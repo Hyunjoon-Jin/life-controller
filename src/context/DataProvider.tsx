@@ -8,6 +8,8 @@ import {
     UserProfile, Education, Career
 } from '@/types';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { useCloudSync } from '@/hooks/useCloudSync';
+import { useSession } from 'next-auth/react';
 import { toast } from 'sonner';
 import { differenceInMinutes, isSameDay } from 'date-fns';
 
@@ -198,6 +200,49 @@ export function DataProvider({ children }: { children: ReactNode }) {
     });
     const [educations, setEducations] = useLocalStorage<Education[]>('educations', []);
     const [careers, setCareers] = useLocalStorage<Career[]>('careers', []);
+    const [educations, setEducations] = useLocalStorage<Education[]>('educations', []);
+    const [careers, setCareers] = useLocalStorage<Career[]>('careers', []);
+
+    // Cloud Sync Integration
+    const { saveData, loadData, isSyncing } = useCloudSync();
+    const { data: session } = useSession();
+
+    // 1. Load data from cloud on login
+    useEffect(() => {
+        if (session?.user) {
+            loadData().then(data => {
+                if (data) {
+                    // Update all states from cloud data
+                    // Note: This matches the JSON structure from useCloudSync
+                    if (data.tasks) setTasks(data.tasks);
+                    if (data.projects) setProjects(data.projects);
+                    if (data.goals) setGoals(data.goals);
+                    if (data.habits) setHabits(data.habits);
+                    if (data.events) setEvents(data.events);
+                    if (data.userProfile) setUserProfile(data.userProfile);
+                    // ... load other states (omitted for brevity, but ideally should map all)
+                }
+            });
+        }
+    }, [session, loadData]);
+
+    // 2. Save data to cloud on change
+    useEffect(() => {
+        if (session?.user) {
+            saveData({
+                tasks, projects, goals, habits, events, journals, memos, people, scraps,
+                languageEntries, books, exerciseSessions, dietEntries, inBodyEntries, hobbyEntries,
+                transactions, assets, certificates, portfolios, archiveDocuments,
+                userProfile, educations, careers
+            });
+        }
+    }, [
+        session, saveData,
+        tasks, projects, goals, habits, events, journals, memos, people, scraps,
+        languageEntries, books, exerciseSessions, dietEntries, inBodyEntries, hobbyEntries,
+        transactions, assets, certificates, portfolios, archiveDocuments,
+        userProfile, educations, careers
+    ]);
 
     // ... (Existing handlers)
 

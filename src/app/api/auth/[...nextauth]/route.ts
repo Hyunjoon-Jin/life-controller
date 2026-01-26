@@ -1,29 +1,65 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import { prisma } from "@/lib/prisma";
+import { comparePassword } from "@/lib/hash";
 
 export const authOptions: NextAuthOptions = {
+    adapter: PrismaAdapter(prisma),
+    session: {
+        strategy: "jwt",
+    },
     providers: [
         CredentialsProvider({
             name: "Credentials",
             credentials: {
-                username: { label: "Username", type: "text", placeholder: "admin" },
+                email: { label: "Email", type: "email" },
                 password: { label: "Password", type: "password" }
             },
-            async authorize(credentials, req) {
-                const adminUser = process.env.ADMIN_USERNAME;
-                const adminPass = process.env.ADMIN_PASSWORD;
-
-                if (credentials?.username === adminUser && credentials?.password === adminPass) {
-                    return { id: "1", name: "Admin User", email: "admin@dailyscheduler.com" };
+            async authorize(credentials) {
+                if (!credentials?.email || !credentials?.password) {
+                    return null;
                 }
-                return null;
+
+                const user = await prisma.user.findUnique({
+                    where: { email: credentials.email }
+                });
+
+                if (!user || !user.password) {
+                    return null;
+                }
+
+                const isValid = await comparePassword(credentials.password, user.password);
+
+                if (!isValid) {
+                    return null;
+                }
+
+                return {
+                    id: user.id,
+                    email: user.email,
+                    name: user.name,
+                };
             }
         })
     ],
     callbacks: {
         async session({ session, token }) {
+            if (session.user && token.sub) {
+                // @ts-ignore
+                session.user.id = token.sub;
+            }
             return session;
         },
+        async jwt({ token, user }) {
+            if (user) {
+                token.sub = user.id;
+            }
+            return token;
+        },
+    },
+    pages: {
+        signIn: '/login', // We will stick to default or redirect to home if no login page
     },
     secret: process.env.NEXTAUTH_SECRET,
 };

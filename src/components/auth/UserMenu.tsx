@@ -14,6 +14,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User, LogOut, Settings, CreditCard, Chrome } from 'lucide-react';
 import { useData } from "@/context/DataProvider";
 import { useEffect } from "react";
+import { ProfileModal } from "./ProfileModal";
 
 export function UserMenu() {
     const { data: session } = useSession();
@@ -62,10 +63,12 @@ export function UserMenu() {
                     </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => { }}>
-                    <User className="mr-2 h-4 w-4" />
-                    <span>프로필</span>
-                </DropdownMenuItem>
+                <ProfileModal>
+                    <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        <User className="mr-2 h-4 w-4" />
+                        <span>프로필</span>
+                    </DropdownMenuItem>
+                </ProfileModal>
                 <DropdownMenuItem>
                     <CreditCard className="mr-2 h-4 w-4" />
                     <span>결제 관리</span>
