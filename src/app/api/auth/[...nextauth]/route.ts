@@ -1,20 +1,32 @@
-import NextAuth from "next-auth";
-import GoogleProvider from "next-auth/providers/google";
+import NextAuth, { NextAuthOptions } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
 
-const handler = NextAuth({
+export const authOptions: NextAuthOptions = {
     providers: [
-        GoogleProvider({
-            clientId: process.env.GOOGLE_CLIENT_ID || "",
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
-        }),
+        CredentialsProvider({
+            name: "Credentials",
+            credentials: {
+                username: { label: "Username", type: "text", placeholder: "admin" },
+                password: { label: "Password", type: "password" }
+            },
+            async authorize(credentials, req) {
+                const adminUser = process.env.ADMIN_USERNAME;
+                const adminPass = process.env.ADMIN_PASSWORD;
+
+                if (credentials?.username === adminUser && credentials?.password === adminPass) {
+                    return { id: "1", name: "Admin User", email: "admin@dailyscheduler.com" };
+                }
+                return null;
+            }
+        })
     ],
     callbacks: {
         async session({ session, token }) {
-            // You can add custom logic here to attach more data to the session
             return session;
         },
     },
     secret: process.env.NEXTAUTH_SECRET,
-});
+};
 
+const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };
