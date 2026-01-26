@@ -200,8 +200,6 @@ export function DataProvider({ children }: { children: ReactNode }) {
     });
     const [educations, setEducations] = useLocalStorage<Education[]>('educations', []);
     const [careers, setCareers] = useLocalStorage<Career[]>('careers', []);
-    const [educations, setEducations] = useLocalStorage<Education[]>('educations', []);
-    const [careers, setCareers] = useLocalStorage<Career[]>('careers', []);
 
     // Cloud Sync Integration
     const { saveData, loadData, isSyncing } = useCloudSync();
