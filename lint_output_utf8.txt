@@ -1,0 +1,239 @@
+
+> daily-scheduler@0.1.0 lint
+> eslint
+
+
+C:\Users\jhj98\OneDrive\??? ???\daily-scheduler\src\app\layout.tsx
+  3:10  warning  'cn' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\jhj98\OneDrive\??? ???\daily-scheduler\src\app\page.tsx
+  19:32  warning  'Lightbulb' is defined but never used    @typescript-eslint/no-unused-vars
+  19:52  warning  'UsersIcon' is defined but never used    @typescript-eslint/no-unused-vars
+  19:71  warning  'LinkIcon' is defined but never used     @typescript-eslint/no-unused-vars
+  19:81  warning  'Target' is defined but never used       @typescript-eslint/no-unused-vars
+  19:89  warning  'Book' is defined but never used         @typescript-eslint/no-unused-vars
+  19:95  warning  'CheckSquare' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\jhj98\OneDrive\??? ???\daily-scheduler\src\components\auth\UserMenu.tsx
+  26:29  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\jhj98\OneDrive\??? ???\daily-scheduler\src\components\calendar\DayView.tsx
+    6:17  warning  'AlertCircle' is defined but never used                @typescript-eslint/no-unused-vars
+   49:12  warning  'now' is assigned a value but never used               @typescript-eslint/no-unused-vars
+  113:17  error    'end' is never reassigned. Use 'const' instead         prefer-const
+  219:11  warning  'handleOpenCreate' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  288:32  error    Unexpected any. Specify a different type               @typescript-eslint/no-explicit-any
+  291:38  error    Unexpected any. Specify a different type               @typescript-eslint/no-explicit-any
+  435:23  error    Unexpected any. Specify a different type               @typescript-eslint/no-explicit-any
+  635:55  error    Unexpected any. Specify a different type               @typescript-eslint/no-explicit-any
+  748:72  error    Unexpected any. Specify a different type               @typescript-eslint/no-explicit-any
+  767:72  error    Unexpected any. Specify a different type               @typescript-eslint/no-explicit-any
+
+C:\Users\jhj98\OneDrive\??? ???\daily-scheduler\src\components\calendar\EventDialog.tsx
+   4:74  warning  'DialogClose' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    @typescript-eslint/no-unused-vars
+  17:37  warning  'CalendarIcon' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   @typescript-eslint/no-unused-vars
+  18:10  warning  'cn' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             @typescript-eslint/no-unused-vars
+  70:13  error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\jhj98\OneDrive\??? ???\daily-scheduler\src\components\calendar\EventDialog.tsx:70:13
+  68 |     useEffect(() => {
+  69 |         if (event) {
+> 70 |             setTitle(event.title);
+     |             ^^^^^^^^ Avoid calling setState() directly within an effect
+  71 |             setType(event.type || 'work');
+  72 |             setPriority(event.priority || 'medium');
+  73 |             setIsMeeting(event.isMeeting || false);  react-hooks/set-state-in-effect
+
+C:\Users\jhj98\OneDrive\??? ???\daily-scheduler\src\components\calendar\MonthView.tsx
+  15:18  warning  'CheckCircle' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\jhj98\OneDrive\??? ???\daily-scheduler\src\components\calendar\WeekView.tsx
+  6:10  warning  'Plus' is defined but never used         @typescript-eslint/no-unused-vars
+  6:24  warning  'CheckCircle' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\jhj98\OneDrive\??? ???\daily-scheduler\src\components\goals\GoalDetailDialog.tsx
+   4:33  warning  'DialogHeader' is defined but never used          @typescript-eslint/no-unused-vars
+   6:22  warning  'CalendarEvent' is defined but never used         @typescript-eslint/no-unused-vars
+   8:54  warning  'Plus' is defined but never used                  @typescript-eslint/no-unused-vars
+   8:60  warning  'ChevronRight' is defined but never used          @typescript-eslint/no-unused-vars
+   8:74  warning  'ChevronDown' is defined but never used           @typescript-eslint/no-unused-vars
+  11:10  warning  'ko' is defined but never used                    @typescript-eslint/no-unused-vars
+  20:13  warning  'goals' is assigned a value but never used        @typescript-eslint/no-unused-vars
+  20:35  warning  'updateGoal' is assigned a value but never used   @typescript-eslint/no-unused-vars
+  29:11  warning  'getSubGoals' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  29:26  warning  'parentId' is defined but never used              @typescript-eslint/no-unused-vars
+
+C:\Users\jhj98\OneDrive\??? ???\daily-scheduler\src\components\goals\GoalTree.tsx
+    8:60  warning  'DialogTrigger' is defined but never used     @typescript-eslint/no-unused-vars
+  226:30  error    'g' is never reassigned. Use 'const' instead  prefer-const
+  245:18  error    'g' is never reassigned. Use 'const' instead  prefer-const
+  304:78  error    Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  368:91  error    Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  386:87  error    Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+
+C:\Users\jhj98\OneDrive\??? ???\daily-scheduler\src\components\guide\GuideModal.tsx
+  10:20  warning  'GripVertical' is defined but never used                         @typescript-eslint/no-unused-vars
+  10:47  warning  'Users' is defined but never used                                @typescript-eslint/no-unused-vars
+  65:62  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  65:65  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\Users\jhj98\OneDrive\??? ???\daily-scheduler\src\components\ideas\IdeaBoard.tsx
+    9:47  warning  'Tag' is defined but never used                                                                                                                                                                                                                                                          @typescript-eslint/no-unused-vars
+   13:10  warning  'Label' is defined but never used                                                                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+  256:41  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\jhj98\OneDrive\??? ???\daily-scheduler\src\components\journal\JournalEditor.tsx
+    7:10  warning  'Smile' is defined but never used                                                                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+  146:33  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\jhj98\OneDrive\??? ???\daily-scheduler\src\components\journal\JournalView.tsx
+  136:45  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\jhj98\OneDrive\??? ???\daily-scheduler\src\components\people\PeopleManager.tsx
+   10:49  warning  'Filter' is defined but never used                                                                                                                                                                                                                                                       @typescript-eslint/no-unused-vars
+   10:73  warning  'Trash2' is defined but never used                                                                                                                                                                                                                                                       @typescript-eslint/no-unused-vars
+   11:10  warning  'Checkbox' is defined but never used                                                                                                                                                                                                                                                     @typescript-eslint/no-unused-vars
+  324:41  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  352:29  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\jhj98\OneDrive\??? ???\daily-scheduler\src\components\project\ArchiveSystem.tsx
+   6:58  warning  'Tag' is defined but never used                @typescript-eslint/no-unused-vars
+   9:74  warning  'DialogDescription' is defined but never used  @typescript-eslint/no-unused-vars
+  10:10  warning  'Badge' is defined but never used              @typescript-eslint/no-unused-vars
+
+C:\Users\jhj98\OneDrive\??? ???\daily-scheduler\src\components\project\GanttChart.tsx
+   11:10  warning  'Dialog' is defined but never used                     @typescript-eslint/no-unused-vars
+   11:18  warning  'DialogContent' is defined but never used              @typescript-eslint/no-unused-vars
+   11:33  warning  'DialogTrigger' is defined but never used              @typescript-eslint/no-unused-vars
+   12:10  warning  'TaskDialog' is defined but never used                 @typescript-eslint/no-unused-vars
+   24:12  warning  'isTaskDialogOpen' is assigned a value but never used  @typescript-eslint/no-unused-vars
+   25:12  warning  'editingTask' is assigned a value but never used       @typescript-eslint/no-unused-vars
+   65:11  warning  'getTaskStyle' is assigned a value but never used      @typescript-eslint/no-unused-vars
+  229:39  warning  'midX' is assigned a value but never used              @typescript-eslint/no-unused-vars
+
+C:\Users\jhj98\OneDrive\??? ???\daily-scheduler\src\components\project\ProjectDashboard.tsx
+  6:52  warning  'BarChart' is defined but never used  @typescript-eslint/no-unused-vars
+  6:62  warning  'Bar' is defined but never used       @typescript-eslint/no-unused-vars
+  6:67  warning  'XAxis' is defined but never used     @typescript-eslint/no-unused-vars
+  6:74  warning  'YAxis' is defined but never used     @typescript-eslint/no-unused-vars
+  7:10  warning  'Calendar' is defined but never used  @typescript-eslint/no-unused-vars
+  7:32  warning  'Users' is defined but never used     @typescript-eslint/no-unused-vars
+
+C:\Users\jhj98\OneDrive\??? ???\daily-scheduler\src\components\project\ProjectDialog.tsx
+  35:13  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\jhj98\OneDrive\??? ???\daily-scheduler\src\components\project\ProjectDialog.tsx:35:13
+  33 |     useEffect(() => {
+  34 |         if (projectToEdit) {
+> 35 |             setTitle(projectToEdit.title);
+     |             ^^^^^^^^ Avoid calling setState() directly within an effect
+  36 |             setDescription(projectToEdit.description || '');
+  37 |             setStatus(projectToEdit.status || 'preparation');
+  38 |             setColor(projectToEdit.color);  react-hooks/set-state-in-effect
+  67:31  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      @typescript-eslint/no-explicit-any
+
+C:\Users\jhj98\OneDrive\??? ???\daily-scheduler\src\components\project\ProjectStructure.tsx
+  21:35  warning  'updateProject' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\jhj98\OneDrive\??? ???\daily-scheduler\src\components\project\TaskDialog.tsx
+  31:13  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\jhj98\OneDrive\??? ???\daily-scheduler\src\components\project\TaskDialog.tsx:31:13
+  29 |     useEffect(() => {
+  30 |         if (taskToEdit) {
+> 31 |             setTitle(taskToEdit.title);
+     |             ^^^^^^^^ Avoid calling setState() directly within an effect
+  32 |             setRemarks(taskToEdit.remarks || '');
+  33 |             setPriority(taskToEdit.priority || 'medium');
+  34 |             setStartDate(taskToEdit.startDate ? new Date(taskToEdit.startDate).toISOString().split('T')[0] : '');  react-hooks/set-state-in-effect
+
+C:\Users\jhj98\OneDrive\??? ???\daily-scheduler\src\components\project\WorkLayout.tsx
+  5:93  warning  'MoreHorizontal' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\jhj98\OneDrive\??? ???\daily-scheduler\src\components\scraps\ScrapManager.tsx
+    6:22  warning  'cn' is defined but never used                                                                                                                                                                                                                                                           @typescript-eslint/no-unused-vars
+   11:66  warning  'Search' is defined but never used                                                                                                                                                                                                                                                       @typescript-eslint/no-unused-vars
+   11:74  warning  'Hash' is defined but never used                                                                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+  185:41  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\jhj98\OneDrive\??? ???\daily-scheduler\src\components\tasks\TaskBoard.tsx
+   9:39  warning  'Search' is defined but never used                   @typescript-eslint/no-unused-vars
+  31:25  warning  'setSearchQuery' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\jhj98\OneDrive\??? ???\daily-scheduler\src\components\timeline\TimelineView.tsx
+   5:10  warning  'cn' is defined but never used                        @typescript-eslint/no-unused-vars
+   6:10  warning  'Button' is defined but never used                    @typescript-eslint/no-unused-vars
+  10:26  warning  'setSelectedDate' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\jhj98\OneDrive\??? ???\daily-scheduler\src\components\tools\Pomodoro.tsx
+  34:13  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\jhj98\OneDrive\??? ???\daily-scheduler\src\components\tools\Pomodoro.tsx:34:13
+  32 |             }, 1000);
+  33 |         } else if (timeLeft === 0) {
+> 34 |             setIsActive(false);
+     |             ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  35 |             // Play sound here if we had one
+  36 |         }
+  37 |  react-hooks/set-state-in-effect
+
+C:\Users\jhj98\OneDrive\??? ???\daily-scheduler\src\components\tools\SearchWidget.tsx
+  7:10  warning  'cn' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\jhj98\OneDrive\??? ???\daily-scheduler\src\components\ui\input.tsx
+  5:18  error  An interface declaring no members is equivalent to its supertype  @typescript-eslint/no-empty-object-type
+
+C:\Users\jhj98\OneDrive\??? ???\daily-scheduler\src\components\weather\WeatherWidget.tsx
+  5:10  warning  'cn' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\jhj98\OneDrive\??? ???\daily-scheduler\src\hooks\useLocalStorage.ts
+  12:17  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\jhj98\OneDrive\??? ???\daily-scheduler\src\hooks\useLocalStorage.ts:12:17
+  10 |             const item = window.localStorage.getItem(key);
+  11 |             if (item) {
+> 12 |                 setStoredValue(JSON.parse(item));
+     |                 ^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  13 |             }
+  14 |         } catch (error) {
+  15 |             console.warn(`Error reading localStorage key ??{key}??`, error);  react-hooks/set-state-in-effect
+
+C:\Users\jhj98\OneDrive\??? ???\daily-scheduler\src\lib\auth.ts
+  12:34  warning  'token' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\jhj98\OneDrive\??? ???\daily-scheduler\tailwind.config.ts
+  63:15  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+
+??94 problems (22 errors, 72 warnings)
+  3 errors and 0 warnings potentially fixable with the `--fix` option.
+

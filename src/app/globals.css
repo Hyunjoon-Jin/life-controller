@@ -1,0 +1,148 @@
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css");
+
+/* Font loaded via next/font/local in layout.tsx */
+
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    /* Digital Wellbeing Theme - Light Mode */
+    --background: 220 33% 98%;
+    --foreground: 231 44% 31%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 231 44% 31%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 231 44% 31%;
+
+    --primary: 251 100% 55%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 33% 96%;
+    --secondary-foreground: 231 44% 31%;
+
+    --muted: 220 20% 96%;
+    --muted-foreground: 220 10% 65%;
+
+    --accent: 251 100% 95%;
+    --accent-foreground: 251 100% 55%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 251 100% 55%;
+
+    --radius: 1.25rem;
+  }
+
+  .dark {
+    /* Dark Mode Theme */
+    --background: 222 47% 11%;
+    --foreground: 210 40% 98%;
+
+    --card: 222 47% 11%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222 47% 11%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222 47% 11.2%;
+
+    --secondary: 217 32% 17%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217 32% 17%;
+    --muted-foreground: 215 20% 65%;
+
+    --accent: 217 32% 17%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217 32% 17%;
+    --input: 217 32% 17%;
+    --ring: 212 26% 87%;
+  }
+
+  .gray {
+    /* Comfort Gray Mode (Softer than high-contrast dark) */
+    --background: 220 15% 20%;
+    --foreground: 220 15% 90%;
+
+    --card: 220 15% 25%;
+    --card-foreground: 220 15% 90%;
+
+    --popover: 220 15% 25%;
+    --popover-foreground: 220 15% 90%;
+
+    --primary: 220 15% 80%;
+    --primary-foreground: 220 15% 20%;
+
+    --secondary: 220 10% 30%;
+    --secondary-foreground: 220 15% 90%;
+
+    --muted: 220 10% 30%;
+    --muted-foreground: 220 10% 70%;
+
+    --accent: 220 10% 35%;
+    --accent-foreground: 220 15% 90%;
+
+    --destructive: 0 50% 50%;
+    --destructive-foreground: 220 15% 90%;
+
+    /* Light enough borders to be visible but not black */
+    --border: 220 10% 40%;
+    --input: 220 10% 40%;
+    --ring: 220 15% 60%;
+  }
+}
+
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+    /* Fixed: Added hsl wrapper */
+  }
+
+  body {
+    background-color: hsl(var(--background));
+    /* Fixed: Added hsl wrapper */
+    color: hsl(var(--foreground));
+    /* Fixed: Added hsl wrapper */
+    /* Font family handled by next/font in layout.tsx */
+  }
+}
+
+/* Utilities */
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--muted-foreground) / 0.2);
+    border-radius: 9999px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: hsl(var(--muted-foreground) / 0.3);
+  }
+}
