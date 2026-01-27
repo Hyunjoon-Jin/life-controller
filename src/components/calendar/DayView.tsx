@@ -1,6 +1,6 @@
 'use client';
 
-import { format, isSameDay } from 'date-fns';
+import { format, isSameDay, isValid } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { cn, generateId } from '@/lib/utils';
 import { Users, AlertCircle, Briefcase } from 'lucide-react';
@@ -134,7 +134,10 @@ export function DayView({ currentDate, showProjectTasks }: { currentDate: Date; 
         });
 
     const standardEvents = events
-        .filter(event => isSameDay(new Date(event.start), currentDate))
+        .filter(event => {
+            const d = new Date(event.start);
+            return isValid(d) && isSameDay(d, currentDate);
+        })
         .map(event => ({
             ...event,
             start: new Date(event.start),
@@ -146,7 +149,7 @@ export function DayView({ currentDate, showProjectTasks }: { currentDate: Date; 
         if (!t.projectId) return false;
         if (t.completed) return false;
         const targetDate = t.endDate ? new Date(t.endDate) : (t.deadline ? new Date(t.deadline) : (t.startDate ? new Date(t.startDate) : null));
-        if (!targetDate) return false;
+        if (!targetDate || !isValid(targetDate)) return false;
         return isSameDay(targetDate, currentDate);
     }) : [];
 

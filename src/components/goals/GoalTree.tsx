@@ -1,6 +1,5 @@
-'use client';
-
 import { useState } from 'react';
+import { isValid } from 'date-fns';
 import { Goal, PlanType, GoalCategory } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -183,7 +182,7 @@ export function GoalTree() {
         setNewGoalTitle(goal.title);
         setNewGoalProgress(goal.progress || 0);
         setNewGoalMemo(goal.memo || '');
-        setNewGoalDeadline(goal.deadline ? new Date(goal.deadline).toISOString().split('T')[0] : '');
+        setNewGoalDeadline(goal.deadline && isValid(new Date(goal.deadline)) ? new Date(goal.deadline).toISOString().split('T')[0] : '');
         setNewPlanType(goal.planType || 'short-term');
         setNewGoalCategory(goal.category || 'other');
 

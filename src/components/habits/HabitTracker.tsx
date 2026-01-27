@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Habit } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -41,7 +41,12 @@ export function HabitTracker() {
     // Edit State
     const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
 
-    const today = format(new Date(), 'yyyy-MM-dd');
+    const [today, setToday] = useState('');
+
+    // Hydration fix: Set today only on client
+    useEffect(() => {
+        setToday(format(new Date(), 'yyyy-MM-dd'));
+    }, []);
 
     const toggleHabit = (id: string) => {
         const habit = habits.find(h => h.id === id);

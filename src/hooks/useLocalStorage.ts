@@ -9,7 +9,14 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
         try {
             const item = window.localStorage.getItem(key);
             if (item) {
-                setStoredValue(JSON.parse(item));
+                setStoredValue(JSON.parse(item, (key, value) => {
+                    // ISO 8601 Date Pattern: YYYY-MM-DDTHH:mm:ss.sssZ
+                    const dateFormat = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d*)?(?:[-+]\d{2}:?\d{2}|Z)?$/;
+                    if (typeof value === "string" && dateFormat.test(value)) {
+                        return new Date(value);
+                    }
+                    return value;
+                }));
             }
         } catch (error) {
             console.warn(`Error reading localStorage key “${key}”:`, error);

@@ -59,7 +59,7 @@ export const authOptions: NextAuthOptions = {
         },
     },
     pages: {
-        signIn: '/login', // We will stick to default or redirect to home if no login page
+        signIn: '/login',
     },
     secret: process.env.NEXTAUTH_SECRET,
 };

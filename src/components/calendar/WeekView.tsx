@@ -1,6 +1,6 @@
 'use client';
 
-import { format, startOfWeek, endOfWeek, eachDayOfInterval, isToday, isSameDay } from 'date-fns';
+import { format, startOfWeek, endOfWeek, eachDayOfInterval, isToday, isSameDay, isValid } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { cn, generateId } from '@/lib/utils';
 import { Plus, Target, CheckCircle } from 'lucide-react';
@@ -182,13 +182,17 @@ export function WeekView({ currentDate, showProjectTasks }: { currentDate: Date;
             <div className="flex border-b border-border/20">
                 <div className="w-16 flex-shrink-0 border-r border-border/20 bg-muted/30" />
                 {weekDays.map((day) => {
-                    const daysGoals = goals.filter(g => g.deadline && isSameDay(new Date(g.deadline), day));
+                    const daysGoals = goals.filter(g => {
+                        if (!g.deadline) return false;
+                        const d = new Date(g.deadline);
+                        return isValid(d) && isSameDay(d, day);
+                    });
 
                     const daysProjectTasks = showProjectTasks ? tasks.filter(t => {
                         if (!t.projectId) return false;
                         if (t.completed) return false;
                         const targetDate = t.endDate ? new Date(t.endDate) : (t.deadline ? new Date(t.deadline) : (t.startDate ? new Date(t.startDate) : null));
-                        if (!targetDate) return false;
+                        if (!targetDate || !isValid(targetDate)) return false;
                         return isSameDay(targetDate, day);
                     }) : [];
 
@@ -262,7 +266,10 @@ export function WeekView({ currentDate, showProjectTasks }: { currentDate: Date;
                 {/* Day Columns */}
                 {weekDays.map(day => {
                     // Filter events for this day
-                    const dayEvents = events.filter(e => isSameDay(new Date(e.start), day));
+                    const dayEvents = events.filter(e => {
+                        const d = new Date(e.start);
+                        return isValid(d) && isSameDay(d, day);
+                    });
 
                     return (
                         <div

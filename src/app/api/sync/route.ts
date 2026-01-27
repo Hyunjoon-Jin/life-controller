@@ -23,7 +23,7 @@ export async function GET(req: Request) {
         return NextResponse.json({ data: user.schedulerData.data });
     } catch (error) {
         console.error('Sync GET error:', error);
-        return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
+        return NextResponse.json({ message: 'Internal server error', error: String(error) }, { status: 500 });
     }
 }
 
@@ -54,6 +54,6 @@ export async function POST(req: Request) {
         return NextResponse.json({ message: 'Synced successfully' });
     } catch (error) {
         console.error('Sync POST error:', error);
-        return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
+        return NextResponse.json({ message: 'Internal server error', error: String(error) }, { status: 500 });
     }
 }

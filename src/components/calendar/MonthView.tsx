@@ -9,6 +9,7 @@ import {
     isSameDay,
     isToday,
     format,
+    isValid,
 } from 'date-fns';
 import { cn, generateId } from '@/lib/utils';
 import { useData } from '@/context/DataProvider';
@@ -126,13 +127,18 @@ export function MonthView({ currentDate, onDateClick, showProjectTasks }: { curr
             {/* Days Grid */}
             <div className="grid grid-cols-7 grid-rows-5 flex-1">
                 {days.map((day, dayIdx) => {
-                    const daysGoals = goals.filter(g => g.deadline && isSameDay(new Date(g.deadline), day));
+                    const daysGoals = goals.filter(g => {
+                        if (!g.deadline) return false;
+                        const d = new Date(g.deadline);
+                        return isValid(d) && isSameDay(d, day);
+                    });
 
                     // Filter Events: ONLY Meeting, Appointment, Vacation, WorkLog
-                    const daysEvents = events.filter(e =>
-                        isSameDay(new Date(e.start), day) &&
-                        (e.isMeeting || e.isAppointment || e.type === 'vacation' || e.isWorkLog)
-                    );
+                    const daysEvents = events.filter(e => {
+                        const d = new Date(e.start);
+                        return isValid(d) && isSameDay(d, day) &&
+                            (e.isMeeting || e.isAppointment || e.type === 'vacation' || e.isWorkLog);
+                    });
 
                     // Filter Project Tasks
                     const daysProjectTasks = showProjectTasks ? tasks.filter(t => {
@@ -145,7 +151,7 @@ export function MonthView({ currentDate, onDateClick, showProjectTasks }: { curr
                         // Common pattern: Show on deadline as "Due"
 
                         const targetDate = t.endDate ? new Date(t.endDate) : (t.deadline ? new Date(t.deadline) : (t.startDate ? new Date(t.startDate) : null));
-                        if (!targetDate) return false;
+                        if (!targetDate || !isValid(targetDate)) return false;
 
                         return isSameDay(targetDate, day);
                     }) : [];

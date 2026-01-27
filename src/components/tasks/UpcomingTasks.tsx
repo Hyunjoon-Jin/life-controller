@@ -1,7 +1,7 @@
 'use client';
 
 import { useData } from '@/context/DataProvider';
-import { differenceInDays, addDays, isBefore, isAfter, startOfDay } from 'date-fns';
+import { differenceInDays, addDays, isBefore, isAfter, startOfDay, isValid } from 'date-fns';
 import { Check, Clock, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
@@ -17,9 +17,15 @@ export function UpcomingTasks() {
     const upcomingTasks = tasks.filter(task => {
         if (!task.deadline || task.completed) return false;
         const deadlineDate = new Date(task.deadline);
+        if (!isValid(deadlineDate)) return false;
         // Is after yesterday (today included) AND before next week?
         return isAfter(deadlineDate, addDays(today, -1)) && isBefore(deadlineDate, nextWeek);
-    }).sort((a, b) => new Date(a.deadline!).getTime() - new Date(b.deadline!).getTime());
+    }).sort((a, b) => {
+        const dateA = new Date(a.deadline!);
+        const dateB = new Date(b.deadline!);
+        // Safe guard sort as well just in case
+        return (isValid(dateA) ? dateA.getTime() : 0) - (isValid(dateB) ? dateB.getTime() : 0);
+    });
 
     const toggleTask = (id: string, completed: boolean) => {
         const task = tasks.find(t => t.id === id);

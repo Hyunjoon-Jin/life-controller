@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { CalendarView } from '@/components/calendar/CalendarView';
 import { GoalTree } from '@/components/goals/GoalTree';
 import { HabitTracker } from '@/components/habits/HabitTracker';
@@ -37,6 +37,11 @@ export default function Home() {
   const [activeCategory, setActiveCategory] = useState<'basic' | 'health' | 'growth' | 'record' | 'finance'>('basic');
   const [activeTab, setActiveTab] = useState<'calendar' | 'tasks' | 'people' | 'goals' | 'language' | 'reading' | 'exercise' | 'diet' | 'inbody' | 'hobby' | 'ideas' | 'journal' | 'scraps' | 'widgets' | 'ledger' | 'assets' | 'certificate' | 'portfolio'>('calendar');
   const [isGuideOpen, setIsGuideOpen] = useState(false);
+  const [todayDate, setTodayDate] = useState('');
+
+  useEffect(() => {
+    setTodayDate(new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }));
+  }, []);
 
   const handleQuickLink = (mode: 'home' | 'schedule' | 'work', category: 'basic' | 'growth' | 'record' | 'finance', tab: string) => {
     setMainMode(mode);
@@ -93,8 +98,8 @@ export default function Home() {
         </div>
         <div className="flex items-center gap-4 self-end md:self-auto">
           <WeatherWidget />
-          <div className="text-sm text-muted-foreground hidden sm:block border-l border-gray-700 pl-4">
-            {new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' })}
+          <div className="text-sm text-muted-foreground hidden sm:block border-l border-gray-700 pl-4 h-5">
+            {todayDate}
           </div>
           <Button variant="ghost" size="icon" onClick={() => setIsGuideOpen(true)} className="text-muted-foreground">
             <HelpCircle className="w-5 h-5" />

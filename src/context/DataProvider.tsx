@@ -222,7 +222,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
                 }
             });
         }
-    }, [session, loadData]);
+    }, [session?.user?.email, loadData]);
 
     // 2. Save data to cloud on change
     useEffect(() => {
@@ -235,7 +235,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
             });
         }
     }, [
-        session, saveData,
+        session?.user?.email, saveData,
         tasks, projects, goals, habits, events, journals, memos, people, scraps,
         languageEntries, books, exerciseSessions, dietEntries, inBodyEntries, hobbyEntries,
         transactions, assets, certificates, portfolios, archiveDocuments,

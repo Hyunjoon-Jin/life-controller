@@ -68,7 +68,7 @@ export function useCloudSync() {
                 setIsSyncing(false);
             }
         }, 2000); // 2 second debounce
-    }, [session]);
+    }, [session?.user?.email]);
 
     const loadData = useCallback(async () => {
         if (!session?.user) return null;
@@ -85,7 +85,7 @@ export function useCloudSync() {
             // toast.error('데이터 불러오기 실패');
             return null;
         }
-    }, [session]);
+    }, [session?.user?.email]);
 
     return { saveData, loadData, isSyncing };
 }

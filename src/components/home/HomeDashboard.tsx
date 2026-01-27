@@ -19,7 +19,7 @@ import {
     Languages,
     Briefcase
 } from 'lucide-react';
-import { format } from 'date-fns';
+import { format, isValid } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { WeatherCard } from '@/components/widgets/WeatherCard';
 import { SearchWidget } from '@/components/tools/SearchWidget';
@@ -34,10 +34,11 @@ interface HomeDashboardProps {
 export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
     const { events, tasks } = useData();
     const { data: session } = useSession();
-    const [currentTime, setCurrentTime] = useState(new Date());
+    const [currentTime, setCurrentTime] = useState<Date | null>(null);
     const [greeting, setGreeting] = useState('');
 
     useEffect(() => {
+        setCurrentTime(new Date());
         const timer = setInterval(() => setCurrentTime(new Date()), 1000);
 
         const hour = new Date().getHours();
@@ -51,7 +52,10 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
 
     const todaysEvents = events
         .filter(e => {
+            if (!e.start) return false;
             const start = new Date(e.start);
+            if (!isValid(start)) return false;
+
             const today = new Date();
             return start.getDate() === today.getDate() &&
                 start.getMonth() === today.getMonth() &&
@@ -62,6 +66,7 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
     const todaysTasks = tasks.filter(t => {
         if (!t.dueDate) return false;
         const due = new Date(t.dueDate);
+        if (!isValid(due)) return false;
         const today = new Date();
         return due.getDate() === today.getDate() &&
             due.getMonth() === today.getMonth() &&
@@ -93,8 +98,14 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
                     <h1 className="text-3xl md:text-4xl font-extrabold bg-gradient-to-br from-gray-900 to-gray-500 dark:from-white dark:to-gray-400 bg-clip-text text-transparent mb-2">
                         {greeting}, {session?.user?.name || '사용자'}님.
                     </h1>
-                    <p className="text-lg text-muted-foreground font-medium">
-                        {format(currentTime, 'M월 d일 EEEE', { locale: ko })} · {format(currentTime, 'a h:mm')}
+                    <p className="text-lg text-muted-foreground font-medium h-7">
+                        {currentTime ? (
+                            <>
+                                {format(currentTime, 'M월 d일 EEEE', { locale: ko })} · {format(currentTime, 'a h:mm')}
+                            </>
+                        ) : (
+                            <span className="opacity-0">Loading...</span>
+                        )}
                     </p>
                 </div>
                 <div className="w-full md:w-auto">

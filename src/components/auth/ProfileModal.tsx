@@ -70,14 +70,13 @@ export function ProfileModal({ children }: { children: React.ReactNode }) {
                         />
                     </div>
                     {/* Phone field support needs schema update first, hidden for now */}
-                </DialogFooter>
-                <DialogFooter>
-                    <Button type="submit" disabled={isLoading}>
-                        {isLoading ? '저장 중...' : '변경사항 저장'}
-                    </Button>
-                </DialogFooter>
-            </form>
-        </DialogContent>
+                    <DialogFooter>
+                        <Button type="submit" disabled={isLoading}>
+                            {isLoading ? '저장 중...' : '변경사항 저장'}
+                        </Button>
+                    </DialogFooter>
+                </form>
+            </DialogContent>
         </Dialog >
     );
 }
