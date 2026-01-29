@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 export function useLocalStorage<T>(key: string, initialValue: T) {
     // Always initialize with the default value to avoid hydration mismatch

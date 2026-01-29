@@ -238,23 +238,23 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
     // ... (Existing handlers)
 
-    const addCertificate = (cert: Certificate) => setCertificates(prev => [...prev, cert]);
-    const updateCertificate = (cert: Certificate) => setCertificates(prev => prev.map(c => c.id === cert.id ? cert : c));
-    const deleteCertificate = (id: string) => setCertificates(prev => prev.filter(c => c.id !== id));
+    const addCertificate = (cert: Certificate) => setCertificates((prev: Certificate[]) => [...prev, cert]);
+    const updateCertificate = (cert: Certificate) => setCertificates((prev: Certificate[]) => prev.map(c => c.id === cert.id ? cert : c));
+    const deleteCertificate = (id: string) => setCertificates((prev: Certificate[]) => prev.filter(c => c.id !== id));
 
-    const addPortfolio = (item: PortfolioItem) => setPortfolios(prev => [...prev, item]);
-    const updatePortfolio = (item: PortfolioItem) => setPortfolios(prev => prev.map(p => p.id === item.id ? item : p));
-    const deletePortfolio = (id: string) => setPortfolios(prev => prev.filter(p => p.id !== id));
+    const addPortfolio = (item: PortfolioItem) => setPortfolios((prev: PortfolioItem[]) => [...prev, item]);
+    const updatePortfolio = (item: PortfolioItem) => setPortfolios((prev: PortfolioItem[]) => prev.map(p => p.id === item.id ? item : p));
+    const deletePortfolio = (id: string) => setPortfolios((prev: PortfolioItem[]) => prev.filter(p => p.id !== id));
 
     const updateUserProfile = (profile: UserProfile) => setUserProfile(profile);
 
-    const addEducation = (edu: Education) => setEducations(prev => [...prev, edu]);
-    const updateEducation = (edu: Education) => setEducations(prev => prev.map(e => e.id === edu.id ? edu : e));
-    const deleteEducation = (id: string) => setEducations(prev => prev.filter(e => e.id !== id));
+    const addEducation = (edu: Education) => setEducations((prev: Education[]) => [...prev, edu]);
+    const updateEducation = (edu: Education) => setEducations((prev: Education[]) => prev.map(e => e.id === edu.id ? edu : e));
+    const deleteEducation = (id: string) => setEducations((prev: Education[]) => prev.filter(e => e.id !== id));
 
-    const addCareer = (career: Career) => setCareers(prev => [...prev, career]);
-    const updateCareer = (career: Career) => setCareers(prev => prev.map(c => c.id === career.id ? career : c));
-    const deleteCareer = (id: string) => setCareers(prev => prev.filter(c => c.id !== id));
+    const addCareer = (career: Career) => setCareers((prev: Career[]) => [...prev, career]);
+    const updateCareer = (career: Career) => setCareers((prev: Career[]) => prev.map(c => c.id === career.id ? career : c));
+    const deleteCareer = (id: string) => setCareers((prev: Career[]) => prev.filter(c => c.id !== id));
 
     // Alarm State
     const alertedEventIdsRef = React.useRef<Set<string>>(new Set());
