@@ -6,17 +6,21 @@
 
 @layer base {
   :root {
-    /* Digital Wellbeing Theme - Light Mode */
-    --background: 220 33% 98%;
-    --foreground: 231 44% 31%;
+    /* Digital Wellbeing Theme - Google Style Light Mode */
+    --background: 213 27% 96%;
+    /* #F0F4F9 Google Light Blue-Gray */
+    --foreground: 215 25% 27%;
+    /* #444746 Google Dark Gray Text */
 
     --card: 0 0% 100%;
-    --card-foreground: 231 44% 31%;
+    /* White Surface */
+    --card-foreground: 215 25% 27%;
 
     --popover: 0 0% 100%;
     --popover-foreground: 231 44% 31%;
 
-    --primary: 251 100% 55%;
+    --primary: 217 90% 43%;
+    /* #0B57D0 Google Blue */
     --primary-foreground: 0 0% 100%;
 
     --secondary: 220 33% 96%;

@@ -60,12 +60,15 @@ export default function Home() {
               LIFE Controller
             </h1>
             {/* Top Level Navigation */}
-            <div className="bg-muted p-1 rounded-lg flex gap-1">
+            {/* Top Level Navigation - Pill Style */}
+            <div className="flex gap-2">
               <button
                 onClick={() => setMainMode('home')}
                 className={cn(
-                  "px-3 py-1 rounded-md text-sm font-medium transition-all",
-                  mainMode === 'home' ? "bg-white shadow text-primary" : "text-muted-foreground hover:bg-white/50"
+                  "px-5 py-2 rounded-full text-sm font-bold transition-all duration-300",
+                  mainMode === 'home'
+                    ? "bg-primary text-white shadow-md shadow-primary/30"
+                    : "text-muted-foreground hover:bg-white hover:text-foreground"
                 )}
               >
                 홈
@@ -73,8 +76,10 @@ export default function Home() {
               <button
                 onClick={() => setMainMode('schedule')}
                 className={cn(
-                  "px-3 py-1 rounded-md text-sm font-medium transition-all",
-                  mainMode === 'schedule' ? "bg-white shadow text-primary" : "text-muted-foreground hover:bg-white/50"
+                  "px-5 py-2 rounded-full text-sm font-bold transition-all duration-300",
+                  mainMode === 'schedule'
+                    ? "bg-primary text-white shadow-md shadow-primary/30"
+                    : "text-muted-foreground hover:bg-white hover:text-foreground"
                 )}
               >
                 일상 관리
@@ -82,8 +87,10 @@ export default function Home() {
               <button
                 onClick={() => setMainMode('work')}
                 className={cn(
-                  "px-3 py-1 rounded-md text-sm font-medium transition-all",
-                  mainMode === 'work' ? "bg-white shadow text-primary" : "text-muted-foreground hover:bg-white/50"
+                  "px-5 py-2 rounded-full text-sm font-bold transition-all duration-300",
+                  mainMode === 'work'
+                    ? "bg-primary text-white shadow-md shadow-primary/30"
+                    : "text-muted-foreground hover:bg-white hover:text-foreground"
                 )}
               >
                 업무 관리
@@ -116,16 +123,17 @@ export default function Home() {
           <div className="flex-1 grid grid-cols-1 md:grid-cols-12 gap-6 min-h-0">
             {/* Left Column: Main Tabbed View (8 cols - widened) */}
             <div className="md:col-span-12 lg:col-span-8 flex flex-col min-h-[800px]">
-              {/* Navigation Tabs */}
-              <div className="flex flex-col gap-3 mb-6 bg-white p-3 rounded-2xl shadow-sm border border-gray-100">
+              {/* Navigation Tabs - Floating Card Style */}
+              <div className="flex flex-col gap-4 mb-6">
 
                 {/* Level 1: Categories */}
-                <div className="flex gap-2 p-1 bg-muted/30 rounded-xl w-fit">
+                {/* Level 1: Categories - Transparent Pills */}
+                <div className="flex gap-1 p-1 w-fit">
                   <button
                     onClick={() => setActiveCategory('basic')}
                     className={cn(
-                      "px-4 py-1.5 rounded-lg text-sm font-bold transition-all",
-                      activeCategory === 'basic' ? "bg-white shadow text-primary" : "text-muted-foreground hover:bg-white/50"
+                      "px-4 py-2 rounded-full text-sm font-bold transition-all",
+                      activeCategory === 'basic' ? "bg-white text-primary shadow-sm ring-1 ring-border/50" : "text-muted-foreground hover:bg-white/60 hover:text-foreground"
                     )}
                   >
                     기본 관리
@@ -133,8 +141,8 @@ export default function Home() {
                   <button
                     onClick={() => setActiveCategory('health')}
                     className={cn(
-                      "px-4 py-1.5 rounded-lg text-sm font-bold transition-all",
-                      activeCategory === 'health' ? "bg-white shadow text-primary" : "text-muted-foreground hover:bg-white/50"
+                      "px-4 py-2 rounded-full text-sm font-bold transition-all",
+                      activeCategory === 'health' ? "bg-white text-primary shadow-sm ring-1 ring-border/50" : "text-muted-foreground hover:bg-white/60 hover:text-foreground"
                     )}
                   >
                     건강 관리
@@ -142,8 +150,8 @@ export default function Home() {
                   <button
                     onClick={() => setActiveCategory('growth')}
                     className={cn(
-                      "px-4 py-1.5 rounded-lg text-sm font-bold transition-all",
-                      activeCategory === 'growth' ? "bg-white shadow text-primary" : "text-muted-foreground hover:bg-white/50"
+                      "px-4 py-2 rounded-full text-sm font-bold transition-all",
+                      activeCategory === 'growth' ? "bg-white text-primary shadow-sm ring-1 ring-border/50" : "text-muted-foreground hover:bg-white/60 hover:text-foreground"
                     )}
                   >
                     자기 성장
@@ -151,8 +159,8 @@ export default function Home() {
                   <button
                     onClick={() => setActiveCategory('record')}
                     className={cn(
-                      "px-4 py-1.5 rounded-lg text-sm font-bold transition-all",
-                      activeCategory === 'record' ? "bg-white shadow text-primary" : "text-muted-foreground hover:bg-white/50"
+                      "px-4 py-2 rounded-full text-sm font-bold transition-all",
+                      activeCategory === 'record' ? "bg-white text-primary shadow-sm ring-1 ring-border/50" : "text-muted-foreground hover:bg-white/60 hover:text-foreground"
                     )}
                   >
                     기록 보관
@@ -160,8 +168,8 @@ export default function Home() {
                   <button
                     onClick={() => setActiveCategory('finance')}
                     className={cn(
-                      "px-4 py-1.5 rounded-lg text-sm font-bold transition-all",
-                      activeCategory === 'finance' ? "bg-white shadow text-primary" : "text-muted-foreground hover:bg-white/50"
+                      "px-4 py-2 rounded-full text-sm font-bold transition-all",
+                      activeCategory === 'finance' ? "bg-white text-primary shadow-sm ring-1 ring-border/50" : "text-muted-foreground hover:bg-white/60 hover:text-foreground"
                     )}
                   >
                     자산 관리
