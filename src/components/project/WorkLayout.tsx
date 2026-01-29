@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { LayoutDashboard, GanttChart as GanttChartIcon, Network, Archive, FolderTree, Plus, MoreHorizontal, Edit2 } from 'lucide-react';
+import { LayoutDashboard, GanttChart as GanttChartIcon, Network, Archive, FolderTree, Plus, MoreHorizontal, Edit2, Trash2 } from 'lucide-react';
 import { useData } from '@/context/DataProvider';
 import { ProjectDashboard } from './ProjectDashboard';
 import { GanttChart } from './GanttChart';
@@ -17,7 +17,7 @@ type ViewMode = 'dashboard' | 'timeline' | 'structure' | 'archive';
 export function WorkLayout() {
     const [viewMode, setViewMode] = useState<ViewMode>('dashboard');
     const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
-    const { projects } = useData();
+    const { projects, deleteProject } = useData();
 
     // Dialog State
     const [isProjectDialogOpen, setIsProjectDialogOpen] = useState(false);
@@ -51,33 +51,53 @@ export function WorkLayout() {
                 <div className="flex-1 overflow-y-auto p-4 custom-scrollbar space-y-1">
                     {/* Project Tree */}
                     {projects.map(project => (
-                        <button
+                        <div
                             key={project.id}
-                            onClick={() => setSelectedProjectId(project.id)}
-                            className={cn(
-                                "w-full text-left px-4 py-3 rounded-2xl text-sm transition-all mb-2 flex items-center gap-3 group relative pr-10",
-                                selectedProjectId === project.id
-                                    ? "bg-primary text-primary-foreground shadow-md font-bold"
-                                    : "text-muted-foreground hover:bg-gray-50 font-medium"
-                            )}
+                            className="group relative mb-2"
                         >
-                            <div
-                                className={cn("w-2.5 h-2.5 rounded-full ring-2 ring-white/20", selectedProjectId !== project.id && "ring-transparent")}
-                                style={{ backgroundColor: selectedProjectId === project.id ? '#ffffff' : project.color }}
-                            />
-                            <span className="truncate flex-1">{project.title}</span>
-
-                            {/* Edit Button (Visible on Hover) */}
-                            <div
-                                onClick={(e) => { e.stopPropagation(); handleEditProject(project); }}
+                            <button
+                                onClick={() => setSelectedProjectId(project.id)}
                                 className={cn(
-                                    "absolute right-2 opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-full hover:bg-black/10 cursor-pointer",
-                                    selectedProjectId === project.id ? "hover:bg-white/20" : ""
+                                    "w-full text-left px-4 py-3 rounded-2xl text-sm transition-all flex items-center gap-3 pr-16",
+                                    selectedProjectId === project.id
+                                        ? "bg-primary text-primary-foreground shadow-md font-bold"
+                                        : "text-muted-foreground hover:bg-gray-50 font-medium"
                                 )}
                             >
-                                <Edit2 className="w-3.5 h-3.5" />
+                                <div
+                                    className={cn("w-2.5 h-2.5 rounded-full ring-2 ring-white/20", selectedProjectId !== project.id && "ring-transparent")}
+                                    style={{ backgroundColor: selectedProjectId === project.id ? '#ffffff' : project.color }}
+                                />
+                                <span className="truncate flex-1">{project.title}</span>
+                            </button>
+
+                            {/* Action Buttons (Visible on Hover) */}
+                            <div className={cn(
+                                "absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity",
+                                selectedProjectId === project.id ? "text-primary-foreground/80" : "text-muted-foreground"
+                            )}>
+                                <div
+                                    onClick={(e) => { e.stopPropagation(); handleEditProject(project); }}
+                                    className="p-1.5 rounded-full hover:bg-black/10 cursor-pointer transition-colors"
+                                    title="수정"
+                                >
+                                    <Edit2 className="w-3.5 h-3.5" />
+                                </div>
+                                <div
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (confirm(`'${project.title}' 프로젝트를 삭제하시겠습니까?\n포함된 모든 작업이 함께 삭제됩니다.`)) {
+                                            deleteProject(project.id);
+                                            if (selectedProjectId === project.id) setSelectedProjectId(null);
+                                        }
+                                    }}
+                                    className="p-1.5 rounded-full hover:bg-red-500/20 hover:text-red-600 cursor-pointer transition-colors"
+                                    title="삭제"
+                                >
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                </div>
                             </div>
-                        </button>
+                        </div>
                     ))}
                     {projects.length === 0 && (
                         <div className="text-sm text-muted-foreground p-4 text-center">

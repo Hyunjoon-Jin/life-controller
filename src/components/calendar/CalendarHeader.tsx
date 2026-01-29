@@ -29,7 +29,7 @@ export function CalendarHeader({ currentDate, view, setView, onNext, onPrev, onT
     };
 
     return (
-        <div className="flex items-center justify-between p-4 bg-white rounded-3xl mb-4 shadow-sm border border-transparent">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between p-4 bg-white rounded-3xl mb-4 shadow-sm border border-transparent gap-4">
             <div className="flex items-center gap-2">
                 <Button variant="outline" size="sm" onClick={onToday} className="rounded-xl border-border">오늘</Button>
                 <div className="flex items-center rounded-xl border border-border bg-transparent p-0.5">
@@ -45,27 +45,28 @@ export function CalendarHeader({ currentDate, view, setView, onNext, onPrev, onT
                 </div>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
                 <button
                     onClick={() => setShowProjectTasks(!showProjectTasks)}
                     className={cn(
-                        "flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold transition-all border",
+                        "flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold transition-all border whitespace-nowrap",
                         showProjectTasks
                             ? "bg-indigo-50 text-indigo-600 border-indigo-200"
                             : "bg-transparent text-muted-foreground border-transparent hover:bg-muted"
                     )}
                 >
                     <FolderTree className="h-3.5 w-3.5" />
-                    프로젝트 작업 표시
+                    <span className="hidden sm:inline">프로젝트 작업 표시</span>
+                    <span className="sm:hidden">작업</span>
                 </button>
 
-                <div className="flex items-center bg-muted/50 rounded-2xl p-1">
+                <div className="flex items-center bg-muted/50 rounded-2xl p-1 ml-auto md:ml-0">
                     {(['month', 'week', 'day'] as CalendarViewType[]).map((v) => (
                         <button
                             key={v}
                             onClick={() => setView(v)}
                             className={cn(
-                                "px-4 py-1.5 text-sm font-bold rounded-xl capitalize transition-all",
+                                "px-3 md:px-4 py-1.5 text-sm font-bold rounded-xl capitalize transition-all",
                                 view === v ? "bg-white shadow-sm text-primary" : "text-muted-foreground hover:text-foreground hover:bg-white/50 font-medium"
                             )}
                         >

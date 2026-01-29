@@ -52,16 +52,15 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen p-6 bg-background text-foreground flex flex-col">
-      <header className="mb-6 flex flex-col md:flex-row justify-between items-start md:items-end flex-shrink-0 gap-4">
-        <div>
-          <div className="flex items-baseline gap-4 mb-2">
+    <main className="min-h-screen p-4 md:p-6 bg-background text-foreground flex flex-col">
+      <header className="mb-6 flex flex-col md:flex-row justify-between items-start md:items-end flex-shrink-0 gap-4 w-full">
+        <div className="w-full md:w-auto">
+          <div className="flex flex-col md:flex-row md:items-baseline gap-4 mb-2">
             <h1 className="text-3xl font-bold tracking-tight text-primary">
               LIFE Controller
             </h1>
-            {/* Top Level Navigation */}
             {/* Top Level Navigation - Pill Style */}
-            <div className="flex gap-2">
+            <div className="flex gap-2 overflow-x-auto no-scrollbar w-full md:w-auto pb-1">
               <button
                 onClick={() => setMainMode('home')}
                 className={cn(
@@ -128,7 +127,7 @@ export default function Home() {
 
                 {/* Level 1: Categories */}
                 {/* Level 1: Categories - Transparent Pills */}
-                <div className="flex gap-1 p-1 w-fit">
+                <div className="flex gap-1 p-1 w-full overflow-x-auto no-scrollbar pb-2">
                   <button
                     onClick={() => setActiveCategory('basic')}
                     className={cn(

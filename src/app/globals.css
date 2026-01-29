@@ -6,40 +6,45 @@
 
 @layer base {
   :root {
-    /* Digital Wellbeing Theme - Google Style Light Mode */
-    --background: 213 27% 96%;
-    /* #F0F4F9 Google Light Blue-Gray */
+    /* Toss Theme - Modern & Vivid */
+    --background: 210 14% 96%;
+    /* #F2F4F6 Cool Light Gray */
     --foreground: 215 25% 27%;
-    /* #444746 Google Dark Gray Text */
+    /* #333D4B Dark Gray Text */
 
     --card: 0 0% 100%;
-    /* White Surface */
+    /* White Base */
     --card-foreground: 215 25% 27%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 231 44% 31%;
+    --popover-foreground: 215 25% 27%;
 
-    --primary: 217 90% 43%;
-    /* #0B57D0 Google Blue */
+    --primary: 215 91% 58%;
+    /* #3182F6 Toss Vivid Blue */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 33% 96%;
-    --secondary-foreground: 231 44% 31%;
+    --secondary: 210 14% 96%;
+    /* Match BG for secondary buttons */
+    --secondary-foreground: 215 25% 27%;
 
-    --muted: 220 20% 96%;
-    --muted-foreground: 220 10% 65%;
+    --muted: 210 14% 93%;
+    --muted-foreground: 215 16% 47%;
+    /* #6B7684 Medium Gray */
 
-    --accent: 251 100% 95%;
-    --accent-foreground: 251 100% 55%;
+    --accent: 215 91% 95%;
+    /* Very light blue for hover */
+    --accent-foreground: 215 91% 58%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 251 100% 55%;
+    --border: 210 14% 89%;
+    /* #E5E8EB Soft Border */
+    --input: 210 14% 89%;
+    --ring: 215 91% 58%;
 
     --radius: 1.25rem;
+    /* 20px - Modern but not childish */
   }
 
   .dark {
