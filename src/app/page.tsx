@@ -70,6 +70,31 @@ export default function Home() {
         </div>
       </header>
 
+      {/* Global Navigation Bar */}
+      <div className="w-full max-w-4xl mx-auto mb-6 flex items-center justify-between gap-4 z-50 relative">
+        <div className="flex-1 min-w-0">
+          <MegaMenuNav
+            activeCategory={activeCategory}
+            activeTab={activeTab}
+            onSelect={(category, tab) => {
+              setMainMode('schedule');
+              setActiveCategory(category);
+              setActiveTab(tab as any);
+            }}
+          />
+        </div>
+        <Button
+          onClick={() => setMainMode('work')}
+          className={cn(
+            "rounded-full px-5 font-bold shadow-sm transition-all shrink-0",
+            mainMode === 'work' ? "bg-black text-white hover:bg-gray-800" : "bg-white text-black hover:bg-gray-100 border border-gray-200"
+          )}
+        >
+          <Briefcase className="w-4 h-4 mr-2" />
+          업무 관리
+        </Button>
+      </div>
+
       {
         mainMode === 'home' ? (
           <HomeDashboard onNavigate={setMainMode} onQuickLink={handleQuickLink} />
@@ -77,17 +102,6 @@ export default function Home() {
           <div className="flex-1 grid grid-cols-1 md:grid-cols-12 gap-6 min-h-0">
             {/* Left Column: Main Tabbed View (8 cols - widened) */}
             <div className="md:col-span-12 lg:col-span-8 flex flex-col min-h-[800px]">
-              {/* Navigation Tabs - Mega Menu Style */}
-              <div className="mb-6">
-                <MegaMenuNav
-                  activeCategory={activeCategory}
-                  activeTab={activeTab}
-                  onSelect={(category, tab) => {
-                    setActiveCategory(category);
-                    setActiveTab(tab as any);
-                  }}
-                />
-              </div>
 
               {/* Content Area */}
               <div className="flex-1 relative">
@@ -210,3 +224,4 @@ export default function Home() {
     </main >
   );
 }
+```

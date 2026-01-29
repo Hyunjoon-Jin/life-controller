@@ -95,7 +95,7 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
                     <AppIcon icon={Dumbbell} label="운동" colorClass="bg-cyan-50 text-cyan-600 dark:bg-cyan-900/40 dark:text-cyan-400" onClick={() => onQuickLink('schedule', 'growth', 'exercise')} />
                     <AppIcon icon={Utensils} label="식단" colorClass="bg-green-50 text-green-600 dark:bg-green-900/40 dark:text-green-400" onClick={() => onQuickLink('schedule', 'growth', 'diet')} />
                     <AppIcon icon={Lightbulb} label="아이디어" colorClass="bg-yellow-50 text-yellow-600 dark:bg-yellow-900/40 dark:text-yellow-400" onClick={() => onQuickLink('schedule', 'record', 'ideas')} />
-                    <AppIcon icon={Briefcase} label="프로젝트" colorClass="bg-slate-50 text-slate-600 dark:bg-slate-800 dark:text-slate-300" onClick={() => onQuickLink('work', 'basic', 'calendar')} />
+                    <AppIcon icon={Briefcase} label="업무" colorClass="bg-slate-50 text-slate-600 dark:bg-slate-800 dark:text-slate-300" onClick={() => onQuickLink('work', 'basic', 'calendar')} />
                     <AppIcon icon={Palette} label="취미" colorClass="bg-pink-50 text-pink-600 dark:bg-pink-900/40 dark:text-pink-400" onClick={() => onQuickLink('schedule', 'growth', 'hobby')} />
                 </div>
             </div>
