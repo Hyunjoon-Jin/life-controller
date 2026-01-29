@@ -234,13 +234,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
                 userProfile, educations, careers
             });
         }
-    }, [
-        session?.user?.email, saveData,
-        tasks, projects, goals, habits, events, journals, memos, people, scraps,
-        languageEntries, books, exerciseSessions, dietEntries, inBodyEntries, hobbyEntries,
-        transactions, assets, certificates, portfolios, archiveDocuments,
-        userProfile, educations, careers
-    ]);
+    }, []); // Disabled auto-save loop to prevent crash
 
     // ... (Existing handlers)
 
