@@ -81,7 +81,7 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
     const QuickAccessItem = ({ icon: Icon, label, color, onClick }: { icon: any, label: string, color: string, onClick: () => void }) => (
         <button
             onClick={onClick}
-            className="group flex flex-col items-center justify-center p-4 rounded-2xl bg-white/40 dark:bg-black/20 backdrop-blur-md border border-white/20 hover:bg-white/60 dark:hover:bg-white/10 transition-all duration-300 hover:-translate-y-1 shadow-sm hover:shadow-md"
+            className="group flex flex-col items-center justify-center p-4 rounded-2xl bg-white/40 dark:bg-white/5 backdrop-blur-md border border-white/20 dark:border-white/10 hover:bg-white/60 dark:hover:bg-white/10 transition-all duration-300 hover:-translate-y-1 shadow-sm hover:shadow-md"
         >
             <div className={cn("p-3 rounded-xl mb-2 transition-colors", color, "bg-opacity-10 dark:bg-opacity-20 group-hover:bg-opacity-20")}>
                 <Icon className={cn("w-6 h-6", color.replace('bg-', 'text-'))} />
@@ -135,7 +135,7 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-6 delay-200 duration-700">
 
                 {/* Left: Today's Schedule (2 cols wide) */}
-                <Card className="lg:col-span-2 border-none shadow-lg bg-white/50 dark:bg-black/20 backdrop-blur-md overflow-hidden relative">
+                <Card className="lg:col-span-2 border-none shadow-lg bg-white/50 dark:bg-white/5 backdrop-blur-md overflow-hidden relative">
                     <div className="absolute top-0 left-0 w-1 h-full bg-blue-500/50" />
                     <CardContent className="p-6">
                         <div className="flex items-center justify-between mb-6">
@@ -161,7 +161,7 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
                         ) : (
                             <div className="space-y-4">
                                 {todaysEvents.slice(0, 3).map((event, idx) => (
-                                    <div key={event.id} className="flex items-center gap-4 group p-3 rounded-xl hover:bg-white/40 dark:hover:bg-white/5 transition-all border border-transparent hover:border-white/10">
+                                    <div key={event.id} className="flex items-center gap-4 group p-3 rounded-xl hover:bg-white/40 dark:hover:bg-white/10 transition-all border border-transparent hover:border-white/10">
                                         <div className="flex flex-col items-center min-w-[60px]">
                                             <span className="text-lg font-bold text-foreground">
                                                 {format(new Date(event.start), 'HH:mm')}
@@ -194,7 +194,7 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
                 </Card>
 
                 {/* Right: Task Progress (1 col wide) */}
-                <Card className="border-none shadow-lg bg-white/50 dark:bg-black/20 backdrop-blur-md overflow-hidden relative">
+                <Card className="border-none shadow-lg bg-white/50 dark:bg-white/5 backdrop-blur-md overflow-hidden relative">
                     <div className="absolute top-0 right-0 w-1 h-full bg-green-500/50" />
                     <CardContent className="p-6 flex flex-col h-full">
                         <div className="flex items-center justify-between mb-6">
