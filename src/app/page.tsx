@@ -59,7 +59,9 @@ export default function Home() {
   return (
     <main className="min-h-screen p-4 md:p-6 bg-background text-foreground flex flex-col">
       <header className="mb-2 flex justify-between items-center w-full max-w-4xl mx-auto pt-2">
-        <Logo variant="icon" className="scale-110" />
+        <button onClick={() => setMainMode('home')} className="hover:opacity-80 transition-opacity">
+          <Logo variant="icon" className="scale-110" />
+        </button>
         <div className="flex items-center gap-2">
           {/* Main Mode Toggles (If needed later, but simplified for now to keep home clean) */}
           <Button variant="ghost" size="icon" onClick={() => setMainMode('home')} className={cn("rounded-full", mainMode === 'home' && "bg-gray-100 text-black")}>
