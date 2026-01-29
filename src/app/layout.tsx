@@ -39,6 +39,8 @@ export const metadata: Metadata = {
   description: 'Comprehensive productivity platform',
 };
 
+import { SessionReset } from '@/components/auth/SessionReset';
+
 export default function RootLayout({
   children,
 }: {
@@ -50,6 +52,7 @@ export default function RootLayout({
         <ServiceWorkerUnregister />
         <SessionProvider>
           <DataProvider>
+            <SessionReset />
             <ThemeProvider
               attribute="class"
               defaultTheme="system"
