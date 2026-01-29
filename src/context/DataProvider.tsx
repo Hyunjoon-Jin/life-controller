@@ -257,14 +257,14 @@ export function DataProvider({ children }: { children: ReactNode }) {
     const deleteCareer = (id: string) => setCareers(prev => prev.filter(c => c.id !== id));
 
     // Alarm State
-    const [alertedEventIds, setAlertedEventIds] = useState<Set<string>>(new Set());
+    const alertedEventIdsRef = React.useRef<Set<string>>(new Set());
 
     useEffect(() => {
         const checkAlarms = () => {
             const now = new Date();
             const upcomingEvents = events.filter(event => {
                 if (event.priority !== 'high') return false;
-                if (alertedEventIds.has(event.id)) return false;
+                if (alertedEventIdsRef.current.has(event.id)) return false;
 
                 const start = new Date(event.start);
                 if (!isSameDay(start, now)) return false;
@@ -283,7 +283,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
                         border: '1px solid #f87171'
                     }
                 });
-                setAlertedEventIds(prev => new Set(prev).add(event.id));
+                alertedEventIdsRef.current.add(event.id);
             });
         };
 
@@ -291,7 +291,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         checkAlarms(); // Initial check
 
         return () => clearInterval(interval);
-    }, [events, alertedEventIds]);
+    }, [events]);
 
     const addTask = (task: Task) => setTasks([...tasks, task]);
     const updateTask = (updatedTask: Task) => setTasks(tasks.map(t => t.id === updatedTask.id ? updatedTask : t));
