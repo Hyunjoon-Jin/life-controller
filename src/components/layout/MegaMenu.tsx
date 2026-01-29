@@ -131,7 +131,7 @@ export function MegaMenuNav({ activeCategory, activeTab, onSelect }: MegaMenuNav
                         <h3 className="text-lg font-bold mb-6 text-gray-900 dark:text-white px-2">
                             {categories.find(c => c.id === hoveredCategory)?.label} 서비스
                         </h3>
-                        <div className="grid grid-cols-2 gap-2">
+                        <div className="flex flex-col gap-2">
                             {subMenus[hoveredCategory].map((item) => (
                                 <button
                                     key={item.id}
@@ -140,29 +140,30 @@ export function MegaMenuNav({ activeCategory, activeTab, onSelect }: MegaMenuNav
                                         setIsOpen(false);
                                     }}
                                     className={cn(
-                                        "flex items-start gap-3 p-3 rounded-2xl transition-all group hover:bg-gray-50 dark:hover:bg-gray-800 text-left",
+                                        "flex items-start gap-4 p-4 rounded-2xl transition-all group hover:bg-gray-50 dark:hover:bg-gray-800 text-left w-full",
                                         activeTab === item.id && activeCategory === hoveredCategory ? "bg-blue-50 dark:bg-blue-900/10" : ""
                                     )}
                                 >
                                     <div className={cn(
-                                        "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors",
+                                        "w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 transition-colors",
                                         activeTab === item.id && activeCategory === hoveredCategory
                                             ? "bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300"
                                             : "bg-gray-100 text-gray-500 group-hover:bg-white group-hover:text-blue-500 group-hover:shadow-sm"
                                     )}>
-                                        <item.icon className="w-5 h-5" strokeWidth={2} />
+                                        <item.icon className="w-6 h-6" strokeWidth={2} />
                                     </div>
-                                    <div>
+                                    <div className="flex-1 min-w-0">
                                         <div className={cn(
-                                            "font-bold text-[15px] mb-0.5",
+                                            "font-bold text-[16px] mb-1",
                                             activeTab === item.id && activeCategory === hoveredCategory ? "text-blue-600" : "text-gray-900 dark:text-gray-100"
                                         )}>
                                             {item.label}
                                         </div>
-                                        <div className="text-xs text-gray-400 font-medium line-clamp-2 leading-relaxed">
+                                        <div className="text-sm text-gray-400 font-medium leading-relaxed break-keep">
                                             {item.desc}
                                         </div>
                                     </div>
+                                    <ChevronRight className="w-5 h-5 text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity self-center" />
                                 </button>
                             ))}
                         </div>
