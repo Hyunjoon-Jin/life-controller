@@ -3,12 +3,10 @@
 import { useState, useRef } from 'react';
 import { useData } from '@/context/DataProvider';
 import { Memo } from '@/types';
-import { generateId, cn } from '@/lib/utils';
+import { generateId, cn, safeFormat } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Plus, X, Trash2, Image as ImageIcon, Tag, Paperclip, Sparkles } from 'lucide-react';
-import { format } from 'date-fns';
-import { ko } from 'date-fns/locale';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
@@ -163,7 +161,7 @@ export function IdeaBoard() {
                                         ))}
                                     </div>
                                     <div className="text-[10px] opacity-60 text-right mt-1">
-                                        {format(new Date(memo.createdAt), 'yy.MM.dd', { locale: ko })}
+                                        {safeFormat(memo.createdAt, 'yy.MM.dd')}
                                     </div>
                                 </div>
 
