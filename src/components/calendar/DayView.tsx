@@ -517,12 +517,12 @@ export function DayView({ currentDate, showProjectTasks }: { currentDate: Date; 
     };
 
     return (
-        <div className="flex flex-col h-full bg-card rounded-lg border-transparent shadow-sm overflow-hidden relative select-none">
+        <div className="flex flex-col h-full bg-white rounded-3xl border border-transparent shadow-sm overflow-hidden relative select-none">
             {/* Header */}
-            <div className="p-4 border-b border-border/20 flex items-center justify-between bg-muted/20">
+            <div className="p-4 border-b border-border/[0.05] flex items-center justify-between bg-gray-50/50">
                 <div className="flex items-center gap-3">
-                    <div className="text-4xl font-extrabold tracking-tight">{format(currentDate, 'd')}</div>
-                    <div className="text-xl font-bold text-muted-foreground pt-1">{format(currentDate, 'EEEE', { locale: ko })}</div>
+                    <div className="text-4xl font-extrabold tracking-tight text-gray-900">{format(currentDate, 'd')}</div>
+                    <div className="text-xl font-bold text-gray-500 pt-1">{format(currentDate, 'EEEE', { locale: ko })}</div>
                 </div>
 
                 <div className="flex items-center gap-4">
@@ -546,7 +546,7 @@ export function DayView({ currentDate, showProjectTasks }: { currentDate: Date; 
                     )}
 
                     {/* Font Size Control */}
-                    <div className="flex items-center gap-1 bg-background/50 p-0.5 rounded-md border border-border/10">
+                    <div className="flex items-center gap-1 bg-white p-0.5 rounded-lg border border-border/[1.0]">
                         {(['xs', 'sm', 'base'] as const).map(size => (
                             <button
                                 key={size}
@@ -554,8 +554,8 @@ export function DayView({ currentDate, showProjectTasks }: { currentDate: Date; 
                                 className={cn(
                                     "px-2 py-1 text-[10px] font-bold rounded transition-all",
                                     fontSize === size
-                                        ? "bg-primary text-primary-foreground shadow-sm"
-                                        : "text-muted-foreground hover:bg-muted"
+                                        ? "bg-black text-white shadow-sm"
+                                        : "text-gray-400 hover:bg-gray-100 hover:text-gray-900"
                                 )}
                             >
                                 {size.toUpperCase()}
