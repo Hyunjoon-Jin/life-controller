@@ -249,7 +249,11 @@ export default function Home() {
         )
       }
 
-      <GuideModal isOpen={isGuideOpen} onOpenChange={setIsGuideOpen} />
+      <GuideModal
+        isOpen={isGuideOpen}
+        onOpenChange={setIsGuideOpen}
+        initialCategory={activeCategory || 'basic'}
+      />
     </main >
   );
 }
