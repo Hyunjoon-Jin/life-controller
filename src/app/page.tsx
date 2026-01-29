@@ -34,7 +34,10 @@ import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { Logo } from '@/components/ui/Logo';
 import { cn } from '@/lib/utils';
 
+import { useBirthdayNotifications } from '@/hooks/useBirthdayNotifications';
+
 export default function Home() {
+  useBirthdayNotifications(); // Initialize Birthday Check
   const [mainMode, setMainMode] = useState<'home' | 'schedule' | 'work'>('home');
   const [activeCategory, setActiveCategory] = useState<'basic' | 'health' | 'growth' | 'record' | 'finance'>('basic');
   const [activeTab, setActiveTab] = useState<'calendar' | 'tasks' | 'people' | 'goals' | 'language' | 'reading' | 'exercise' | 'diet' | 'inbody' | 'hobby' | 'ideas' | 'journal' | 'scraps' | 'widgets' | 'ledger' | 'assets' | 'certificate' | 'portfolio'>('calendar');

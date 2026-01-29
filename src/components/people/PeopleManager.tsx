@@ -272,6 +272,17 @@ export function PeopleManager() {
                                 placeholder="010-0000-0000"
                             />
                         </div>
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label className="text-right">생일</Label>
+                            <Input
+                                id="person-birthdate"
+                                type="date"
+                                name="birthdate"
+                                value={formData.birthdate ? new Date(formData.birthdate).toISOString().split('T')[0] : ''}
+                                onChange={e => setFormData({ ...formData, birthdate: e.target.value ? new Date(e.target.value) : undefined })}
+                                className="col-span-3 bg-muted border-transparent rounded-xl focus-visible:ring-primary/30"
+                            />
+                        </div>
 
                         {/* Workplace Info */}
                         <div className="grid grid-cols-4 items-center gap-4">
