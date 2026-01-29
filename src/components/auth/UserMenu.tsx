@@ -78,7 +78,12 @@ export function UserMenu() {
                     <span>설정</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => signOut()}>
+                <DropdownMenuItem onClick={() => {
+                    // Force clear local storage and sign out
+                    localStorage.removeItem('userProfile');
+                    // Optionally clear other keys if needed, but userProfile is main culprit for display
+                    signOut({ callbackUrl: '/login', redirect: true });
+                }}>
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>로그아웃</span>
                 </DropdownMenuItem>
