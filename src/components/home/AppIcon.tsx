@@ -12,7 +12,7 @@ export function AppIcon({ icon: Icon, label, colorClass, onClick }: AppIconProps
     return (
         <button
             onClick={onClick}
-            className="flex flex-col items-center gap-2 group w-full"
+            className="flex flex-col items-center gap-2 group w-full cursor-pointer"
         >
             <div className={cn(
                 "w-[60px] h-[60px] rounded-[22px] flex items-center justify-center transition-transform duration-200 group-hover:scale-95 group-active:scale-90 shadow-sm",

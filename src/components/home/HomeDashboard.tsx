@@ -76,7 +76,7 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
                     <div className="space-y-4">
                         <button
                             onClick={() => onNavigate('home')}
-                            className="flex items-center gap-3 group text-left transition-opacity hover:opacity-80"
+                            className="flex items-center gap-3 group text-left transition-opacity hover:opacity-80 cursor-pointer"
                         >
                             <div className="w-10 h-10 bg-black dark:bg-white text-white dark:text-black rounded-2xl flex items-center justify-center shadow-lg transform rotate-[-5deg] group-hover:rotate-0 transition-transform duration-300">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="translate-y-[1px]">
@@ -116,7 +116,7 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
                         {/* Task Chip */}
                         <button
                             onClick={() => onQuickLink('schedule', 'basic', 'tasks')}
-                            className="bg-white dark:bg-gray-800 px-4 py-2.5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-center gap-2 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors group"
+                            className="bg-white dark:bg-gray-800 px-4 py-2.5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-center gap-2 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors group cursor-pointer"
                         >
                             <div className="w-2 h-2 rounded-full bg-red-500 group-hover:animate-pulse" />
                             <span className="text-sm font-bold text-gray-700 dark:text-gray-200">

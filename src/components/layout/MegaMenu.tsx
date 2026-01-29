@@ -140,7 +140,7 @@ export function MegaMenuNav({ activeCategory, activeTab, onSelect }: MegaMenuNav
                                         setIsOpen(false);
                                     }}
                                     className={cn(
-                                        "flex items-center gap-3 p-3 rounded-xl transition-all group hover:bg-gray-50 dark:hover:bg-gray-800 text-left w-full",
+                                        "flex items-center gap-3 p-3 rounded-xl transition-all group hover:bg-gray-50 dark:hover:bg-gray-800 text-left w-full cursor-pointer",
                                         activeTab === item.id && activeCategory === hoveredCategory ? "bg-blue-50 dark:bg-blue-900/10" : ""
                                     )}
                                 >

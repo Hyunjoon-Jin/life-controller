@@ -60,7 +60,7 @@ export default function Home() {
     <main className="min-h-screen p-4 md:p-6 bg-background text-foreground flex flex-col">
       <header className="mb-2 flex justify-between items-center w-full max-w-4xl mx-auto pt-2">
         <div className="flex items-center gap-4">
-          <button onClick={() => setMainMode('home')} className="hover:opacity-80 transition-opacity">
+          <button onClick={() => setMainMode('home')} className="hover:opacity-80 transition-opacity cursor-pointer">
             <Logo variant="full" className="scale-100" />
           </button>
           <div className="hidden md:flex items-center text-sm font-medium text-muted-foreground border-l pl-4 h-4 leading-none">
