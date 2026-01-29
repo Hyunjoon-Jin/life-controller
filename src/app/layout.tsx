@@ -6,6 +6,7 @@ import { DataProvider } from '@/context/DataProvider';
 import { ThemeProvider } from '@/components/ui/theme-provider';
 import { SessionProvider } from '@/components/auth/SessionProvider';
 import { Toaster } from 'sonner';
+import { ServiceWorkerUnregister } from '@/components/ServiceWorkerUnregister';
 
 const nanum = localFont({
   src: [
@@ -46,6 +47,7 @@ export default function RootLayout({
   return (
     <html lang="ko" suppressHydrationWarning>
       <body className={`${nanum.variable} font-sans antialiased bg-background text-foreground`} suppressHydrationWarning>
+        <ServiceWorkerUnregister />
         <SessionProvider>
           <DataProvider>
             <ThemeProvider
