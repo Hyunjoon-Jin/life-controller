@@ -8,6 +8,7 @@ import { useState, useEffect } from 'react';
 import { useData } from '@/context/DataProvider';
 import { CalendarEvent } from '@/types';
 import { EventDialog } from './EventDialog';
+import { getEventStyle, getEventColors } from '@/lib/calendar';
 
 export function WeekView({ currentDate, showProjectTasks }: { currentDate: Date; showProjectTasks: boolean }) {
     const weekStart = startOfWeek(currentDate, { weekStartsOn: 0 }); // Sunday start
@@ -392,7 +393,7 @@ export function WeekView({ currentDate, showProjectTasks }: { currentDate: Date;
                                             !isDragging && "hover:shadow-md hover:brightness-[1.02] hover:-translate-y-[1px]"
                                         )}
                                         style={{
-                                            ...getEventStyle(displayEvent),
+                                            ...getEventStyle(displayEvent, PIXELS_PER_HOUR),
                                             backgroundColor: colors.bg,
                                             borderColor: colors.border,
                                             borderLeftColor: colors.accent,
