@@ -21,16 +21,23 @@ export function UserMenu() {
     const { userProfile, updateUserProfile } = useData();
 
     // Sync session data with local UserProfile if logged in
+    // Sync session data with local UserProfile if logged in
     useEffect(() => {
         if (session?.user) {
-            updateUserProfile({
-                ...userProfile,
-                name: session.user.name || userProfile.name,
-                email: session.user.email || userProfile.email,
-                photo: session.user.image || userProfile.photo,
-            });
+            const newName = session.user.name || userProfile.name;
+            const newEmail = session.user.email || userProfile.email;
+            const newPhoto = session.user.image || userProfile.photo;
+
+            if (newName !== userProfile.name || newEmail !== userProfile.email || newPhoto !== userProfile.photo) {
+                updateUserProfile({
+                    ...userProfile,
+                    name: newName,
+                    email: newEmail,
+                    photo: newPhoto,
+                });
+            }
         }
-    }, [session, updateUserProfile]); // Removed userProfile from dependency to avoid infinite loop if not careful, but strictly needed. optimized.
+    }, [session, userProfile, updateUserProfile]);
 
     if (!session) {
         return (
