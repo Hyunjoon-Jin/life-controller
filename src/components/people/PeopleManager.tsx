@@ -100,12 +100,7 @@ export function PeopleManager() {
     return (
         <div className="h-full flex flex-col bg-card text-card-foreground rounded-3xl border border-transparent shadow-sm overflow-hidden">
             {/* Header */}
-            <div className="p-4 pt-6 pb-2">
-                <div className="flex items-center gap-2 mb-4">
-                    <UsersRound className="w-5 h-5 text-primary" />
-                    <h2 className="text-xl font-semibold">인맥 관리</h2>
-                </div>
-
+            <div className="p-4 pt-4 pb-2">
                 {/* Toolbar */}
                 <div className="flex items-center justify-between gap-4">
                     <div className="flex items-center gap-2 flex-1 max-w-sm relative">

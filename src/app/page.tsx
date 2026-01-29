@@ -141,7 +141,7 @@ export default function Home() {
                 )}
                 {activeTab === 'tasks' && (
                   <div className="h-full animate-in fade-in zoom-in-95 duration-200">
-                    <TaskBoard />
+                    <TaskBoard hideHeader={true} />
                   </div>
                 )}
                 {activeTab === 'people' && (

@@ -65,17 +65,8 @@ export function LanguageLog() {
     return (
         <div className="h-full flex flex-col gap-6 p-6 overflow-y-auto custom-scrollbar bg-gray-50/50 dark:bg-black/5">
             {/* Header Area */}
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                <div className="flex flex-col gap-1">
-                    <div className="flex items-center gap-2">
-                        <div className="p-2 bg-primary/10 rounded-lg">
-                            <Languages className="w-6 h-6 text-primary" />
-                        </div>
-                        <h2 className="text-2xl font-bold tracking-tight">어학 학습 센터</h2>
-                    </div>
-                    <p className="text-sm text-muted-foreground ml-1">오늘도 꾸준한 학습으로 실력을 쌓아보세요!</p>
-                </div>
-
+            {/* Header Area & Language Selector */}
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                 {/* Language Selector */}
                 <div className="flex bg-white dark:bg-zinc-900 p-1 rounded-full shadow-sm border border-gray-100 dark:border-zinc-800">
                     {languages.map(lang => (

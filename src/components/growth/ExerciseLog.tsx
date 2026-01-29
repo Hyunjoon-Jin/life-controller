@@ -225,11 +225,7 @@ export function ExerciseLog() {
 
     return (
         <div className="h-full flex flex-col gap-6 p-6 overflow-y-auto custom-scrollbar">
-            <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                    <Dumbbell className="w-6 h-6 text-primary" />
-                    <h2 className="text-2xl font-bold">운동 기록</h2>
-                </div>
+            <div className="flex items-center justify-end mb-2">
                 <Button onClick={() => setIsDialogOpen(true)} className="bg-primary hover:bg-primary/90">
                     <Plus className="w-4 h-4 mr-2" /> 운동 기록하기
                 </Button>

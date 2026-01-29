@@ -280,13 +280,6 @@ export function GoalTree() {
     return (
         <div className="border border-border rounded-lg bg-card text-card-foreground p-4 space-y-4">
             <div className="flex flex-col gap-4">
-                <div className="flex items-center justify-between">
-                    <h2 className="text-xl font-bold flex items-center gap-2">
-                        <Trophy className="w-5 h-5 text-primary" /> 목표 관리
-                    </h2>
-                    <Button size="sm" variant="ghost" onClick={() => handleOpenCreateDialog()}><Plus className="w-4 h-4" /></Button>
-                </div>
-
                 <div className="flex gap-2">
                     <div className="relative flex-1">
                         <Input
@@ -311,6 +304,7 @@ export function GoalTree() {
                         <option value="hobby">취미</option>
                         <option value="other">기타</option>
                     </select>
+                    <Button size="sm" variant="ghost" className="h-9 w-9 p-0 bg-secondary/50" onClick={() => handleOpenCreateDialog()}><Plus className="w-4 h-4" /></Button>
                 </div>
             </div>
 
