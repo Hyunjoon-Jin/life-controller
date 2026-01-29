@@ -190,12 +190,12 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
     // Resume States
     const [userProfile, setUserProfile] = useLocalStorage<UserProfile>('userProfile', {
-        id: 'user',
-        name: '홍길동',
-        jobTitle: 'Frontend Developer',
-        email: 'example@email.com',
-        phone: '010-1234-5678',
-        bio: '안녕하세요. 꾸준히 성장하는 개발자입니다.',
+        id: '',
+        name: '',
+        jobTitle: '',
+        email: '',
+        phone: '',
+        bio: '',
         socialLinks: []
     });
     const [educations, setEducations] = useLocalStorage<Education[]>('educations', []);
