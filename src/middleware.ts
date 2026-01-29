@@ -1,11 +1,17 @@
-export { default } from "next-auth/middleware";
+import { withAuth } from "next-auth/middleware";
+
+export default withAuth({
+    pages: {
+        signIn: "/login",
+    },
+});
 
 export const config = {
     matcher: [
         /*
-         * Match all request paths except for the ones starting with:
-         * - login
-         * - register
+         * Match all request paths except:
+         * - login (custom login page)
+         * - register (signup page)
          * - api/auth (NextAuth API routes)
          * - _next/static (static files)
          * - _next/image (image optimization files)
