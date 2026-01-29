@@ -177,7 +177,7 @@ export function TaskBoard({ projectId, hideHeader = false }: TaskBoardProps) {
                                 <Plus className="w-4 h-4 mr-1" strokeWidth={1.5} /> 작업 추가
                             </Button>
                         </DialogTrigger>
-                        <DialogContent className="bg-card text-card-foreground sm:max-w-[500px]">
+                        <DialogContent className="sm:max-w-[500px]">
                             {/* ... Content duplicated below due to replace block structure ... */}
                             <DialogHeader>
                                 <DialogTitle className="font-extrabold text-xl">
@@ -257,7 +257,7 @@ export function TaskBoard({ projectId, hideHeader = false }: TaskBoardProps) {
                                 <Plus className="w-4 h-4 mr-1" strokeWidth={1.5} /> 새로 만들기
                             </Button>
                         </DialogTrigger>
-                        <DialogContent className="bg-card text-card-foreground sm:max-w-[500px]">
+                        <DialogContent className="sm:max-w-[500px]">
                             <DialogHeader>
                                 <DialogTitle className="font-extrabold text-xl">
                                     {editingTask ? '작업 수정' : '새 작업 추가'}

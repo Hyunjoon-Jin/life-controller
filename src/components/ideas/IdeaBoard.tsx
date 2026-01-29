@@ -178,7 +178,7 @@ export function IdeaBoard() {
             </div>
 
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogContent className="sm:max-w-[600px] bg-card text-card-foreground">
+                <DialogContent className="sm:max-w-[600px]">
                     <DialogHeader>
                         <DialogTitle>{editingMemo ? '메모 수정' : '새 메모'}</DialogTitle>
                     </DialogHeader>

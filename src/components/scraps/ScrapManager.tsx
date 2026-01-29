@@ -353,7 +353,7 @@ export function ScrapManager() {
             </div>
 
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogContent className="bg-card text-card-foreground">
+                <DialogContent>
                     <DialogHeader>
                         <DialogTitle>{editingScrap ? '스크랩 수정' : '기사/링크 스크랩'}</DialogTitle>
                     </DialogHeader>

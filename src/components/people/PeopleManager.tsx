@@ -226,7 +226,7 @@ export function PeopleManager() {
 
             {/* Create/Edit Dialog */}
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogContent className="bg-card text-card-foreground">
+                <DialogContent>
                     <DialogHeader>
                         <DialogTitle>{editingId ? '정보 수정' : '새 인맥 추가'}</DialogTitle>
                     </DialogHeader>
