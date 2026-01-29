@@ -3,7 +3,7 @@
 import { format, isSameDay, isValid } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { cn, generateId } from '@/lib/utils';
-import { Users, AlertCircle, Briefcase } from 'lucide-react';
+import { Users, AlertCircle, Briefcase, Handshake } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { useData } from '@/context/DataProvider';
 import { CalendarEvent, EventType } from '@/types';
