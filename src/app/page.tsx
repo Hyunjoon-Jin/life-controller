@@ -30,6 +30,7 @@ import { WeatherWidget } from '@/components/weather/WeatherWidget';
 import { HelpCircle, Calendar, Lightbulb, Users as UsersIcon, Link as LinkIcon, Target, Book, CheckSquare, ListTodo, Sparkles, Trophy, NotebookPen, UsersRound, Bookmark, Scale, Award, Briefcase } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
+import { Logo } from '@/components/ui/Logo';
 import { cn } from '@/lib/utils';
 
 export default function Home() {
@@ -55,10 +56,8 @@ export default function Home() {
     <main className="min-h-screen p-4 md:p-6 bg-background text-foreground flex flex-col">
       <header className="mb-6 flex flex-col md:flex-row justify-between items-start md:items-end flex-shrink-0 gap-4 w-full">
         <div className="w-full md:w-auto">
-          <div className="flex flex-col md:flex-row md:items-baseline gap-4 mb-2">
-            <h1 className="text-3xl font-bold tracking-tight text-primary">
-              LIFE Controller
-            </h1>
+          <div className="flex flex-col md:flex-row md:items-center gap-4 mb-2">
+            <Logo className="scale-110 origin-left" />
             {/* Top Level Navigation - Pill Style */}
             <div className="flex gap-2 overflow-x-auto no-scrollbar w-full md:w-auto pb-1">
               <button

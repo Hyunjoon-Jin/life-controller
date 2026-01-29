@@ -48,7 +48,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko" suppressHydrationWarning>
-      <body className={`${nanum.variable} font-sans antialiased bg-background text-foreground`} suppressHydrationWarning>
+      <body className={`${nanum.variable} font-sans antialiased bg-background text-foreground tracking-tight`} suppressHydrationWarning>
         <ServiceWorkerUnregister />
         <SessionProvider>
           <DataProvider>
