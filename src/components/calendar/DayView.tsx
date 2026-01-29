@@ -7,6 +7,7 @@ import { Users, AlertCircle, Briefcase, Handshake } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { useData } from '@/context/DataProvider';
 import { CalendarEvent, EventType } from '@/types';
+import { getEventStyle, getEventColors } from '@/lib/calendar';
 import { EventDialog } from './EventDialog';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
@@ -526,7 +527,7 @@ export function DayView({ currentDate, showProjectTasks }: { currentDate: Date; 
                                     "absolute left-0.5 right-2 rounded-sm p-1.5 border bg-primary/10 border-primary/30 text-primary-foreground z-50 shadow-lg backdrop-blur-[2px] flex items-center gap-1.5",
                                     getTextSizeClass(fontSize, 'title')
                                 )}
-                                style={getEventStyle(tempEvent)}
+                                style={getEventStyle(tempEvent, pixelsPerHour)}
                             >
                                 <div className="font-bold truncate">{tempEvent.title}</div>
                                 <div className={cn("opacity-80 font-mono shrink-0", getTextSizeClass(fontSize, 'time'))}>
