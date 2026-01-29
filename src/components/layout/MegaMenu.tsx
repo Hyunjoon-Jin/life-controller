@@ -2,16 +2,11 @@
 
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
-import {
-    Calendar, ListTodo, UsersRound, Target, Book, Sparkles, Award, Briefcase,
-    NotebookPen, Lightbulb, Bookmark, CheckSquare, Scale, Home, ChevronRight,
-    Utensils, Dumbbell, Wallet
-} from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { CATEGORIES, SUB_MENUS, CategoryType } from '@/constants/menu';
 
-export type CategoryType = 'basic' | 'health' | 'growth' | 'record' | 'finance';
-export type TabType = 'calendar' | 'tasks' | 'people' | 'goals' | 'language' | 'reading' | 'exercise.weight' | 'exercise.cardio' | 'diet' | 'inbody' | 'hobby' | 'certificate' | 'portfolio' | 'journal' | 'ideas' | 'scraps' | 'ledger' | 'assets' | 'exercise';
-
+// TabType is now imported or we use string for flexibility in props as defined in interface
 interface MegaMenuNavProps {
     activeCategory: CategoryType;
     activeTab: string;
@@ -22,43 +17,8 @@ export function MegaMenuNav({ activeCategory, activeTab, onSelect }: MegaMenuNav
     const [isOpen, setIsOpen] = useState(false);
     const [hoveredCategory, setHoveredCategory] = useState<CategoryType>(activeCategory);
 
-    const categories: { id: CategoryType; label: string }[] = [
-        { id: 'basic', label: '기본 관리' },
-        { id: 'health', label: '건강 관리' },
-        { id: 'growth', label: '자기 성장' },
-        { id: 'record', label: '기록 보관' },
-        { id: 'finance', label: '자산 관리' },
-    ];
+    // Categories and SubMenus are now imported from constants
 
-    const subMenus: Record<CategoryType, { id: string; label: string; icon: any; desc: string }[]> = {
-        basic: [
-            { id: 'calendar', label: '일정', icon: Calendar, desc: '나의 하루를 계획하세요' },
-            { id: 'tasks', label: '할일', icon: ListTodo, desc: '중요한 작업을 체크하세요' },
-            { id: 'people', label: '인맥', icon: UsersRound, desc: '소중한 관계를 관리하세요' },
-        ],
-        health: [
-            { id: 'exercise', label: '운동', icon: Dumbbell, desc: '오늘의 운동을 기록하세요' },
-            { id: 'diet', label: '식단', icon: Utensils, desc: '건강한 식습관 만들기' },
-            { id: 'inbody', label: '신체 변화', icon: Scale, desc: '나의 변화를 확인하세요' },
-        ],
-        growth: [
-            { id: 'goals', label: '목표', icon: Target, desc: '꿈을 향해 나아가세요' },
-            { id: 'language', label: '어학', icon: Book, desc: '새로운 언어 배우기' },
-            { id: 'reading', label: '독서', icon: Book, desc: '마음의 양식 쌓기' },
-            { id: 'hobby', label: '취미', icon: Sparkles, desc: '즐거운 여가 생활' },
-            { id: 'certificate', label: '자격증', icon: Award, desc: '나의 스펙 업그레이드' },
-            { id: 'portfolio', label: '포트폴리오', icon: Briefcase, desc: '나의 커리어 정리' },
-        ],
-        record: [
-            { id: 'journal', label: '일기장', icon: NotebookPen, desc: '오늘의 감정을 기록하세요' },
-            { id: 'ideas', label: '아이디어', icon: Lightbulb, desc: '번뜩이는 영감 메모' },
-            { id: 'scraps', label: '스크랩', icon: Bookmark, desc: '유용한 정보 저장' },
-        ],
-        finance: [
-            { id: 'ledger', label: '가계부', icon: CheckSquare, desc: '수입과 지출 관리' },
-            { id: 'assets', label: '자산 현황', icon: Wallet, desc: '나의 부를 한눈에' },
-        ],
-    };
 
     return (
         <div className="w-full relative z-50" onMouseLeave={() => setIsOpen(false)}>
@@ -78,7 +38,7 @@ export function MegaMenuNav({ activeCategory, activeTab, onSelect }: MegaMenuNav
 
                 <div className="h-4 w-[1px] bg-gray-200 mx-2" />
 
-                {categories.map(cat => (
+                {CATEGORIES.map(cat => (
                     <button
                         key={cat.id}
                         onMouseEnter={() => {
@@ -87,7 +47,7 @@ export function MegaMenuNav({ activeCategory, activeTab, onSelect }: MegaMenuNav
                         }}
                         onClick={() => {
                             // Optionally select first tab
-                            const firstTab = subMenus[cat.id][0].id;
+                            const firstTab = SUB_MENUS[cat.id][0].id;
                             onSelect(cat.id, firstTab);
                             setIsOpen(false);
                         }}
@@ -109,7 +69,7 @@ export function MegaMenuNav({ activeCategory, activeTab, onSelect }: MegaMenuNav
 
                     {/* Left: Categories List */}
                     <div className="w-48 py-4 px-2 border-r border-gray-100 dark:border-gray-800 flex flex-col gap-1">
-                        {categories.map(cat => (
+                        {CATEGORIES.map(cat => (
                             <button
                                 key={cat.id}
                                 onMouseEnter={() => setHoveredCategory(cat.id)}
@@ -129,10 +89,10 @@ export function MegaMenuNav({ activeCategory, activeTab, onSelect }: MegaMenuNav
                     {/* Center: Sub Menus Grid */}
                     <div className="flex-1 p-6 bg-white dark:bg-gray-900">
                         <h3 className="text-lg font-bold mb-6 text-gray-900 dark:text-white px-2">
-                            {categories.find(c => c.id === hoveredCategory)?.label} 서비스
+                            {CATEGORIES.find(c => c.id === hoveredCategory)?.label} 서비스
                         </h3>
                         <div className="flex flex-col gap-1">
-                            {subMenus[hoveredCategory].map((item) => (
+                            {SUB_MENUS[hoveredCategory].map((item) => (
                                 <button
                                     key={item.id}
                                     onClick={() => {

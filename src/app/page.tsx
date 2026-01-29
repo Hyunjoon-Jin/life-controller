@@ -22,6 +22,8 @@ import { DietLog } from '@/components/growth/DietLog';
 import { InBodyLog } from '@/components/growth/InBodyLog';
 import { HobbyLog } from '@/components/growth/HobbyLog';
 import { MegaMenuNav } from '@/components/layout/MegaMenu';
+import { SUB_MENUS } from '@/constants/menu';
+import { TabHeader } from '@/components/layout/TabHeader';
 
 import { CertificateManager } from '@/components/growth/CertificateManager';
 import { PortfolioBoard } from '@/components/growth/PortfolioBoard';
@@ -115,6 +117,23 @@ export default function Home() {
 
               {/* Content Area */}
               <div className="flex-1 relative">
+                {/* Dynamic Tab Header */}
+                {(() => {
+                  const currentCategoryItems = SUB_MENUS[activeCategory];
+                  const currentItem = currentCategoryItems?.find(item => item.id === activeTab);
+
+                  if (currentItem) {
+                    return (
+                      <TabHeader
+                        title={currentItem.label}
+                        description={currentItem.desc}
+                        icon={currentItem.icon}
+                      />
+                    );
+                  }
+                  return null;
+                })()}
+
                 {activeTab === 'calendar' && (
                   <div className="space-y-6 animate-in fade-in zoom-in-95 duration-200">
                     <CalendarView />
