@@ -317,6 +317,32 @@ export function EventDialog({ isOpen, onOpenChange, event, initialDate, initialE
                             </DropdownMenu>
                         </div>
                     </div>
+
+                    {/* Flags: Meeting & Appointment */}
+                    <div className="flex items-center gap-6 pt-2">
+                        <div className="flex items-center space-x-2">
+                            <Checkbox
+                                id="isMeeting"
+                                checked={isMeeting}
+                                onCheckedChange={(c) => setIsMeeting(c as boolean)}
+                            />
+                            <Label htmlFor="isMeeting" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center gap-1">
+                                <Users className="w-3.5 h-3.5 text-blue-500" />
+                                회의
+                            </Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                            <Checkbox
+                                id="isAppointment"
+                                checked={isAppointment}
+                                onCheckedChange={(c) => setIsAppointment(c as boolean)}
+                            />
+                            <Label htmlFor="isAppointment" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center gap-1">
+                                <Handshake className="w-3.5 h-3.5 text-green-500" />
+                                약속
+                            </Label>
+                        </div>
+                    </div>
                 </div>
 
                 <DialogFooter className="px-6 py-4 bg-muted/20 flex items-center justify-between sm:justify-between w-full">

@@ -675,7 +675,8 @@ export function DayView({ currentDate, showProjectTasks }: { currentDate: Date; 
                                             {!isHabit && event.priority === 'high' && (
                                                 <div className="w-1 h-1 rounded-full bg-red-400 animate-pulse shrink-0 shadow-[0_0_8px_rgba(248,113,113,0.8)]" />
                                             )}
-                                            {event.isMeeting && <Users className="w-3 h-3 opacity-60 shrink-0" strokeWidth={1.5} />}
+                                            {event.isMeeting && <Users className="w-3 h-3 opacity-80 shrink-0 text-blue-600 dark:text-blue-400" strokeWidth={2} />}
+                                            {event.isAppointment && <Handshake className="w-3 h-3 opacity-80 shrink-0 text-green-600 dark:text-green-400" strokeWidth={2} />}
                                             <span className={cn("truncate leading-none", getTextSizeClass(fontSize, 'title'))}>
                                                 {event.title}
                                             </span>
