@@ -140,7 +140,7 @@ export function MegaMenuNav({ activeCategory, activeTab, onSelect }: MegaMenuNav
                                         setIsOpen(false);
                                     }}
                                     className={cn(
-                                        "flex items-start gap-4 p-4 rounded-2xl transition-all group hover:bg-gray-50 dark:hover:bg-gray-800 text-left w-full",
+                                        "flex items-center gap-4 p-4 rounded-2xl transition-all group hover:bg-gray-50 dark:hover:bg-gray-800 text-left w-full",
                                         activeTab === item.id && activeCategory === hoveredCategory ? "bg-blue-50 dark:bg-blue-900/10" : ""
                                     )}
                                 >
@@ -152,35 +152,22 @@ export function MegaMenuNav({ activeCategory, activeTab, onSelect }: MegaMenuNav
                                     )}>
                                         <item.icon className="w-6 h-6" strokeWidth={2} />
                                     </div>
-                                    <div className="flex-1 min-w-0">
+                                    <div className="flex-1 min-w-0 flex items-center gap-3">
                                         <div className={cn(
-                                            "font-bold text-[16px] mb-1",
+                                            "font-bold text-[16px] whitespace-nowrap",
                                             activeTab === item.id && activeCategory === hoveredCategory ? "text-blue-600" : "text-gray-900 dark:text-gray-100"
                                         )}>
                                             {item.label}
                                         </div>
-                                        <div className="text-sm text-gray-400 font-medium leading-relaxed break-keep">
+                                        <div className="text-sm text-gray-400 font-medium whitespace-nowrap overflow-hidden text-ellipsis">
                                             {item.desc}
                                         </div>
                                     </div>
-                                    <ChevronRight className="w-5 h-5 text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity self-center" />
+                                    <ChevronRight className="w-5 h-5 text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
                                 </button>
                             ))}
                         </div>
                     </div>
-
-                    {/* Right: Featured / Promo (Optional) */}
-                    <div className="w-64 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-r-[28px] hidden md:flex flex-col justify-between">
-                        <div className="p-4">
-                            <h4 className="font-bold text-gray-900 dark:text-white mb-2">오늘의 발견</h4>
-                            <div className="bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-sm mb-4">
-                                <div className="text-2xl mb-2">🌱</div>
-                                <div className="font-bold text-sm mb-1">성장하고 계신가요?</div>
-                                <p className="text-xs text-gray-400">어제보다 나은 오늘을 위해<br />작은 목표부터 시작해보세요.</p>
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
             )}
         </div>
