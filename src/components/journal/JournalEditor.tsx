@@ -92,6 +92,8 @@ export function JournalEditor({ onClose, journal }: { onClose: () => void; journ
                     ))}
                 </div>
                 <textarea
+                    id="journal-content"
+                    name="content"
                     className="flex min-h-[120px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 resize-none"
                     placeholder="생각을 기록해보세요..."
                     value={content}
@@ -116,6 +118,8 @@ export function JournalEditor({ onClose, journal }: { onClose: () => void; journ
                     ))}
                 </div>
                 <Input
+                    id="journal-tags"
+                    name="tags"
                     placeholder="태그 입력 (Enter로 추가)"
                     value={tagInput}
                     onChange={(e) => setTagInput(e.target.value)}
@@ -136,7 +140,7 @@ export function JournalEditor({ onClose, journal }: { onClose: () => void; journ
                 <Label className="flex items-center gap-2 cursor-pointer w-fit text-muted-foreground hover:text-foreground transition-colors">
                     <ImageIcon className="w-4 h-4" />
                     <span className="text-xs">이미지 첨부</span>
-                    <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
+                    <input id="journal-image-upload" name="image" type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
                 </Label>
 
                 {images.length > 0 && (

@@ -111,6 +111,8 @@ export function PeopleManager() {
                     <div className="flex items-center gap-2 flex-1 max-w-sm relative">
                         <Search className="w-4 h-4 absolute left-2 text-muted-foreground" />
                         <Input
+                            id="people-search"
+                            name="search"
                             placeholder="검색 (이름, 연락처)"
                             className="h-9 pl-9 bg-muted border-transparent rounded-xl focus-visible:ring-primary/30"
                             value={searchQuery}
@@ -237,6 +239,8 @@ export function PeopleManager() {
                         <div className="grid grid-cols-4 items-center gap-4">
                             <Label className="text-right">이름</Label>
                             <Input
+                                id="person-name"
+                                name="name"
                                 value={formData.name}
                                 onChange={e => setFormData({ ...formData, name: e.target.value })}
                                 className="col-span-3 bg-muted border-transparent rounded-xl focus-visible:ring-primary/30"
@@ -245,6 +249,8 @@ export function PeopleManager() {
                         <div className="grid grid-cols-4 items-center gap-4">
                             <Label className="text-right">관계</Label>
                             <select
+                                id="person-relationship"
+                                name="relationship"
                                 value={formData.relationship}
                                 onChange={e => setFormData({ ...formData, relationship: e.target.value as RelationshipType })}
                                 className="col-span-3 flex h-9 w-full rounded-xl bg-muted px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/30"
@@ -258,6 +264,8 @@ export function PeopleManager() {
                         <div className="grid grid-cols-4 items-center gap-4">
                             <Label className="text-right">연락처</Label>
                             <Input
+                                id="person-contact"
+                                name="contact"
                                 value={formData.contact}
                                 onChange={e => setFormData({ ...formData, contact: e.target.value })}
                                 className="col-span-3 bg-muted border-transparent rounded-xl focus-visible:ring-primary/30"
@@ -269,6 +277,8 @@ export function PeopleManager() {
                         <div className="grid grid-cols-4 items-center gap-4">
                             <Label className="text-right">회사/소속</Label>
                             <Input
+                                id="person-company"
+                                name="company"
                                 value={formData.company || ''}
                                 onChange={e => setFormData({ ...formData, company: e.target.value })}
                                 className="col-span-3 bg-muted border-transparent rounded-xl focus-visible:ring-primary/30"
@@ -278,6 +288,8 @@ export function PeopleManager() {
                         <div className="grid grid-cols-4 items-center gap-4">
                             <Label className="text-right">부서</Label>
                             <Input
+                                id="person-department"
+                                name="department"
                                 value={formData.department || ''}
                                 onChange={e => setFormData({ ...formData, department: e.target.value })}
                                 className="col-span-3 bg-muted border-transparent rounded-xl focus-visible:ring-primary/30"
@@ -287,6 +299,8 @@ export function PeopleManager() {
                         <div className="grid grid-cols-4 items-center gap-4">
                             <Label className="text-right">직책</Label>
                             <Input
+                                id="person-jobTitle"
+                                name="jobTitle"
                                 value={formData.jobTitle || ''}
                                 onChange={e => setFormData({ ...formData, jobTitle: e.target.value })}
                                 className="col-span-3 bg-muted border-transparent rounded-xl focus-visible:ring-primary/30"
@@ -296,6 +310,8 @@ export function PeopleManager() {
                         <div className="grid grid-cols-4 items-start gap-4">
                             <Label className="text-right mt-2">메모</Label>
                             <textarea
+                                id="person-notes"
+                                name="notes"
                                 value={formData.notes || ''}
                                 onChange={e => setFormData({ ...formData, notes: e.target.value })}
                                 className="col-span-3 bg-muted border-transparent rounded-xl p-3 text-sm h-20 resize-none focus:outline-none focus:ring-2 focus:ring-primary/20"

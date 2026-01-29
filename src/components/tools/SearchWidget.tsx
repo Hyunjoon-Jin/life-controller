@@ -110,6 +110,8 @@ export function SearchWidget() {
 
                 <div className="relative flex-1">
                     <Input
+                        id="widget-search"
+                        name="q"
                         value={query}
                         onChange={e => setQuery(e.target.value)}
                         onKeyDown={handleKeyDown}

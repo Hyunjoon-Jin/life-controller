@@ -81,6 +81,8 @@ export function JournalView() {
                 <div className="flex gap-2">
                     <div className="relative flex-1">
                         <Input
+                            id="journal-search"
+                            name="journal-search"
                             placeholder="내용 또는 태그 검색..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
@@ -89,6 +91,8 @@ export function JournalView() {
                         <NotebookPen className="absolute left-2.5 top-2.5 w-4 h-4 text-muted-foreground opacity-50" />
                     </div>
                     <select
+                        id="journal-mood-filter"
+                        name="journal-mood-filter"
                         className="h-9 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring w-[100px]"
                         value={filterMood}
                         onChange={(e) => setFilterMood(e.target.value)}
