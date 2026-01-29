@@ -31,16 +31,23 @@ interface HomeDashboardProps {
     onQuickLink: (mode: 'home' | 'schedule' | 'work', category: 'basic' | 'growth' | 'record', tab: string) => void;
 }
 
+import { useWeather } from '@/hooks/useWeather';
+
+// ... (imports)
+
 export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
-    const { events, tasks } = useData();
+    const { events, tasks, userProfile } = useData(); // Added userProfile
     const { data: session } = useSession();
     const [currentTime, setCurrentTime] = useState<Date | null>(null);
+    const { weather, loading: weatherLoading, getWeatherIcon, getWeatherLabel } = useWeather(); // Added weather hook
 
     useEffect(() => {
         setCurrentTime(new Date());
         const timer = setInterval(() => setCurrentTime(new Date()), 1000);
         return () => clearInterval(timer);
     }, []);
+
+    // ... (todaysEvents, todaysTasks logic remains same)
 
     const todaysEvents = events
         .filter(e => {
@@ -63,6 +70,8 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
             due.getMonth() === today.getMonth() &&
             due.getFullYear() === today.getFullYear();
     });
+
+    const displayName = userProfile?.name || session?.user?.name || '사용자';
 
     return (
         <div className="flex flex-col gap-6 max-w-4xl mx-auto p-4 pb-20">
@@ -95,7 +104,7 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
 
                         <div className="space-y-1">
                             <h2 className="text-lg font-bold text-[#333D4B] dark:text-gray-200">
-                                반가워요, {session?.user?.name || '사용자'}님!
+                                반가워요, {displayName}님!
                             </h2>
                             <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
                                 "작은 습관이 모여 위대한 변화를 만듭니다."
@@ -124,11 +133,15 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
                             </span>
                         </button>
 
-                        {/* Weather Chip (Simple) */}
+                        {/* Weather Chip (Real Data) */}
                         <div className="bg-white dark:bg-gray-800 px-4 py-2.5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-center gap-2">
-                            <Sun className="w-4 h-4 text-orange-400" />
+                            {weatherLoading || !weather ? (
+                                <Sun className="w-4 h-4 text-gray-300 animate-pulse" />
+                            ) : (
+                                getWeatherIcon(weather.current_weather.weathercode, "w-4 h-4")
+                            )}
                             <span className="text-sm font-bold text-gray-700 dark:text-gray-200">
-                                맑음 24°
+                                {weatherLoading || !weather ? '로딩중...' : `${getWeatherLabel(weather.current_weather.weathercode)} ${Math.round(weather.current_weather.temperature)}°`}
                             </span>
                         </div>
                     </div>
