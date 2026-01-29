@@ -144,40 +144,42 @@ export function EventDialog({ isOpen, onOpenChange, event, initialDate, initialE
 
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[450px] p-0 overflow-hidden bg-card border-border shadow-2xl">
+            <DialogContent className="sm:max-w-[450px] p-0 overflow-hidden">
                 <DialogHeader className="px-6 pt-6 pb-2">
                     <DialogTitle className="text-xl font-extrabold flex items-center gap-2 tracking-tight">
                         {event ? '일정 수정' : '새 일정'}
                     </DialogTitle>
                 </DialogHeader>
 
-                <div className="px-6 py-4 space-y-5" onKeyDown={(e) => {
+                <div className="px-6 py-4 space-y-6" onKeyDown={(e) => {
                     if (e.key === 'Enter') handleSave();
                 }}>
                     {/* Title Input */}
-                    <div className="space-y-1">
-                        <Label htmlFor="title" className="text-xs font-bold text-muted-foreground uppercase tracking-wider">제목</Label>
+                    <div className="space-y-2">
+                        <Label htmlFor="title" className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                            <Tag className="w-3 h-3 text-primary" /> 제목
+                        </Label>
                         <Input
                             id="title"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
-                            placeholder="어떤 일인가요?"
-                            className="text-lg font-bold border-0 border-b border-border rounded-none px-0 py-2 focus-visible:ring-0 focus-visible:border-primary placeholder:font-medium placeholder:text-muted-foreground/50"
+                            placeholder="일정 제목을 입력하세요"
+                            className="text-lg font-bold border-0 border-b-2 border-muted bg-transparent rounded-none px-0 py-2 focus-visible:ring-0 focus-visible:border-primary placeholder:font-medium placeholder:text-muted-foreground/30 transition-colors"
                             autoFocus
                         />
                     </div>
 
                     {/* Time Selection */}
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-1">
-                            <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1">
-                                <Clock className="w-3 h-3" /> 시작
+                    <div className="grid grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                            <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                                <Clock className="w-3 h-3 text-primary" /> 시작 시간
                             </Label>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="outline" className="w-full justify-between font-medium border-input bg-transparent shadow-sm hover:bg-muted/50 focus:ring-1 focus:ring-ring">
+                                    <Button variant="outline" className="w-full justify-between font-medium border-muted/40 bg-muted/20 hover:bg-muted/40 hover:text-primary transition-all">
                                         {startTime}
-                                        <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
+                                        <ChevronDown className="ml-2 h-3 w-3 opacity-50" />
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent className="max-h-[200px] overflow-y-auto w-[180px]">
@@ -189,15 +191,15 @@ export function EventDialog({ isOpen, onOpenChange, event, initialDate, initialE
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         </div>
-                        <div className="space-y-1">
-                            <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1">
-                                <Clock className="w-3 h-3" /> 종료
+                        <div className="space-y-2">
+                            <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                                <Clock className="w-3 h-3 text-primary" /> 종료 시간
                             </Label>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="outline" className="w-full justify-between font-medium border-input bg-transparent shadow-sm hover:bg-muted/50 focus:ring-1 focus:ring-ring">
+                                    <Button variant="outline" className="w-full justify-between font-medium border-muted/40 bg-muted/20 hover:bg-muted/40 hover:text-primary transition-all">
                                         {endTime}
-                                        <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
+                                        <ChevronDown className="ml-2 h-3 w-3 opacity-50" />
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent className="max-h-[200px] overflow-y-auto w-[180px]">
@@ -212,14 +214,14 @@ export function EventDialog({ isOpen, onOpenChange, event, initialDate, initialE
                     </div>
 
                     {/* Type & Priority */}
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-1">
-                            <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1">
-                                <Tag className="w-3 h-3" /> 유형
+                    <div className="grid grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                            <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                                <FolderTree className="w-3 h-3 text-primary" /> 유형
                             </Label>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="outline" className="w-full justify-between font-medium border-input bg-transparent shadow-sm hover:bg-muted/50 focus:ring-1 focus:ring-ring capitalize">
+                                    <Button variant="outline" className="w-full justify-between font-medium border-muted/40 bg-muted/20 hover:bg-muted/40 hover:text-primary transition-all capitalize">
                                         {type === 'work' ? '업무' :
                                             type === 'personal' ? '개인' :
                                                 type === 'study' ? '공부' :
@@ -229,7 +231,7 @@ export function EventDialog({ isOpen, onOpenChange, event, initialDate, initialE
                                                                 type === 'social' ? '사교' :
                                                                     type === 'travel' ? '여행' :
                                                                         type === 'meal' ? '식사' : '기타'}
-                                        <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
+                                        <ChevronDown className="ml-2 h-3 w-3 opacity-50" />
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent className="w-[180px]">
@@ -246,15 +248,15 @@ export function EventDialog({ isOpen, onOpenChange, event, initialDate, initialE
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         </div>
-                        <div className="space-y-1">
-                            <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1">
-                                <AlertCircle className="w-3 h-3" /> 우선순위
+                        <div className="space-y-2">
+                            <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                                <AlertCircle className="w-3 h-3 text-primary" /> 우선순위
                             </Label>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="outline" className="w-full justify-between font-medium border-input bg-transparent shadow-sm hover:bg-muted/50 focus:ring-1 focus:ring-ring capitalize">
+                                    <Button variant="outline" className="w-full justify-between font-medium border-muted/40 bg-muted/20 hover:bg-muted/40 hover:text-primary transition-all capitalize">
                                         {priority === 'low' ? '낮음' : priority === 'medium' ? '보통' : '높음'}
-                                        <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
+                                        <ChevronDown className="ml-2 h-3 w-3 opacity-50" />
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent className="w-[180px]">
@@ -266,41 +268,16 @@ export function EventDialog({ isOpen, onOpenChange, event, initialDate, initialE
                         </div>
                     </div>
 
-                    {/* Meeting & Appointment Toggle */}
-                    <div className="flex items-center gap-6 pt-2">
-                        <div className="flex items-center space-x-2">
-                            <Checkbox
-                                id="isMeeting"
-                                checked={isMeeting}
-                                onCheckedChange={(checked) => setIsMeeting(checked as boolean)}
-                            />
-                            <Label htmlFor="isMeeting" className="text-sm font-normal cursor-pointer flex items-center gap-2">
-                                <Users className="w-4 h-4 text-muted-foreground" />
-                                <span>회의</span>
-                            </Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                            <Checkbox
-                                id="isAppointment"
-                                checked={isAppointment}
-                                onCheckedChange={(checked) => setIsAppointment(checked as boolean)}
-                            />
-                            <Label htmlFor="isAppointment" className="text-sm font-normal cursor-pointer flex items-center gap-2">
-                                <Handshake className="w-4 h-4 text-muted-foreground" />
-                                <span>약속</span>
-                            </Label>
-                        </div>
-                    </div>
-
                     {/* Link Section */}
-                    <div className="grid grid-cols-2 gap-4 pt-2 border-t border-border">
-                        <div className="space-y-1">
-                            <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1">
-                                <FolderTree className="w-3 h-3" /> 프로젝트 연동
+                    {/* ... (Kept similar but cleaned up) ... */}
+                    <div className="grid grid-cols-2 gap-6 pt-4 border-t border-border/10">
+                        <div className="space-y-2">
+                            <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                                <FolderTree className="w-3 h-3 text-primary" /> 프로젝트
                             </Label>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="outline" className="w-full justify-between font-medium border-input bg-transparent shadow-sm hover:bg-muted/50 focus:ring-1 focus:ring-ring text-xs h-9">
+                                    <Button variant="outline" className="w-full justify-between font-medium border-muted/40 bg-muted/20 hover:bg-muted/40 hover:text-primary transition-all text-xs h-9">
                                         {projects.find(p => p.id === connectedProjectId)?.title || '선택 안 함'}
                                         <ChevronDown className="ml-2 h-3 w-3 opacity-50" />
                                     </Button>
@@ -318,13 +295,13 @@ export function EventDialog({ isOpen, onOpenChange, event, initialDate, initialE
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         </div>
-                        <div className="space-y-1">
-                            <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1">
-                                <Trophy className="w-3 h-3" /> 목표 연동
+                        <div className="space-y-2">
+                            <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                                <Trophy className="w-3 h-3 text-primary" /> 목표
                             </Label>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="outline" className="w-full justify-between font-medium border-input bg-transparent shadow-sm hover:bg-muted/50 focus:ring-1 focus:ring-ring text-xs h-9">
+                                    <Button variant="outline" className="w-full justify-between font-medium border-muted/40 bg-muted/20 hover:bg-muted/40 hover:text-primary transition-all text-xs h-9">
                                         {goals.find(g => g.id === connectedGoalId)?.title || '선택 안 함'}
                                         <ChevronDown className="ml-2 h-3 w-3 opacity-50" />
                                     </Button>

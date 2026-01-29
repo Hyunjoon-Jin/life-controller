@@ -57,7 +57,7 @@ export function FoodSearchDialog({ open, onOpenChange, onSelect }: FoodSearchDia
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[500px] h-[600px] flex flex-col p-0 gap-0">
+            <DialogContent className="sm:max-w-[800px] h-[80vh] flex flex-col p-0">
                 <DialogHeader className="p-4 pb-2">
                     <DialogTitle>식단 검색 (Open Food Facts)</DialogTitle>
                 </DialogHeader>
