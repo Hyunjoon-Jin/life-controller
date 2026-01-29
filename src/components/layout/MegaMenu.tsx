@@ -131,7 +131,7 @@ export function MegaMenuNav({ activeCategory, activeTab, onSelect }: MegaMenuNav
                         <h3 className="text-lg font-bold mb-6 text-gray-900 dark:text-white px-2">
                             {categories.find(c => c.id === hoveredCategory)?.label} 서비스
                         </h3>
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                        <div className="grid grid-cols-2 gap-2">
                             {subMenus[hoveredCategory].map((item) => (
                                 <button
                                     key={item.id}
@@ -159,7 +159,7 @@ export function MegaMenuNav({ activeCategory, activeTab, onSelect }: MegaMenuNav
                                         )}>
                                             {item.label}
                                         </div>
-                                        <div className="text-xs text-gray-400 font-medium line-clamp-1">
+                                        <div className="text-xs text-gray-400 font-medium line-clamp-2 leading-relaxed">
                                             {item.desc}
                                         </div>
                                     </div>
