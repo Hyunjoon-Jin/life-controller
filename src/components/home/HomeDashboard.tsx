@@ -66,15 +66,70 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
 
     return (
         <div className="flex flex-col gap-6 max-w-4xl mx-auto p-4 pb-20">
-            {/* 1. Header (Greeting) */}
-            <div className="pt-4 pb-2 px-2 animate-in fade-in slide-in-from-bottom-2 duration-700">
-                <h1 className="text-[26px] font-bold text-[#191F28] dark:text-white leading-tight mb-1">
-                    반가워요, {session?.user?.name || '사용자'}님<br />
-                    오늘도 갓생 살아볼까요?
-                </h1>
-                <p className="text-sm text-[#8B95A1] font-medium">
-                    {currentTime ? format(currentTime, 'M월 d일 EEEE · a h:mm', { locale: ko }) : '...'}
-                </p>
+            {/* 1. Hero Section (Branding & Status) */}
+            <div className="bg-gradient-to-br from-white to-gray-50 dark:from-[#202022] dark:to-[#1a1a1c] p-6 rounded-[32px] shadow-sm border border-gray-100 dark:border-gray-800 animate-in fade-in slide-in-from-bottom-2 duration-700 relative overflow-hidden">
+                {/* Decorative Background Element */}
+                <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-50/50 to-purple-50/50 dark:from-blue-900/10 dark:to-purple-900/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none" />
+
+                <div className="relative z-10 flex flex-col md:flex-row justify-between md:items-end gap-6">
+                    {/* Left: Branding & Quote */}
+                    <div className="space-y-4">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-black dark:bg-white text-white dark:text-black rounded-2xl flex items-center justify-center shadow-lg transform rotate-[-5deg]">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="translate-y-[1px]">
+                                    <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                                    <path d="M2 17L12 22L22 17" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                                    <path d="M2 12L12 17L22 12" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h1 className="text-2xl font-extrabold tracking-tight text-[#191F28] dark:text-white leading-none">
+                                    LIFE <span className="text-blue-600">Controller</span>
+                                </h1>
+                                <p className="text-xs text-gray-500 font-medium mt-0.5 ml-0.5">Daily Productivity OS</p>
+                            </div>
+                        </div>
+
+                        <div className="space-y-1">
+                            <h2 className="text-lg font-bold text-[#333D4B] dark:text-gray-200">
+                                반가워요, {session?.user?.name || '사용자'}님!
+                            </h2>
+                            <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
+                                "작은 습관이 모여 위대한 변화를 만듭니다."
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* Right: Quick Stats (Chips) */}
+                    <div className="flex flex-wrap gap-2">
+                        {/* Date Chip */}
+                        <div className="bg-white dark:bg-gray-800 px-4 py-2.5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-center gap-2">
+                            <CalendarIcon className="w-4 h-4 text-gray-400" />
+                            <span className="text-sm font-bold text-gray-700 dark:text-gray-200">
+                                {currentTime ? format(currentTime, 'M월 d일 EEEE', { locale: ko }) : '...'}
+                            </span>
+                        </div>
+
+                        {/* Task Chip */}
+                        <button
+                            onClick={() => onQuickLink('schedule', 'basic', 'tasks')}
+                            className="bg-white dark:bg-gray-800 px-4 py-2.5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-center gap-2 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors group"
+                        >
+                            <div className="w-2 h-2 rounded-full bg-red-500 group-hover:animate-pulse" />
+                            <span className="text-sm font-bold text-gray-700 dark:text-gray-200">
+                                할일 <span className="text-blue-600">{todaysTasks.length}</span>개
+                            </span>
+                        </button>
+
+                        {/* Weather Chip (Simple) */}
+                        <div className="bg-white dark:bg-gray-800 px-4 py-2.5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-center gap-2">
+                            <Sun className="w-4 h-4 text-orange-400" />
+                            <span className="text-sm font-bold text-gray-700 dark:text-gray-200">
+                                맑음 24°
+                            </span>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             {/* 2. Search (Minimal) */}
