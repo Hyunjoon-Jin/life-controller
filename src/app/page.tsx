@@ -95,10 +95,10 @@ export default function Home() {
               </button>
             </div>
           </div>
-          <p className="text-muted-foreground">
-            {mainMode === 'home' && '오늘 하루를 한눈에 확인하세요.'}
-            {mainMode === 'schedule' && '시간을 지배하고, 목표를 달성하세요.'}
-            {mainMode === 'work' && '프로젝트의 모든 것을 한눈에 관리하세요.'}
+          <p className="text-muted-foreground font-medium animate-in fade-in slide-in-from-bottom-2 duration-700 delay-100">
+            {mainMode === 'home' && '오늘도 힘차게 시작해볼까요?'}
+            {mainMode === 'schedule' && '하루의 시간을 알차게 계획해보세요.'}
+            {mainMode === 'work' && '진행 중인 프로젝트를 살펴볼까요?'}
           </p>
         </div>
         <div className="flex items-center gap-4 self-end md:self-auto">
