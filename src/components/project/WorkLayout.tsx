@@ -140,25 +140,25 @@ export function WorkLayout() {
                     <div className="flex gap-2 bg-white p-1.5 rounded-full shadow-sm w-full md:w-fit border border-gray-100 overflow-x-auto no-scrollbar scroll-smooth">
                         <button
                             onClick={() => setViewMode('dashboard')}
-                            className={cn("flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap", viewMode === 'dashboard' ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-gray-100")}
+                            className={cn("flex items-center gap-2 px-3 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap", viewMode === 'dashboard' ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-gray-100")}
                         >
                             <LayoutDashboard className="w-4 h-4" strokeWidth={1.5} /> 대시보드
                         </button>
                         <button
                             onClick={() => setViewMode('kanban')}
-                            className={cn("flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap", viewMode === 'kanban' ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-gray-100")}
+                            className={cn("flex items-center gap-2 px-3 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap", viewMode === 'kanban' ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-gray-100")}
                         >
                             <LayoutDashboard className="w-4 h-4" strokeWidth={1.5} /> 칸반
                         </button>
                         <button
                             onClick={() => setViewMode('timeline')}
-                            className={cn("flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap", viewMode === 'timeline' ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-gray-100")}
+                            className={cn("flex items-center gap-2 px-3 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap", viewMode === 'timeline' ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-gray-100")}
                         >
                             <GanttChartIcon className="w-4 h-4" strokeWidth={1.5} /> 타임라인
                         </button>
                         <button
                             onClick={() => setViewMode('okr')}
-                            className={cn("flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap", viewMode === 'okr' ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-gray-100")}
+                            className={cn("flex items-center gap-2 px-3 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap", viewMode === 'okr' ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-gray-100")}
                         >
                             <Target className="w-4 h-4" strokeWidth={1.5} /> 목표
                         </button>
@@ -170,7 +170,7 @@ export function WorkLayout() {
                             <DropdownMenuTrigger asChild>
                                 <button
                                     className={cn(
-                                        "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap outline-none",
+                                        "flex items-center gap-2 px-3 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap outline-none",
                                         ['team', 'resources', 'structure', 'archive'].includes(viewMode) ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-gray-100"
                                     )}
                                 >
@@ -201,7 +201,7 @@ export function WorkLayout() {
                             <DropdownMenuTrigger asChild>
                                 <button
                                     className={cn(
-                                        "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap outline-none",
+                                        "flex items-center gap-2 px-3 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap outline-none",
                                         ['automation', 'analytics'].includes(viewMode) ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-gray-100"
                                     )}
                                 >
@@ -221,13 +221,13 @@ export function WorkLayout() {
                         </DropdownMenu>
 
                         {/* Tools Divider & Buttons */}
-                        <div className="w-[1px] h-6 bg-gray-200 mx-2" />
+                        <div className="w-[1px] h-6 bg-gray-200 mx-1" />
 
                         <Popover>
                             <PopoverTrigger asChild>
-                                <Button variant="outline" size="sm" className="gap-2 bg-background/50 backdrop-blur-sm border-dashed">
-                                    <Music className="w-4 h-4 text-pink-500" />
-                                    <span className="hidden md:inline">Focus Sounds</span>
+                                <Button variant="outline" size="sm" className="h-8 w-8 p-0 rounded-full border-dashed border-gray-300 hover:border-pink-500 hover:text-pink-500" title="Focus Sounds">
+                                    <Music className="w-4 h-4" />
+                                    <span className="sr-only">Focus Sounds</span>
                                 </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-80" align="end">
@@ -238,10 +238,12 @@ export function WorkLayout() {
                         <Button
                             variant="outline"
                             size="sm"
-                            className="gap-2 rounded-full border-dashed border-gray-300 hover:border-primary hover:text-primary hover:bg-primary/5"
+                            className="h-8 w-8 p-0 rounded-full border-dashed border-gray-300 hover:border-primary hover:text-primary hover:bg-primary/5"
                             onClick={() => setIsMeetingModeOpen(true)}
+                            title="회의 모드"
                         >
-                            <Clock className="w-4 h-4" /> 회의 모드
+                            <Clock className="w-4 h-4" />
+                            <span className="sr-only">회의 모드</span>
                         </Button>
                     </div>
                 )}
