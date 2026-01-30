@@ -121,15 +121,9 @@ export function MobileHeader({
                             </div>
 
                             {appMode === 'work' && (
-                                <button
-                                    onClick={() => { setMainMode('work'); setIsOpen(false); }}
-                                    className={cn(
-                                        "w-full flex items-center gap-4 p-3 rounded-xl transition-colors text-left font-medium",
-                                        mainMode === 'work' ? "bg-primary/10 text-primary" : "hover:bg-muted"
-                                    )}
-                                >
-                                    <Briefcase className="w-5 h-5" /> 업무 관리
-                                </button>
+                                <div className="p-3 bg-blue-50 text-blue-700 rounded-lg text-sm text-center">
+                                    업무 모드 활성화됨 (기본 메뉴에서 '프로젝트 관리' 선택 가능)
+                                </div>
                             )}
                         </div>
                     </div>

@@ -44,7 +44,7 @@ export default function Home() {
   const [appMode, setAppMode] = useState<'life' | 'work'>('life');
   const [mainMode, setMainMode] = useState<'home' | 'schedule' | 'work'>('home');
   const [activeCategory, setActiveCategory] = useState<'basic' | 'health' | 'growth' | 'record' | 'finance'>('basic');
-  const [activeTab, setActiveTab] = useState<'calendar' | 'tasks' | 'people' | 'goals' | 'language' | 'reading' | 'exercise' | 'diet' | 'inbody' | 'hobby' | 'ideas' | 'journal' | 'scraps' | 'widgets' | 'ledger' | 'assets' | 'certificate' | 'portfolio'>('calendar');
+  const [activeTab, setActiveTab] = useState<'calendar' | 'tasks' | 'projects' | 'people' | 'goals' | 'language' | 'reading' | 'exercise' | 'diet' | 'inbody' | 'hobby' | 'ideas' | 'journal' | 'scraps' | 'widgets' | 'ledger' | 'assets' | 'certificate' | 'portfolio'>('calendar');
   const [isGuideOpen, setIsGuideOpen] = useState(false);
   const [todayDate, setTodayDate] = useState('');
 
@@ -153,19 +153,7 @@ export default function Home() {
           />
         </div>
 
-        {/* Only show 'Work Management' in Work Mode */}
-        {appMode === 'work' && (
-          <Button
-            onClick={() => setMainMode('work')}
-            className={cn(
-              "rounded-full px-5 font-bold shadow-sm transition-all shrink-0",
-              mainMode === 'work' ? "bg-black text-white hover:bg-gray-800" : "bg-white text-black hover:bg-gray-100 border border-gray-200"
-            )}
-          >
-            <Briefcase className="w-4 h-4 mr-2" />
-            업무 관리
-          </Button>
-        )}
+        {/* Only show 'Work Management' in Work Mode - REMOVED (Integrated into Menu) */}
       </div>
 
       {
@@ -203,6 +191,11 @@ export default function Home() {
                 {activeTab === 'tasks' && (
                   <div className="h-full animate-in fade-in zoom-in-95 duration-200">
                     <TaskBoard hideHeader={true} />
+                  </div>
+                )}
+                {activeTab === 'projects' && (
+                  <div className="h-full animate-in fade-in zoom-in-95 duration-200">
+                    <WorkLayout />
                   </div>
                 )}
                 {activeTab === 'people' && (

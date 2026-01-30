@@ -22,6 +22,54 @@ export type Task = {
 
 export type ProjectStatus = 'preparation' | 'active' | 'completed' | 'hold';
 
+// New OKR Types
+export type KeyResult = {
+    id: string;
+    title: string;
+    targetValue: number;
+    currentValue: number;
+    unit: string; // e.g., '%', 'users', 'krw'
+    weight?: number; // Importance
+};
+
+export type Objective = {
+    id: string;
+    title: string;
+    description?: string;
+    startDate?: Date;
+    endDate?: Date;
+    progress: number;
+    keyResults: KeyResult[];
+    status: 'on-track' | 'at-risk' | 'off-track' | 'completed';
+};
+
+export type Stakeholder = {
+    id: string;
+    name: string;
+    role: string; // e.g., 'Designer', 'Client', 'Frontend Dev'
+    contact?: string; // Email or Phone
+    organization?: string; // Company / Dept
+    notes?: string;
+};
+
+export type ProjectResource = {
+    id: string;
+    title: string;
+    type: 'link' | 'file' | 'image' | 'figma' | 'github' | 'drive' | 'notion';
+    url: string;
+    description?: string;
+    tags?: string[];
+    createdAt: Date;
+};
+
+export type AutomationRule = {
+    id: string;
+    name: string;
+    trigger: string; // e.g. 'task_completed', 'task_created_p1'
+    action: string; // e.g. 'archive_task', 'set_due_today'
+    isActive: boolean;
+};
+
 export type Project = {
     id: string;
     title: string;
@@ -40,6 +88,10 @@ export type Project = {
     description?: string;
     progress?: number; // 0-100
     myRole?: string; // New: User's Role in this project
+    okrs?: Objective[]; // New: OKR Integration
+    stakeholders?: Stakeholder[]; // New: Team/Stakeholder Management
+    resources?: ProjectResource[]; // New: Resource Library
+    automationRules?: AutomationRule[]; // New: Automation
 };
 
 export type ArchiveDocument = {

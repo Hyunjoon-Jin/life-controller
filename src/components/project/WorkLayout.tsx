@@ -12,13 +12,21 @@ import { ProjectKanban } from './ProjectKanban';
 import { ProjectDialog } from './ProjectDialog';
 import { WorkMainDashboard } from '@/components/work/WorkMainDashboard'; // Import
 import { ProjectWiki } from './ProjectWiki';
+import { ProjectOKR } from './ProjectOKR';
+import { ProjectTeam } from './ProjectTeam';
+import { ProjectResources } from './ProjectResources';
+import { AutomationRules } from './AutomationRules';
+import { FocusSounds } from './FocusSounds';
+import { GlobalScratchpad } from './GlobalScratchpad';
+import { TimeAnalytics } from './TimeAnalytics'; // Import
 import { RetrospectiveDialog } from './RetrospectiveDialog';
-import { MeetingMode } from '@/components/work/MeetingMode'; // Import
+import { MeetingMode } from '@/components/work/MeetingMode';
 import { Project } from '@/types';
 import { Button } from '@/components/ui/button';
-import { Clock, Book, RotateCw } from 'lucide-react';
+import { Clock, Book, RotateCw, Target, Users, Link2, Zap, Music } from 'lucide-react'; // Added Music icon
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'; // Import Popover
 
-type ViewMode = 'dashboard' | 'kanban' | 'timeline' | 'structure' | 'archive' | 'wiki';
+type ViewMode = 'dashboard' | 'kanban' | 'timeline' | 'team' | 'resources' | 'automation' | 'analytics' | 'structure' | 'archive' | 'wiki' | 'okr';
 
 export function WorkLayout() {
     const [viewMode, setViewMode] = useState<ViewMode>('dashboard');
@@ -139,6 +147,36 @@ export function WorkLayout() {
                             <GanttChartIcon className="w-4 h-4" strokeWidth={1.5} /> 타임라인
                         </button>
                         <button
+                            onClick={() => setViewMode('okr')}
+                            className={cn("flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all whitespace-nowrap", viewMode === 'okr' ? "bg-primary text-primary-foreground shadow-md" : "text-muted-foreground hover:bg-gray-50")}
+                        >
+                            <Target className="w-4 h-4" strokeWidth={1.5} /> 목표(OKR)
+                        </button>
+                        <button
+                            onClick={() => setViewMode('team')}
+                            className={cn("flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all whitespace-nowrap", viewMode === 'team' ? "bg-primary text-primary-foreground shadow-md" : "text-muted-foreground hover:bg-gray-50")}
+                        >
+                            <Users className="w-4 h-4" strokeWidth={1.5} /> 팀/멤버
+                        </button>
+                        <button
+                            onClick={() => setViewMode('resources')}
+                            className={cn("flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all whitespace-nowrap", viewMode === 'resources' ? "bg-primary text-primary-foreground shadow-md" : "text-muted-foreground hover:bg-gray-50")}
+                        >
+                            <Link2 className="w-4 h-4" strokeWidth={1.5} /> 리소스
+                        </button>
+                        <button
+                            onClick={() => setViewMode('automation')}
+                            className={cn("flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all whitespace-nowrap", viewMode === 'automation' ? "bg-primary text-primary-foreground shadow-md" : "text-muted-foreground hover:bg-gray-50")}
+                        >
+                            <Zap className="w-4 h-4" strokeWidth={1.5} /> 자동화
+                        </button>
+                        <button
+                            onClick={() => setViewMode('analytics')}
+                            className={cn("flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all whitespace-nowrap", viewMode === 'analytics' ? "bg-primary text-primary-foreground shadow-md" : "text-muted-foreground hover:bg-gray-50")}
+                        >
+                            <Clock className="w-4 h-4" strokeWidth={1.5} /> 분석
+                        </button>
+                        <button
                             onClick={() => setViewMode('structure')}
                             className={cn("flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all whitespace-nowrap", viewMode === 'structure' ? "bg-primary text-primary-foreground shadow-md" : "text-muted-foreground hover:bg-gray-50")}
                         >
@@ -153,6 +191,18 @@ export function WorkLayout() {
 
                         {/* Tools Divider & Buttons */}
                         <div className="w-[1px] h-6 bg-gray-200 mx-2" />
+
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button variant="outline" size="sm" className="gap-2 bg-background/50 backdrop-blur-sm border-dashed">
+                                    <Music className="w-4 h-4 text-pink-500" />
+                                    <span className="hidden md:inline">Focus Sounds</span>
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-80" align="end">
+                                <FocusSounds />
+                            </PopoverContent>
+                        </Popover>
 
                         <Button
                             variant="outline"
@@ -184,6 +234,11 @@ export function WorkLayout() {
                             {viewMode === 'dashboard' && <ProjectDashboard project={selectedProject} />}
                             {viewMode === 'kanban' && <ProjectKanban project={selectedProject} />}
                             {viewMode === 'timeline' && <GanttChart project={selectedProject} />}
+                            {viewMode === 'okr' && <ProjectOKR project={selectedProject} />}
+                            {viewMode === 'team' && <ProjectTeam project={selectedProject} />}
+                            {viewMode === 'resources' && <ProjectResources project={selectedProject} />}
+                            {viewMode === 'automation' && <AutomationRules project={selectedProject} />}
+                            {viewMode === 'analytics' && <TimeAnalytics project={selectedProject} />}
                             {viewMode === 'structure' && <ProjectStructure />}
                             {viewMode === 'archive' && <ArchiveSystem project={selectedProject} />}
                         </div>
@@ -197,6 +252,9 @@ export function WorkLayout() {
                 onOpenChange={setIsProjectDialogOpen}
                 projectToEdit={editingProject}
             />
+
+            {/* Global Features */}
+            <GlobalScratchpad />
         </div>
     );
 }
