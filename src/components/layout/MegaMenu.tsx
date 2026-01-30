@@ -13,12 +13,20 @@ interface MegaMenuNavProps {
     onSelect: (category: CategoryType, tab: string) => void;
 }
 
-export function MegaMenuNav({ activeCategory, activeTab, onSelect }: MegaMenuNavProps) {
+export function MegaMenuNav({ activeCategory, activeTab, onSelect, appMode = 'life' }: MegaMenuNavProps & { appMode?: 'life' | 'work' }) {
     const [isOpen, setIsOpen] = useState(false);
     const [hoveredCategory, setHoveredCategory] = useState<CategoryType>(activeCategory);
 
-    // Categories and SubMenus are now imported from constants
-
+    // Filter categories based on mode
+    const visibleCategories = CATEGORIES.filter(cat => {
+        if (appMode === 'work') {
+            // In Work Mode, only show 'Basic' (Schedule, Tasks, People)
+            // 'Projects' is handled separately via the button, but maybe we could add it here too if we had a category for it.
+            // For now, sticking to the requirement: Schedule, Todo, Networking -> which are in 'basic'.
+            return cat.id === 'basic';
+        }
+        return true;
+    });
 
     return (
         <div className="w-full relative z-50" onMouseLeave={() => setIsOpen(false)}>
@@ -33,12 +41,12 @@ export function MegaMenuNav({ activeCategory, activeTab, onSelect }: MegaMenuNav
                     onMouseEnter={() => setIsOpen(true)}
                     onClick={() => setIsOpen(!isOpen)}
                 >
-                    <span className="mr-1">≡</span> 전체 메뉴
+                    <span className="mr-1">≡</span> {appMode === 'work' ? '업무 메뉴' : '전체 메뉴'}
                 </Button>
 
                 <div className="h-4 w-[1px] bg-gray-200 mx-2" />
 
-                {CATEGORIES.map(cat => (
+                {visibleCategories.map(cat => (
                     <button
                         key={cat.id}
                         onMouseEnter={() => {
@@ -69,7 +77,7 @@ export function MegaMenuNav({ activeCategory, activeTab, onSelect }: MegaMenuNav
 
                     {/* Left: Categories List */}
                     <div className="w-48 py-4 px-2 border-r border-gray-100 dark:border-gray-800 flex flex-col gap-1">
-                        {CATEGORIES.map(cat => (
+                        {visibleCategories.map(cat => (
                             <button
                                 key={cat.id}
                                 onMouseEnter={() => setHoveredCategory(cat.id)}
@@ -92,7 +100,7 @@ export function MegaMenuNav({ activeCategory, activeTab, onSelect }: MegaMenuNav
                             {CATEGORIES.find(c => c.id === hoveredCategory)?.label} 서비스
                         </h3>
                         <div className="flex flex-col gap-1">
-                            {SUB_MENUS[hoveredCategory].map((item) => (
+                            {SUB_MENUS[hoveredCategory] ? SUB_MENUS[hoveredCategory].map((item: any) => (
                                 <button
                                     key={item.id}
                                     onClick={() => {
@@ -125,7 +133,9 @@ export function MegaMenuNav({ activeCategory, activeTab, onSelect }: MegaMenuNav
                                     </div>
                                     <ChevronRight className="w-4 h-4 text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
                                 </button>
-                            ))}
+                            )) : (
+                                <div className="text-gray-400 text-sm p-4">메뉴가 없습니다.</div>
+                            )}
                         </div>
                     </div>
                 </div>

@@ -8,11 +8,17 @@ import { ProjectDashboard } from './ProjectDashboard';
 import { GanttChart } from './GanttChart';
 import { ProjectStructure } from './ProjectStructure';
 import { ArchiveSystem } from './ArchiveSystem';
+import { ProjectKanban } from './ProjectKanban';
 import { ProjectDialog } from './ProjectDialog';
+import { WorkMainDashboard } from '@/components/work/WorkMainDashboard'; // Import
+import { ProjectWiki } from './ProjectWiki';
+import { RetrospectiveDialog } from './RetrospectiveDialog';
+import { MeetingMode } from '@/components/work/MeetingMode'; // Import
 import { Project } from '@/types';
 import { Button } from '@/components/ui/button';
+import { Clock, Book, RotateCw } from 'lucide-react';
 
-type ViewMode = 'dashboard' | 'timeline' | 'structure' | 'archive';
+type ViewMode = 'dashboard' | 'kanban' | 'timeline' | 'structure' | 'archive' | 'wiki';
 
 export function WorkLayout() {
     const [viewMode, setViewMode] = useState<ViewMode>('dashboard');
@@ -21,6 +27,8 @@ export function WorkLayout() {
 
     // Dialog State
     const [isProjectDialogOpen, setIsProjectDialogOpen] = useState(false);
+    const [isMeetingModeOpen, setIsMeetingModeOpen] = useState(false);
+    const [isRetrospectiveOpen, setIsRetrospectiveOpen] = useState(false);
     const [editingProject, setEditingProject] = useState<Project | null>(null);
 
     const handleCreateProject = () => {
@@ -119,6 +127,12 @@ export function WorkLayout() {
                             <LayoutDashboard className="w-4 h-4" strokeWidth={1.5} /> 대시보드
                         </button>
                         <button
+                            onClick={() => setViewMode('kanban')}
+                            className={cn("flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all whitespace-nowrap", viewMode === 'kanban' ? "bg-primary text-primary-foreground shadow-md" : "text-muted-foreground hover:bg-gray-50")}
+                        >
+                            <LayoutDashboard className="w-4 h-4" strokeWidth={1.5} /> 칸반 보드
+                        </button>
+                        <button
                             onClick={() => setViewMode('timeline')}
                             className={cn("flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all whitespace-nowrap", viewMode === 'timeline' ? "bg-primary text-primary-foreground shadow-md" : "text-muted-foreground hover:bg-gray-50")}
                         >
@@ -136,20 +150,39 @@ export function WorkLayout() {
                         >
                             <Archive className="w-4 h-4" strokeWidth={1.5} /> 아카이브
                         </button>
+
+                        {/* Tools Divider & Buttons */}
+                        <div className="w-[1px] h-6 bg-gray-200 mx-2" />
+
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            className="gap-2 rounded-full border-dashed border-gray-300 hover:border-primary hover:text-primary hover:bg-primary/5"
+                            onClick={() => setIsMeetingModeOpen(true)}
+                        >
+                            <Clock className="w-4 h-4" /> 회의 모드
+                        </Button>
                     </div>
+                )}
+
+                {/* Meeting Mode Overlay */}
+                {isMeetingModeOpen && selectedProject && (
+                    <MeetingMode
+                        project={selectedProject}
+                        onClose={() => setIsMeetingModeOpen(false)}
+                    />
                 )}
 
                 {/* Content View */}
                 <div className="flex-1 p-6 bg-white rounded-3xl shadow-sm border border-gray-100 overflow-y-auto custom-scrollbar relative">
                     {!selectedProject ? (
-                        <div className="flex flex-col items-center justify-center h-full text-muted-foreground opacity-50">
-                            <FolderTree className="w-16 h-16 mb-4 opacity-20" strokeWidth={1} />
-                            <p className="text-lg font-medium">프로젝트를 선택하여 작업을 시작하세요</p>
-                            <p className="text-sm">왼쪽 목록에서 프로젝트를 클릭하세요.</p>
+                        <div className="h-full">
+                            <WorkMainDashboard onOpenProject={setSelectedProjectId} />
                         </div>
                     ) : (
                         <div className="h-full animate-in fade-in zoom-in-95 duration-200">
                             {viewMode === 'dashboard' && <ProjectDashboard project={selectedProject} />}
+                            {viewMode === 'kanban' && <ProjectKanban project={selectedProject} />}
                             {viewMode === 'timeline' && <GanttChart project={selectedProject} />}
                             {viewMode === 'structure' && <ProjectStructure />}
                             {viewMode === 'archive' && <ArchiveSystem project={selectedProject} />}

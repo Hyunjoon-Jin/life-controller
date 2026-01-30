@@ -40,6 +40,7 @@ import { useBirthdayNotifications } from '@/hooks/useBirthdayNotifications';
 
 export default function Home() {
   useBirthdayNotifications(); // Initialize Birthday Check
+  const [appMode, setAppMode] = useState<'life' | 'work'>('life');
   const [mainMode, setMainMode] = useState<'home' | 'schedule' | 'work'>('home');
   const [activeCategory, setActiveCategory] = useState<'basic' | 'health' | 'growth' | 'record' | 'finance'>('basic');
   const [activeTab, setActiveTab] = useState<'calendar' | 'tasks' | 'people' | 'goals' | 'language' | 'reading' | 'exercise' | 'diet' | 'inbody' | 'hobby' | 'ideas' | 'journal' | 'scraps' | 'widgets' | 'ledger' | 'assets' | 'certificate' | 'portfolio'>('calendar');
@@ -49,6 +50,19 @@ export default function Home() {
   useEffect(() => {
     setTodayDate(new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }));
   }, []);
+
+  // When switching directly to 'Work Mode' via toggle, ensure we are in a compatible view
+  useEffect(() => {
+    if (appMode === 'work') {
+      // Allow 'schedule' (for Tasks/Calendar) or 'work' (for Projects). 
+      // If currently in 'home', maybe default to 'schedule' (Dashboard) or stay?
+      // For now, let's keep user where they are, but if they were in a life-only category, reset to basic.
+      if (activeCategory !== 'basic' && mainMode === 'schedule') {
+        setActiveCategory('basic');
+        setActiveTab('calendar');
+      }
+    }
+  }, [appMode, activeCategory, mainMode]);
 
   const handleQuickLink = (mode: 'home' | 'schedule' | 'work', category: 'basic' | 'growth' | 'record' | 'finance', tab: string) => {
     setMainMode(mode);
@@ -65,12 +79,48 @@ export default function Home() {
           <button onClick={() => setMainMode('home')} className="hover:opacity-80 transition-opacity cursor-pointer">
             <Logo variant="full" className="scale-100" />
           </button>
+
+          {/* Mode Toggle Switch */}
+          <div className="hidden md:flex bg-gray-100 dark:bg-gray-800 p-1 rounded-full items-center">
+            <button
+              onClick={() => setAppMode('life')}
+              className={cn(
+                "px-3 py-1 rounded-full text-xs font-bold transition-all flex items-center gap-1.5",
+                appMode === 'life'
+                  ? "bg-white dark:bg-gray-700 text-black dark:text-white shadow-sm"
+                  : "text-gray-500 hover:text-gray-900 dark:text-gray-400"
+              )}
+            >
+              <Sparkles className="w-3 h-3 text-yellow-500" /> 일상 모드
+            </button>
+            <button
+              onClick={() => setAppMode('work')}
+              className={cn(
+                "px-3 py-1 rounded-full text-xs font-bold transition-all flex items-center gap-1.5",
+                appMode === 'work'
+                  ? "bg-white dark:bg-gray-700 text-black dark:text-white shadow-sm"
+                  : "text-gray-500 hover:text-gray-900 dark:text-gray-400"
+              )}
+            >
+              <Briefcase className="w-3 h-3 text-blue-500" /> 업무 모드
+            </button>
+          </div>
+
           <div className="hidden md:flex items-center text-sm font-medium text-muted-foreground border-l pl-4 h-4 leading-none">
             {todayDate}
           </div>
         </div>
         <div className="flex items-center gap-2">
-          {/* Main Mode Toggles (If needed later, but simplified for now to keep home clean) */}
+          {/* Mobile Mode Toggle (Simplified) */}
+          <div className="md:hidden flex bg-gray-100 dark:bg-gray-800 p-1 rounded-full items-center mr-1">
+            <button
+              onClick={() => setAppMode(appMode === 'life' ? 'work' : 'life')}
+              className="p-1.5 rounded-full bg-white dark:bg-gray-700 shadow-sm"
+            >
+              {appMode === 'life' ? <Sparkles className="w-4 h-4 text-yellow-500" /> : <Briefcase className="w-4 h-4 text-blue-500" />}
+            </button>
+          </div>
+
           <Button variant="ghost" size="icon" onClick={() => setMainMode('home')} className={cn("rounded-full", mainMode === 'home' && "bg-gray-100 text-black")}>
             <HomeIcon className="w-5 h-5" />
           </Button>
@@ -88,6 +138,7 @@ export default function Home() {
           <MegaMenuNav
             activeCategory={activeCategory}
             activeTab={activeTab}
+            appMode={appMode} // Pass the mode
             onSelect={(category, tab) => {
               setMainMode('schedule');
               setActiveCategory(category);
@@ -95,6 +146,10 @@ export default function Home() {
             }}
           />
         </div>
+
+        {/* Only show 'Work Management' direct link if in Life Mode or it's always available? 
+            Let's keep it but maybe highlight it differently in Work Mode.
+            Actually, in Work Mode, 'Projects' is key. */}
         <Button
           onClick={() => setMainMode('work')}
           className={cn(
