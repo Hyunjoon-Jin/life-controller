@@ -100,7 +100,7 @@ export function MeetingMode({ project, onClose }: MeetingModeProps) {
     };
 
     return (
-        <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm flex flex-col animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-[100] bg-background flex flex-col animate-in fade-in duration-200">
             {/* Header / Toolbar */}
             <div className="h-16 border-b border-border flex items-center justify-between px-6 bg-card shadow-sm shrink-0">
                 <div className="flex items-center gap-4">

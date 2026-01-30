@@ -22,6 +22,7 @@ import { DietLog } from '@/components/growth/DietLog';
 import { InBodyLog } from '@/components/growth/InBodyLog';
 import { HobbyLog } from '@/components/growth/HobbyLog';
 import { MegaMenuNav } from '@/components/layout/MegaMenu';
+import { MobileHeader } from '@/components/layout/MobileHeader'; // Added
 import { SUB_MENUS } from '@/constants/menu';
 import { TabHeader } from '@/components/layout/TabHeader';
 
@@ -55,11 +56,14 @@ export default function Home() {
   useEffect(() => {
     if (appMode === 'work') {
       // Allow 'schedule' (for Tasks/Calendar) or 'work' (for Projects). 
-      // If currently in 'home', maybe default to 'schedule' (Dashboard) or stay?
-      // For now, let's keep user where they are, but if they were in a life-only category, reset to basic.
       if (activeCategory !== 'basic' && mainMode === 'schedule') {
         setActiveCategory('basic');
         setActiveTab('calendar');
+      }
+    } else if (appMode === 'life') {
+      // If switching to Life Mode while in Work Management, go back to Home
+      if (mainMode === 'work') {
+        setMainMode('home');
       }
     }
   }, [appMode, activeCategory, mainMode]);
@@ -74,14 +78,26 @@ export default function Home() {
 
   return (
     <main className="min-h-screen p-4 md:p-6 bg-background text-foreground flex flex-col">
-      <header className="mb-2 flex justify-between items-center w-full max-w-4xl mx-auto pt-2">
+      {/* Mobile Header (Hidden on Desktop) */}
+      <MobileHeader
+        appMode={appMode}
+        setAppMode={setAppMode}
+        mainMode={mainMode}
+        setMainMode={setMainMode}
+        activeCategory={activeCategory}
+        setActiveCategory={setActiveCategory}
+        onOpenGuide={() => setIsGuideOpen(true)}
+      />
+
+      {/* Desktop Header (Hidden on Mobile) */}
+      <header className="hidden md:flex mb-2 justify-between items-center w-full max-w-4xl mx-auto pt-2">
         <div className="flex items-center gap-4">
           <button onClick={() => setMainMode('home')} className="hover:opacity-80 transition-opacity cursor-pointer">
             <Logo variant="full" className="scale-100" />
           </button>
 
           {/* Mode Toggle Switch */}
-          <div className="hidden md:flex bg-gray-100 dark:bg-gray-800 p-1 rounded-full items-center">
+          <div className="bg-gray-100 dark:bg-gray-800 p-1 rounded-full flex items-center">
             <button
               onClick={() => setAppMode('life')}
               className={cn(
@@ -106,21 +122,11 @@ export default function Home() {
             </button>
           </div>
 
-          <div className="hidden md:flex items-center text-sm font-medium text-muted-foreground border-l pl-4 h-4 leading-none">
+          <div className="flex items-center text-sm font-medium text-muted-foreground border-l pl-4 h-4 leading-none">
             {todayDate}
           </div>
         </div>
         <div className="flex items-center gap-2">
-          {/* Mobile Mode Toggle (Simplified) */}
-          <div className="md:hidden flex bg-gray-100 dark:bg-gray-800 p-1 rounded-full items-center mr-1">
-            <button
-              onClick={() => setAppMode(appMode === 'life' ? 'work' : 'life')}
-              className="p-1.5 rounded-full bg-white dark:bg-gray-700 shadow-sm"
-            >
-              {appMode === 'life' ? <Sparkles className="w-4 h-4 text-yellow-500" /> : <Briefcase className="w-4 h-4 text-blue-500" />}
-            </button>
-          </div>
-
           <Button variant="ghost" size="icon" onClick={() => setMainMode('home')} className={cn("rounded-full", mainMode === 'home' && "bg-gray-100 text-black")}>
             <HomeIcon className="w-5 h-5" />
           </Button>
@@ -132,8 +138,8 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Global Navigation Bar */}
-      <div className="w-full max-w-4xl mx-auto mb-6 flex items-center justify-between gap-4 z-50 relative">
+      {/* Global Navigation Bar (Hidden on Mobile) */}
+      <div className="hidden md:flex w-full max-w-4xl mx-auto mb-6 items-center justify-between gap-4 z-50 relative">
         <div className="flex-1 min-w-0">
           <MegaMenuNav
             activeCategory={activeCategory}
@@ -147,19 +153,19 @@ export default function Home() {
           />
         </div>
 
-        {/* Only show 'Work Management' direct link if in Life Mode or it's always available? 
-            Let's keep it but maybe highlight it differently in Work Mode.
-            Actually, in Work Mode, 'Projects' is key. */}
-        <Button
-          onClick={() => setMainMode('work')}
-          className={cn(
-            "rounded-full px-5 font-bold shadow-sm transition-all shrink-0",
-            mainMode === 'work' ? "bg-black text-white hover:bg-gray-800" : "bg-white text-black hover:bg-gray-100 border border-gray-200"
-          )}
-        >
-          <Briefcase className="w-4 h-4 mr-2" />
-          업무 관리
-        </Button>
+        {/* Only show 'Work Management' in Work Mode */}
+        {appMode === 'work' && (
+          <Button
+            onClick={() => setMainMode('work')}
+            className={cn(
+              "rounded-full px-5 font-bold shadow-sm transition-all shrink-0",
+              mainMode === 'work' ? "bg-black text-white hover:bg-gray-800" : "bg-white text-black hover:bg-gray-100 border border-gray-200"
+            )}
+          >
+            <Briefcase className="w-4 h-4 mr-2" />
+            업무 관리
+          </Button>
+        )}
       </div>
 
       {
