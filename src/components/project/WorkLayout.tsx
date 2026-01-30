@@ -25,6 +25,16 @@ import { Project } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Clock, Book, RotateCw, Target, Users, Link2, Zap, Music } from 'lucide-react'; // Added Music icon
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'; // Import Popover
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuGroup
+} from '@/components/ui/dropdown-menu';
+import { ChevronDown, Settings, BarChart2 } from 'lucide-react';
 
 type ViewMode = 'dashboard' | 'kanban' | 'timeline' | 'team' | 'resources' | 'automation' | 'analytics' | 'structure' | 'archive' | 'wiki' | 'okr';
 
@@ -130,64 +140,85 @@ export function WorkLayout() {
                     <div className="flex gap-2 bg-white p-1.5 rounded-full shadow-sm w-full md:w-fit border border-gray-100 overflow-x-auto no-scrollbar scroll-smooth">
                         <button
                             onClick={() => setViewMode('dashboard')}
-                            className={cn("flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all whitespace-nowrap", viewMode === 'dashboard' ? "bg-primary text-primary-foreground shadow-md" : "text-muted-foreground hover:bg-gray-50")}
+                            className={cn("flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap", viewMode === 'dashboard' ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-gray-100")}
                         >
                             <LayoutDashboard className="w-4 h-4" strokeWidth={1.5} /> 대시보드
                         </button>
                         <button
                             onClick={() => setViewMode('kanban')}
-                            className={cn("flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all whitespace-nowrap", viewMode === 'kanban' ? "bg-primary text-primary-foreground shadow-md" : "text-muted-foreground hover:bg-gray-50")}
+                            className={cn("flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap", viewMode === 'kanban' ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-gray-100")}
                         >
-                            <LayoutDashboard className="w-4 h-4" strokeWidth={1.5} /> 칸반 보드
+                            <LayoutDashboard className="w-4 h-4" strokeWidth={1.5} /> 칸반
                         </button>
                         <button
                             onClick={() => setViewMode('timeline')}
-                            className={cn("flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all whitespace-nowrap", viewMode === 'timeline' ? "bg-primary text-primary-foreground shadow-md" : "text-muted-foreground hover:bg-gray-50")}
+                            className={cn("flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap", viewMode === 'timeline' ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-gray-100")}
                         >
                             <GanttChartIcon className="w-4 h-4" strokeWidth={1.5} /> 타임라인
                         </button>
                         <button
                             onClick={() => setViewMode('okr')}
-                            className={cn("flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all whitespace-nowrap", viewMode === 'okr' ? "bg-primary text-primary-foreground shadow-md" : "text-muted-foreground hover:bg-gray-50")}
+                            className={cn("flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap", viewMode === 'okr' ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-gray-100")}
                         >
-                            <Target className="w-4 h-4" strokeWidth={1.5} /> 목표(OKR)
+                            <Target className="w-4 h-4" strokeWidth={1.5} /> 목표
                         </button>
-                        <button
-                            onClick={() => setViewMode('team')}
-                            className={cn("flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all whitespace-nowrap", viewMode === 'team' ? "bg-primary text-primary-foreground shadow-md" : "text-muted-foreground hover:bg-gray-50")}
-                        >
-                            <Users className="w-4 h-4" strokeWidth={1.5} /> 팀/멤버
-                        </button>
-                        <button
-                            onClick={() => setViewMode('resources')}
-                            className={cn("flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all whitespace-nowrap", viewMode === 'resources' ? "bg-primary text-primary-foreground shadow-md" : "text-muted-foreground hover:bg-gray-50")}
-                        >
-                            <Link2 className="w-4 h-4" strokeWidth={1.5} /> 리소스
-                        </button>
-                        <button
-                            onClick={() => setViewMode('automation')}
-                            className={cn("flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all whitespace-nowrap", viewMode === 'automation' ? "bg-primary text-primary-foreground shadow-md" : "text-muted-foreground hover:bg-gray-50")}
-                        >
-                            <Zap className="w-4 h-4" strokeWidth={1.5} /> 자동화
-                        </button>
-                        <button
-                            onClick={() => setViewMode('analytics')}
-                            className={cn("flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all whitespace-nowrap", viewMode === 'analytics' ? "bg-primary text-primary-foreground shadow-md" : "text-muted-foreground hover:bg-gray-50")}
-                        >
-                            <Clock className="w-4 h-4" strokeWidth={1.5} /> 분석
-                        </button>
-                        <button
-                            onClick={() => setViewMode('structure')}
-                            className={cn("flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all whitespace-nowrap", viewMode === 'structure' ? "bg-primary text-primary-foreground shadow-md" : "text-muted-foreground hover:bg-gray-50")}
-                        >
-                            <Network className="w-4 h-4" strokeWidth={1.5} /> 계층 구조
-                        </button>
-                        <button
-                            onClick={() => setViewMode('archive')}
-                            className={cn("flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all whitespace-nowrap", viewMode === 'archive' ? "bg-primary text-primary-foreground shadow-md" : "text-muted-foreground hover:bg-gray-50")}
-                        >
-                            <Archive className="w-4 h-4" strokeWidth={1.5} /> 아카이브
-                        </button>
+
+                        <div className="w-[1px] h-4 bg-gray-200 mx-1" />
+
+                        {/* Management Dropdown */}
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <button
+                                    className={cn(
+                                        "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap outline-none",
+                                        ['team', 'resources', 'structure', 'archive'].includes(viewMode) ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-gray-100"
+                                    )}
+                                >
+                                    <Settings className="w-4 h-4" strokeWidth={1.5} /> 관리 <ChevronDown className="w-3 h-3 opacity-50" />
+                                </button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="start" className="w-48">
+                                <DropdownMenuLabel>프로젝트 관리</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem onClick={() => setViewMode('team')} className="gap-2">
+                                    <Users className="w-4 h-4" /> 팀/멤버
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setViewMode('resources')} className="gap-2">
+                                    <Link2 className="w-4 h-4" /> 리소스
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setViewMode('structure')} className="gap-2">
+                                    <Network className="w-4 h-4" /> 구조 (WBS)
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem onClick={() => setViewMode('archive')} className="gap-2 text-muted-foreground">
+                                    <Archive className="w-4 h-4" /> 아카이브
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+
+                        {/* Tools/Analytics Dropdown */}
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <button
+                                    className={cn(
+                                        "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap outline-none",
+                                        ['automation', 'analytics'].includes(viewMode) ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-gray-100"
+                                    )}
+                                >
+                                    <BarChart2 className="w-4 h-4" strokeWidth={1.5} /> 도구 <ChevronDown className="w-3 h-3 opacity-50" />
+                                </button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="start" className="w-48">
+                                <DropdownMenuLabel>도구 및 분석</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem onClick={() => setViewMode('automation')} className="gap-2">
+                                    <Zap className="w-4 h-4" /> 자동화 규칙
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setViewMode('analytics')} className="gap-2">
+                                    <Clock className="w-4 h-4" /> 시간/진척도 분석
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
 
                         {/* Tools Divider & Buttons */}
                         <div className="w-[1px] h-6 bg-gray-200 mx-2" />
