@@ -75,7 +75,7 @@ export function ProjectTeam({ project }: ProjectTeamProps) {
                         프로젝트에 참여하는 모든 인원과 연락처를 관리하세요.
                     </p>
                 </div>
-                <Button onClick={() => setIsAddOpen(true)} className="gap-2 bg-indigo-600 hover:bg-indigo-700">
+                <Button onClick={() => setIsAddOpen(true)} className="gap-2 bg-indigo-100 text-indigo-700 hover:bg-indigo-200 border border-indigo-200/50 shadow-sm">
                     <Plus className="w-4 h-4" /> 팀원 추가
                 </Button>
             </div>

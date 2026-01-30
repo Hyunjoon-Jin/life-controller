@@ -168,7 +168,7 @@ export function GanttChart({ project }: GanttChartProps) {
                     >
                         월간
                     </Button>
-                    <Button size="sm" className="bg-primary hover:bg-primary/90" onClick={handleCreateTask}>
+                    <Button size="sm" className="bg-blue-100 text-blue-700 hover:bg-blue-200 border border-blue-200/50 shadow-sm" onClick={handleCreateTask}>
                         <Plus className="w-4 h-4 mr-1" /> 작업 추가
                     </Button>
                 </div>
