@@ -26,6 +26,25 @@ interface FoodSearchDialogProps {
     onSelect: (item: FoodItem) => void;
 }
 
+const POPULAR_FOODS: FoodItem[] = [
+    { name: '쌀밥 (공기밥)', brand: '일반', calories: 300, macros: { carbs: 65, protein: 6, fat: 0.5 }, servingSize: '1공기' },
+    { name: '현미밥', brand: '일반', calories: 290, macros: { carbs: 60, protein: 7, fat: 1 }, servingSize: '1공기' },
+    { name: '닭가슴살', brand: '일반', calories: 109, macros: { carbs: 0, protein: 23, fat: 1.2 }, servingSize: '100g' },
+    { name: '삶은 달걀', brand: '일반', calories: 77, macros: { carbs: 0.6, protein: 6.3, fat: 5.3 }, servingSize: '1개' },
+    { name: '단백질 쉐이크', brand: '보충제', calories: 120, macros: { carbs: 5, protein: 20, fat: 1 }, servingSize: '1스쿱' },
+    { name: '김치찌개', brand: '한식', calories: 250, macros: { carbs: 15, protein: 15, fat: 15 }, servingSize: '1인분' },
+    { name: '된장찌개', brand: '한식', calories: 180, macros: { carbs: 10, protein: 12, fat: 10 }, servingSize: '1인분' },
+    { name: '비빔밥', brand: '한식', calories: 550, macros: { carbs: 80, protein: 15, fat: 15 }, servingSize: '1인분' },
+    { name: '김밥', brand: '분식', calories: 350, macros: { carbs: 50, protein: 10, fat: 10 }, servingSize: '1줄' },
+    { name: '라면', brand: '분식', calories: 500, macros: { carbs: 75, protein: 10, fat: 16 }, servingSize: '1개' },
+    { name: '떡볶이', brand: '분식', calories: 600, macros: { carbs: 100, protein: 10, fat: 10 }, servingSize: '1인분' },
+    { name: '제육볶음', brand: '한식', calories: 400, macros: { carbs: 15, protein: 25, fat: 25 }, servingSize: '1인분' },
+    { name: '삼겹살', brand: '구이', calories: 660, macros: { carbs: 0, protein: 20, fat: 60 }, servingSize: '200g' },
+    { name: '아메리카노', brand: '카페', calories: 5, macros: { carbs: 1, protein: 0, fat: 0 }, servingSize: '1잔' },
+    { name: '바나나', brand: '과일', calories: 90, macros: { carbs: 23, protein: 1, fat: 0.3 }, servingSize: '1개' },
+    { name: '사과', brand: '과일', calories: 52, macros: { carbs: 14, protein: 0.3, fat: 0.2 }, servingSize: '100g' },
+];
+
 export function FoodSearchDialog({ open, onOpenChange, onSelect }: FoodSearchDialogProps) {
     const [query, setQuery] = useState('');
     const [results, setResults] = useState<FoodItem[]>([]);
@@ -128,9 +147,35 @@ export function FoodSearchDialog({ open, onOpenChange, onSelect }: FoodSearchDia
                     )}
 
                     {!searched && (
-                        <div className="h-full flex flex-col items-center justify-center text-muted-foreground opacity-40">
-                            <Search className="w-12 h-12 mb-3" />
-                            <p>메뉴를 검색해보세요</p>
+                        <div className="bg-slate-50/50 pb-4">
+                            <div className="p-3 text-xs font-bold text-muted-foreground flex items-center gap-1">
+                                <Utensils className="w-3 h-3" /> 추천 / 인기 메뉴
+                            </div>
+                            <div className="grid gap-2 px-1">
+                                {POPULAR_FOODS.filter(f => !query || f.name.includes(query)).map((item, idx) => (
+                                    <div
+                                        key={`pop-${idx}`}
+                                        className="flex items-center gap-3 p-3 bg-white rounded-lg border hover:border-primary/50 hover:shadow-sm transition-all cursor-pointer group"
+                                        onClick={() => onSelect(item)}
+                                    >
+                                        <div className="w-12 h-12 shrink-0 bg-orange-50 rounded-md flex items-center justify-center text-orange-400 font-bold text-xs border border-orange-100">
+                                            {item.name[0]}
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <h4 className="font-bold text-sm truncate">{item.name}</h4>
+                                            <div className="flex gap-2 mt-1 text-[10px] text-slate-500">
+                                                <span className="font-bold text-orange-600">{Math.round(item.calories)} kcal</span>
+                                                <span>탄 {Math.round(item.macros.carbs)}</span>
+                                                <span>단 {Math.round(item.macros.protein)}</span>
+                                                <span>지 {Math.round(item.macros.fat)}</span>
+                                            </div>
+                                        </div>
+                                        <Button size="icon" variant="ghost" className="opacity-0 group-hover:opacity-100 shrink-0 text-primary h-8 w-8">
+                                            <Plus className="w-4 h-4" />
+                                        </Button>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     )}
                 </div>

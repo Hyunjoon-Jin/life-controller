@@ -54,7 +54,7 @@ export default function RegisterPage() {
         <div className="flex min-h-screen items-center justify-center bg-[#f5f6f7] p-4 text-[#333]">
             <div className="w-full max-w-[460px] space-y-4">
                 <div className="text-center mb-8">
-                    <h1 className="text-4xl font-black text-[#03c75a] tracking-tighter">NAVER</h1>
+                    <h1 className="text-3xl font-serif font-bold text-slate-800 tracking-widest uppercase">Life Controller</h1>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-4">

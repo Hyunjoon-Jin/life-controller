@@ -493,7 +493,7 @@ export function DayView({ currentDate, showProjectTasks }: { currentDate: Date; 
                         {hours.map((hour) => (
                             <div
                                 key={hour}
-                                className="border-b border-border/[0.03] flex w-full relative group transition-[height] duration-200 ease-out"
+                                className="flex w-full relative group transition-[height] duration-200 ease-out"
                                 style={{ height: pixelsPerHour }}
                             >
                                 {/* Time Label */}
@@ -505,7 +505,7 @@ export function DayView({ currentDate, showProjectTasks }: { currentDate: Date; 
                                 <div className="w-16 flex-shrink-0 border-r border-border/[0.03] bg-muted/10"></div>
 
                                 {/* Clickable Content Area - 4 slots for 15 min intervals */}
-                                <div className="flex-1 flex flex-col h-full relative">
+                                <div className="flex-1 flex flex-col h-full relative border-b border-border/[0.03]">
                                     {[0, 15, 30, 45].map((minute) => (
                                         <div
                                             key={minute}

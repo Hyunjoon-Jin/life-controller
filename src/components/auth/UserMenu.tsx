@@ -15,6 +15,7 @@ import { User, LogOut, Settings, CreditCard, Chrome } from 'lucide-react';
 import { useData } from "@/context/DataProvider";
 import { useEffect } from "react";
 import { ProfileModal } from "./ProfileModal";
+import { SettingsModal } from "./SettingsModal";
 
 export function UserMenu() {
     const { data: session } = useSession();
@@ -80,10 +81,12 @@ export function UserMenu() {
                     <CreditCard className="mr-2 h-4 w-4" />
                     <span>결제 관리</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>설정</span>
-                </DropdownMenuItem>
+                <SettingsModal>
+                    <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        <Settings className="mr-2 h-4 w-4" />
+                        <span>설정</span>
+                    </DropdownMenuItem>
+                </SettingsModal>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => {
                     // Force clear local storage and sign out
