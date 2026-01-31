@@ -19,8 +19,7 @@ export const getEventStyle = (event: CalendarEvent, pixelsPerHour: number) => {
 
     return {
         top: `${top}px`,
-        height: `${height}px`,
-        minHeight: '20px'
+        height: `${height}px`
     };
 };
 

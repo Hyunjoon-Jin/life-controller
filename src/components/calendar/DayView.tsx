@@ -419,12 +419,12 @@ export function DayView({ currentDate, showProjectTasks }: { currentDate: Date; 
 
 
     return (
-        <div className="flex flex-col h-full bg-white rounded-3xl border border-transparent shadow-sm overflow-hidden relative select-none">
+        <div className="flex flex-col h-full bg-white dark:bg-[#1C1C1E] rounded-3xl border border-transparent dark:border-gray-800 shadow-sm overflow-hidden relative select-none">
             {/* Header */}
-            <div className="p-4 border-b border-border/[0.05] flex items-center justify-between bg-gray-50/50">
+            <div className="p-4 border-b border-border/[0.05] dark:border-gray-800 flex items-center justify-between bg-gray-50/50 dark:bg-gray-900/50">
                 <div className="flex items-center gap-3">
-                    <div className="text-4xl font-extrabold tracking-tight text-gray-900">{format(currentDate, 'd')}</div>
-                    <div className="text-xl font-bold text-gray-500 pt-1">{format(currentDate, 'EEEE', { locale: ko })}</div>
+                    <div className="text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white">{format(currentDate, 'd')}</div>
+                    <div className="text-xl font-bold text-gray-500 dark:text-gray-400 pt-1">{format(currentDate, 'EEEE', { locale: ko })}</div>
                 </div>
 
                 <div className="flex items-center gap-4">

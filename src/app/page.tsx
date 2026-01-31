@@ -23,7 +23,7 @@ import { InBodyLog } from '@/components/growth/InBodyLog';
 import { HobbyLog } from '@/components/growth/HobbyLog';
 import { MegaMenuNav } from '@/components/layout/MegaMenu';
 import { MobileHeader } from '@/components/layout/MobileHeader'; // Added
-import { SUB_MENUS } from '@/constants/menu';
+import { CATEGORIES, SUB_MENUS, CategoryType } from '@/constants/menu';
 import { TabHeader } from '@/components/layout/TabHeader';
 
 import { CertificateManager } from '@/components/growth/CertificateManager';
@@ -68,7 +68,7 @@ export default function Home() {
     }
   }, [appMode, activeCategory, mainMode]);
 
-  const handleQuickLink = (mode: 'home' | 'schedule' | 'work', category: 'basic' | 'growth' | 'record' | 'finance', tab: string) => {
+  const handleQuickLink = (mode: 'home' | 'schedule' | 'work', category: CategoryType, tab: string) => {
     setMainMode(mode);
     if (mode === 'schedule') {
       setActiveCategory(category);
@@ -307,6 +307,7 @@ export default function Home() {
         isOpen={isGuideOpen}
         onOpenChange={setIsGuideOpen}
         initialCategory={activeCategory || 'basic'}
+        onNavigate={(cat, tab) => handleQuickLink('schedule', cat, tab)}
       />
     </main >
   );

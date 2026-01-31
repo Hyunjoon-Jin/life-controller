@@ -16,9 +16,10 @@ interface GuideModalProps {
     isOpen: boolean;
     onOpenChange: (open: boolean) => void;
     initialCategory?: CategoryType;
+    onNavigate?: (category: CategoryType, tab: string) => void;
 }
 
-export function GuideModal({ isOpen, onOpenChange, initialCategory = 'basic' }: GuideModalProps) {
+export function GuideModal({ isOpen, onOpenChange, initialCategory = 'basic', onNavigate }: GuideModalProps) {
     const [activeCategory, setActiveCategory] = useState<CategoryType>(initialCategory);
 
     // Sync active category when modal opens or initialCategory changes
@@ -105,7 +106,16 @@ export function GuideModal({ isOpen, onOpenChange, initialCategory = 'basic' }: 
                         <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
                             <div className="grid gap-6">
                                 {SUB_MENUS[activeCategory].map(item => (
-                                    <div key={item.id} className="bg-slate-50 dark:bg-[#2C2C2E] p-6 rounded-3xl border border-slate-100 dark:border-white/5 hover:border-blue-200 dark:hover:border-blue-900/30 transition-colors group">
+                                    <div
+                                        key={item.id}
+                                        onClick={() => {
+                                            if (onNavigate) {
+                                                onNavigate(activeCategory, item.id);
+                                                onOpenChange(false);
+                                            }
+                                        }}
+                                        className="bg-slate-50 dark:bg-[#2C2C2E] p-6 rounded-3xl border border-slate-100 dark:border-white/5 hover:border-blue-200 dark:hover:border-blue-900/30 transition-colors group cursor-pointer"
+                                    >
                                         <div className="flex items-start gap-4">
                                             <div className="w-12 h-12 rounded-2xl bg-white dark:bg-black flex items-center justify-center shrink-0 shadow-sm text-blue-500 dark:text-blue-400 group-hover:scale-110 transition-transform">
                                                 <item.icon className="w-6 h-6" />

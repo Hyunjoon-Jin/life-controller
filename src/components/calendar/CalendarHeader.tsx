@@ -29,17 +29,17 @@ export function CalendarHeader({ currentDate, view, setView, onNext, onPrev, onT
     };
 
     return (
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between p-4 bg-white rounded-3xl mb-4 shadow-sm border border-transparent gap-4">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between p-4 bg-white dark:bg-[#1C1C1E] rounded-3xl mb-4 shadow-sm border border-gray-100 dark:border-gray-800 gap-4">
             <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" onClick={onToday} className="rounded-xl border-border">오늘</Button>
-                <div className="flex items-center rounded-xl border border-border bg-transparent p-0.5">
-                    <Button variant="ghost" size="icon" onClick={onPrev} className="h-8 w-8 rounded-lg hover:bg-muted">
+                <Button variant="outline" size="sm" onClick={onToday} className="rounded-xl border-border dark:border-gray-700 dark:text-gray-200">오늘</Button>
+                <div className="flex items-center rounded-xl border border-border dark:border-gray-700 bg-transparent p-0.5">
+                    <Button variant="ghost" size="icon" onClick={onPrev} className="h-8 w-8 rounded-lg hover:bg-muted dark:text-gray-200">
                         <ChevronLeft className="h-4 w-4" strokeWidth={1.5} />
                     </Button>
-                    <div className="mx-2 font-extrabold text-lg min-w-[140px] text-center text-foreground">
+                    <div className="mx-2 font-extrabold text-lg min-w-[140px] text-center text-foreground dark:text-white">
                         {renderTitle()}
                     </div>
-                    <Button variant="ghost" size="icon" onClick={onNext} className="h-8 w-8 rounded-lg hover:bg-muted">
+                    <Button variant="ghost" size="icon" onClick={onNext} className="h-8 w-8 rounded-lg hover:bg-muted dark:text-gray-200">
                         <ChevronRight className="h-4 w-4" strokeWidth={1.5} />
                     </Button>
                 </div>

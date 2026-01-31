@@ -54,10 +54,15 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
             if (!e.start) return false;
             const start = new Date(e.start);
             if (!isValid(start)) return false;
+
+            const now = currentTime || new Date();
             const today = new Date();
-            return start.getDate() === today.getDate() &&
+
+            const isToday = start.getDate() === today.getDate() &&
                 start.getMonth() === today.getMonth() &&
                 start.getFullYear() === today.getFullYear();
+
+            return isToday && start > now;
         })
         .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
 

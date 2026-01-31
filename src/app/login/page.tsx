@@ -99,7 +99,7 @@ export default function LoginPage() {
                                     id="email"
                                     type="text"
                                     required
-                                    placeholder="아이디 또는 전화번호"
+                                    placeholder="아이디 또는 이메일"
                                     value={formData.email}
                                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                     className="border-0 focus-visible:ring-0 shadow-none h-[48px] px-4 text-base placeholder:text-[#aaa]"
@@ -255,8 +255,8 @@ export default function LoginPage() {
                     <Link href="/register" className="hover:underline">회원가입</Link>
                 </div>
 
-                <div className="mt-8 text-center text-xs text-[#8e8e8e] font-sans">
-                    <span className="font-bold">NAVER Corp.</span>
+                <div className="mt-8 text-center text-xs text-[#8e8e8e] font-serif tracking-widest uppercase">
+                    <span className="font-bold">Life Controller</span>
                 </div>
             </div>
         </div>
