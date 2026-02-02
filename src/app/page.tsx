@@ -22,7 +22,8 @@ import { DietLog } from '@/components/growth/DietLog';
 import { InBodyLog } from '@/components/growth/InBodyLog';
 import { HobbyLog } from '@/components/growth/HobbyLog';
 import { MegaMenuNav } from '@/components/layout/MegaMenu';
-import { MobileHeader } from '@/components/layout/MobileHeader'; // Added
+import { MobileHeader } from '@/components/layout/MobileHeader';
+import { CloudSyncStatus } from '@/components/layout/CloudSyncStatus'; // Added
 import { CATEGORIES, SUB_MENUS, CategoryType } from '@/constants/menu';
 import { TabHeader } from '@/components/layout/TabHeader';
 
@@ -133,6 +134,7 @@ export default function Home() {
           <Button variant="ghost" size="icon" onClick={() => setIsGuideOpen(true)} className="text-muted-foreground rounded-full">
             <HelpCircle className="w-5 h-5" />
           </Button>
+          <CloudSyncStatus />
           <ThemeToggle />
           <UserMenu />
         </div>

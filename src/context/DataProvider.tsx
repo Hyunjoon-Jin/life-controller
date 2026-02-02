@@ -141,7 +141,11 @@ interface DataContextType {
     addCareer: (career: Career) => void;
     updateCareer: (career: Career) => void;
     deleteCareer: (id: string) => void;
+    // Sync
+    isSyncing: boolean;
+    forceSync: () => Promise<void>;
 }
+
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
@@ -204,10 +208,13 @@ export function DataProvider({ children }: { children: ReactNode }) {
     // Cloud Sync Integration
     const { saveData, loadData, isSyncing } = useCloudSync();
     const { data: session } = useSession();
+    const [isLoadedFromCloud, setIsLoadedFromCloud] = useState(false);
+
 
     // 1. Load data from cloud on login
     useEffect(() => {
         if (session?.user) {
+            setIsLoadedFromCloud(false); // Reset on login
             loadData().then(data => {
                 if (data) {
                     // Update all states from cloud data
@@ -218,15 +225,34 @@ export function DataProvider({ children }: { children: ReactNode }) {
                     if (data.habits) setHabits(data.habits);
                     if (data.events) setEvents(data.events);
                     if (data.userProfile) setUserProfile(data.userProfile);
-                    // ... load other states (omitted for brevity, but ideally should map all)
+                    // Load other states
+                    if (data.journals) setJournals(data.journals);
+                    if (data.memos) setMemos(data.memos);
+                    if (data.people) setPeople(data.people);
+                    if (data.scraps) setScraps(data.scraps);
+                    if (data.languageEntries) setLanguageEntries(data.languageEntries);
+                    if (data.books) setBooks(data.books);
+                    if (data.exerciseSessions) setExerciseSessions(data.exerciseSessions);
+                    if (data.dietEntries) setDietEntries(data.dietEntries);
+                    if (data.inBodyEntries) setInBodyEntries(data.inBodyEntries);
+                    if (data.hobbyEntries) setHobbyEntries(data.hobbyEntries);
+                    if (data.transactions) setTransactions(data.transactions);
+                    if (data.assets) setAssets(data.assets);
+                    if (data.certificates) setCertificates(data.certificates);
+                    if (data.portfolios) setPortfolios(data.portfolios);
+                    if (data.archiveDocuments) setArchiveDocuments(data.archiveDocuments);
+                    if (data.educations) setEducations(data.educations);
+                    if (data.careers) setCareers(data.careers);
                 }
+                setIsLoadedFromCloud(true);
             });
         }
     }, [session?.user?.email, loadData]);
 
+
     // 2. Save data to cloud on change
     useEffect(() => {
-        if (session?.user) {
+        if (session?.user && isLoadedFromCloud) {
             saveData({
                 tasks, projects, goals, habits, events, journals, memos, people, scraps,
                 languageEntries, books, exerciseSessions, dietEntries, inBodyEntries, hobbyEntries,
@@ -234,7 +260,25 @@ export function DataProvider({ children }: { children: ReactNode }) {
                 userProfile, educations, careers
             });
         }
-    }, []); // Disabled auto-save loop to prevent crash
+    }, [
+        session?.user, isLoadedFromCloud, saveData,
+        tasks, projects, goals, habits, events, journals, memos, people, scraps,
+        languageEntries, books, exerciseSessions, dietEntries, inBodyEntries, hobbyEntries,
+        transactions, assets, certificates, portfolios, archiveDocuments,
+        userProfile, educations, careers
+    ]);
+
+    const forceSync = async () => {
+        if (session?.user) {
+            await saveData({
+                tasks, projects, goals, habits, events, journals, memos, people, scraps,
+                languageEntries, books, exerciseSessions, dietEntries, inBodyEntries, hobbyEntries,
+                transactions, assets, certificates, portfolios, archiveDocuments,
+                userProfile, educations, careers
+            });
+        }
+    };
+
 
     // ... (Existing handlers)
 
@@ -451,7 +495,10 @@ export function DataProvider({ children }: { children: ReactNode }) {
             addCareer,
             updateCareer,
             deleteCareer,
+            isSyncing,
+            forceSync,
         }}>
+
             {children}
         </DataContext.Provider>
     );
