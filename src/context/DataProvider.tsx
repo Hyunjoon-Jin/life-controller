@@ -5,7 +5,8 @@ import {
     Task, Project, Goal, Habit, CalendarEvent, JournalEntry, Memo, Person, Scrap,
     LanguageEntry, Book, ExerciseSession, DietEntry, InBodyEntry, HobbyEntry,
     Transaction, Asset, Certificate, PortfolioItem, ArchiveDocument,
-    UserProfile, Education, Career, BodyCompositionGoal, LanguageResource
+    UserProfile, Education, Career, BodyCompositionGoal, LanguageResource,
+    Hobby, HobbyPost // New Hobby Types
 } from '@/types';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useCloudSync } from '@/hooks/useCloudSync';
@@ -116,6 +117,19 @@ interface DataContextType {
     updateHobbyEntry: (entry: HobbyEntry) => void;
     deleteHobbyEntry: (id: string) => void;
 
+    // New Hobby Revamp
+    hobbies: Hobby[];
+    setHobbies: (hobbies: Hobby[]) => void;
+    addHobby: (hobby: Hobby) => void;
+    updateHobby: (hobby: Hobby) => void;
+    deleteHobby: (id: string) => void;
+
+    hobbyPosts: HobbyPost[];
+    setHobbyPosts: (posts: HobbyPost[]) => void;
+    addHobbyPost: (post: HobbyPost) => void;
+    updateHobbyPost: (post: HobbyPost) => void;
+    deleteHobbyPost: (id: string) => void;
+
     // Finance
     transactions: Transaction[];
     setTransactions: (transactions: Transaction[]) => void;
@@ -195,6 +209,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
     const [dietEntries, setDietEntries] = useLocalStorage<DietEntry[]>('dietEntries', []);
     const [inBodyEntries, setInBodyEntries] = useLocalStorage<InBodyEntry[]>('inbodyEntries', []);
     const [hobbyEntries, setHobbyEntries] = useLocalStorage<HobbyEntry[]>('hobbyEntries', []);
+    const [hobbies, setHobbies] = useLocalStorage<Hobby[]>('hobbies', []);
+    const [hobbyPosts, setHobbyPosts] = useLocalStorage<HobbyPost[]>('hobbyPosts', []);
 
     // Finance States
     const [transactions, setTransactions] = useLocalStorage<Transaction[]>('transactions', []);
@@ -251,6 +267,10 @@ export function DataProvider({ children }: { children: ReactNode }) {
                     if (data.dietEntries) setDietEntries(data.dietEntries);
                     if (data.inBodyEntries) setInBodyEntries(data.inBodyEntries);
                     if (data.hobbyEntries) setHobbyEntries(data.hobbyEntries);
+
+                    // Hobby Revamp
+                    if (data.hobbies) setHobbies(data.hobbies);
+                    if (data.hobbyPosts) setHobbyPosts(data.hobbyPosts);
                     if (data.transactions) setTransactions(data.transactions);
                     if (data.assets) setAssets(data.assets);
                     if (data.certificates) setCertificates(data.certificates);
@@ -271,6 +291,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
             saveData({
                 tasks, projects, goals, habits, events, journals, memos, people, scraps,
                 languageEntries, languageResources, books, exerciseSessions, dietEntries, inBodyEntries, hobbyEntries,
+                hobbies, hobbyPosts,
                 transactions, assets, certificates, portfolios, archiveDocuments,
                 userProfile, educations, careers, bodyCompositionGoal
             });
@@ -279,6 +300,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         session?.user, isLoadedFromCloud, saveData,
         tasks, projects, goals, habits, events, journals, memos, people, scraps,
         languageEntries, languageResources, books, exerciseSessions, dietEntries, inBodyEntries, hobbyEntries,
+        hobbies, hobbyPosts,
         transactions, assets, certificates, portfolios, archiveDocuments,
         userProfile, educations, careers, bodyCompositionGoal
     ]);
@@ -288,6 +310,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
             await saveData({
                 tasks, projects, goals, habits, events, journals, memos, people, scraps,
                 languageEntries, languageResources, books, exerciseSessions, dietEntries, inBodyEntries, hobbyEntries,
+                hobbies, hobbyPosts,
                 transactions, assets, certificates, portfolios, archiveDocuments,
                 userProfile, educations, careers, bodyCompositionGoal
             });
@@ -387,6 +410,20 @@ export function DataProvider({ children }: { children: ReactNode }) {
     const updateHobbyEntry = (updatedEntry: HobbyEntry) => setHobbyEntries(hobbyEntries.map(e => e.id === updatedEntry.id ? updatedEntry : e));
     const deleteHobbyEntry = (id: string) => setHobbyEntries(hobbyEntries.filter(e => e.id !== id));
 
+    // New Hobby Functions
+    const addHobby = (hobby: Hobby) => setHobbies([...hobbies, hobby]);
+    const updateHobby = (updatedHobby: Hobby) => setHobbies(hobbies.map(h => h.id === updatedHobby.id ? updatedHobby : h));
+    const deleteHobby = (id: string) => {
+        setHobbies(hobbies.filter(h => h.id !== id));
+        // Also delete posts? Maybe, or keep them orphaned? Let's keep them logic simple for now.
+        // Or filter posts that belong to this hobby? user might want to keep data. 
+        // Let's just delete the hobby container for now.
+    };
+
+    const addHobbyPost = (post: HobbyPost) => setHobbyPosts([...hobbyPosts, post]);
+    const updateHobbyPost = (updatedPost: HobbyPost) => setHobbyPosts(hobbyPosts.map(p => p.id === updatedPost.id ? updatedPost : p));
+    const deleteHobbyPost = (id: string) => setHobbyPosts(hobbyPosts.filter(p => p.id !== id));
+
     const addTransaction = (transaction: Transaction) => setTransactions([...transactions, transaction]);
     const updateTransaction = (updatedTransaction: Transaction) => setTransactions(transactions.map(t => t.id === updatedTransaction.id ? updatedTransaction : t));
     const deleteTransaction = (id: string) => setTransactions(transactions.filter(t => t.id !== id));
@@ -485,6 +522,11 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
             dietEntries, setDietEntries, addDietEntry, updateDietEntry, deleteDietEntry,
             inBodyEntries, setInBodyEntries, addInBodyEntry, updateInBodyEntry, deleteInBodyEntry,
+
+            // Hobby Revamp
+            hobbies, setHobbies, addHobby, updateHobby, deleteHobby,
+            hobbyPosts, setHobbyPosts, addHobbyPost, updateHobbyPost, deleteHobbyPost,
+            // Deprecated but kept for compatibility during migration
             hobbyEntries, setHobbyEntries, addHobbyEntry, updateHobbyEntry, deleteHobbyEntry,
 
             // Finance

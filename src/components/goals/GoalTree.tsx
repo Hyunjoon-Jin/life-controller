@@ -296,7 +296,7 @@ export function GoalTree() {
                     </div>
                     <div className="flex gap-2">
                         <Select value={filterCategory} onValueChange={(v) => setFilterCategory(v as any)}>
-                            <SelectTrigger className="w-[120px] h-9 text-xs">
+                            <SelectTrigger className="w-[120px] h-9 text-xs bg-background">
                                 <SelectValue placeholder="카테고리" />
                             </SelectTrigger>
                             <SelectContent>
@@ -312,7 +312,7 @@ export function GoalTree() {
                         </Select>
 
                         <Select value={filterPlanType} onValueChange={(v) => setFilterPlanType(v as any)}>
-                            <SelectTrigger className="w-[120px] h-9 text-xs">
+                            <SelectTrigger className="w-[120px] h-9 text-xs bg-background">
                                 <SelectValue placeholder="유형" />
                             </SelectTrigger>
                             <SelectContent>
@@ -379,7 +379,7 @@ export function GoalTree() {
                                     <Tag className="w-3 h-3" /> 목표 분류
                                 </Label>
                                 <Select value={newGoalCategory} onValueChange={(v) => setNewGoalCategory(v as any)}>
-                                    <SelectTrigger>
+                                    <SelectTrigger className="w-full">
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -398,7 +398,7 @@ export function GoalTree() {
                                     <Calendar className="w-3 h-3" /> 계획 유형
                                 </Label>
                                 <Select value={newPlanType} onValueChange={(v) => setNewPlanType(v as any)}>
-                                    <SelectTrigger>
+                                    <SelectTrigger className="w-full">
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>

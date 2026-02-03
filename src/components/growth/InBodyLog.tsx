@@ -9,8 +9,9 @@ import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Card, CardContent } from '@/components/ui/card';
 import { format, differenceInDays } from 'date-fns';
-import { Plus, Trash2, Scale, Activity, TrendingUp, Ruler, Zap, Heart, Target, Calendar as CalendarIcon, ArrowRight } from 'lucide-react';
+import { Plus, Trash2, Scale, Activity, TrendingUp, Ruler, Zap, Heart, Target, Calendar as CalendarIcon, ArrowRight, Camera, ScanLine, Loader2 } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { createWorker } from 'tesseract.js';
 
 export function InBodyLog() {
     const { inBodyEntries, addInBodyEntry, deleteInBodyEntry, bodyCompositionGoal, setBodyCompositionGoal } = useData();
@@ -28,12 +29,84 @@ export function InBodyLog() {
     const [bmr, setBmr] = useState('');
     const [visceralFat, setVisceralFat] = useState('');
     const [memo, setMemo] = useState('');
+    const [isScanning, setIsScanning] = useState(false);
 
     // Goal Form State
     const [goalDate, setGoalDate] = useState<Date>(new Date());
     const [goalWeight, setGoalWeight] = useState('');
     const [goalMuscle, setGoalMuscle] = useState('');
     const [goalFatPercent, setGoalFatPercent] = useState('');
+
+    const handleOCR = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setIsScanning(true);
+        try {
+            const worker = await createWorker('kor');
+            const { data: { text } } = await worker.recognize(file);
+            console.log("OCR Result:", text);
+
+            // Simple Regex Parsing (Can be improved based on actual InBody formats)
+            // Weight
+            const weightMatch = text.match(/(체중|Weight)\s*[:]?\s*([\d.]+)/i) || text.match(/([\d.]+)\s*(kg|Kg)\s*(체중)/); // Pattern varies
+            // Let's try to find numbers near keywords.
+            // Helper to find value next to keyword
+            const findValue = (keywords: string[]) => {
+                const lines = text.split('\n');
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i];
+                    if (keywords.some(k => line.includes(k))) {
+                        // Look in this line or next few
+                        const context = [line, lines[i + 1], lines[i + 2]].join(' ');
+                        const numbers = context.match(/[\d.]+/g);
+                        if (numbers) {
+                            // Find the number that looks like a value (not date or crazy high)
+                            // This is heuristic.
+                            // For now, let's use a simpler approach: regex on full text
+                        }
+                    }
+                }
+                return null;
+            };
+
+            // Improved Regex for standard InBody Sheet
+            // Often: "체중 70.5" or "Weight 70.5 kg"
+            // Use broader match: Keyword... (Number)
+            const parse = (patterns: RegExp[]) => {
+                for (let p of patterns) {
+                    const m = text.match(p);
+                    if (m && m[1]) return m[1];
+                    if (m && m[2]) return m[2]; // specific group
+                }
+                return '';
+            };
+
+            const w = parse([/(?:체중|Weight)\s*([\d.]+)/i, /([\d.]+)\s*(?:kg)?\s*(?:체중)/]);
+            const m = parse([/(?:골격근량|Skeletal Muscle Mass)\s*([\d.]+)/i]);
+            const f = parse([/(?:체지방량|Body Fat Mass)\s*([\d.]+)/i]); // Fat Mass
+            const p = parse([/(?:체지방률|Percent Body Fat)\s*([\d.]+)/i]); // Percent
+            const b = parse([/(?:BMI|Body Mass Index)\s*([\d.]+)/i]);
+            const meta = parse([/(?:기초대사량|Basal Metabolic Rate)\s*([\d]+)/i]);
+            const v = parse([/(?:내장지방레벨|Visceral Fat Level)\s*([\d]+)/i]);
+
+            if (w) setWeight(w);
+            if (m) setSkeletalMuscle(m);
+            if (f) setBodyFat(f);
+            if (p) setBodyFatPercent(p);
+            if (b) setBmi(b);
+            if (meta) setBmr(meta);
+            if (v) setVisceralFat(v);
+
+            alert('이미지에서 데이터를 읽어왔습니다. 정확한지 확인해주세요!');
+            await worker.terminate();
+        } catch (error) {
+            console.error(error);
+            alert('OCR 스캔에 실패했습니다. 다시 시도하거나 직접 입력해주세요.');
+        } finally {
+            setIsScanning(false);
+        }
+    };
 
     const sortedEntries = (inBodyEntries || []).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
     const latestEntry = sortedEntries[sortedEntries.length - 1];
@@ -439,11 +512,34 @@ export function InBodyLog() {
                     <div className="grid gap-4 py-4">
                         <div className="grid gap-2">
                             <Label>측정 날짜</Label>
-                            <Input
-                                type="datetime-local"
-                                value={format(date, "yyyy-MM-dd'T'HH:mm")}
-                                onChange={(e) => setDate(new Date(e.target.value))}
-                            />
+                            <div className="flex gap-2">
+                                <Input
+                                    type="datetime-local"
+                                    value={format(date, "yyyy-MM-dd'T'HH:mm")}
+                                    onChange={(e) => setDate(new Date(e.target.value))}
+                                    className="flex-1"
+                                />
+                                <div className="relative">
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        id="ocr-upload"
+                                        className="hidden"
+                                        onChange={handleOCR}
+                                        disabled={isScanning}
+                                    />
+                                    <Label
+                                        htmlFor="ocr-upload"
+                                        className={cn(
+                                            "flex items-center gap-2 h-10 px-4 rounded-md border text-sm font-medium cursor-pointer transition-colors hover:bg-muted",
+                                            isScanning ? "opacity-50 cursor-not-allowed" : "bg-white"
+                                        )}
+                                    >
+                                        {isScanning ? <Loader2 className="w-4 h-4 animate-spin text-primary" /> : <ScanLine className="w-4 h-4 text-primary" />}
+                                        {isScanning ? '스캔 중...' : 'InBody 스캔'}
+                                    </Label>
+                                </div>
+                            </div>
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">

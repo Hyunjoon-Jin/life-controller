@@ -187,25 +187,25 @@ export function DietLog() {
 
     return (
         <div className="h-full flex flex-col p-6 overflow-hidden">
-            <div className="flex items-center justify-between mb-4 shrink-0">
-                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                    <TabsList className="grid w-full grid-cols-2 h-12 bg-muted/20 p-1 rounded-xl mb-6">
+            <div className="flex items-center justify-between mb-4 shrink-0 gap-4">
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-auto">
+                    <TabsList className="grid w-[240px] grid-cols-2 h-10 bg-muted/20 p-1 rounded-lg">
                         <TabsTrigger
                             value="log"
-                            className="h-full data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-md text-muted-foreground font-bold rounded-lg transition-all gap-2 text-sm sm:text-base"
+                            className="h-full data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm text-muted-foreground font-bold rounded-md transition-all gap-2 text-xs"
                         >
-                            <Utensils className="w-4 h-4" /> 식단 기록
+                            <Utensils className="w-3.5 h-3.5" /> 식단 기록
                         </TabsTrigger>
                         <TabsTrigger
                             value="analysis"
-                            className="h-full data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-md text-muted-foreground font-bold rounded-lg transition-all gap-2 text-sm sm:text-base"
+                            className="h-full data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm text-muted-foreground font-bold rounded-md transition-all gap-2 text-xs"
                         >
-                            <Activity className="w-4 h-4" /> 상세 분석
+                            <Activity className="w-3.5 h-3.5" /> 상세 분석
                         </TabsTrigger>
                     </TabsList>
                 </Tabs>
-                <Button onClick={() => { resetForm(); setIsDialogOpen(true); }} className="bg-primary hover:bg-primary/90">
-                    <Plus className="w-4 h-4 mr-2" /> 식사 기록하기
+                <Button onClick={() => { resetForm(); setIsDialogOpen(true); }} size="sm" className="bg-primary hover:bg-primary/90 h-9 text-xs px-4">
+                    <Plus className="w-3.5 h-3.5 mr-1.5" /> 식사 기록하기
                 </Button>
             </div>
 
@@ -358,10 +358,10 @@ export function DietLog() {
                                     className="flex-[2]"
                                 />
                                 <Select value={mealType} onValueChange={(v) => setMealType(v as any)}>
-                                    <SelectTrigger className="w-[100px]">
+                                    <SelectTrigger className="w-[100px] bg-background">
                                         <SelectValue />
                                     </SelectTrigger>
-                                    <SelectContent>
+                                    <SelectContent className="z-[9999]">
                                         <SelectItem value="breakfast">아침</SelectItem>
                                         <SelectItem value="lunch">점심</SelectItem>
                                         <SelectItem value="dinner">저녁</SelectItem>

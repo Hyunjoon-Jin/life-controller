@@ -308,18 +308,38 @@ export type InBodyEntry = {
     memo?: string;
 };
 
+// New Hobby System
+export type Hobby = {
+    id: string;
+    title: string; // e.g., "Film Photography", "Baking"
+    description?: string;
+    coverImage?: string; // Base64 or URL
+    startDate: Date;
+    tags?: string[];
+};
+
+export type HobbyPost = {
+    id: string;
+    hobbyId: string;
+    title: string;
+    content: string; // Markdown support
+    date: Date;
+    images?: string[];
+    tags?: string[];
+    link?: string;
+};
+
+// Deprecated (Keep for data migration if needed, or remove if safe)
 export type HobbyEntry = {
     id: string;
     date: Date;
     activity: string;
-    duration?: number; // Minutes
+    duration?: number;
     content?: string;
-    image?: string; // Base64
+    category?: string;
+    satisfaction?: number;
+    link?: string;
     tags?: string[];
-    // New Fields
-    category?: string; // e.g., 'music', 'art', 'sport', 'game', 'cooking', 'other'
-    satisfaction?: number; // 1-5
-    link?: string; // URL
 };
 
 export type BodyCompositionGoal = {
