@@ -7,7 +7,7 @@ import { generateId, cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { UsersRound, Plus, Phone, Search, User, Filter, MoreHorizontal, Trash2, Image as ImageIcon, X, MessageSquare, PhoneCall, Network } from 'lucide-react';
+import { UsersRound, Plus, Phone, Search, User, Filter, MoreHorizontal, Trash2, Image as ImageIcon, X, MessageSquare, PhoneCall, Network, ChevronDown } from 'lucide-react';
 
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
@@ -276,205 +276,215 @@ export function PeopleManager() {
 
             {/* Create/Edit Dialog */}
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>{editingId ? '정보 수정' : '새 인맥 추가'}</DialogTitle>
+                <DialogContent className="sm:max-w-[600px] max-h-[85vh] flex flex-col p-0 overflow-hidden bg-card text-card-foreground">
+                    <DialogHeader className="p-6 pb-2 shrink-0">
+                        <DialogTitle className="text-xl">{editingId ? '정보 수정' : '새 인맥 추가'}</DialogTitle>
                     </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label className="text-right">이름</Label>
-                            <Input
-                                id="person-name"
-                                name="name"
-                                value={formData.name}
-                                onChange={e => setFormData({ ...formData, name: e.target.value })}
-                                className="col-span-3 bg-muted border-transparent rounded-xl focus-visible:ring-primary/30"
-                            />
-                        </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label className="text-right">나(Self)</Label>
-                            <div className="col-span-3 flex items-center gap-2">
-                                <Checkbox
-                                    id="person-isMe"
-                                    checked={formData.isMe}
-                                    onCheckedChange={(checked) => setFormData({ ...formData, isMe: checked === true })}
-                                />
-                                <label htmlFor="person-isMe" className="text-sm text-muted-foreground cursor-pointer select-none">
-                                    이 프로필이 '나'입니다.
-                                </label>
-                            </div>
-                        </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label className="text-right">관계</Label>
-                            <select
-                                id="person-relationship"
-                                name="relationship"
-                                value={formData.relationship}
-                                onChange={e => setFormData({ ...formData, relationship: e.target.value as RelationshipType })}
-                                className="col-span-3 flex h-9 w-full rounded-xl bg-muted px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/30"
-                            >
-                                <option value="family">가족</option>
-                                <option value="friend">친구</option>
-                                <option value="work">직장</option>
-                                <option value="other">기타</option>
-                            </select>
-                        </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label className="text-right">연락처</Label>
-                            <Input
-                                id="person-contact"
-                                name="contact"
-                                value={formData.contact}
-                                onChange={e => setFormData({ ...formData, contact: e.target.value })}
-                                className="col-span-3 bg-muted border-transparent rounded-xl focus-visible:ring-primary/30"
-                                placeholder="010-0000-0000"
-                            />
-                        </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label className="text-right">생일</Label>
-                            <div className="col-span-3">
-                                <DatePicker
-                                    date={formData.birthdate ? new Date(formData.birthdate) : undefined}
-                                    setDate={(date) => setFormData({ ...formData, birthdate: date })}
-                                />
-                            </div>
-                        </div>
 
-
-                        {/* Workplace Info */}
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label className="text-right">회사/소속</Label>
-                            <Input
-                                id="person-company"
-                                name="company"
-                                value={formData.company || ''}
-                                onChange={e => setFormData({ ...formData, company: e.target.value })}
-                                className="col-span-3 bg-muted border-transparent rounded-xl focus-visible:ring-primary/30"
-                                placeholder="회사명 또는 소속"
-                            />
-                        </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label className="text-right">부서</Label>
-                            <Input
-                                id="person-department"
-                                name="department"
-                                value={formData.department || ''}
-                                onChange={e => setFormData({ ...formData, department: e.target.value })}
-                                className="col-span-3 bg-muted border-transparent rounded-xl focus-visible:ring-primary/30"
-                                placeholder="부서명"
-                            />
-                        </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label className="text-right">직책</Label>
-                            <Input
-                                id="person-jobTitle"
-                                name="jobTitle"
-                                value={formData.jobTitle || ''}
-                                onChange={e => setFormData({ ...formData, jobTitle: e.target.value })}
-                                className="col-span-3 bg-muted border-transparent rounded-xl focus-visible:ring-primary/30"
-                                placeholder="직책/직위"
-                            />
-                        </div>
-
-                        {/* Education Info */}
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label className="text-right">학교</Label>
-                            <Input
-                                id="person-school"
-                                name="school"
-                                value={formData.school || ''}
-                                onChange={e => setFormData({ ...formData, school: e.target.value })}
-                                className="col-span-3 bg-muted border-transparent rounded-xl focus-visible:ring-primary/30"
-                                placeholder="학교명 (대학교/대학원)"
-                            />
-                        </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label className="text-right">전공</Label>
-                            <Input
-                                id="person-major"
-                                name="major"
-                                value={formData.major || ''}
-                                onChange={e => setFormData({ ...formData, major: e.target.value })}
-                                className="col-span-3 bg-muted border-transparent rounded-xl focus-visible:ring-primary/30"
-                                placeholder="전공/학과"
-                            />
-                        </div>
-
-                        <div className="grid grid-cols-4 items-start gap-4">
-                            <Label className="text-right mt-2">메모</Label>
-                            <textarea
-                                id="person-notes"
-                                name="notes"
-                                value={formData.notes || ''}
-                                onChange={e => setFormData({ ...formData, notes: e.target.value })}
-                                className="col-span-3 bg-muted border-transparent rounded-xl p-3 text-sm h-20 resize-none focus:outline-none focus:ring-2 focus:ring-primary/20"
-                                placeholder="기억 해야 할 특징, 생일 등..."
-                            />
-                        </div>
-
-                        {/* Tags Input */}
-                        <div className="grid grid-cols-4 items-start gap-4">
-                            <Label className="text-right mt-3">태그</Label>
-                            <div className="col-span-3 flex flex-wrap gap-2 p-3 bg-muted rounded-xl focus-within:ring-2 focus-within:ring-primary/30 transition-shadow">
-                                {(formData.tags || []).map(tag => (
-                                    <Badge key={tag} variant="secondary" className="px-2 py-1 text-sm font-normal rounded-md bg-white/50 border border-black/5 hover:bg-white transition-colors">
-                                        {tag}
-                                        <button
-                                            type="button"
-                                            onClick={() => handleRemoveTag(tag)}
-                                            className="ml-1 text-muted-foreground hover:text-foreground"
-                                        >
-                                            <X className="w-3 h-3" />
-                                        </button>
-                                    </Badge>
-                                ))}
-                                <input
-                                    id="person-tags"
-                                    value={tagInput}
-                                    onChange={e => setTagInput(e.target.value)}
-                                    onKeyDown={handleTagKeyDown}
-                                    onBlur={handleAddTag} // Add tag on blur as well
-                                    className="flex-1 min-w-[120px] bg-transparent outline-none text-sm h-7"
-                                    placeholder={formData.tags?.length ? "" : "태그 입력 (Enter로 추가)"}
-                                />
-                            </div>
-                        </div>
-
-                        {/* Business Card Upload */}
-
-                        <div className="grid grid-cols-4 items-start gap-4">
-                            <Label className="text-right mt-2">명함</Label>
-                            <div className="col-span-3">
-                                <Label className="flex items-center gap-2 cursor-pointer w-fit text-muted-foreground hover:text-foreground transition-colors mb-2">
-                                    <Button type="button" variant="outline" size="sm" onClick={() => document.getElementById('card-upload')?.click()}>
-                                        <ImageIcon className="w-4 h-4 mr-2" /> 이미지 업로드
-                                    </Button>
-                                    <input
-                                        id="card-upload"
-                                        type="file"
-                                        accept="image/*"
-                                        className="hidden"
-                                        onChange={handleImageUpload}
-                                    />
-                                </Label>
-                                {formData.businessCardImage && (
-                                    <div className="relative w-full h-32 rounded-lg overflow-hidden border">
-                                        <img src={formData.businessCardImage} alt="Business Card" className="w-full h-full object-contain bg-black/5" />
-                                        <button
-                                            type="button"
-                                            onClick={() => setFormData(prev => ({ ...prev, businessCardImage: '' }))}
-                                            className="absolute top-2 right-2 bg-black/50 text-white p-1 rounded-full hover:bg-red-500"
-                                        >
-                                            <X className="w-3 h-3" />
-                                        </button>
+                    <div className="flex-1 overflow-y-auto custom-scrollbar p-6 py-2">
+                        <div className="grid gap-6">
+                            {/* Basic Info Group */}
+                            <div className="grid gap-4">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="person-name">이름 <span className="text-red-500">*</span></Label>
+                                        <Input
+                                            id="person-name"
+                                            name="name"
+                                            value={formData.name}
+                                            onChange={e => setFormData({ ...formData, name: e.target.value })}
+                                            placeholder="이름 입력"
+                                            className="bg-muted/50"
+                                        />
                                     </div>
-                                )}
+                                    <div className="space-y-2">
+                                        <Label htmlFor="person-relationship">관계</Label>
+                                        <div className="relative">
+                                            <select
+                                                id="person-relationship"
+                                                name="relationship"
+                                                value={formData.relationship}
+                                                onChange={e => setFormData({ ...formData, relationship: e.target.value as RelationshipType })}
+                                                className="flex h-10 w-full rounded-md border border-input bg-muted/50 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 appearance-none"
+                                            >
+                                                <option value="family">가족</option>
+                                                <option value="friend">친구</option>
+                                                <option value="work">직장</option>
+                                                <option value="other">기타</option>
+                                            </select>
+                                            <ChevronDown className="absolute right-3 top-2.5 h-4 w-4 opacity-50 pointer-events-none" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center space-x-2">
+                                    <Checkbox
+                                        id="person-isMe"
+                                        checked={formData.isMe}
+                                        onCheckedChange={(checked) => setFormData({ ...formData, isMe: checked === true })}
+                                    />
+                                    <label htmlFor="person-isMe" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer">
+                                        이 프로필이 '나'입니다 (본인 표시)
+                                    </label>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="person-contact">연락처</Label>
+                                        <Input
+                                            id="person-contact"
+                                            name="contact"
+                                            value={formData.contact}
+                                            onChange={e => setFormData({ ...formData, contact: e.target.value })}
+                                            placeholder="010-0000-0000"
+                                            className="bg-muted/50"
+                                        />
+                                    </div>
+                                    <div className="space-y-2 flex flex-col">
+                                        <Label>생일</Label>
+                                        <DatePicker
+                                            date={(() => {
+                                                if (!formData.birthdate) return undefined;
+                                                const d = new Date(formData.birthdate);
+                                                return isNaN(d.getTime()) ? undefined : d;
+                                            })()}
+                                            setDate={(date) => setFormData({ ...formData, birthdate: date })}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="h-px bg-border/50" />
+
+                            {/* Social / Work Group */}
+                            <div className="grid gap-4">
+                                <Label className="text-muted-foreground text-xs uppercase font-bold tracking-wider">소속 및 학력</Label>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <Input
+                                        value={formData.company || ''}
+                                        onChange={e => setFormData({ ...formData, company: e.target.value })}
+                                        placeholder="회사/소속명"
+                                        className="col-span-2 bg-muted/50"
+                                    />
+                                    <Input
+                                        value={formData.department || ''}
+                                        onChange={e => setFormData({ ...formData, department: e.target.value })}
+                                        placeholder="부서"
+                                        className="bg-muted/50"
+                                    />
+                                    <Input
+                                        value={formData.jobTitle || ''}
+                                        onChange={e => setFormData({ ...formData, jobTitle: e.target.value })}
+                                        placeholder="직책/직위"
+                                        className="bg-muted/50"
+                                    />
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <Input
+                                        value={formData.school || ''}
+                                        onChange={e => setFormData({ ...formData, school: e.target.value })}
+                                        placeholder="학교명"
+                                        className="bg-muted/50"
+                                    />
+                                    <Input
+                                        value={formData.major || ''}
+                                        onChange={e => setFormData({ ...formData, major: e.target.value })}
+                                        placeholder="전공"
+                                        className="bg-muted/50"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="h-px bg-border/50" />
+
+                            {/* Additional Info */}
+                            <div className="space-y-4">
+                                <Label className="text-muted-foreground text-xs uppercase font-bold tracking-wider">추가 정보</Label>
+
+                                <div className="space-y-2">
+                                    <Label>태그</Label>
+                                    <div className="flex flex-wrap gap-2 p-3 bg-muted/50 rounded-xl border border-input/50 focus-within:ring-2 focus-within:ring-ring ring-offset-background transition-all">
+                                        {(formData.tags || []).map(tag => (
+                                            <Badge key={tag} variant="secondary" className="px-2 py-1 text-sm font-normal rounded-md bg-background border shadow-sm hover:bg-accent transition-colors">
+                                                {tag}
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleRemoveTag(tag)}
+                                                    className="ml-1 text-muted-foreground hover:text-red-500 rounded-full"
+                                                >
+                                                    <X className="w-3 h-3" />
+                                                </button>
+                                            </Badge>
+                                        ))}
+                                        <input
+                                            id="person-tags"
+                                            value={tagInput}
+                                            onChange={e => setTagInput(e.target.value)}
+                                            onKeyDown={handleTagKeyDown}
+                                            onBlur={handleAddTag}
+                                            className="flex-1 min-w-[120px] bg-transparent outline-none text-sm h-6 placeholder:text-muted-foreground"
+                                            placeholder={formData.tags?.length ? "" : "태그 입력 (Enter)"}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="person-notes">메모</Label>
+                                    <textarea
+                                        id="person-notes"
+                                        name="notes"
+                                        value={formData.notes || ''}
+                                        onChange={e => setFormData({ ...formData, notes: e.target.value })}
+                                        className="flex min-h-[80px] w-full rounded-md border border-input bg-muted/50 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-y"
+                                        placeholder="기억해야 할 특징, 취미, 특이사항 등..."
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label>명함 이미지</Label>
+                                    <div className="border-2 border-dashed border-muted-foreground/25 rounded-xl p-4 transition-colors hover:bg-muted/50">
+                                        <div className="flex flex-col items-center justify-center gap-2">
+                                            {formData.businessCardImage ? (
+                                                <div className="relative w-full h-[200px] rounded-lg overflow-hidden border bg-background">
+                                                    <img src={formData.businessCardImage} alt="Business Card" className="w-full h-full object-contain" />
+                                                    <Button
+                                                        type="button"
+                                                        size="icon"
+                                                        variant="destructive"
+                                                        onClick={() => setFormData(prev => ({ ...prev, businessCardImage: '' }))}
+                                                        className="absolute top-2 right-2 h-6 w-6 rounded-full shadow-md"
+                                                    >
+                                                        <X className="w-3 h-3" />
+                                                    </Button>
+                                                </div>
+                                            ) : (
+                                                <div className="flex flex-col items-center text-center py-4">
+                                                    <ImageIcon className="w-8 h-8 text-muted-foreground/50 mb-2" />
+                                                    <p className="text-xs text-muted-foreground mb-3">명함 이미지를 업로드하세요</p>
+                                                    <Button type="button" variant="outline" size="sm" onClick={() => document.getElementById('card-upload')?.click()}>
+                                                        이미지 선택
+                                                    </Button>
+                                                </div>
+                                            )}
+                                            <input
+                                                id="card-upload"
+                                                type="file"
+                                                accept="image/*"
+                                                className="hidden"
+                                                onChange={handleImageUpload}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <DialogFooter>
+
+                    <DialogFooter className="p-6 pt-2 shrink-0">
                         <Button variant="ghost" onClick={() => setIsDialogOpen(false)}>취소</Button>
-                        <Button onClick={handleSave} disabled={!formData.name}>저장</Button>
+                        <Button onClick={handleSave} disabled={!formData.name}>
+                            {editingId ? '수정 완료' : '등록'}
+                        </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

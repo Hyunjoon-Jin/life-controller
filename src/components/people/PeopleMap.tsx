@@ -41,7 +41,7 @@ export function PeopleMap({ onClose }: PeopleMapProps) {
 
     // Process Data into Graph Format
     const graphData = useMemo(() => {
-        const nodes = people.map(p => ({
+        let nodes = people.map(p => ({
             ...p,
             val: (p.tags?.length || 0) + 1 + (p.isMe ? 5 : 0), // Me is bigger
             group: p.relationship,
@@ -50,6 +50,22 @@ export function PeopleMap({ onClose }: PeopleMapProps) {
             fy: p.isMe ? 0 : undefined,
             color: p.isMe ? '#fbbf24' : undefined // Gold for Me
         }));
+
+        // Inject Virtual 'Me' if missing
+        if (!nodes.some(n => n.isMe)) {
+            nodes.push({
+                id: 'virtual-me',
+                name: '나 (Me)',
+                relationship: 'me' as any,
+                isMe: true,
+                val: 10,
+                // Center fixed
+                fx: 0,
+                fy: 0,
+                color: '#fbbf24',
+                tags: [], company: '', school: '', contact: '', notes: '', businessCardImage: '', department: '', jobTitle: '', major: '', birthdate: undefined
+            } as any);
+        }
 
         const links: any[] = [];
         const meNode = nodes.find(n => n.isMe);
@@ -126,9 +142,9 @@ export function PeopleMap({ onClose }: PeopleMapProps) {
 
             {/* Graph Container */}
             <div ref={containerRef} className="flex-1 relative overflow-hidden bg-black/5 dark:bg-black/20">
-                {people.length < 1 ? (
+                {graphData.nodes.length === 0 ? (
                     <div className="absolute inset-0 flex items-center justify-center text-muted-foreground">
-                        인맥 데이터가 부족합니다.
+                        인맥 데이터가 없습니다.
                     </div>
                 ) : (
                     <ForceGraph2D
