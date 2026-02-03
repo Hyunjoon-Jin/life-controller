@@ -10,6 +10,8 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useData } from '@/context/DataProvider';
 import { cn } from '@/lib/utils';
+import { DatePicker } from '@/components/ui/date-picker';
+
 
 interface TaskDialogProps {
     isOpen: boolean;
@@ -32,9 +34,10 @@ export function TaskDialog({ isOpen, onOpenChange, projectId, taskToEdit }: Task
     const [title, setTitle] = useState('');
     const [remarks, setRemarks] = useState('');
     const [priority, setPriority] = useState<Priority>('medium');
-    const [startDate, setStartDate] = useState('');
-    const [endDate, setEndDate] = useState('');
+    const [startDate, setStartDate] = useState<Date | undefined>(undefined);
+    const [endDate, setEndDate] = useState<Date | undefined>(undefined);
     const [type, setType] = useState('work');
+
 
     // Subtasks State (Simple string array for local editing, mapped to Task[] on save)
     const [subTaskInput, setSubTaskInput] = useState('');
@@ -45,9 +48,10 @@ export function TaskDialog({ isOpen, onOpenChange, projectId, taskToEdit }: Task
             setTitle(taskToEdit.title);
             setRemarks(taskToEdit.remarks || '');
             setPriority(taskToEdit.priority || 'medium');
-            setStartDate(taskToEdit.startDate ? new Date(taskToEdit.startDate).toISOString().split('T')[0] : '');
-            setEndDate(taskToEdit.endDate ? new Date(taskToEdit.endDate).toISOString().split('T')[0] : '');
+            setStartDate(taskToEdit.startDate ? new Date(taskToEdit.startDate) : undefined);
+            setEndDate(taskToEdit.endDate ? new Date(taskToEdit.endDate) : undefined);
             setType(taskToEdit.type || 'work');
+
 
             // Map existing subTasks if any
             if (taskToEdit.subTasks) {
@@ -60,9 +64,10 @@ export function TaskDialog({ isOpen, onOpenChange, projectId, taskToEdit }: Task
             setTitle('');
             setRemarks('');
             setPriority('medium');
-            setStartDate(new Date().toISOString().split('T')[0]);
-            setEndDate('');
+            setStartDate(new Date());
+            setEndDate(undefined);
             setType('work');
+
             setSubTasks([]);
         }
     }, [taskToEdit, isOpen]);
@@ -88,9 +93,10 @@ export function TaskDialog({ isOpen, onOpenChange, projectId, taskToEdit }: Task
             priority,
             remarks,
             type,
-            startDate: startDate ? new Date(startDate) : undefined,
-            endDate: endDate ? new Date(endDate) : undefined,
+            startDate: startDate,
+            endDate: endDate,
             // Reconstruct subTasks
+
             subTasks: subTasks.map(st => ({
                 id: st.id,
                 title: st.title,
@@ -175,20 +181,19 @@ export function TaskDialog({ isOpen, onOpenChange, projectId, taskToEdit }: Task
                             <div className="grid grid-cols-4 items-center gap-4">
                                 <Label className="text-right">기간</Label>
                                 <div className="col-span-3 flex gap-2 items-center">
-                                    <Input
-                                        type="date"
-                                        value={startDate}
-                                        onChange={(e) => setStartDate(e.target.value)}
+                                    <DatePicker
+                                        date={startDate}
+                                        setDate={setStartDate}
                                         className="w-full"
                                     />
                                     <span className="text-muted-foreground">→</span>
-                                    <Input
-                                        type="date"
-                                        value={endDate}
-                                        onChange={(e) => setEndDate(e.target.value)}
+                                    <DatePicker
+                                        date={endDate}
+                                        setDate={setEndDate}
                                         className="w-full"
                                     />
                                 </div>
+
                             </div>
                         </div>
 

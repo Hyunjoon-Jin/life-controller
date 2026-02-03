@@ -8,6 +8,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useData } from '@/context/DataProvider';
+import { DatePicker } from '@/components/ui/date-picker';
+
 
 interface ProjectDialogProps {
     isOpen: boolean;
@@ -23,8 +25,9 @@ export function ProjectDialog({ isOpen, onOpenChange, projectToEdit }: ProjectDi
     const [description, setDescription] = useState('');
     const [status, setStatus] = useState<string>('preparation');
     const [color, setColor] = useState('#6b7280');
-    const [startDate, setStartDate] = useState('');
-    const [endDate, setEndDate] = useState('');
+    const [startDate, setStartDate] = useState<Date | undefined>(undefined);
+    const [endDate, setEndDate] = useState<Date | undefined>(undefined);
+
     const [manager, setManager] = useState('');
     const [myRole, setMyRole] = useState('');
     const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
@@ -36,8 +39,9 @@ export function ProjectDialog({ isOpen, onOpenChange, projectToEdit }: ProjectDi
             setDescription(projectToEdit.description || '');
             setStatus(projectToEdit.status || 'preparation');
             setColor(projectToEdit.color);
-            setStartDate(projectToEdit.startDate ? new Date(projectToEdit.startDate).toISOString().split('T')[0] : '');
-            setEndDate(projectToEdit.endDate ? new Date(projectToEdit.endDate).toISOString().split('T')[0] : '');
+            setStartDate(projectToEdit.startDate ? new Date(projectToEdit.startDate) : undefined);
+            setEndDate(projectToEdit.endDate ? new Date(projectToEdit.endDate) : undefined);
+
             setManager(projectToEdit.manager || '');
             setMyRole(projectToEdit.myRole || '');
             setSelectedMembers(projectToEdit.members || []);
@@ -48,9 +52,10 @@ export function ProjectDialog({ isOpen, onOpenChange, projectToEdit }: ProjectDi
             setDescription('');
             setStatus('preparation');
             setColor('#3b82f6'); // Default Blue
-            setStartDate(new Date().toISOString().split('T')[0]);
-            setEndDate('');
+            setStartDate(new Date());
+            setEndDate(undefined);
             setManager('Me');
+
             setMyRole('');
             setSelectedMembers([]);
             setBudgetTotal('');
@@ -69,9 +74,10 @@ export function ProjectDialog({ isOpen, onOpenChange, projectToEdit }: ProjectDi
             manager,
             myRole,
             members: selectedMembers,
-            startDate: startDate ? new Date(startDate) : undefined,
-            endDate: endDate ? new Date(endDate) : undefined,
+            startDate: startDate,
+            endDate: endDate,
             budget: {
+
                 total: Number(budgetTotal) || 0,
                 spent: projectToEdit?.budget?.spent || 0
             },
@@ -193,18 +199,17 @@ export function ProjectDialog({ isOpen, onOpenChange, projectToEdit }: ProjectDi
                     <div className="grid grid-cols-4 items-center gap-4">
                         <Label className="text-right">기간</Label>
                         <div className="col-span-3 flex gap-2">
-                            <Input
-                                type="date"
-                                value={startDate}
-                                onChange={(e) => setStartDate(e.target.value)}
+                            <DatePicker
+                                date={startDate}
+                                setDate={setStartDate}
                             />
                             <span className="flex items-center text-muted-foreground">~</span>
-                            <Input
-                                type="date"
-                                value={endDate}
-                                onChange={(e) => setEndDate(e.target.value)}
+                            <DatePicker
+                                date={endDate}
+                                setDate={setEndDate}
                             />
                         </div>
+
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
                         <Label className="text-right">총 예산</Label>

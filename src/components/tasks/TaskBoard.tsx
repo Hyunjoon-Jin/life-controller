@@ -9,6 +9,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Plus, MoreHorizontal, Check, Search, ListTodo } from 'lucide-react';
 import { useData } from '@/context/DataProvider';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
+import { DatePicker } from '@/components/ui/date-picker';
+
 
 const MOCK_PROJECTS: Project[] = [
     { id: '1', title: '개인', color: 'bg-blue-400' },
@@ -36,10 +38,11 @@ export function TaskBoard({ projectId, hideHeader = false }: TaskBoardProps) {
     const [newTaskTitle, setNewTaskTitle] = useState('');
     const [newTaskType, setNewTaskType] = useState('work');
     const [newTaskRemarks, setNewTaskRemarks] = useState('');
-    const [newTaskDeadline, setNewTaskDeadline] = useState('');
+    const [newTaskDeadline, setNewTaskDeadline] = useState<Date | undefined>(undefined);
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+
 
     const filteredTasks = tasks.filter(t => {
         // If projectId prop provided, STRICTLY filter by it. Else use internal state.
@@ -62,10 +65,11 @@ export function TaskBoard({ projectId, hideHeader = false }: TaskBoardProps) {
                 title: newTaskTitle,
                 type: newTaskType,
                 remarks: newTaskRemarks,
-                deadline: newTaskDeadline ? new Date(newTaskDeadline) : undefined,
+                deadline: newTaskDeadline,
                 // Keep existing project ID unless explicitly moving (not implemented here)
                 projectId: editingTask.projectId
             });
+
         } else {
             // Create New
             const newTask: Task = {
@@ -77,18 +81,20 @@ export function TaskBoard({ projectId, hideHeader = false }: TaskBoardProps) {
                 projectId: projectId || (selectedProjectId === 'all' ? '1' : selectedProjectId),
                 type: newTaskType,
                 remarks: newTaskRemarks,
-                deadline: newTaskDeadline ? new Date(newTaskDeadline) : undefined,
+                deadline: newTaskDeadline,
                 source: 'daily'
             };
+
             addTask(newTask);
         }
 
         // Reset
         setNewTaskTitle('');
         setNewTaskRemarks('');
-        setNewTaskDeadline('');
+        setNewTaskDeadline(undefined);
         setNewTaskType('work');
         setEditingTask(null);
+
 
         setIsDialogOpen(false);
     };
@@ -97,17 +103,19 @@ export function TaskBoard({ projectId, hideHeader = false }: TaskBoardProps) {
         setEditingTask(null);
         setNewTaskTitle('');
         setNewTaskRemarks('');
-        setNewTaskDeadline('');
+        setNewTaskDeadline(undefined);
         setNewTaskType('work');
         setIsDialogOpen(true);
+
     };
 
     const openEditDialog = (task: Task) => {
         setEditingTask(task);
         setNewTaskTitle(task.title);
         setNewTaskRemarks(task.remarks || '');
-        setNewTaskDeadline(task.deadline ? new Date(task.deadline).toISOString().split('T')[0] : '');
+        setNewTaskDeadline(task.deadline ? new Date(task.deadline) : undefined);
         setNewTaskType(task.type || 'work');
+
         setIsDialogOpen(true);
     };
 
@@ -163,7 +171,83 @@ export function TaskBoard({ projectId, hideHeader = false }: TaskBoardProps) {
                                 </button>
                             ))}
                         </div>
+
+                        {/* Add Task Button inside Toolbar */}
+                        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                            <DialogTrigger asChild>
+                                <Button variant="ghost" size="sm" onClick={openCreateDialog} className="h-8 w-8 p-0 rounded-full hover:bg-muted">
+                                    <Plus className="w-5 h-5 text-muted-foreground" />
+                                </Button>
+                            </DialogTrigger>
+                            <DialogContent className="sm:max-w-[500px]">
+                                <DialogHeader>
+                                    <DialogTitle className="font-extrabold text-xl">
+                                        {editingTask ? '작업 수정' : '새 작업 추가'}
+                                    </DialogTitle>
+                                </DialogHeader>
+
+                                <div className="grid gap-4 py-4">
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-bold text-muted-foreground">작업 이름</label>
+                                        <Input
+                                            className="font-bold text-lg border-transparent bg-muted focus-visible:ring-primary/30"
+                                            placeholder="무엇을 해야 하나요?"
+                                            value={newTaskTitle}
+                                            onChange={e => setNewTaskTitle(e.target.value)}
+                                        />
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-bold text-muted-foreground">유형</label>
+                                            <select
+                                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-medium"
+                                                value={newTaskType}
+                                                onChange={e => setNewTaskType(e.target.value)}
+                                            >
+                                                <option value="work">업무</option>
+                                                <option value="study">공부</option>
+                                                <option value="personal">개인</option>
+                                                <option value="health">건강</option>
+                                                <option value="finance">재테크</option>
+                                                <option value="travel">여행</option>
+                                                <option value="social">사교</option>
+                                                <option value="hobby">취미</option>
+                                                <option value="home">집안일</option>
+                                                <option value="other">기타</option>
+                                            </select>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-bold text-muted-foreground">마감 기한</label>
+                                            <label className="text-sm font-bold text-muted-foreground">마감 기한</label>
+                                            <DatePicker
+                                                date={newTaskDeadline}
+                                                setDate={setNewTaskDeadline}
+                                            />
+                                        </div>
+
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-bold text-muted-foreground">비고 사항</label>
+                                        <Input
+                                            className="bg-muted border-transparent"
+                                            placeholder="추가 세부사항..."
+                                            value={newTaskRemarks}
+                                            onChange={e => setNewTaskRemarks(e.target.value)}
+                                        />
+                                    </div>
+                                </div>
+
+                                <DialogFooter>
+                                    <Button onClick={handleSaveTask} className="w-full font-bold">
+                                        {editingTask ? '수정 완료' : '추가하기'}
+                                    </Button>
+                                </DialogFooter>
+                            </DialogContent>
+                        </Dialog>
                     </div>
+
                 </div>
             )}
 
@@ -173,9 +257,10 @@ export function TaskBoard({ projectId, hideHeader = false }: TaskBoardProps) {
                     <h3 className="font-bold text-lg">작업 목록</h3>
                     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                         <DialogTrigger asChild>
-                            <Button size="sm" onClick={openCreateDialog} className="rounded-xl font-bold bg-blue-600 hover:bg-blue-700">
-                                <Plus className="w-4 h-4 mr-1" strokeWidth={1.5} /> 작업 추가
+                            <Button variant="ghost" size="sm" onClick={openCreateDialog} className="h-8 w-8 p-0 rounded-full hover:bg-muted">
+                                <Plus className="w-5 h-5 text-muted-foreground" />
                             </Button>
+
                         </DialogTrigger>
                         <DialogContent className="sm:max-w-[500px]">
                             {/* ... Content duplicated below due to replace block structure ... */}
@@ -218,13 +303,12 @@ export function TaskBoard({ projectId, hideHeader = false }: TaskBoardProps) {
                                     </div>
                                     <div className="space-y-2">
                                         <label className="text-sm font-bold text-muted-foreground">마감 기한</label>
-                                        <Input
-                                            type="date"
-                                            className="bg-background font-medium"
-                                            value={newTaskDeadline}
-                                            onChange={e => setNewTaskDeadline(e.target.value)}
+                                        <DatePicker
+                                            date={newTaskDeadline}
+                                            setDate={setNewTaskDeadline}
                                         />
                                     </div>
+
                                 </div>
 
                                 <div className="space-y-2">
@@ -248,84 +332,8 @@ export function TaskBoard({ projectId, hideHeader = false }: TaskBoardProps) {
                 </div>
             )}
 
-            {/* Main Create Dialog (Used when Header is visible or shared) */}
-            {!hideHeader && (
-                <div className="px-4 pb-2">
-                    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                        <DialogTrigger asChild>
-                            <Button size="sm" onClick={openCreateDialog} className="rounded-xl font-bold bg-blue-600 hover:bg-blue-700 w-full">
-                                <Plus className="w-4 h-4 mr-1" strokeWidth={1.5} /> 새로 만들기
-                            </Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-[500px]">
-                            <DialogHeader>
-                                <DialogTitle className="font-extrabold text-xl">
-                                    {editingTask ? '작업 수정' : '새 작업 추가'}
-                                </DialogTitle>
-                            </DialogHeader>
+            {/* Main Create Dialog Removed (Moved to Toolbar) */}
 
-                            <div className="grid gap-4 py-4">
-                                <div className="space-y-2">
-                                    <label className="text-sm font-bold text-muted-foreground">작업 이름</label>
-                                    <Input
-                                        className="font-bold text-lg border-transparent bg-muted focus-visible:ring-primary/30"
-                                        placeholder="무엇을 해야 하나요?"
-                                        value={newTaskTitle}
-                                        onChange={e => setNewTaskTitle(e.target.value)}
-                                    />
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-bold text-muted-foreground">유형</label>
-                                        <select
-                                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-medium"
-                                            value={newTaskType}
-                                            onChange={e => setNewTaskType(e.target.value)}
-                                        >
-                                            <option value="work">업무</option>
-                                            <option value="study">공부</option>
-                                            <option value="personal">개인</option>
-                                            <option value="health">건강</option>
-                                            <option value="finance">재테크</option>
-                                            <option value="travel">여행</option>
-                                            <option value="social">사교</option>
-                                            <option value="hobby">취미</option>
-                                            <option value="home">집안일</option>
-                                            <option value="other">기타</option>
-                                        </select>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-bold text-muted-foreground">마감 기한</label>
-                                        <Input
-                                            type="date"
-                                            className="bg-background font-medium"
-                                            value={newTaskDeadline}
-                                            onChange={e => setNewTaskDeadline(e.target.value)}
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="space-y-2">
-                                    <label className="text-sm font-bold text-muted-foreground">비고 사항</label>
-                                    <Input
-                                        className="bg-muted border-transparent"
-                                        placeholder="추가 세부사항..."
-                                        value={newTaskRemarks}
-                                        onChange={e => setNewTaskRemarks(e.target.value)}
-                                    />
-                                </div>
-                            </div>
-
-                            <DialogFooter>
-                                <Button onClick={handleSaveTask} className="w-full font-bold">
-                                    {editingTask ? '수정 완료' : '추가하기'}
-                                </Button>
-                            </DialogFooter>
-                        </DialogContent>
-                    </Dialog>
-                </div>
-            )}
 
             {/* List Header */}
             <div className="grid grid-cols-[30px_1.5fr_80px_100px_1fr_80px_30px] gap-4 px-6 py-3 border-b border-border/50 text-xs font-bold text-muted-foreground bg-muted/20">

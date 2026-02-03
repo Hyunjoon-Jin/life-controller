@@ -100,40 +100,46 @@ export function MegaMenuNav({ activeCategory, activeTab, onSelect, appMode = 'li
                             {CATEGORIES.find(c => c.id === hoveredCategory)?.label} 서비스
                         </h3>
                         <div className="flex flex-col gap-1">
-                            {SUB_MENUS[hoveredCategory] ? SUB_MENUS[hoveredCategory].map((item: any) => (
-                                <button
-                                    key={item.id}
-                                    onClick={() => {
-                                        onSelect(hoveredCategory, item.id);
-                                        setIsOpen(false);
-                                    }}
-                                    className={cn(
-                                        "flex items-center gap-3 p-3 rounded-xl transition-all group hover:bg-gray-50 dark:hover:bg-gray-800 text-left w-full cursor-pointer",
-                                        activeTab === item.id && activeCategory === hoveredCategory ? "bg-blue-50 dark:bg-blue-900/10" : ""
-                                    )}
-                                >
-                                    <div className={cn(
-                                        "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors",
-                                        activeTab === item.id && activeCategory === hoveredCategory
-                                            ? "bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300"
-                                            : "bg-gray-100 text-gray-500 group-hover:bg-white group-hover:text-blue-500 group-hover:shadow-sm"
-                                    )}>
-                                        <item.icon className="w-5 h-5" strokeWidth={2} />
-                                    </div>
-                                    <div className="flex-1 min-w-0 flex items-center gap-3">
+                            {SUB_MENUS[hoveredCategory] ? SUB_MENUS[hoveredCategory]
+                                .filter(item => {
+                                    if (appMode === 'work' && hoveredCategory === 'basic' && item.id === 'tasks') return false;
+                                    return true;
+                                })
+                                .map((item: any) => (
+
+                                    <button
+                                        key={item.id}
+                                        onClick={() => {
+                                            onSelect(hoveredCategory, item.id);
+                                            setIsOpen(false);
+                                        }}
+                                        className={cn(
+                                            "flex items-center gap-3 p-3 rounded-xl transition-all group hover:bg-gray-50 dark:hover:bg-gray-800 text-left w-full cursor-pointer",
+                                            activeTab === item.id && activeCategory === hoveredCategory ? "bg-blue-50 dark:bg-blue-900/10" : ""
+                                        )}
+                                    >
                                         <div className={cn(
-                                            "font-bold text-[15px] whitespace-nowrap",
-                                            activeTab === item.id && activeCategory === hoveredCategory ? "text-blue-600" : "text-gray-900 dark:text-gray-100"
+                                            "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors",
+                                            activeTab === item.id && activeCategory === hoveredCategory
+                                                ? "bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300"
+                                                : "bg-gray-100 text-gray-500 group-hover:bg-white group-hover:text-blue-500 group-hover:shadow-sm"
                                         )}>
-                                            {item.label}
+                                            <item.icon className="w-5 h-5" strokeWidth={2} />
                                         </div>
-                                        <div className="text-xs text-gray-400 font-medium whitespace-nowrap overflow-hidden text-ellipsis">
-                                            {item.desc}
+                                        <div className="flex-1 min-w-0 flex items-center gap-3">
+                                            <div className={cn(
+                                                "font-bold text-[15px] whitespace-nowrap",
+                                                activeTab === item.id && activeCategory === hoveredCategory ? "text-blue-600" : "text-gray-900 dark:text-gray-100"
+                                            )}>
+                                                {item.label}
+                                            </div>
+                                            <div className="text-xs text-gray-400 font-medium whitespace-nowrap overflow-hidden text-ellipsis">
+                                                {item.desc}
+                                            </div>
                                         </div>
-                                    </div>
-                                    <ChevronRight className="w-4 h-4 text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
-                                </button>
-                            )) : (
+                                        <ChevronRight className="w-4 h-4 text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
+                                    </button>
+                                )) : (
                                 <div className="text-gray-400 text-sm p-4">메뉴가 없습니다.</div>
                             )}
                         </div>

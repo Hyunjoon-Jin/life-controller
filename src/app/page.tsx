@@ -60,7 +60,11 @@ export default function Home() {
       if (activeCategory !== 'basic' && mainMode === 'schedule') {
         setActiveCategory('basic');
         setActiveTab('calendar');
+      } else if (activeCategory === 'basic' && activeTab === 'tasks') {
+        // If on 'Tasks' tab (which is hidden in Work mode), switch to Calendar
+        setActiveTab('calendar');
       }
+
     } else if (appMode === 'life') {
       // If switching to Life Mode while in Work Management, go back to Home
       if (mainMode === 'work') {

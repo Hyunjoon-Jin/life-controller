@@ -11,6 +11,8 @@ import { UsersRound, Plus, Phone, Search, User, Filter, MoreHorizontal, Trash2, 
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
+import { DatePicker } from '@/components/ui/date-picker';
+
 
 export function PeopleManager() {
     const { people, addPerson, updatePerson, deletePerson } = useData();
@@ -269,15 +271,14 @@ export function PeopleManager() {
                         </div>
                         <div className="grid grid-cols-4 items-center gap-4">
                             <Label className="text-right">생일</Label>
-                            <Input
-                                id="person-birthdate"
-                                type="date"
-                                name="birthdate"
-                                value={formData.birthdate ? new Date(formData.birthdate).toISOString().split('T')[0] : ''}
-                                onChange={e => setFormData({ ...formData, birthdate: e.target.value ? new Date(e.target.value) : undefined })}
-                                className="col-span-3 bg-muted border-transparent rounded-xl focus-visible:ring-primary/30"
-                            />
+                            <div className="col-span-3">
+                                <DatePicker
+                                    date={formData.birthdate ? new Date(formData.birthdate) : undefined}
+                                    setDate={(date) => setFormData({ ...formData, birthdate: date })}
+                                />
+                            </div>
                         </div>
+
 
                         {/* Workplace Info */}
                         <div className="grid grid-cols-4 items-center gap-4">

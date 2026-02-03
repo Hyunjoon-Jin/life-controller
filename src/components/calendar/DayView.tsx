@@ -38,6 +38,8 @@ export function DayView({ currentDate, showProjectTasks }: { currentDate: Date; 
     // Refs for event listeners to avoid stale closures
     const dragStateRef = useRef(dragState);
     const tempEventRef = useRef(tempEvent);
+    const justDraggedRef = useRef(false);
+
 
     useEffect(() => {
         dragStateRef.current = dragState;
@@ -395,6 +397,10 @@ export function DayView({ currentDate, showProjectTasks }: { currentDate: Date; 
                 setIsDialogOpen(true);
             } else if (currentTempEvent && currentDragState && currentDragState.mode !== 'create') {
                 if (currentDragState.hasMoved) {
+                    justDraggedRef.current = true;
+                    // Reset the flag after a short delay to ensure onClick can see it
+                    setTimeout(() => { justDraggedRef.current = false; }, 100);
+
                     if (currentTempEvent.id.startsWith('habit-')) {
                         setPendingHabitUpdate(currentTempEvent);
                         setShowHabitUpdateChoiceDialog(true);
@@ -406,6 +412,7 @@ export function DayView({ currentDate, showProjectTasks }: { currentDate: Date; 
             setDragState(null);
             setTempEvent(null);
         };
+
 
         window.addEventListener('mousemove', handleMouseMove);
         window.addEventListener('mouseup', handleMouseUp);
@@ -568,6 +575,7 @@ export function DayView({ currentDate, showProjectTasks }: { currentDate: Date; 
                                     onMouseDown={(e) => startMove(e, event)}
                                     onClick={(e) => {
                                         e.stopPropagation();
+                                        if (justDraggedRef.current) return;
                                         if (!isDragging) handleOpenEdit(event);
                                     }}
                                 >
