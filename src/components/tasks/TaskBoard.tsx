@@ -137,7 +137,8 @@ export function TaskBoard({ projectId, hideHeader = false }: TaskBoardProps) {
     };
 
     return (
-        <div className={cn("flex flex-col h-full bg-card text-card-foreground rounded-3xl overflow-hidden border border-transparent shadow-sm", hideHeader ? "border-none shadow-none bg-transparent" : "")}>
+        <div className={cn("flex flex-col h-full bg-card text-card-foreground border border-transparent shadow-sm", hideHeader ? "border-none shadow-none bg-transparent" : "rounded-3xl overflow-hidden")}>
+
             {/* Header */}
             {!hideHeader && (
                 <div className="p-4 pt-6 pb-2">

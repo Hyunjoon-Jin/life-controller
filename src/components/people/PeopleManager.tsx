@@ -7,28 +7,34 @@ import { generateId, cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { UsersRound, Plus, Phone, Search, User, Filter, MoreHorizontal, Trash2, Image as ImageIcon, X, MessageSquare, PhoneCall } from 'lucide-react';
+import { UsersRound, Plus, Phone, Search, User, Filter, MoreHorizontal, Trash2, Image as ImageIcon, X, MessageSquare, PhoneCall, Network } from 'lucide-react';
+
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { DatePicker } from '@/components/ui/date-picker';
-
+import { PeopleMap } from './PeopleMap';
 
 export function PeopleManager() {
+
     const { people, addPerson, updatePerson, deletePerson } = useData();
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedRelation, setSelectedRelation] = useState<RelationshipType | 'all'>('all');
 
     // Dialog State
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isMapOpen, setIsMapOpen] = useState(false); // New Map State
     const [editingId, setEditingId] = useState<string | null>(null);
+
     const [formData, setFormData] = useState<Partial<Person>>({
         name: '',
         relationship: 'friend',
         contact: '',
         notes: '',
-        businessCardImage: ''
+        businessCardImage: '',
+        tags: [] // Initialize tags
     });
+
 
     // Preview state for View Mode
     const [viewImage, setViewImage] = useState<string | null>(null);
@@ -42,7 +48,7 @@ export function PeopleManager() {
 
     const handleOpenCreate = () => {
         setEditingId(null);
-        setFormData({ name: '', relationship: 'friend', contact: '', notes: '', businessCardImage: '', company: '', department: '', jobTitle: '' });
+        setFormData({ name: '', relationship: 'friend', contact: '', notes: '', businessCardImage: '', company: '', department: '', jobTitle: '', tags: [] });
         setIsDialogOpen(true);
     };
 
@@ -133,8 +139,13 @@ export function PeopleManager() {
                             ))}
                         </div>
 
-                        <Button onClick={handleOpenCreate} size="sm" className="h-8 bg-blue-600 hover:bg-blue-700">
-                            <Plus className="w-4 h-4 mr-2" /> 추가
+                        <Button onClick={() => setIsMapOpen(true)} variant="outline" size="sm" className="h-8 gap-2 hidden md:flex">
+                            <Network className="w-4 h-4" />
+                            <span className="text-xs">인맥 지도</span>
+                        </Button>
+
+                        <Button onClick={handleOpenCreate} variant="ghost" size="icon" className="h-8 w-8 hover:bg-muted">
+                            <Plus className="w-4 h-4" />
                         </Button>
                     </div>
                 </div>
@@ -326,7 +337,21 @@ export function PeopleManager() {
                             />
                         </div>
 
+                        {/* Tags Input */}
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label className="text-right">태그</Label>
+                            <Input
+                                id="person-tags"
+                                name="tags"
+                                value={formData.tags?.join(', ') || ''}
+                                onChange={e => setFormData({ ...formData, tags: e.target.value.split(',').map(t => t.trim()) })}
+                                className="col-span-3 bg-muted border-transparent rounded-xl focus-visible:ring-primary/30"
+                                placeholder="쉼표(,)로 구분하여 태그 입력 (예: 개발자, 골프, 동창)"
+                            />
+                        </div>
+
                         {/* Business Card Upload */}
+
                         <div className="grid grid-cols-4 items-start gap-4">
                             <Label className="text-right mt-2">명함</Label>
                             <div className="col-span-3">
@@ -372,11 +397,15 @@ export function PeopleManager() {
                     </DialogHeader>
                     {viewImage && (
                         <div className="w-full h-[60vh] bg-black/5 flex items-center justify-center p-4">
-                            <img src={viewImage} alt="Full Business Card" className="max-w-full max-h-full object-contain shadow-lg rounded-md" />
+                            <img src={viewImage || ''} alt="Full Business Card" className="max-w-full max-h-full object-contain shadow-lg rounded-md" />
                         </div>
                     )}
                 </DialogContent>
             </Dialog>
-        </div>
+
+            {/* People Map View */}
+            {isMapOpen && <PeopleMap onClose={() => setIsMapOpen(false)} />}
+        </div >
     );
 }
+
