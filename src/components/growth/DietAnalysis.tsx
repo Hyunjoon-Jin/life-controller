@@ -4,11 +4,12 @@ import { useMemo, useState } from 'react';
 import { DietEntry } from '@/types';
 import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, eachDayOfInterval, format, isSameDay, subMonths, subWeeks, addMonths, addWeeks } from 'date-fns';
 import { ko } from 'date-fns/locale';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ChevronLeft, ChevronRight, Utensils, Flame, Pizza, Droplet, Wheat } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
+import { ChevronLeft, ChevronRight, Utensils, Flame, Pizza, Droplet, Wheat, TrendingUp, Award, AlertCircle } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend, LineChart, Line } from 'recharts';
+import { Progress } from '@/components/ui/progress';
 
 interface DietAnalysisProps {
     entries: DietEntry[];
@@ -20,6 +21,7 @@ export function DietAnalysis({ entries }: DietAnalysisProps) {
 
     const COLORS = ['#fbbf24', '#f97316', '#3b82f6', '#4ade80']; // Breakfast(Y), Lunch(O), Dinner(B), Snack(G)
     const MACRO_COLORS = { carbs: '#60a5fa', protein: '#f87171', fat: '#fbbf24' }; // Blue, Red, Yellow
+    const MACRO_COLORS_ARRAY = ['#60a5fa', '#f87171', '#fbbf24'];
 
     // Date Range Logic
     const dateRange = useMemo(() => {
@@ -52,7 +54,7 @@ export function DietAnalysis({ entries }: DietAnalysisProps) {
         });
     }, [entries, dateRange]);
 
-    // Stats
+    // Stats Calculation
     const stats = useMemo(() => {
         const totalCalories = filteredEntries.reduce((acc, e) => acc + (e.totalCalories || (e as any).calories || 0), 0);
         const totalMacros = filteredEntries.reduce((acc, e) => ({
@@ -63,10 +65,27 @@ export function DietAnalysis({ entries }: DietAnalysisProps) {
 
         const uniqueDays = new Set(filteredEntries.map(e => format(new Date(e.date), 'yyyy-MM-dd'))).size;
 
-        return { totalCalories, totalMacros, uniqueDays };
+        // Detailed Item Analysis for "Top Foods"
+        const foodCounts: Record<string, number> = {};
+        filteredEntries.forEach(entry => {
+            if (entry.items) {
+                entry.items.forEach(item => {
+                    foodCounts[item.name] = (foodCounts[item.name] || 0) + 1;
+                });
+            } else if ((entry as any).menu) {
+                foodCounts[(entry as any).menu] = (foodCounts[(entry as any).menu] || 0) + 1;
+            }
+        });
+
+        const topFoods = Object.entries(foodCounts)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 5)
+            .map(([name, count]) => ({ name, count }));
+
+        return { totalCalories, totalMacros, uniqueDays, topFoods };
     }, [filteredEntries]);
 
-    // Chart Data
+    // Chart Data Preparation
     const chartData = useMemo(() => {
         const days = eachDayOfInterval(dateRange);
         return days.map(day => {
@@ -87,24 +106,43 @@ export function DietAnalysis({ entries }: DietAnalysisProps) {
         });
     }, [dateRange, filteredEntries, viewMode]);
 
-    // Meal Type Breakdown
-    const mealTypeData = useMemo(() => {
-        const counts = { breakfast: 0, lunch: 0, dinner: 0, snack: 0 };
-        filteredEntries.forEach(e => {
-            if (counts[e.mealType] !== undefined) counts[e.mealType]++;
-        });
+    // Macro Ratio Data for Pie Chart
+    const macroRatioData = useMemo(() => {
+        const { carbs, protein, fat } = stats.totalMacros;
+        const total = carbs + protein + fat;
+        if (total === 0) return [];
         return [
-            { name: '아침', value: counts.breakfast },
-            { name: '점심', value: counts.lunch },
-            { name: '저녁', value: counts.dinner },
-            { name: '간식', value: counts.snack },
-        ].filter(d => d.value > 0);
-    }, [filteredEntries]);
+            { name: '탄수화물', value: carbs },
+            { name: '단백질', value: protein },
+            { name: '지방', value: fat },
+        ];
+    }, [stats]);
+
+    // Simple Insights Generation
+    const insights = useMemo(() => {
+        const list = [];
+        const avgCal = stats.uniqueDays > 0 ? stats.totalCalories / stats.uniqueDays : 0;
+
+        if (avgCal > 2500) list.push({ type: 'warning', text: '일일 평균 섭취 칼로리가 높은 편입니다.' });
+        else if (avgCal < 1200 && avgCal > 0) list.push({ type: 'warning', text: '섭취 칼로리가 너무 부족합니다.' });
+
+        const { carbs, protein, fat } = stats.totalMacros;
+        const totalWeight = carbs + protein + fat;
+        if (totalWeight > 0) {
+            const pRatio = protein / totalWeight;
+            if (pRatio < 0.2) list.push({ type: 'info', text: '단백질 섭취 비율을 조금 더 늘려보세요.' });
+            if (pRatio > 0.4) list.push({ type: 'success', text: '단백질 섭취량이 훌륭합니다! 💪' });
+        }
+
+        if (stats.uniqueDays === 0) list.push({ type: 'neutral', text: '데이터 기록을 시작해보세요!' });
+
+        return list;
+    }, [stats]);
 
     return (
-        <div className="space-y-6 animate-in fade-in">
-            {/* Header Controls */}
-            <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div className="space-y-6 animate-in fade-in pb-10">
+            {/* Controls */}
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-white p-4 rounded-xl shadow-sm border">
                 <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as any)} className="w-[200px]">
                     <TabsList className="grid w-full grid-cols-2">
                         <TabsTrigger value="week">주간</TabsTrigger>
@@ -116,7 +154,7 @@ export function DietAnalysis({ entries }: DietAnalysisProps) {
                     <Button variant="ghost" size="icon" onClick={() => navigate('prev')}>
                         <ChevronLeft className="w-5 h-5" />
                     </Button>
-                    <span className="font-bold min-w-[120px] text-center">
+                    <span className="font-bold min-w-[140px] text-center text-lg">
                         {viewMode === 'week'
                             ? `${format(dateRange.start, 'MM.dd')} - ${format(dateRange.end, 'MM.dd')}`
                             : format(currentDate, 'yyyy년 MM월')
@@ -128,118 +166,172 @@ export function DietAnalysis({ entries }: DietAnalysisProps) {
                 </div>
             </div>
 
-            {/* Stats Cards */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <Card>
+            {/* Quick Stats Row */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <Card className="bg-gradient-to-br from-red-50 to-white border-red-100">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">총 섭취 칼로리</CardTitle>
+                        <CardTitle className="text-sm font-medium text-red-600">평균 칼로리</CardTitle>
                         <Flame className="h-4 w-4 text-red-500" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{Math.round(stats.totalCalories).toLocaleString()}</div>
-                        <p className="text-xs text-muted-foreground">kcal</p>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">일 평균 칼로리</CardTitle>
-                        <Utensils className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">
+                        <div className="text-2xl font-bold text-red-700">
                             {stats.uniqueDays > 0 ? Math.round(stats.totalCalories / stats.uniqueDays).toLocaleString() : 0}
-                        </div>
-                        <p className="text-xs text-muted-foreground">kcal / day</p>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">탄단지 비율</CardTitle>
-                        <div className="flex gap-1">
-                            <Wheat className="w-3 h-3 text-blue-400" />
-                            <Pizza className="w-3 h-3 text-red-400" />
-                            <Droplet className="w-3 h-3 text-yellow-400" />
-                        </div>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="flex gap-2 text-sm font-bold">
-                            <span className="text-blue-500">{Math.round(stats.totalMacros.carbs)}g</span>
-                            <span className="text-red-500">{Math.round(stats.totalMacros.protein)}g</span>
-                            <span className="text-yellow-500">{Math.round(stats.totalMacros.fat)}g</span>
+                            <span className="text-xs font-normal text-muted-foreground ml-1">kcal</span>
                         </div>
                     </CardContent>
                 </Card>
-                <Card>
+                <Card className="bg-gradient-to-br from-blue-50 to-white border-blue-100">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">기록 일수</CardTitle>
-                        <Utensils className="h-4 w-4 text-muted-foreground" />
+                        <CardTitle className="text-sm font-medium text-blue-600">총 탄수화물</CardTitle>
+                        <Wheat className="h-4 w-4 text-blue-500" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{stats.uniqueDays}일</div>
+                        <div className="text-2xl font-bold text-blue-700">
+                            {Math.round(stats.totalMacros.carbs).toLocaleString()}
+                            <span className="text-xs font-normal text-muted-foreground ml-1">g</span>
+                        </div>
+                    </CardContent>
+                </Card>
+                <Card className="bg-gradient-to-br from-red-50 to-white border-red-100">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium text-red-600">총 단백질</CardTitle>
+                        <Pizza className="h-4 w-4 text-red-500" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold text-red-700">
+                            {Math.round(stats.totalMacros.protein).toLocaleString()}
+                            <span className="text-xs font-normal text-muted-foreground ml-1">g</span>
+                        </div>
+                    </CardContent>
+                </Card>
+                <Card className="bg-gradient-to-br from-yellow-50 to-white border-yellow-100">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium text-yellow-600">총 지방</CardTitle>
+                        <Droplet className="h-4 w-4 text-yellow-500" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold text-yellow-700">
+                            {Math.round(stats.totalMacros.fat).toLocaleString()}
+                            <span className="text-xs font-normal text-muted-foreground ml-1">g</span>
+                        </div>
                     </CardContent>
                 </Card>
             </div>
 
-            {/* Charts Row */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {/* Calories & Macro Stacked Bar */}
-                <Card className="col-span-2">
+            {/* Main Charts Area */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* 1. Macro Ratio & Insights */}
+                <div className="space-y-6">
+                    <Card className="h-full">
+                        <CardHeader>
+                            <CardTitle>탄단지 비율</CardTitle>
+                            <CardDescription>섭취한 영양소의 비율입니다.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="flex flex-col items-center justify-center min-h-[250px]">
+                            {macroRatioData.length > 0 ? (
+                                <div className="w-full h-[200px] relative">
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <PieChart>
+                                            <Pie
+                                                data={macroRatioData}
+                                                cx="50%"
+                                                cy="50%"
+                                                innerRadius={50}
+                                                outerRadius={80}
+                                                paddingAngle={5}
+                                                dataKey="value"
+                                            >
+                                                {macroRatioData.map((entry, index) => (
+                                                    <Cell key={`cell-${index}`} fill={MACRO_COLORS_ARRAY[index]} />
+                                                ))}
+                                            </Pie>
+                                            <Tooltip />
+                                            <Legend verticalAlign="bottom" height={36} />
+                                        </PieChart>
+                                    </ResponsiveContainer>
+                                </div>
+                            ) : (
+                                <div className="text-muted-foreground text-sm">데이터가 부족합니다.</div>
+                            )}
+
+                            {/* Insights Box */}
+                            <div className="w-full mt-4 space-y-2">
+                                <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">분석 피드백</h4>
+                                {insights.map((insight, idx) => (
+                                    <div key={idx} className={`p-3 rounded-lg text-sm flex items-start gap-2 ${insight.type === 'warning' ? 'bg-orange-50 text-orange-700' :
+                                            insight.type === 'success' ? 'bg-green-50 text-green-700' :
+                                                insight.type === 'info' ? 'bg-blue-50 text-blue-700' :
+                                                    'bg-gray-50 text-gray-700'
+                                        }`}>
+                                        <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
+                                        <p>{insight.text}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+
+                {/* 2. Daily Trends Chart */}
+                <Card className="col-span-1 lg:col-span-2">
                     <CardHeader>
-                        <CardTitle>일별 영양 섭취 (탄/단/지)</CardTitle>
+                        <CardTitle>일별 섭취 추이</CardTitle>
+                        <CardDescription>일일 칼로리 및 영양소 섭취량 변화</CardDescription>
                     </CardHeader>
-                    <CardContent className="h-[300px]">
+                    <CardContent className="h-[400px]">
                         <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={chartData}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                            <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                                 <XAxis dataKey="name" fontSize={12} tickLine={false} axisLine={false} />
-                                <YAxis fontSize={12} tickLine={false} axisLine={false} />
+                                <YAxis yAxisId="left" fontSize={12} tickLine={false} axisLine={false} label={{ value: 'g', position: 'insideLeft', offset: 10, fill: '#94a3b8' }} />
+                                {/* Optional: Right Y Axis for Calories if we assume scale diff, but Stacked Bar is usually Macros. Let's keep Calories as a Line */}
+                                <YAxis yAxisId="right" orientation="right" fontSize={12} tickLine={false} axisLine={false} label={{ value: 'kcal', position: 'insideRight', offset: 10, fill: '#94a3b8' }} />
+
                                 <Tooltip
-                                    contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                                    cursor={{ fill: 'transparent' }}
+                                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                                    cursor={{ fill: '#f8fafc' }}
                                 />
                                 <Legend />
-                                <Bar dataKey="carbs" stackId="a" fill={MACRO_COLORS.carbs} name="탄수화물" />
-                                <Bar dataKey="protein" stackId="a" fill={MACRO_COLORS.protein} name="단백질" />
-                                <Bar dataKey="fat" stackId="a" fill={MACRO_COLORS.fat} name="지방" radius={[4, 4, 0, 0]} />
+
+                                <Bar yAxisId="left" dataKey="carbs" stackId="a" fill={MACRO_COLORS.carbs} name="탄수화물" maxBarSize={50} />
+                                <Bar yAxisId="left" dataKey="protein" stackId="a" fill={MACRO_COLORS.protein} name="단백질" maxBarSize={50} />
+                                <Bar yAxisId="left" dataKey="fat" stackId="a" fill={MACRO_COLORS.fat} name="지방" radius={[4, 4, 0, 0]} maxBarSize={50} />
+
+                                <Line yAxisId="right" type="monotone" dataKey="calories" stroke="#ef4444" strokeWidth={3} name="칼로리" dot={{ r: 4, strokeWidth: 2, fill: '#fff' }} />
                             </BarChart>
                         </ResponsiveContainer>
                     </CardContent>
                 </Card>
-
-                {/* Meal Type Pie Chart */}
-                <Card className="col-span-1">
-                    <CardHeader>
-                        <CardTitle>끼니별 비율</CardTitle>
-                    </CardHeader>
-                    <CardContent className="h-[300px]">
-                        {mealTypeData.length > 0 ? (
-                            <ResponsiveContainer width="100%" height="100%">
-                                <PieChart>
-                                    <Pie
-                                        data={mealTypeData}
-                                        cx="50%"
-                                        cy="50%"
-                                        innerRadius={60}
-                                        outerRadius={80}
-                                        paddingAngle={5}
-                                        dataKey="value"
-                                    >
-                                        {mealTypeData.map((entry, index) => (
-                                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                        ))}
-                                    </Pie>
-                                    <Tooltip />
-                                    <Legend verticalAlign="bottom" height={36} />
-                                </PieChart>
-                            </ResponsiveContainer>
-                        ) : (
-                            <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
-                                데이터가 없습니다.
-                            </div>
-                        )}
-                    </CardContent>
-                </Card>
             </div>
+
+            {/* Top Foods Section */}
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                        <Award className="w-5 h-5 text-yellow-500" /> 자주 먹은 음식 Top 5
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    {stats.topFoods.length > 0 ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-5 gap-4">
+                            {stats.topFoods.map((food, idx) => (
+                                <div key={idx} className="flex flex-col items-center justify-center p-4 bg-muted/20 rounded-xl border border-dashed">
+                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-white mb-2 shadow-sm ${idx === 0 ? 'bg-yellow-400' :
+                                            idx === 1 ? 'bg-gray-400' :
+                                                idx === 2 ? 'bg-orange-400' : 'bg-slate-300'
+                                        }`}>
+                                        {idx + 1}
+                                    </div>
+                                    <span className="font-bold text-center text-sm line-clamp-1">{food.name}</span>
+                                    <span className="text-xs text-muted-foreground mt-1">{food.count}회 섭취</span>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="text-center py-6 text-muted-foreground">아직 충분한 데이터가 없습니다.</div>
+                    )}
+                </CardContent>
+            </Card>
         </div>
     );
 }

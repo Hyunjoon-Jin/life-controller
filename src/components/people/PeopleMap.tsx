@@ -45,9 +45,6 @@ export function PeopleMap({ onClose }: PeopleMapProps) {
             ...p,
             val: (p.tags?.length || 0) + 1 + (p.isMe ? 5 : 0), // Me is bigger
             group: p.relationship,
-            // Fix 'Me' node to center
-            fx: p.isMe ? 0 : undefined,
-            fy: p.isMe ? 0 : undefined,
             color: p.isMe ? '#fbbf24' : undefined // Gold for Me
         }));
 
@@ -59,9 +56,6 @@ export function PeopleMap({ onClose }: PeopleMapProps) {
                 relationship: 'me' as any,
                 isMe: true,
                 val: 10,
-                // Center fixed
-                fx: 0,
-                fy: 0,
                 color: '#fbbf24',
                 tags: [], company: '', school: '', contact: '', notes: '', businessCardImage: '', department: '', jobTitle: '', major: '', birthdate: undefined
             } as any);
@@ -72,13 +66,6 @@ export function PeopleMap({ onClose }: PeopleMapProps) {
 
         for (let i = 0; i < nodes.length; i++) {
             const p1 = nodes[i];
-
-            // Link Me to Everyone
-            if (meNode && p1.id !== meNode.id) {
-                // Avoid duplicating if we are iterating
-                // actually easier to just iterate all pairs or do explicit Me links
-                // Let's rely on pair loop for shared attributes, and add special Me links
-            }
 
             for (let j = i + 1; j < nodes.length; j++) {
                 const p2 = nodes[j];
@@ -109,12 +96,16 @@ export function PeopleMap({ onClose }: PeopleMapProps) {
                     if (reasons.includes('me')) type = 'me';
                     if (reasons.includes('company')) type = 'company';
                     if (reasons.includes('school')) type = 'school';
-                    // Hierarchy: School/Company > Tag > Me
+
+                    // Priority: School/Company > Me > Tag (Actually Me links should be subtle but visible)
+                    if (reasons.includes('company') || reasons.includes('school')) {
+                        type = reasons.includes('company') ? 'company' : 'school';
+                    }
 
                     links.push({
                         source: p1.id,
                         target: p2.id,
-                        value: reasons.length + (p1.isMe || p2.isMe ? 0.5 : 0), // Strength
+                        value: reasons.length + (p1.isMe || p2.isMe ? 0.5 : 0),
                         type,
                         reasons
                     });
@@ -167,7 +158,7 @@ export function PeopleMap({ onClose }: PeopleMapProps) {
                             switch ((link as any).type) {
                                 case 'company': return '#60a5fa'; // Blue
                                 case 'school': return '#f472b6'; // Pink
-                                case 'me': return '#fbbf2440'; // Transparent Gold
+                                case 'me': return '#fbbf24'; // Solid Gold (was transparent)
                                 default: return '#cbd5e1'; // Gray
                             }
                         }}
