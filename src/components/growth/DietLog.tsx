@@ -17,7 +17,7 @@ import { FoodSearchDialog } from './FoodSearchDialog';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { DietAnalysis } from './DietAnalysis';
 export function DietLog() {
-    const { dietEntries = [], addDietEntry, deleteDietEntry, updateDietEntry } = useData();
+    const { dietEntries = [], addDietEntry, deleteDietEntry, updateDietEntry, inBodyEntries = [], exerciseSessions = [] } = useData();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
 
@@ -169,6 +169,8 @@ export function DietLog() {
         snack: 'bg-green-50 text-green-700 border-green-200'
     };
 
+    const [activeTab, setActiveTab] = useState("log");
+
     // Group by Date
     const groupedEntries = useMemo(() => {
         const groups: Record<string, DietEntry[]> = {};
@@ -185,7 +187,7 @@ export function DietLog() {
     return (
         <div className="h-full flex flex-col p-6 overflow-hidden">
             <div className="flex items-center justify-between mb-4 shrink-0">
-                <Tabs defaultValue="log" className="w-[300px]">
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-[300px]">
                     <TabsList className="grid w-full grid-cols-2">
                         <TabsTrigger value="log">기록</TabsTrigger>
                         <TabsTrigger value="analysis">상세 분석</TabsTrigger>
@@ -196,7 +198,7 @@ export function DietLog() {
                 </Button>
             </div>
 
-            <Tabs defaultValue="log" className="flex-1 overflow-hidden flex flex-col">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 overflow-hidden flex flex-col">
                 <TabsContent value="log" className="flex-1 overflow-y-auto custom-scrollbar space-y-8 mt-0">
                     <div className="flex items-center gap-2 mb-4">
                         <Utensils className="w-6 h-6 text-primary" />
@@ -313,7 +315,11 @@ export function DietLog() {
                     )}
                 </TabsContent>
                 <TabsContent value="analysis" className="flex-1 overflow-y-auto custom-scrollbar mt-0">
-                    <DietAnalysis entries={dietEntries} />
+                    <DietAnalysis
+                        entries={dietEntries}
+                        inBodyEntries={inBodyEntries}
+                        exerciseSessions={exerciseSessions}
+                    />
                 </TabsContent>
             </Tabs>
 

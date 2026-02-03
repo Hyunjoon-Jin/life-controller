@@ -1,21 +1,23 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { DietEntry } from '@/types';
-import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, eachDayOfInterval, format, isSameDay, subMonths, subWeeks, addMonths, addWeeks } from 'date-fns';
+import { DietEntry, InBodyEntry, ExerciseSession } from '@/types';
+import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, eachDayOfInterval, format, isSameDay, subMonths, subWeeks, addMonths, addWeeks, closestIndexTo } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ChevronLeft, ChevronRight, Utensils, Flame, Pizza, Droplet, Wheat, TrendingUp, Award, AlertCircle } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend, LineChart, Line } from 'recharts';
+import { ChevronLeft, ChevronRight, Utensils, Flame, Pizza, Droplet, Wheat, TrendingUp, Award, AlertCircle, Target, Activity } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend, LineChart, Line, ComposedChart } from 'recharts';
 import { Progress } from '@/components/ui/progress';
 
 interface DietAnalysisProps {
     entries: DietEntry[];
+    inBodyEntries: InBodyEntry[];
+    exerciseSessions: ExerciseSession[];
 }
 
-export function DietAnalysis({ entries }: DietAnalysisProps) {
+export function DietAnalysis({ entries, inBodyEntries, exerciseSessions }: DietAnalysisProps) {
     const [viewMode, setViewMode] = useState<'week' | 'month'>('week');
     const [currentDate, setCurrentDate] = useState(new Date());
 
@@ -85,26 +87,66 @@ export function DietAnalysis({ entries }: DietAnalysisProps) {
         return { totalCalories, totalMacros, uniqueDays, topFoods };
     }, [filteredEntries]);
 
-    // Chart Data Preparation
+    // Target & Net Calculation
     const chartData = useMemo(() => {
         const days = eachDayOfInterval(dateRange);
+
+        // Sort InBody for finding closest
+        const sortedInBody = [...inBodyEntries].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
         return days.map(day => {
+            const dateStr = format(day, 'yyyy-MM-dd');
+
+            // 1. Intake
             const dailyEntries = filteredEntries.filter(e => isSameDay(new Date(e.date), day));
-            const calories = dailyEntries.reduce((acc, e) => acc + (e.totalCalories || (e as any).calories || 0), 0);
+            const intake = dailyEntries.reduce((acc, e) => acc + (e.totalCalories || (e as any).calories || 0), 0);
             const macros = dailyEntries.reduce((acc, e) => ({
                 carbs: acc.carbs + (e.totalMacros?.carbs || (e as any).macros?.carbs || 0),
                 protein: acc.protein + (e.totalMacros?.protein || (e as any).macros?.protein || 0),
                 fat: acc.fat + (e.totalMacros?.fat || (e as any).macros?.fat || 0),
             }), { carbs: 0, protein: 0, fat: 0 });
 
+            // 2. Output (Exercise)
+            const dailyExercise = exerciseSessions.filter(e => isSameDay(new Date(e.date), day));
+            // Simple calc: Use stored duration/intensity if calories not available. 
+            // Since we don't have direct calories in ExerciseSession yet, let's estimate or assume user puts it in memo?
+            // Actually, for now let's use a rough estimate based on duration * 5kcal (moderate) - 10kcal (high).
+            // Better: Just use duration for "Activity Level" indication if no explicit calories.
+            // *Wait*, did I add calories to ExerciseSession? No.
+            // Let's estimate: Weight Training ~ 5kcal/min, Cardio ~ 8kcal/min, Sport ~ 7kcal/min.
+            const exerciseBurn = dailyExercise.reduce((acc, s) => {
+                let met = 5;
+                if (s.category === 'cardio') met = 8;
+                if (s.category === 'sport') met = 7;
+                return acc + (s.duration * met);
+            }, 0);
+
+            // 3. BMR (Basal)
+            // Find closest InBody before or on this day
+            let bmr = 0;
+            const closestIdx = closestIndexTo(day, sortedInBody.map(i => new Date(i.date)));
+            if (closestIdx !== undefined && sortedInBody[closestIdx]) {
+                bmr = sortedInBody[closestIdx].basalMetabolicRate || 0;
+            }
+            // Fallback BMR if 0 (Average Male/Female? Let's say 1500)
+            if (bmr === 0) bmr = 1500;
+
+            // 4. Target (TDEE = BMR + ExerciseBurn + TEF(10% of Intake))
+            // Simple: Target = BMR + Exercise
+            const target = bmr + exerciseBurn;
+
             return {
                 name: format(day, viewMode === 'week' ? 'EEE' : 'dd', { locale: ko }),
-                date: format(day, 'yyyy-MM-dd'),
-                calories,
+                date: dateStr,
+                calories: intake,
+                exerciseBurn,
+                target,
+                bmr,
+                net: intake - exerciseBurn,
                 ...macros
             };
         });
-    }, [dateRange, filteredEntries, viewMode]);
+    }, [dateRange, filteredEntries, viewMode, inBodyEntries, exerciseSessions]);
 
     // Macro Ratio Data for Pie Chart
     const macroRatioData = useMemo(() => {
@@ -121,23 +163,31 @@ export function DietAnalysis({ entries }: DietAnalysisProps) {
     // Simple Insights Generation
     const insights = useMemo(() => {
         const list = [];
-        const avgCal = stats.uniqueDays > 0 ? stats.totalCalories / stats.uniqueDays : 0;
 
-        if (avgCal > 2500) list.push({ type: 'warning', text: '일일 평균 섭취 칼로리가 높은 편입니다.' });
-        else if (avgCal < 1200 && avgCal > 0) list.push({ type: 'warning', text: '섭취 칼로리가 너무 부족합니다.' });
+        // Calculate averages from chartData instead of raw stats to align with BMR logic
+        const validDays = chartData.filter(d => d.calories > 0);
+        const avgIntake = validDays.reduce((acc, d) => acc + d.calories, 0) / (validDays.length || 1);
+        const avgTarget = chartData.reduce((acc, d) => acc + d.target, 0) / (chartData.length || 1);
+
+        if (validDays.length > 0) {
+            const ratio = avgIntake / avgTarget;
+            if (ratio > 1.2) list.push({ type: 'warning', text: '목표 섭취량보다 많이 드시고 있어요! 😮 운동을 늘려보세요.' });
+            else if (ratio < 0.7) list.push({ type: 'warning', text: '목표보다 너무 적게 드셨어요. 근손실이 올 수 있어요! 🥗' });
+            else list.push({ type: 'success', text: '목표 섭취량을 아주 잘 지키고 계세요! 👏' });
+        }
 
         const { carbs, protein, fat } = stats.totalMacros;
         const totalWeight = carbs + protein + fat;
         if (totalWeight > 0) {
             const pRatio = protein / totalWeight;
-            if (pRatio < 0.2) list.push({ type: 'info', text: '단백질 섭취 비율을 조금 더 늘려보세요.' });
-            if (pRatio > 0.4) list.push({ type: 'success', text: '단백질 섭취량이 훌륭합니다! 💪' });
+            if (pRatio < 0.2) list.push({ type: 'info', text: '단백질 비중을 높여 근육 성장을 도모해보세요. 🍗' });
+            if (pRatio > 0.4) list.push({ type: 'success', text: '단백질 섭취가 아주 훌륭합니다! 근육맨! 💪' });
         }
 
-        if (stats.uniqueDays === 0) list.push({ type: 'neutral', text: '데이터 기록을 시작해보세요!' });
+        if (stats.uniqueDays === 0) list.push({ type: 'neutral', text: '아직 데이터가 없어요. 오늘 식단을 기록해보세요!' });
 
         return list;
-    }, [stats]);
+    }, [stats, chartData]);
 
     return (
         <div className="space-y-6 animate-in fade-in pb-10">
@@ -259,9 +309,9 @@ export function DietAnalysis({ entries }: DietAnalysisProps) {
                                 <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">분석 피드백</h4>
                                 {insights.map((insight, idx) => (
                                     <div key={idx} className={`p-3 rounded-lg text-sm flex items-start gap-2 ${insight.type === 'warning' ? 'bg-orange-50 text-orange-700' :
-                                            insight.type === 'success' ? 'bg-green-50 text-green-700' :
-                                                insight.type === 'info' ? 'bg-blue-50 text-blue-700' :
-                                                    'bg-gray-50 text-gray-700'
+                                        insight.type === 'success' ? 'bg-green-50 text-green-700' :
+                                            insight.type === 'info' ? 'bg-blue-50 text-blue-700' :
+                                                'bg-gray-50 text-gray-700'
                                         }`}>
                                         <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
                                         <p>{insight.text}</p>
@@ -280,11 +330,10 @@ export function DietAnalysis({ entries }: DietAnalysisProps) {
                     </CardHeader>
                     <CardContent className="h-[400px]">
                         <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                            <ComposedChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                                 <XAxis dataKey="name" fontSize={12} tickLine={false} axisLine={false} />
                                 <YAxis yAxisId="left" fontSize={12} tickLine={false} axisLine={false} label={{ value: 'g', position: 'insideLeft', offset: 10, fill: '#94a3b8' }} />
-                                {/* Optional: Right Y Axis for Calories if we assume scale diff, but Stacked Bar is usually Macros. Let's keep Calories as a Line */}
                                 <YAxis yAxisId="right" orientation="right" fontSize={12} tickLine={false} axisLine={false} label={{ value: 'kcal', position: 'insideRight', offset: 10, fill: '#94a3b8' }} />
 
                                 <Tooltip
@@ -297,8 +346,10 @@ export function DietAnalysis({ entries }: DietAnalysisProps) {
                                 <Bar yAxisId="left" dataKey="protein" stackId="a" fill={MACRO_COLORS.protein} name="단백질" maxBarSize={50} />
                                 <Bar yAxisId="left" dataKey="fat" stackId="a" fill={MACRO_COLORS.fat} name="지방" radius={[4, 4, 0, 0]} maxBarSize={50} />
 
-                                <Line yAxisId="right" type="monotone" dataKey="calories" stroke="#ef4444" strokeWidth={3} name="칼로리" dot={{ r: 4, strokeWidth: 2, fill: '#fff' }} />
-                            </BarChart>
+                                {/* Target Line */}
+                                <Line yAxisId="right" type="step" dataKey="target" stroke="#10b981" strokeWidth={2} strokeDasharray="5 5" name="목표(TDEE)" dot={false} />
+                                <Line yAxisId="right" type="monotone" dataKey="calories" stroke="#ef4444" strokeWidth={3} name="섭취 칼로리" dot={{ r: 4, strokeWidth: 2, fill: '#fff' }} />
+                            </ComposedChart>
                         </ResponsiveContainer>
                     </CardContent>
                 </Card>
@@ -317,8 +368,8 @@ export function DietAnalysis({ entries }: DietAnalysisProps) {
                             {stats.topFoods.map((food, idx) => (
                                 <div key={idx} className="flex flex-col items-center justify-center p-4 bg-muted/20 rounded-xl border border-dashed">
                                     <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-white mb-2 shadow-sm ${idx === 0 ? 'bg-yellow-400' :
-                                            idx === 1 ? 'bg-gray-400' :
-                                                idx === 2 ? 'bg-orange-400' : 'bg-slate-300'
+                                        idx === 1 ? 'bg-gray-400' :
+                                            idx === 2 ? 'bg-orange-400' : 'bg-slate-300'
                                         }`}>
                                         {idx + 1}
                                     </div>

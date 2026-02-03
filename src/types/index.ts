@@ -297,11 +297,14 @@ export type DietEntry = {
 export type InBodyEntry = {
     id: string;
     date: Date;
+    height?: number;         // cm (New)
     weight: number;          // kg
     skeletalMuscleMass: number; // kg
     bodyFatMass: number;     // kg
     bodyFatPercent?: number;  // %
     bmi?: number;
+    basalMetabolicRate?: number; // kcal (New)
+    visceralFatLevel?: number; // Level (New)
     memo?: string;
 };
 

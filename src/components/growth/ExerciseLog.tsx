@@ -78,7 +78,7 @@ const EXERCISE_TYPES = [
 const TARGET_PARTS = ['가슴', '등', '하체', '어깨', '팔', '복근', '전신'];
 
 export function ExerciseLog() {
-    const { exerciseSessions, addExerciseSession, deleteExerciseSession } = useData();
+    const { exerciseSessions, addExerciseSession, deleteExerciseSession, inBodyEntries = [] } = useData();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isTypeOpen, setIsTypeOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
@@ -325,10 +325,12 @@ export function ExerciseLog() {
         return '0분';
     };
 
+    const [activeTab, setActiveTab] = useState("log");
+
     return (
         <div className="h-full flex flex-col p-6 overflow-hidden max-w-7xl mx-auto w-full">
             <div className="flex items-center justify-between mb-4 shrink-0">
-                <Tabs defaultValue="log" className="w-[300px]">
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-[300px]">
                     <TabsList className="grid w-full grid-cols-2">
                         <TabsTrigger value="log">기록 & 추이</TabsTrigger>
                         <TabsTrigger value="analysis">상세 분석</TabsTrigger>
@@ -341,7 +343,7 @@ export function ExerciseLog() {
                 )}
             </div>
 
-            <Tabs defaultValue="log" className="flex-1 overflow-hidden flex flex-col">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 overflow-hidden flex flex-col">
                 <TabsContent value="log" className="flex-1 overflow-hidden flex flex-col mt-0">
                     {isWorkoutActive ? (
                         <div className="flex-1 flex flex-col bg-white rounded-xl shadow-sm border overflow-hidden">
@@ -463,7 +465,7 @@ export function ExerciseLog() {
                 </TabsContent>
 
                 <TabsContent value="analysis" className="flex-1 overflow-y-auto custom-scrollbar mt-0">
-                    <ExerciseAnalysis sessions={exerciseSessions} />
+                    <ExerciseAnalysis sessions={exerciseSessions} inBodyEntries={inBodyEntries} />
                 </TabsContent>
             </Tabs>
 
@@ -535,6 +537,10 @@ export function ExerciseLog() {
                                         <div className="space-y-1">
                                             <Label>시간(분)</Label>
                                             <Input type="number" value={durationMin} onChange={e => setDurationMin(e.target.value)} placeholder="0" />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <Label>시간(초)</Label>
+                                            <Input type="number" value={durationSec} onChange={e => setDurationSec(e.target.value)} placeholder="0" />
                                         </div>
                                         {category === 'cardio' && (
                                             <div className="space-y-1">
