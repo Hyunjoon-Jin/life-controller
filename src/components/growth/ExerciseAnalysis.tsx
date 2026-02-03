@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { ExerciseSession } from '@/types';
+import { ExerciseSession, InBodyEntry } from '@/types';
 import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, eachDayOfInterval, format, isSameDay, subMonths, subWeeks, addMonths, addWeeks } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,9 +12,10 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 
 interface ExerciseAnalysisProps {
     sessions: ExerciseSession[];
+    inBodyEntries?: InBodyEntry[];
 }
 
-export function ExerciseAnalysis({ sessions }: ExerciseAnalysisProps) {
+export function ExerciseAnalysis({ sessions, inBodyEntries = [] }: ExerciseAnalysisProps) {
     const [viewMode, setViewMode] = useState<'week' | 'month'>('week');
     const [currentDate, setCurrentDate] = useState(new Date());
 
