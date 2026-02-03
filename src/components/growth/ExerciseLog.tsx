@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dumbbell, Plus, Trash2, Calendar as CalendarIcon, Timer, Trophy, Footprints, Target, Activity, TrendingUp, Search, ChevronDown, Check, Flower2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ExerciseCategory, ExerciseSession } from '@/types';
@@ -403,15 +404,16 @@ export function ExerciseLog() {
                                                 <TrendingUp className="w-5 h-5 text-blue-600" />
                                                 성장 그래프
                                             </h3>
-                                            <select
-                                                className="bg-transparent border-none text-sm font-medium cursor-pointer focus:ring-0 outline-none text-muted-foreground hover:text-foreground"
-                                                value={trendType}
-                                                onChange={(e) => setTrendType(e.target.value)}
-                                            >
-                                                {availableTypes.map(t => (
-                                                    <option key={t} value={t}>{t}</option>
-                                                ))}
-                                            </select>
+                                            <Select value={trendType} onValueChange={setTrendType}>
+                                                <SelectTrigger className="w-[180px] h-8 text-xs font-bold bg-background/50 border-input/50 md:text-sm">
+                                                    <SelectValue />
+                                                </SelectTrigger>
+                                                <SelectContent align="end" className="max-h-[300px]">
+                                                    {availableTypes.map(t => (
+                                                        <SelectItem key={t} value={t}>{t}</SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
                                         </div>
                                         <div className="h-[250px] w-full p-4">
                                             <ResponsiveContainer width="100%" height="100%">

@@ -8,7 +8,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Utensils, Plus, Trash2, Camera, Flame, Edit2, X, ChevronDown, ChevronRight } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Utensils, Plus, Trash2, Camera, Flame, Edit2, X, ChevronDown, ChevronRight, Activity } from 'lucide-react';
 import { format, isSameDay, parseISO } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { DietEntry, DietItem } from '@/types';
@@ -187,10 +188,20 @@ export function DietLog() {
     return (
         <div className="h-full flex flex-col p-6 overflow-hidden">
             <div className="flex items-center justify-between mb-4 shrink-0">
-                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-[300px]">
-                    <TabsList className="grid w-full grid-cols-2">
-                        <TabsTrigger value="log">기록</TabsTrigger>
-                        <TabsTrigger value="analysis">상세 분석</TabsTrigger>
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                    <TabsList className="grid w-full grid-cols-2 h-12 bg-muted/20 p-1 rounded-xl mb-6">
+                        <TabsTrigger
+                            value="log"
+                            className="h-full data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-md text-muted-foreground font-bold rounded-lg transition-all gap-2 text-sm sm:text-base"
+                        >
+                            <Utensils className="w-4 h-4" /> 식단 기록
+                        </TabsTrigger>
+                        <TabsTrigger
+                            value="analysis"
+                            className="h-full data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-md text-muted-foreground font-bold rounded-lg transition-all gap-2 text-sm sm:text-base"
+                        >
+                            <Activity className="w-4 h-4" /> 상세 분석
+                        </TabsTrigger>
                     </TabsList>
                 </Tabs>
                 <Button onClick={() => { resetForm(); setIsDialogOpen(true); }} className="bg-primary hover:bg-primary/90">
@@ -346,16 +357,17 @@ export function DietLog() {
                                     onChange={e => setDate(new Date(e.target.value))}
                                     className="flex-[2]"
                                 />
-                                <select
-                                    className="flex-1 border rounded-md px-2 text-sm bg-background"
-                                    value={mealType}
-                                    onChange={(e) => setMealType(e.target.value as any)}
-                                >
-                                    <option value="breakfast">아침</option>
-                                    <option value="lunch">점심</option>
-                                    <option value="dinner">저녁</option>
-                                    <option value="snack">간식</option>
-                                </select>
+                                <Select value={mealType} onValueChange={(v) => setMealType(v as any)}>
+                                    <SelectTrigger className="w-[100px]">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="breakfast">아침</SelectItem>
+                                        <SelectItem value="lunch">점심</SelectItem>
+                                        <SelectItem value="dinner">저녁</SelectItem>
+                                        <SelectItem value="snack">간식</SelectItem>
+                                    </SelectContent>
+                                </Select>
                             </div>
                         </div>
 

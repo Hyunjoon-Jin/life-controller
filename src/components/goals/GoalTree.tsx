@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
-import { ChevronRight, ChevronDown, Plus, Trophy, Trash2, Pencil, Calendar, Tag } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ChevronRight, ChevronDown, Plus, Trophy, Trash2, Pencil, Calendar, Tag, Filter, Search } from 'lucide-react';
 import { cn, generateId } from '@/lib/utils';
 import { useData } from '@/context/DataProvider';
 import { GoalDetailDialog } from './GoalDetailDialog';
@@ -24,7 +25,8 @@ function GoalItem({ goal, level = 0, onAddSubGoal, onEdit, onDetail, forceExpand
     const isExpanded = forceExpand || expanded;
     const hasSubGoals = goal.subGoals && goal.subGoals.length > 0;
 
-    const handleDelete = () => {
+    const handleDelete = (e: React.MouseEvent) => {
+        e.stopPropagation();
         if (confirm('이 목표를 삭제하시겠습니까?')) {
             deleteGoal(goal.id);
         }
@@ -81,12 +83,12 @@ function GoalItem({ goal, level = 0, onAddSubGoal, onEdit, onDetail, forceExpand
                             </span>
                             <div className="flex gap-1">
                                 {goal.category && (
-                                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-primary/10 text-primary font-bold">
+                                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-primary/10 text-primary font-bold border border-primary/20">
                                         {getCategoryLabel(goal.category)}
                                     </span>
                                 )}
                                 {goal.planType && (
-                                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-secondary text-secondary-foreground font-medium">
+                                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-secondary text-secondary-foreground font-medium border border-secondary">
                                         {getPlanTypeLabel(goal.planType)}
                                     </span>
                                 )}
@@ -94,21 +96,21 @@ function GoalItem({ goal, level = 0, onAddSubGoal, onEdit, onDetail, forceExpand
                         </div>
 
                         <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <span className="text-xs text-muted-foreground">{goal.progress}%</span>
-                            <button onClick={() => onAddSubGoal(goal.id)} className="text-muted-foreground hover:text-primary">
-                                <Plus className="w-3 h-3" />
+                            <span className="text-xs text-muted-foreground mr-1">{goal.progress}%</span>
+                            <button onClick={() => onAddSubGoal(goal.id)} className="text-muted-foreground hover:text-primary transition-colors">
+                                <Plus className="w-3.5 h-3.5" />
                             </button>
-                            <button onClick={() => onEdit(goal)} className="text-muted-foreground hover:text-foreground">
-                                <Pencil className="w-3 h-3" />
+                            <button onClick={() => onEdit(goal)} className="text-muted-foreground hover:text-foreground transition-colors">
+                                <Pencil className="w-3.5 h-3.5" />
                             </button>
-                            <button onClick={handleDelete} className="text-muted-foreground hover:text-destructive">
-                                <Trash2 className="w-3 h-3" />
+                            <button onClick={handleDelete} className="text-muted-foreground hover:text-destructive transition-colors">
+                                <Trash2 className="w-3.5 h-3.5" />
                             </button>
                         </div>
                     </div>
                     <div className="h-1.5 w-full bg-secondary rounded-full overflow-hidden">
                         <div
-                            className="h-full bg-primary transition-all duration-500"
+                            className="h-full bg-primary transition-all duration-500 ease-out"
                             style={{ width: `${goal.progress}%` }}
                         />
                     </div>
@@ -116,7 +118,7 @@ function GoalItem({ goal, level = 0, onAddSubGoal, onEdit, onDetail, forceExpand
             </div>
 
             {hasSubGoals && isExpanded && (
-                <div className="space-y-1">
+                <div className="space-y-1 animate-in slide-in-from-top-1 fade-in duration-200">
                     {goal.subGoals!.map(subGoal => (
                         <GoalItem
                             key={subGoal.id}
@@ -253,18 +255,20 @@ export function GoalTree() {
 
     const [searchTerm, setSearchTerm] = useState('');
     const [filterCategory, setFilterCategory] = useState<GoalCategory | 'all'>('all');
+    const [filterPlanType, setFilterPlanType] = useState<PlanType | 'all'>('all');
 
     // Recursive filtering logic
     const filterGoals = (goals: Goal[]): Goal[] => {
         return goals.reduce((acc: Goal[], goal) => {
             const matchesTerm = goal.title.toLowerCase().includes(searchTerm.toLowerCase());
             const matchesCategory = filterCategory === 'all' || goal.category === filterCategory;
+            const matchesPlanType = filterPlanType === 'all' || goal.planType === filterPlanType;
 
             // Check subgoals recursively
             const filteredSubGoals = goal.subGoals ? filterGoals(goal.subGoals) : [];
             const hasMatchingSubGoals = filteredSubGoals.length > 0;
 
-            if ((matchesTerm && matchesCategory) || hasMatchingSubGoals) {
+            if ((matchesTerm && matchesCategory && matchesPlanType) || hasMatchingSubGoals) {
                 acc.push({
                     ...goal,
                     subGoals: filteredSubGoals
@@ -275,12 +279,12 @@ export function GoalTree() {
     };
 
     const filteredGoals = filterGoals(goals);
-    const isFiltering = searchTerm !== '' || filterCategory !== 'all';
+    const isFiltering = searchTerm !== '' || filterCategory !== 'all' || filterPlanType !== 'all';
 
     return (
         <div className="border border-border rounded-lg bg-card text-card-foreground p-4 space-y-4">
             <div className="flex flex-col gap-4">
-                <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row gap-2">
                     <div className="relative flex-1">
                         <Input
                             placeholder="목표 검색..."
@@ -288,23 +292,42 @@ export function GoalTree() {
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="h-9 text-sm pl-8"
                         />
-                        <Trophy className="absolute left-2.5 top-2.5 w-4 h-4 text-muted-foreground opacity-50" />
+                        <Search className="absolute left-2.5 top-2.5 w-4 h-4 text-muted-foreground opacity-50" />
                     </div>
-                    <select
-                        className="h-9 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring w-[120px]"
-                        value={filterCategory}
-                        onChange={(e) => setFilterCategory(e.target.value as any)}
-                    >
-                        <option value="all">전체 분류</option>
-                        <option value="financial">재테크</option>
-                        <option value="health">건강</option>
-                        <option value="career">커리어</option>
-                        <option value="growth">자기계발</option>
-                        <option value="language">어학</option>
-                        <option value="hobby">취미</option>
-                        <option value="other">기타</option>
-                    </select>
-                    <Button size="sm" variant="ghost" className="h-9 w-9 p-0 bg-secondary/50" onClick={() => handleOpenCreateDialog()}><Plus className="w-4 h-4" /></Button>
+                    <div className="flex gap-2">
+                        <Select value={filterCategory} onValueChange={(v) => setFilterCategory(v as any)}>
+                            <SelectTrigger className="w-[120px] h-9 text-xs">
+                                <SelectValue placeholder="카테고리" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">전체 분류</SelectItem>
+                                <SelectItem value="financial">재테크</SelectItem>
+                                <SelectItem value="health">건강</SelectItem>
+                                <SelectItem value="career">커리어</SelectItem>
+                                <SelectItem value="growth">자기계발</SelectItem>
+                                <SelectItem value="language">어학</SelectItem>
+                                <SelectItem value="hobby">취미</SelectItem>
+                                <SelectItem value="other">기타</SelectItem>
+                            </SelectContent>
+                        </Select>
+
+                        <Select value={filterPlanType} onValueChange={(v) => setFilterPlanType(v as any)}>
+                            <SelectTrigger className="w-[120px] h-9 text-xs">
+                                <SelectValue placeholder="유형" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">전체 유형</SelectItem>
+                                <SelectItem value="short-term">단기 목표</SelectItem>
+                                <SelectItem value="long-term">장기 목표</SelectItem>
+                                <SelectItem value="project">프로젝트</SelectItem>
+                                <SelectItem value="habit">습관</SelectItem>
+                            </SelectContent>
+                        </Select>
+
+                        <Button size="sm" variant="outline" className="h-9 w-9 p-0 hover:bg-secondary/50" onClick={() => handleOpenCreateDialog()}>
+                            <Plus className="w-4 h-4" />
+                        </Button>
+                    </div>
                 </div>
             </div>
 
@@ -320,12 +343,12 @@ export function GoalTree() {
                     />
                 ))}
                 {filteredGoals.length === 0 && (
-                    <div className="text-center py-8 text-muted-foreground">
-                        <Trophy className="w-12 h-12 mx-auto mb-2 opacity-20" />
-                        <p className="text-sm">
+                    <div className="text-center py-12 text-muted-foreground">
+                        <Trophy className="w-12 h-12 mx-auto mb-3 opacity-10" />
+                        <p className="text-sm font-medium">
                             {isFiltering ? '검색 결과가 없습니다.' : '아직 등록된 목표가 없습니다.'}
                         </p>
-                        {!isFiltering && <p className="text-xs">새로운 목표를 추가하고 계획을 시작해 보세요!</p>}
+                        {!isFiltering && <p className="text-xs text-muted-foreground mt-1">새로운 목표를 추가하고 계획을 시작해 보세요!</p>}
                     </div>
                 )}
             </div>
@@ -355,34 +378,36 @@ export function GoalTree() {
                                 <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1">
                                     <Tag className="w-3 h-3" /> 목표 분류
                                 </Label>
-                                <select
-                                    className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                                    value={newGoalCategory}
-                                    onChange={(e) => setNewGoalCategory(e.target.value as any)}
-                                >
-                                    <option value="financial">재테크</option>
-                                    <option value="health">건강</option>
-                                    <option value="career">커리어</option>
-                                    <option value="growth">자기계발</option>
-                                    <option value="language">어학</option>
-                                    <option value="hobby">취미</option>
-                                    <option value="other">기타</option>
-                                </select>
+                                <Select value={newGoalCategory} onValueChange={(v) => setNewGoalCategory(v as any)}>
+                                    <SelectTrigger>
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="financial">재테크</SelectItem>
+                                        <SelectItem value="health">건강</SelectItem>
+                                        <SelectItem value="career">커리어</SelectItem>
+                                        <SelectItem value="growth">자기계발</SelectItem>
+                                        <SelectItem value="language">어학</SelectItem>
+                                        <SelectItem value="hobby">취미</SelectItem>
+                                        <SelectItem value="other">기타</SelectItem>
+                                    </SelectContent>
+                                </Select>
                             </div>
                             <div className="space-y-2">
                                 <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1">
                                     <Calendar className="w-3 h-3" /> 계획 유형
                                 </Label>
-                                <select
-                                    className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                                    value={newPlanType}
-                                    onChange={(e) => setNewPlanType(e.target.value as any)}
-                                >
-                                    <option value="short-term">단기 목표</option>
-                                    <option value="long-term">장기 목표</option>
-                                    <option value="project">프로젝트</option>
-                                    <option value="habit">습관</option>
-                                </select>
+                                <Select value={newPlanType} onValueChange={(v) => setNewPlanType(v as any)}>
+                                    <SelectTrigger>
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="short-term">단기 목표</SelectItem>
+                                        <SelectItem value="long-term">장기 목표</SelectItem>
+                                        <SelectItem value="project">프로젝트</SelectItem>
+                                        <SelectItem value="habit">습관</SelectItem>
+                                    </SelectContent>
+                                </Select>
                             </div>
                         </div>
 

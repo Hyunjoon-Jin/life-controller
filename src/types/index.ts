@@ -322,6 +322,15 @@ export type HobbyEntry = {
     link?: string; // URL
 };
 
+export type BodyCompositionGoal = {
+    targetWeight?: number;
+    targetMuscle?: number;
+    targetFatPercent?: number;
+    targetDate: Date;
+    startWeight?: number; // To calculate progress
+    startDate?: Date; // To calculate daily adjustment
+};
+
 export type Transaction = {
     id: string;
     date: Date;
@@ -404,4 +413,19 @@ export type Career = {
     description?: string; // 상세 업무
     team?: string; // 소속 팀
     techStack?: string[];
+};
+
+export type LanguageResource = {
+    id: string;
+    title: string;
+    type: 'video' | 'article' | 'lecture' | 'book' | 'other';
+    url: string;
+    thumbnail?: string; // Auto-fetched or manual
+    category: string; // e.g. 'Grammar', 'Listening', 'Reading', 'Culture'
+    language: string; // e.g. 'English', 'Japanese'
+    status: 'tostudy' | 'studying' | 'completed';
+    isRecommended?: boolean; // If true, it's a system recommendation
+    tags?: string[];
+    createdAt: Date;
+    memo?: string;
 };

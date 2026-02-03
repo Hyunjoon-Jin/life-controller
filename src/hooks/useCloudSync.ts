@@ -5,7 +5,7 @@ import {
     Task, Project, Goal, Habit, CalendarEvent, JournalEntry, Memo, Person, Scrap,
     LanguageEntry, Book, ExerciseSession, DietEntry, InBodyEntry, HobbyEntry,
     Transaction, Asset, Certificate, PortfolioItem, ArchiveDocument,
-    UserProfile, Education, Career
+    UserProfile, Education, Career, BodyCompositionGoal, LanguageResource
 } from '@/types';
 
 type AppState = {
@@ -33,6 +33,8 @@ type AppState = {
     userProfile: UserProfile;
     educations: Education[];
     careers: Career[];
+    bodyCompositionGoal?: BodyCompositionGoal;
+    languageResources: LanguageResource[];
 };
 
 export function useCloudSync() {

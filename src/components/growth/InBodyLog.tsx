@@ -6,17 +6,18 @@ import { generateId, cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Card, CardContent } from '@/components/ui/card';
-import { format } from 'date-fns';
-import { Plus, Trash2, Scale, Activity, TrendingUp, Ruler, Zap, Heart } from 'lucide-react';
+import { format, differenceInDays } from 'date-fns';
+import { Plus, Trash2, Scale, Activity, TrendingUp, Ruler, Zap, Heart, Target, Calendar as CalendarIcon, ArrowRight } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 
 export function InBodyLog() {
-    const { inBodyEntries, addInBodyEntry, deleteInBodyEntry } = useData();
+    const { inBodyEntries, addInBodyEntry, deleteInBodyEntry, bodyCompositionGoal, setBodyCompositionGoal } = useData();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isGoalDialogOpen, setIsGoalDialogOpen] = useState(false);
 
-    // Form State
+    // Entry Form State
     const [date, setDate] = useState<Date>(new Date());
     const [height, setHeight] = useState('');
     const [weight, setWeight] = useState('');
@@ -28,18 +29,37 @@ export function InBodyLog() {
     const [visceralFat, setVisceralFat] = useState('');
     const [memo, setMemo] = useState('');
 
-    // Pre-fill height from last entry if available
+    // Goal Form State
+    const [goalDate, setGoalDate] = useState<Date>(new Date());
+    const [goalWeight, setGoalWeight] = useState('');
+    const [goalMuscle, setGoalMuscle] = useState('');
+    const [goalFatPercent, setGoalFatPercent] = useState('');
+
+    const sortedEntries = (inBodyEntries || []).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    const latestEntry = sortedEntries[sortedEntries.length - 1];
+
+    // Initialize Goal Form
     useEffect(() => {
-        if (isDialogOpen && inBodyEntries && inBodyEntries.length > 0 && !height) {
-            const lastEntry = inBodyEntries[inBodyEntries.length - 1]; // Assuming sorted? Or check logic
-            // Actually sortedEntries is sorted by date ascending in render, but inBodyEntries might be arbitrary.
-            // Let's find the latest entry.
-            const latest = [...inBodyEntries].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
-            if (latest?.height) {
-                setHeight(latest.height.toString());
-            }
+        if (isGoalDialogOpen && bodyCompositionGoal) {
+            if (bodyCompositionGoal.targetDate) setGoalDate(new Date(bodyCompositionGoal.targetDate));
+            if (bodyCompositionGoal.targetWeight) setGoalWeight(bodyCompositionGoal.targetWeight.toString());
+            if (bodyCompositionGoal.targetMuscle) setGoalMuscle(bodyCompositionGoal.targetMuscle.toString());
+            if (bodyCompositionGoal.targetFatPercent) setGoalFatPercent(bodyCompositionGoal.targetFatPercent.toString());
+        } else if (isGoalDialogOpen && !bodyCompositionGoal) {
+            // Default target date to 1 month from now
+            const nextMonth = new Date();
+            nextMonth.setMonth(nextMonth.getMonth() + 1);
+            setGoalDate(nextMonth);
         }
-    }, [isDialogOpen, inBodyEntries]);
+    }, [isGoalDialogOpen, bodyCompositionGoal]);
+
+    // Pre-fill height/weight for Entry Form
+    useEffect(() => {
+        if (isDialogOpen && latestEntry) {
+            if (!height && latestEntry.height) setHeight(latestEntry.height.toString());
+            // Optional: pre-fill weight or leave empty to force measurement? Let's leave weight empty.
+        }
+    }, [isDialogOpen, latestEntry, height]);
 
     // Auto-calculate BMI
     useEffect(() => {
@@ -53,9 +73,8 @@ export function InBodyLog() {
         }
     }, [height, weight]);
 
-    const handleSave = () => {
+    const handleSaveEntry = () => {
         if (!weight) return;
-
         addInBodyEntry({
             id: generateId(),
             date: date,
@@ -69,12 +88,23 @@ export function InBodyLog() {
             visceralFatLevel: parseFloat(visceralFat) || undefined,
             memo
         });
-
         setIsDialogOpen(false);
-        resetForm();
+        resetEntryForm();
     };
 
-    const resetForm = () => {
+    const handleSaveGoal = () => {
+        setBodyCompositionGoal({
+            targetDate: goalDate,
+            targetWeight: parseFloat(goalWeight) || undefined,
+            targetMuscle: parseFloat(goalMuscle) || undefined,
+            targetFatPercent: parseFloat(goalFatPercent) || undefined,
+            startDate: new Date(),
+            startWeight: latestEntry?.weight
+        });
+        setIsGoalDialogOpen(false);
+    };
+
+    const resetEntryForm = () => {
         setDate(new Date());
         setWeight('');
         setSkeletalMuscle('');
@@ -84,10 +114,7 @@ export function InBodyLog() {
         setBmr('');
         setVisceralFat('');
         setMemo('');
-        // Keep height? maybe
     };
-
-    const sortedEntries = (inBodyEntries || []).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
     // Prepare Data for Chart
     const chartData = sortedEntries.map(entry => ({
@@ -95,10 +122,30 @@ export function InBodyLog() {
         weight: entry.weight,
         muscle: entry.skeletalMuscleMass,
         fat: entry.bodyFatMass,
-        score: entry.weight + entry.skeletalMuscleMass // Dummy formulation, just to trigger updates if needed
+        score: entry.weight + entry.skeletalMuscleMass // Dummy formulation
     }));
 
-    // Reverse for list view (Newest first)
+    // Goal Summary Calculation
+    let goalSummary = null;
+    if (bodyCompositionGoal && latestEntry) {
+        const daysLeft = differenceInDays(new Date(bodyCompositionGoal.targetDate), new Date());
+        const weightDiff = bodyCompositionGoal.targetWeight ? bodyCompositionGoal.targetWeight - latestEntry.weight : 0;
+        const color = weightDiff < 0 ? 'text-blue-600' : 'text-red-600'; // Losing weight is blue (cool), gaining is red (hot/bulk)? Or standard logic?
+        // Usually Green/Blue is good. Let's stick to neutral or context.
+        // Weight Loss: Negative Diff.
+
+        goalSummary = {
+            daysLeft,
+            weightDiff,
+            targetWeight: bodyCompositionGoal.targetWeight,
+            currentWeight: latestEntry.weight,
+            targetMuscle: bodyCompositionGoal.targetMuscle,
+            currentMuscle: latestEntry.skeletalMuscleMass,
+            targetFat: bodyCompositionGoal.targetFatPercent,
+            currentFat: latestEntry.bodyFatPercent
+        };
+    }
+
     const listEntries = [...sortedEntries].reverse();
 
     return (
@@ -108,10 +155,69 @@ export function InBodyLog() {
                     <Scale className="w-6 h-6 text-primary" />
                     <h2 className="text-2xl font-bold">InBody 상세 기록</h2>
                 </div>
-                <Button onClick={() => setIsDialogOpen(true)} className="bg-primary hover:bg-primary/90">
-                    <Plus className="w-4 h-4 mr-2" /> 기록 추가
-                </Button>
+                <div className="flex gap-2">
+                    <Button onClick={() => setIsGoalDialogOpen(true)} variant="outline" className="gap-2 border-dashed border-primary/50 text-primary hover:bg-primary/5">
+                        <Target className="w-4 h-4" /> 목표 설정
+                    </Button>
+                    <Button onClick={() => setIsDialogOpen(true)} className="bg-primary hover:bg-primary/90">
+                        <Plus className="w-4 h-4 mr-2" /> 기록 추가
+                    </Button>
+                </div>
             </div>
+
+            {/* Goal Progerss Card */}
+            {goalSummary && (
+                <Card className="bg-gradient-to-r from-indigo-50 to-blue-50 border-indigo-100">
+                    <CardContent className="p-4 flex flex-col md:flex-row items-center justify-between gap-4">
+                        <div className="flex flex-col">
+                            <h3 className="text-sm font-semibold text-indigo-900 flex items-center gap-2">
+                                <Target className="w-4 h-4 text-indigo-600" /> 나의 목표 달성 현황
+                            </h3>
+                            <p className="text-xs text-indigo-600/80 mt-1">
+                                목표일 ({format(new Date(bodyCompositionGoal!.targetDate), 'yyyy.MM.dd')})까지
+                                <span className="font-bold text-indigo-700 mx-1">{goalSummary.daysLeft > 0 ? `${goalSummary.daysLeft}일` : 'D-Day'}</span>
+                                남았습니다.
+                            </p>
+                        </div>
+
+                        <div className="flex items-center gap-6">
+                            {goalSummary.targetWeight && (
+                                <div className="flex flex-col items-center">
+                                    <span className="text-xs text-muted-foreground">체중</span>
+                                    <div className="flex items-center gap-2">
+                                        <span className="font-bold text-lg">{goalSummary.currentWeight}</span>
+                                        <ArrowRight className="w-3 h-3 text-muted-foreground" />
+                                        <span className="font-bold text-lg text-primary">{goalSummary.targetWeight}</span>
+                                        <span className="text-xs font-medium bg-white px-1.5 py-0.5 rounded border ml-1">
+                                            {goalSummary.weightDiff > 0 ? '+' : ''}{goalSummary.weightDiff.toFixed(1)}kg
+                                        </span>
+                                    </div>
+                                </div>
+                            )}
+                            {goalSummary.targetMuscle && (
+                                <div className="flex flex-col items-center hidden sm:flex">
+                                    <span className="text-xs text-muted-foreground">골격근량</span>
+                                    <div className="flex items-center gap-2">
+                                        <span className="font-bold text-lg">{goalSummary.currentMuscle}</span>
+                                        <ArrowRight className="w-3 h-3 text-muted-foreground" />
+                                        <span className="font-bold text-lg text-primary">{goalSummary.targetMuscle}</span>
+                                    </div>
+                                </div>
+                            )}
+                            {goalSummary.targetFat && (
+                                <div className="flex flex-col items-center hidden sm:flex">
+                                    <span className="text-xs text-muted-foreground">체지방률</span>
+                                    <div className="flex items-center gap-2">
+                                        <span className="font-bold text-lg">{goalSummary.currentFat}%</span>
+                                        <ArrowRight className="w-3 h-3 text-muted-foreground" />
+                                        <span className="font-bold text-lg text-primary">{goalSummary.targetFat}%</span>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
 
             {/* Chart Section */}
             {sortedEntries.length >= 2 ? (
@@ -270,7 +376,61 @@ export function InBodyLog() {
                 )}
             </div>
 
-            {/* Dialog */}
+            {/* Goal Setting Dialog */}
+            <Dialog open={isGoalDialogOpen} onOpenChange={setIsGoalDialogOpen}>
+                <DialogContent className="max-w-md">
+                    <DialogHeader>
+                        <DialogTitle>목표 설정</DialogTitle>
+                        <DialogDescription>
+                            도달하고자 하는 목표 체중과 골격근량, 그리고 날짜를 설정하세요.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                        <div className="grid gap-2">
+                            <Label>목표 날짜</Label>
+                            <Input
+                                type="date"
+                                value={format(goalDate, 'yyyy-MM-dd')}
+                                onChange={(e) => setGoalDate(new Date(e.target.value))}
+                            />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="grid gap-2">
+                                <Label>목표 체중 (kg)</Label>
+                                <Input
+                                    type="number"
+                                    value={goalWeight}
+                                    onChange={e => setGoalWeight(e.target.value)}
+                                    placeholder={latestEntry?.weight?.toString() || "0.0"}
+                                />
+                            </div>
+                            <div className="grid gap-2">
+                                <Label>목표 골격근량 (kg)</Label>
+                                <Input
+                                    type="number"
+                                    value={goalMuscle}
+                                    onChange={e => setGoalMuscle(e.target.value)}
+                                    placeholder={latestEntry?.skeletalMuscleMass?.toString() || "0.0"}
+                                />
+                            </div>
+                        </div>
+                        <div className="grid gap-2">
+                            <Label>목표 체지방률 (%)</Label>
+                            <Input
+                                type="number"
+                                value={goalFatPercent}
+                                onChange={e => setGoalFatPercent(e.target.value)}
+                                placeholder={latestEntry?.bodyFatPercent?.toString() || "0.0"}
+                            />
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button onClick={handleSaveGoal}>목표 저장</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* Entry Dialog */}
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
@@ -367,7 +527,7 @@ export function InBodyLog() {
                         </div>
                     </div>
                     <DialogFooter>
-                        <Button onClick={handleSave} disabled={!weight}>저장</Button>
+                        <Button onClick={handleSaveEntry} disabled={!weight}>저장</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

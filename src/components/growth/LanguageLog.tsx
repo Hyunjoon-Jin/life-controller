@@ -7,16 +7,17 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { BookOpen, Plus, Trash2, Clock, Calendar as CalendarIcon, Save, Languages, BarChart2, GraduationCap, PenTool } from 'lucide-react';
+import { BookOpen, Plus, Trash2, Clock, Calendar as CalendarIcon, Save, Languages, BarChart2, GraduationCap, PenTool, BookMarked } from 'lucide-react';
 import { format } from 'date-fns';
 import { LanguageStats } from './LanguageStats';
 import { VocabQuiz } from './VocabQuiz';
+import { LanguageResources } from './LanguageResources';
 import { Textarea } from '@/components/ui/textarea';
 
 export function LanguageLog() {
     const { languageEntries, addLanguageEntry, deleteLanguageEntry } = useData();
     const [selectedLanguage, setSelectedLanguage] = useState('English');
-    const [activeTab, setActiveTab] = useState<'log' | 'stats' | 'quiz'>('stats'); // Default to stats for dashboard feel
+    const [activeTab, setActiveTab] = useState<'log' | 'stats' | 'quiz' | 'resources'>('stats'); // Default to stats for dashboard feel
 
     const [studyTime, setStudyTime] = useState('');
     const [vocabList, setVocabList] = useState<{ word: string, meaning: string }[]>([]);
@@ -121,6 +122,17 @@ export function LanguageLog() {
                 >
                     <GraduationCap className="w-4 h-4" /> 단어장 (퀴즈)
                 </button>
+                <button
+                    onClick={() => setActiveTab('resources')}
+                    className={cn(
+                        "flex items-center gap-2 px-4 py-2 text-sm font-bold border-b-2 transition-colors",
+                        activeTab === 'resources'
+                            ? "border-primary text-primary"
+                            : "border-transparent text-muted-foreground hover:text-foreground"
+                    )}
+                >
+                    <BookMarked className="w-4 h-4" /> 자료실
+                </button>
             </div>
 
             {/* Content Area */}
@@ -128,6 +140,8 @@ export function LanguageLog() {
                 {activeTab === 'stats' && <LanguageStats language={selectedLanguage} />}
 
                 {activeTab === 'quiz' && <VocabQuiz language={selectedLanguage} />}
+
+                {activeTab === 'resources' && <LanguageResources language={selectedLanguage} />}
 
                 {activeTab === 'log' && (
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">

@@ -5,7 +5,7 @@ import {
     Task, Project, Goal, Habit, CalendarEvent, JournalEntry, Memo, Person, Scrap,
     LanguageEntry, Book, ExerciseSession, DietEntry, InBodyEntry, HobbyEntry,
     Transaction, Asset, Certificate, PortfolioItem, ArchiveDocument,
-    UserProfile, Education, Career
+    UserProfile, Education, Career, BodyCompositionGoal, LanguageResource
 } from '@/types';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useCloudSync } from '@/hooks/useCloudSync';
@@ -80,6 +80,11 @@ interface DataContextType {
     addLanguageEntry: (entry: LanguageEntry) => void;
     updateLanguageEntry: (entry: LanguageEntry) => void;
     deleteLanguageEntry: (id: string) => void;
+    languageResources: LanguageResource[];
+    setLanguageResources: (resources: LanguageResource[]) => void;
+    addLanguageResource: (resource: LanguageResource) => void;
+    updateLanguageResource: (resource: LanguageResource) => void;
+    deleteLanguageResource: (id: string) => void;
 
     books: Book[];
     setBooks: (books: Book[]) => void;
@@ -144,6 +149,10 @@ interface DataContextType {
     // Sync
     isSyncing: boolean;
     forceSync: () => Promise<void>;
+
+    // New: Body Composition Goal
+    bodyCompositionGoal?: BodyCompositionGoal;
+    setBodyCompositionGoal: (goal: BodyCompositionGoal) => void;
 }
 
 
@@ -180,6 +189,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
     // New Log States
     const [languageEntries, setLanguageEntries] = useLocalStorage<LanguageEntry[]>('languageEntries', []);
+    const [languageResources, setLanguageResources] = useLocalStorage<LanguageResource[]>('languageResources', []); // New
     const [books, setBooks] = useLocalStorage<Book[]>('books', []);
     const [exerciseSessions, setExerciseSessions] = useLocalStorage<ExerciseSession[]>('exerciseSessions', []);
     const [dietEntries, setDietEntries] = useLocalStorage<DietEntry[]>('dietEntries', []);
@@ -205,11 +215,15 @@ export function DataProvider({ children }: { children: ReactNode }) {
     const [educations, setEducations] = useLocalStorage<Education[]>('educations', []);
     const [careers, setCareers] = useLocalStorage<Career[]>('careers', []);
 
+    // Body Composition Goal State
+    const [bodyCompositionGoal, setBodyCompositionGoal] = useLocalStorage<BodyCompositionGoal>('bodyCompositionGoal', {
+        targetDate: new Date()
+    });
+
     // Cloud Sync Integration
     const { saveData, loadData, isSyncing } = useCloudSync();
     const { data: session } = useSession();
     const [isLoadedFromCloud, setIsLoadedFromCloud] = useState(false);
-
 
     // 1. Load data from cloud on login
     useEffect(() => {
@@ -231,6 +245,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
                     if (data.people) setPeople(data.people);
                     if (data.scraps) setScraps(data.scraps);
                     if (data.languageEntries) setLanguageEntries(data.languageEntries);
+                    if (data.languageResources) setLanguageResources(data.languageResources);
                     if (data.books) setBooks(data.books);
                     if (data.exerciseSessions) setExerciseSessions(data.exerciseSessions);
                     if (data.dietEntries) setDietEntries(data.dietEntries);
@@ -243,100 +258,43 @@ export function DataProvider({ children }: { children: ReactNode }) {
                     if (data.archiveDocuments) setArchiveDocuments(data.archiveDocuments);
                     if (data.educations) setEducations(data.educations);
                     if (data.careers) setCareers(data.careers);
+                    if (data.bodyCompositionGoal) setBodyCompositionGoal(data.bodyCompositionGoal);
                 }
                 setIsLoadedFromCloud(true);
             });
         }
     }, [session?.user?.email, loadData]);
 
-
     // 2. Save data to cloud on change
     useEffect(() => {
         if (session?.user && isLoadedFromCloud) {
             saveData({
                 tasks, projects, goals, habits, events, journals, memos, people, scraps,
-                languageEntries, books, exerciseSessions, dietEntries, inBodyEntries, hobbyEntries,
+                languageEntries, languageResources, books, exerciseSessions, dietEntries, inBodyEntries, hobbyEntries,
                 transactions, assets, certificates, portfolios, archiveDocuments,
-                userProfile, educations, careers
+                userProfile, educations, careers, bodyCompositionGoal
             });
         }
     }, [
         session?.user, isLoadedFromCloud, saveData,
         tasks, projects, goals, habits, events, journals, memos, people, scraps,
-        languageEntries, books, exerciseSessions, dietEntries, inBodyEntries, hobbyEntries,
+        languageEntries, languageResources, books, exerciseSessions, dietEntries, inBodyEntries, hobbyEntries,
         transactions, assets, certificates, portfolios, archiveDocuments,
-        userProfile, educations, careers
+        userProfile, educations, careers, bodyCompositionGoal
     ]);
 
     const forceSync = async () => {
         if (session?.user) {
             await saveData({
                 tasks, projects, goals, habits, events, journals, memos, people, scraps,
-                languageEntries, books, exerciseSessions, dietEntries, inBodyEntries, hobbyEntries,
+                languageEntries, languageResources, books, exerciseSessions, dietEntries, inBodyEntries, hobbyEntries,
                 transactions, assets, certificates, portfolios, archiveDocuments,
-                userProfile, educations, careers
+                userProfile, educations, careers, bodyCompositionGoal
             });
         }
     };
 
-
-    // ... (Existing handlers)
-
-    const addCertificate = (cert: Certificate) => setCertificates((prev: Certificate[]) => [...prev, cert]);
-    const updateCertificate = (cert: Certificate) => setCertificates((prev: Certificate[]) => prev.map(c => c.id === cert.id ? cert : c));
-    const deleteCertificate = (id: string) => setCertificates((prev: Certificate[]) => prev.filter(c => c.id !== id));
-
-    const addPortfolio = (item: PortfolioItem) => setPortfolios((prev: PortfolioItem[]) => [...prev, item]);
-    const updatePortfolio = (item: PortfolioItem) => setPortfolios((prev: PortfolioItem[]) => prev.map(p => p.id === item.id ? item : p));
-    const deletePortfolio = (id: string) => setPortfolios((prev: PortfolioItem[]) => prev.filter(p => p.id !== id));
-
-    const updateUserProfile = (profile: UserProfile) => setUserProfile(profile);
-
-    const addEducation = (edu: Education) => setEducations((prev: Education[]) => [...prev, edu]);
-    const updateEducation = (edu: Education) => setEducations((prev: Education[]) => prev.map(e => e.id === edu.id ? edu : e));
-    const deleteEducation = (id: string) => setEducations((prev: Education[]) => prev.filter(e => e.id !== id));
-
-    const addCareer = (career: Career) => setCareers((prev: Career[]) => [...prev, career]);
-    const updateCareer = (career: Career) => setCareers((prev: Career[]) => prev.map(c => c.id === career.id ? career : c));
-    const deleteCareer = (id: string) => setCareers((prev: Career[]) => prev.filter(c => c.id !== id));
-
-    // Alarm State
-    const alertedEventIdsRef = React.useRef<Set<string>>(new Set());
-
-    useEffect(() => {
-        const checkAlarms = () => {
-            const now = new Date();
-            const upcomingEvents = events.filter(event => {
-                if (event.priority !== 'high') return false;
-                if (alertedEventIdsRef.current.has(event.id)) return false;
-
-                const start = new Date(event.start);
-                if (!isSameDay(start, now)) return false;
-
-                const diff = differenceInMinutes(start, now);
-                return diff >= 0 && diff <= 10;
-            });
-
-            upcomingEvents.forEach(event => {
-                toast.error(`중요 일정 알림 ⏰`, {
-                    description: `'${event.title}' 일정이 10분 내에 시작됩니다!`,
-                    duration: 5000,
-                    style: {
-                        background: '#fee2e2',
-                        color: '#991b1b',
-                        border: '1px solid #f87171'
-                    }
-                });
-                alertedEventIdsRef.current.add(event.id);
-            });
-        };
-
-        const interval = setInterval(checkAlarms, 60000); // Check every minute
-        checkAlarms(); // Initial check
-
-        return () => clearInterval(interval);
-    }, [events]);
-
+    // Helper Functions
     const addTask = (task: Task) => setTasks([...tasks, task]);
     const updateTask = (updatedTask: Task) => setTasks(tasks.map(t => t.id === updatedTask.id ? updatedTask : t));
     const deleteTask = (id: string) => setTasks(tasks.filter(t => t.id !== id));
@@ -350,7 +308,6 @@ export function DataProvider({ children }: { children: ReactNode }) {
     const deleteDocument = (id: string) => setArchiveDocuments(archiveDocuments.filter(d => d.id !== id));
 
     const addGoal = (goal: Goal) => setGoals([...goals, goal]);
-
     const updateGoal = (updatedGoal: Goal) => {
         const updateRecursive = (list: Goal[]): Goal[] => {
             return list.map(g => {
@@ -363,7 +320,6 @@ export function DataProvider({ children }: { children: ReactNode }) {
         };
         setGoals(updateRecursive(goals));
     };
-
     const deleteGoal = (id: string) => {
         const deleteRecursive = (list: Goal[]): Goal[] => {
             return list
@@ -406,6 +362,11 @@ export function DataProvider({ children }: { children: ReactNode }) {
     const updateLanguageEntry = (updatedEntry: LanguageEntry) => setLanguageEntries(languageEntries.map(e => e.id === updatedEntry.id ? updatedEntry : e));
     const deleteLanguageEntry = (id: string) => setLanguageEntries(languageEntries.filter(e => e.id !== id));
 
+    // Language Resources (New)
+    const addLanguageResource = (resource: LanguageResource) => setLanguageResources([...languageResources, resource]);
+    const updateLanguageResource = (resource: LanguageResource) => setLanguageResources(languageResources.map(r => r.id === resource.id ? resource : r));
+    const deleteLanguageResource = (id: string) => setLanguageResources(languageResources.filter(r => r.id !== id));
+
     const addBook = (book: Book) => setBooks([...books, book]);
     const updateBook = (updatedBook: Book) => setBooks(books.map(b => b.id === updatedBook.id ? updatedBook : b));
     const deleteBook = (id: string) => setBooks(books.filter(b => b.id !== id));
@@ -434,6 +395,61 @@ export function DataProvider({ children }: { children: ReactNode }) {
     const updateAsset = (updatedAsset: Asset) => setAssets(assets.map(a => a.id === updatedAsset.id ? updatedAsset : a));
     const deleteAsset = (id: string) => setAssets(assets.filter(a => a.id !== id));
 
+    const addCertificate = (cert: Certificate) => setCertificates([...certificates, cert]);
+    const updateCertificate = (cert: Certificate) => setCertificates(certificates.map(c => c.id === cert.id ? cert : c));
+    const deleteCertificate = (id: string) => setCertificates(certificates.filter(c => c.id !== id));
+
+    const addPortfolio = (item: PortfolioItem) => setPortfolios([...portfolios, item]);
+    const updatePortfolio = (item: PortfolioItem) => setPortfolios(portfolios.map(p => p.id === item.id ? item : p));
+    const deletePortfolio = (id: string) => setPortfolios(portfolios.filter(p => p.id !== id));
+
+    const updateUserProfile = (profile: UserProfile) => setUserProfile(profile);
+
+    const addEducation = (edu: Education) => setEducations([...educations, edu]);
+    const updateEducation = (edu: Education) => setEducations(educations.map(e => e.id === edu.id ? edu : e));
+    const deleteEducation = (id: string) => setEducations(educations.filter(e => e.id !== id));
+
+    const addCareer = (career: Career) => setCareers([...careers, career]);
+    const updateCareer = (career: Career) => setCareers(careers.map(c => c.id === career.id ? career : c));
+    const deleteCareer = (id: string) => setCareers(careers.filter(c => c.id !== id));
+
+    // Alarm State
+    const alertedEventIdsRef = React.useRef<Set<string>>(new Set());
+
+    useEffect(() => {
+        const checkAlarms = () => {
+            const now = new Date();
+            const upcomingEvents = events.filter(event => {
+                if (event.priority !== 'high') return false;
+                if (alertedEventIdsRef.current.has(event.id)) return false;
+
+                const start = new Date(event.start);
+                if (!isSameDay(start, now)) return false;
+
+                const diff = differenceInMinutes(start, now);
+                return diff >= 0 && diff <= 10;
+            });
+
+            upcomingEvents.forEach(event => {
+                toast.error(`중요 일정 알림 ⏰`, {
+                    description: `'${event.title}' 일정이 10분 내에 시작됩니다!`,
+                    duration: 5000,
+                    style: {
+                        background: '#fee2e2',
+                        color: '#991b1b',
+                        border: '1px solid #f87171'
+                    }
+                });
+                alertedEventIdsRef.current.add(event.id);
+            });
+        };
+
+        const interval = setInterval(checkAlarms, 60000); // Check every minute
+        checkAlarms(); // Initial check
+
+        return () => clearInterval(interval);
+    }, [events]);
+
     return (
         <DataContext.Provider value={{
             tasks, setTasks,
@@ -458,6 +474,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
             // New Logs
             languageEntries, setLanguageEntries,
             addLanguageEntry, updateLanguageEntry, deleteLanguageEntry,
+            languageResources, setLanguageResources,
+            addLanguageResource, updateLanguageResource, deleteLanguageResource,
 
             books, setBooks,
             addBook, updateBook, deleteBook,
@@ -497,8 +515,9 @@ export function DataProvider({ children }: { children: ReactNode }) {
             deleteCareer,
             isSyncing,
             forceSync,
+            bodyCompositionGoal,
+            setBodyCompositionGoal
         }}>
-
             {children}
         </DataContext.Provider>
     );
