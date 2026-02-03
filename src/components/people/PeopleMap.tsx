@@ -43,29 +43,64 @@ export function PeopleMap({ onClose }: PeopleMapProps) {
     const graphData = useMemo(() => {
         const nodes = people.map(p => ({
             ...p,
-            val: (p.tags?.length || 0) + 1, // Node size
-            group: p.relationship
+            val: (p.tags?.length || 0) + 1 + (p.isMe ? 5 : 0), // Me is bigger
+            group: p.relationship,
+            // Fix 'Me' node to center
+            fx: p.isMe ? 0 : undefined,
+            fy: p.isMe ? 0 : undefined,
+            color: p.isMe ? '#fbbf24' : undefined // Gold for Me
         }));
 
         const links: any[] = [];
+        const meNode = nodes.find(n => n.isMe);
 
-        // Simple algorithm to find connections based on shared tags
-        for (let i = 0; i < people.length; i++) {
-            for (let j = i + 1; j < people.length; j++) {
-                const p1 = people[i];
-                const p2 = people[j];
+        for (let i = 0; i < nodes.length; i++) {
+            const p1 = nodes[i];
 
-                if (!p1.tags || !p2.tags) continue;
+            // Link Me to Everyone
+            if (meNode && p1.id !== meNode.id) {
+                // Avoid duplicating if we are iterating
+                // actually easier to just iterate all pairs or do explicit Me links
+                // Let's rely on pair loop for shared attributes, and add special Me links
+            }
 
-                // Find intersection of tags
-                const sharedTags = p1.tags.filter(tag => p2.tags?.includes(tag));
+            for (let j = i + 1; j < nodes.length; j++) {
+                const p2 = nodes[j];
+                const reasons: string[] = [];
 
-                if (sharedTags.length > 0) {
+                // 0. Me Link (Star Topology)
+                if (p1.isMe || p2.isMe) {
+                    reasons.push('me');
+                }
+
+                // 1. Shared Tags
+                const sharedTags = p1.tags?.filter(tag => p2.tags?.includes(tag)) || [];
+                if (sharedTags.length > 0) reasons.push('tag');
+
+                // 2. Shared Company (and not empty)
+                if (p1.company && p2.company && p1.company === p2.company) {
+                    reasons.push('company');
+                }
+
+                // 3. Shared School (and not empty)
+                if (p1.school && p2.school && p1.school === p2.school) {
+                    reasons.push('school');
+                }
+
+                if (reasons.length > 0) {
+                    // Determine link color/width based on strongest connection
+                    let type = 'tag';
+                    if (reasons.includes('me')) type = 'me';
+                    if (reasons.includes('company')) type = 'company';
+                    if (reasons.includes('school')) type = 'school';
+                    // Hierarchy: School/Company > Tag > Me
+
                     links.push({
                         source: p1.id,
                         target: p2.id,
-                        value: sharedTags.length, // Strength/Width of link
-                        commonTags: sharedTags
+                        value: reasons.length + (p1.isMe || p2.isMe ? 0.5 : 0), // Strength
+                        type,
+                        reasons
                     });
                 }
             }
@@ -81,7 +116,7 @@ export function PeopleMap({ onClose }: PeopleMapProps) {
                 <h2 className="text-lg font-bold">인맥 지도 (People Map)</h2>
                 <div className="flex items-center gap-2">
                     <div className="text-sm text-muted-foreground mr-4">
-                        * 같은 태그를 가진 사람들끼리 연결됩니다.
+                        * <span className="text-amber-500 font-bold">나(Me)</span>를 중심으로 직장, 학교, 태그로 연결됩니다.
                     </div>
                     <Button variant="ghost" size="icon" onClick={onClose}>
                         <X className="w-5 h-5" />
@@ -91,9 +126,9 @@ export function PeopleMap({ onClose }: PeopleMapProps) {
 
             {/* Graph Container */}
             <div ref={containerRef} className="flex-1 relative overflow-hidden bg-black/5 dark:bg-black/20">
-                {people.length < 2 ? (
+                {people.length < 1 ? (
                     <div className="absolute inset-0 flex items-center justify-center text-muted-foreground">
-                        인맥 데이터가 부족하여 지도를 생성할 수 없습니다. (최소 2명 이상, 태그 입력 필요)
+                        인맥 데이터가 부족합니다.
                     </div>
                 ) : (
                     <ForceGraph2D
@@ -103,6 +138,7 @@ export function PeopleMap({ onClose }: PeopleMapProps) {
                         graphData={graphData}
                         nodeLabel="name"
                         nodeColor={node => {
+                            if ((node as any).isMe) return '#fbbf24'; // Gold
                             switch ((node as any).group) {
                                 case 'family': return '#818cf8'; // Indigo
                                 case 'friend': return '#4ade80'; // Green
@@ -111,49 +147,61 @@ export function PeopleMap({ onClose }: PeopleMapProps) {
                             }
                         }}
                         nodeRelSize={6}
-                        linkColor={() => '#cbd5e1'} // Light gray links
-                        linkWidth={link => Math.sqrt((link as any).value) * 2} // Thicker lines for more shared tags
+                        linkColor={link => {
+                            switch ((link as any).type) {
+                                case 'company': return '#60a5fa'; // Blue
+                                case 'school': return '#f472b6'; // Pink
+                                case 'me': return '#fbbf2440'; // Transparent Gold
+                                default: return '#cbd5e1'; // Gray
+                            }
+                        }}
+                        linkWidth={link => (link as any).type === 'me' ? 1 : 2}
                         linkDirectionalParticles={2}
                         linkDirectionalParticleSpeed={d => (d as any).value * 0.001}
-                        // Custom Render for Nodes to show names
+                        // Custom Render for Nodes
                         nodeCanvasObject={(node: any, ctx, globalScale) => {
-
                             const label = node.name;
-                            const fontSize = 12 / globalScale;
-                            ctx.font = `${fontSize}px Sans-Serif`;
-                            const textWidth = ctx.measureText(label).width;
-                            const bckgDimensions = [textWidth, fontSize].map(n => n + fontSize * 0.2); // some padding
+                            const fontSize = (node.isMe ? 16 : 12) / globalScale;
+                            ctx.font = `${node.isMe ? 'bold ' : ''}${fontSize}px Sans-Serif`;
 
-                            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-                            if (node.group === 'family') ctx.fillStyle = 'rgba(129, 140, 248, 0.2)';
-                            if (node.group === 'friend') ctx.fillStyle = 'rgba(74, 222, 128, 0.2)';
-                            if (node.group === 'work') ctx.fillStyle = 'rgba(96, 165, 250, 0.2)';
-
+                            // Node shape
                             ctx.beginPath();
-                            ctx.arc(node.x, node.y, 5, 0, 2 * Math.PI, false);
+                            const r = node.isMe ? 8 : 4;
+                            ctx.arc(node.x, node.y, r, 0, 2 * Math.PI, false);
+
+                            if (node.isMe) ctx.fillStyle = '#fbbf24';
+                            else {
+                                switch (node.group) {
+                                    case 'family': ctx.fillStyle = '#818cf8'; break;
+                                    case 'friend': ctx.fillStyle = '#4ade80'; break;
+                                    case 'work': ctx.fillStyle = '#60a5fa'; break;
+                                    default: ctx.fillStyle = '#9ca3af'; break;
+                                }
+                            }
                             ctx.fill();
 
-                            // Node Color
-                            ctx.fillStyle = node.color || '#9ca3af';
-                            ctx.beginPath();
-                            ctx.arc(node.x, node.y, 4, 0, 2 * Math.PI, false);
-                            ctx.fill();
+                            // Border for Me
+                            if (node.isMe) {
+                                ctx.lineWidth = 2 / globalScale;
+                                ctx.strokeStyle = '#fff';
+                                ctx.stroke();
+                            }
 
                             // Text
                             ctx.textAlign = 'center';
                             ctx.textBaseline = 'middle';
-                            ctx.fillStyle = '#000'; // Text Color
-                            // Check theme? For now assume black text on light bg, or adjust
                             ctx.fillStyle = document.documentElement.classList.contains('dark') ? '#eee' : '#333';
-                            ctx.fillText(label, node.x, node.y + 8);
+                            ctx.fillText(label, node.x, node.y + r + fontSize);
                         }}
                     />
                 )}
             </div>
 
+
+
             <div className="bg-background border-t p-2 text-xs text-center text-muted-foreground">
                 Drag to move • Scroll to zoom • Hover for details
             </div>
-        </div>
+        </div >
     );
 }

@@ -195,6 +195,9 @@ export type Person = {
     notes?: string;
     tags?: string[];
     businessCardImage?: string; // Base64
+    school?: string;       // New: Education
+    major?: string;        // New: Major
+    isMe?: boolean;        // New: Identify as Self
 };
 
 export type CalendarViewType = 'month' | 'week' | 'day';

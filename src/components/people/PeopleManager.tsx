@@ -13,7 +13,9 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { DatePicker } from '@/components/ui/date-picker';
+import { Badge } from '@/components/ui/badge';
 import { PeopleMap } from './PeopleMap';
+
 
 export function PeopleManager() {
 
@@ -32,8 +34,12 @@ export function PeopleManager() {
         contact: '',
         notes: '',
         businessCardImage: '',
+        school: '',
+        major: '',
+        isMe: false,
         tags: [] // Initialize tags
     });
+    const [tagInput, setTagInput] = useState('');
 
 
     // Preview state for View Mode
@@ -48,13 +54,15 @@ export function PeopleManager() {
 
     const handleOpenCreate = () => {
         setEditingId(null);
-        setFormData({ name: '', relationship: 'friend', contact: '', notes: '', businessCardImage: '', company: '', department: '', jobTitle: '', tags: [] });
+        setFormData({ name: '', relationship: 'friend', contact: '', notes: '', businessCardImage: '', company: '', department: '', jobTitle: '', school: '', major: '', isMe: false, tags: [] });
+        setTagInput('');
         setIsDialogOpen(true);
     };
 
     const handleOpenEdit = (person: Person) => {
         setEditingId(person.id);
         setFormData(person);
+        setTagInput('');
         setIsDialogOpen(true);
     };
 
@@ -89,6 +97,34 @@ export function PeopleManager() {
             }
         };
         reader.readAsDataURL(file);
+    };
+
+    const handleAddTag = () => {
+        const tag = tagInput.trim();
+        if (!tag) return;
+
+        const currentTags = formData.tags || [];
+        if (!currentTags.includes(tag)) {
+            setFormData(prev => ({ ...prev, tags: [...currentTags, tag] }));
+        }
+        setTagInput('');
+    };
+
+    const handleRemoveTag = (tagToRemove: string) => {
+        setFormData(prev => ({
+            ...prev,
+            tags: prev.tags?.filter(tag => tag !== tagToRemove) || []
+        }));
+    };
+
+    const handleTagKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter' || e.key === ',') {
+            e.preventDefault();
+            handleAddTag();
+        } else if (e.key === 'Backspace' && !tagInput && formData.tags?.length) {
+            const lastTag = formData.tags[formData.tags.length - 1];
+            handleRemoveTag(lastTag);
+        }
     };
 
     const getRelationBadge = (rel: RelationshipType) => {
@@ -178,6 +214,7 @@ export function PeopleManager() {
                                     {person.name.slice(0, 1)}
                                 </div>
                                 {person.name}
+                                {person.isMe && <Badge variant="default" className="text-[10px] px-1 h-5">Me</Badge>}
                                 {person.businessCardImage && (
                                     <button
                                         onClick={() => setViewImage(person.businessCardImage || null)}
@@ -255,6 +292,19 @@ export function PeopleManager() {
                             />
                         </div>
                         <div className="grid grid-cols-4 items-center gap-4">
+                            <Label className="text-right">나(Self)</Label>
+                            <div className="col-span-3 flex items-center gap-2">
+                                <Checkbox
+                                    id="person-isMe"
+                                    checked={formData.isMe}
+                                    onCheckedChange={(checked) => setFormData({ ...formData, isMe: checked === true })}
+                                />
+                                <label htmlFor="person-isMe" className="text-sm text-muted-foreground cursor-pointer select-none">
+                                    이 프로필이 '나'입니다.
+                                </label>
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-4 items-center gap-4">
                             <Label className="text-right">관계</Label>
                             <select
                                 id="person-relationship"
@@ -325,6 +375,31 @@ export function PeopleManager() {
                                 placeholder="직책/직위"
                             />
                         </div>
+
+                        {/* Education Info */}
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label className="text-right">학교</Label>
+                            <Input
+                                id="person-school"
+                                name="school"
+                                value={formData.school || ''}
+                                onChange={e => setFormData({ ...formData, school: e.target.value })}
+                                className="col-span-3 bg-muted border-transparent rounded-xl focus-visible:ring-primary/30"
+                                placeholder="학교명 (대학교/대학원)"
+                            />
+                        </div>
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label className="text-right">전공</Label>
+                            <Input
+                                id="person-major"
+                                name="major"
+                                value={formData.major || ''}
+                                onChange={e => setFormData({ ...formData, major: e.target.value })}
+                                className="col-span-3 bg-muted border-transparent rounded-xl focus-visible:ring-primary/30"
+                                placeholder="전공/학과"
+                            />
+                        </div>
+
                         <div className="grid grid-cols-4 items-start gap-4">
                             <Label className="text-right mt-2">메모</Label>
                             <textarea
@@ -338,16 +413,31 @@ export function PeopleManager() {
                         </div>
 
                         {/* Tags Input */}
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label className="text-right">태그</Label>
-                            <Input
-                                id="person-tags"
-                                name="tags"
-                                value={formData.tags?.join(', ') || ''}
-                                onChange={e => setFormData({ ...formData, tags: e.target.value.split(',').map(t => t.trim()) })}
-                                className="col-span-3 bg-muted border-transparent rounded-xl focus-visible:ring-primary/30"
-                                placeholder="쉼표(,)로 구분하여 태그 입력 (예: 개발자, 골프, 동창)"
-                            />
+                        <div className="grid grid-cols-4 items-start gap-4">
+                            <Label className="text-right mt-3">태그</Label>
+                            <div className="col-span-3 flex flex-wrap gap-2 p-3 bg-muted rounded-xl focus-within:ring-2 focus-within:ring-primary/30 transition-shadow">
+                                {(formData.tags || []).map(tag => (
+                                    <Badge key={tag} variant="secondary" className="px-2 py-1 text-sm font-normal rounded-md bg-white/50 border border-black/5 hover:bg-white transition-colors">
+                                        {tag}
+                                        <button
+                                            type="button"
+                                            onClick={() => handleRemoveTag(tag)}
+                                            className="ml-1 text-muted-foreground hover:text-foreground"
+                                        >
+                                            <X className="w-3 h-3" />
+                                        </button>
+                                    </Badge>
+                                ))}
+                                <input
+                                    id="person-tags"
+                                    value={tagInput}
+                                    onChange={e => setTagInput(e.target.value)}
+                                    onKeyDown={handleTagKeyDown}
+                                    onBlur={handleAddTag} // Add tag on blur as well
+                                    className="flex-1 min-w-[120px] bg-transparent outline-none text-sm h-7"
+                                    placeholder={formData.tags?.length ? "" : "태그 입력 (Enter로 추가)"}
+                                />
+                            </div>
                         </div>
 
                         {/* Business Card Upload */}

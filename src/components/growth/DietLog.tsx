@@ -14,7 +14,8 @@ import { ko } from 'date-fns/locale';
 import { DietEntry, DietItem } from '@/types';
 
 import { FoodSearchDialog } from './FoodSearchDialog';
-
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { DietAnalysis } from './DietAnalysis';
 export function DietLog() {
     const { dietEntries = [], addDietEntry, deleteDietEntry, updateDietEntry } = useData();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -182,125 +183,139 @@ export function DietLog() {
     }, [dietEntries]);
 
     return (
-        <div className="h-full flex flex-col gap-6 p-6 overflow-y-auto custom-scrollbar">
-            <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                    <Utensils className="w-6 h-6 text-primary" />
-                    <h2 className="text-2xl font-bold">식단 기록</h2>
-                </div>
+        <div className="h-full flex flex-col p-6 overflow-hidden">
+            <div className="flex items-center justify-between mb-4 shrink-0">
+                <Tabs defaultValue="log" className="w-[300px]">
+                    <TabsList className="grid w-full grid-cols-2">
+                        <TabsTrigger value="log">기록</TabsTrigger>
+                        <TabsTrigger value="analysis">상세 분석</TabsTrigger>
+                    </TabsList>
+                </Tabs>
                 <Button onClick={() => { resetForm(); setIsDialogOpen(true); }} className="bg-primary hover:bg-primary/90">
                     <Plus className="w-4 h-4 mr-2" /> 식사 기록하기
                 </Button>
             </div>
 
-            {/* Daily View List */}
-            {groupedEntries.length === 0 ? (
-                <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground opacity-50">
-                    <Utensils className="w-16 h-16 mb-4" />
-                    <p>오늘의 식단을 기록해보세요.</p>
-                </div>
-            ) : (
-                <div className="space-y-8">
-                    {groupedEntries.map(([dateKey, entries]) => {
-                        // Sort entries by meal type order? (Breakfast -> Lunch -> Dinner -> Snack)
-                        const order = { 'breakfast': 0, 'lunch': 1, 'dinner': 2, 'snack': 3 };
-                        const sortedDayEntries = entries.sort((a, b) => (order[a.mealType] || 0) - (order[b.mealType] || 0));
+            <Tabs defaultValue="log" className="flex-1 overflow-hidden flex flex-col">
+                <TabsContent value="log" className="flex-1 overflow-y-auto custom-scrollbar space-y-8 mt-0">
+                    <div className="flex items-center gap-2 mb-4">
+                        <Utensils className="w-6 h-6 text-primary" />
+                        <h2 className="text-2xl font-bold">식단 기록</h2>
+                    </div>
 
-                        return (
-                            <div key={dateKey} className="animate-in fade-in slide-in-from-bottom-2">
-                                <h3 className="text-lg font-bold mb-3 flex items-center gap-2 text-slate-700 border-b pb-2">
-                                    <span className="bg-slate-100 px-2 py-0.5 rounded text-sm font-mono text-slate-500">
-                                        {format(parseISO(dateKey), 'MM.dd')}
-                                    </span>
-                                    <span>{format(parseISO(dateKey), 'EEEE', { locale: ko })}</span>
-                                </h3>
+                    {/* Daily View List */}
+                    {groupedEntries.length === 0 ? (
+                        <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground opacity-50 min-h-[200px]">
+                            <Utensils className="w-16 h-16 mb-4" />
+                            <p>오늘의 식단을 기록해보세요.</p>
+                        </div>
+                    ) : (
+                        <div className="space-y-8 pb-4">
+                            {groupedEntries.map(([dateKey, entries]) => {
+                                // Sort entries by meal type order? (Breakfast -> Lunch -> Dinner -> Snack)
+                                const order = { 'breakfast': 0, 'lunch': 1, 'dinner': 2, 'snack': 3 };
+                                const sortedDayEntries = entries.sort((a, b) => (order[a.mealType] || 0) - (order[b.mealType] || 0));
 
-                                <div className="grid grid-cols-1 gap-4">
-                                    {sortedDayEntries.map(entry => {
-                                        // Legacy Support for Display
-                                        const displayItems = (entry.items && entry.items.length > 0)
-                                            ? entry.items
-                                            : (entry as any).menu
-                                                ? [{
-                                                    id: 'legacy',
-                                                    name: (entry as any).menu,
-                                                    calories: (entry as any).calories || entry.totalCalories || 0,
-                                                    macros: (entry as any).macros || entry.totalMacros || { carbs: 0, protein: 0, fat: 0 }
-                                                } as DietItem]
-                                                : [];
+                                return (
+                                    <div key={dateKey} className="animate-in fade-in slide-in-from-bottom-2">
+                                        <h3 className="text-lg font-bold mb-3 flex items-center gap-2 text-slate-700 border-b pb-2">
+                                            <span className="bg-slate-100 px-2 py-0.5 rounded text-sm font-mono text-slate-500">
+                                                {format(parseISO(dateKey), 'MM.dd')}
+                                            </span>
+                                            <span>{format(parseISO(dateKey), 'EEEE', { locale: ko })}</span>
+                                        </h3>
 
-                                        return (
-                                            <Card key={entry.id} className="overflow-hidden hover:shadow-md transition-shadow group border-l-4" style={{ borderLeftColor: entry.mealType === 'breakfast' ? '#fde047' : entry.mealType === 'lunch' ? '#fdba74' : entry.mealType === 'dinner' ? '#93c5fd' : '#86efac' }}>
-                                                <CardContent className="p-0 flex flex-col sm:flex-row">
-                                                    {/* Image Section */}
-                                                    {entry.image && (
-                                                        <div className="sm:w-[150px] w-full h-32 sm:h-auto shrink-0 relative">
-                                                            <img src={entry.image} alt="Meal" className="w-full h-full object-cover" />
-                                                        </div>
-                                                    )}
+                                        <div className="grid grid-cols-1 gap-4">
+                                            {sortedDayEntries.map(entry => {
+                                                // Legacy Support for Display
+                                                const displayItems = (entry.items && entry.items.length > 0)
+                                                    ? entry.items
+                                                    : (entry as any).menu
+                                                        ? [{
+                                                            id: 'legacy',
+                                                            name: (entry as any).menu,
+                                                            calories: (entry as any).calories || entry.totalCalories || 0,
+                                                            macros: (entry as any).macros || entry.totalMacros || { carbs: 0, protein: 0, fat: 0 }
+                                                        } as DietItem]
+                                                        : [];
 
-                                                    {/* Details Section */}
-                                                    <div className="flex-1 p-4">
-                                                        <div className="flex justify-between items-start mb-2">
-                                                            <div className="flex items-center gap-2">
-                                                                <span className={cn("text-xs font-bold px-2 py-1 rounded border", mealTypeColors[entry.mealType])}>
-                                                                    {mealTypeLabels[entry.mealType]}
-                                                                </span>
-                                                                <span className="text-sm font-medium text-slate-500">
-                                                                    {format(new Date(entry.date), 'HH:mm')}
-                                                                </span>
-
-                                                                <div className="flex items-center text-xs font-bold text-red-500 ml-2">
-                                                                    <Flame className="w-3 h-3 mr-0.5" />
-                                                                    {Math.round(entry.totalCalories || (entry as any).calories || 0)} kcal
+                                                return (
+                                                    <Card key={entry.id} className="overflow-hidden hover:shadow-md transition-shadow group border-l-4" style={{ borderLeftColor: entry.mealType === 'breakfast' ? '#fde047' : entry.mealType === 'lunch' ? '#fdba74' : entry.mealType === 'dinner' ? '#93c5fd' : '#86efac' }}>
+                                                        <CardContent className="p-0 flex flex-col sm:flex-row">
+                                                            {/* Image Section */}
+                                                            {entry.image && (
+                                                                <div className="sm:w-[150px] w-full h-32 sm:h-auto shrink-0 relative">
+                                                                    <img src={entry.image} alt="Meal" className="w-full h-full object-cover" />
                                                                 </div>
-                                                            </div>
-                                                            <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                                <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => handleEdit(entry)}>
-                                                                    <Edit2 className="w-3.5 h-3.5 text-slate-500" />
-                                                                </Button>
-                                                                <Button size="sm" variant="ghost" className="h-7 w-7 p-0 hover:text-red-500" onClick={() => deleteDietEntry(entry.id)}>
-                                                                    <Trash2 className="w-3.5 h-3.5" />
-                                                                </Button>
-                                                            </div>
-                                                        </div>
+                                                            )}
 
-                                                        {/* Items List */}
-                                                        <div className="space-y-1 mb-3">
-                                                            {displayItems.map((item, idx) => (
-                                                                <div key={idx} className="flex justify-between text-sm py-0.5 border-b border-dashed last:border-0 border-slate-100">
-                                                                    <span className="font-medium text-slate-700">{item.name}</span>
-                                                                    <span className="text-slate-400 text-xs">{Math.round(item.calories)} kcal</span>
+                                                            {/* Details Section */}
+                                                            <div className="flex-1 p-4">
+                                                                <div className="flex justify-between items-start mb-2">
+                                                                    <div className="flex items-center gap-2">
+                                                                        <span className={cn("text-xs font-bold px-2 py-1 rounded border", mealTypeColors[entry.mealType])}>
+                                                                            {mealTypeLabels[entry.mealType]}
+                                                                        </span>
+                                                                        <span className="text-sm font-medium text-slate-500">
+                                                                            {format(new Date(entry.date), 'HH:mm')}
+                                                                        </span>
+
+                                                                        <div className="flex items-center text-xs font-bold text-red-500 ml-2">
+                                                                            <Flame className="w-3 h-3 mr-0.5" />
+                                                                            {Math.round(entry.totalCalories || (entry as any).calories || 0)} kcal
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                                        <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => handleEdit(entry)}>
+                                                                            <Edit2 className="w-3.5 h-3.5 text-slate-500" />
+                                                                        </Button>
+                                                                        <Button size="sm" variant="ghost" className="h-7 w-7 p-0 hover:text-red-500" onClick={() => deleteDietEntry(entry.id)}>
+                                                                            <Trash2 className="w-3.5 h-3.5" />
+                                                                        </Button>
+                                                                    </div>
                                                                 </div>
-                                                            ))}
-                                                        </div>
 
-                                                        {/* Macros Summary (Total) */}
-                                                        {((entry.totalMacros || (entry as any).macros) && ((entry.totalMacros?.carbs || (entry as any).macros?.carbs) > 0)) && (
-                                                            <div className="flex gap-3 text-xs text-muted-foreground bg-slate-50 p-2 rounded-lg inline-block">
-                                                                <span className="mr-2 font-bold text-slate-500">Total</span>
-                                                                <span className="text-blue-600">C: {Math.round(entry.totalMacros?.carbs || (entry as any).macros?.carbs || 0)}g</span>
-                                                                <span className="text-red-600">P: {Math.round(entry.totalMacros?.protein || (entry as any).macros?.protein || 0)}g</span>
-                                                                <span className="text-yellow-600">F: {Math.round(entry.totalMacros?.fat || (entry as any).macros?.fat || 0)}g</span>
+                                                                {/* Items List */}
+                                                                <div className="space-y-1 mb-3">
+                                                                    {displayItems.map((item, idx) => (
+                                                                        <div key={idx} className="flex justify-between text-sm py-0.5 border-b border-dashed last:border-0 border-slate-100">
+                                                                            <span className="font-medium text-slate-700">{item.name}</span>
+                                                                            <span className="text-slate-400 text-xs">{Math.round(item.calories)} kcal</span>
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+
+                                                                {/* Macros Summary (Total) */}
+                                                                {((entry.totalMacros || (entry as any).macros) && ((entry.totalMacros?.carbs || (entry as any).macros?.carbs) > 0)) && (
+                                                                    <div className="flex gap-3 text-xs text-muted-foreground bg-slate-50 p-2 rounded-lg inline-block">
+                                                                        <span className="mr-2 font-bold text-slate-500">Total</span>
+                                                                        <span className="text-blue-600">C: {Math.round(entry.totalMacros?.carbs || (entry as any).macros?.carbs || 0)}g</span>
+                                                                        <span className="text-red-600">P: {Math.round(entry.totalMacros?.protein || (entry as any).macros?.protein || 0)}g</span>
+                                                                        <span className="text-yellow-600">F: {Math.round(entry.totalMacros?.fat || (entry as any).macros?.fat || 0)}g</span>
+                                                                    </div>
+                                                                )}
+
+                                                                {entry.memo && (
+                                                                    <p className="text-xs text-muted-foreground mt-2 bg-yellow-50/50 p-1.5 rounded">
+                                                                        {entry.memo}
+                                                                    </p>
+                                                                )}
                                                             </div>
-                                                        )}
-
-                                                        {entry.memo && (
-                                                            <p className="text-xs text-muted-foreground mt-2 bg-yellow-50/50 p-1.5 rounded">
-                                                                {entry.memo}
-                                                            </p>
-                                                        )}
-                                                    </div>
-                                                </CardContent>
-                                            </Card>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-                        );
-                    })}
-                </div>
-            )}
+                                                        </CardContent>
+                                                    </Card>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )}
+                </TabsContent>
+                <TabsContent value="analysis" className="flex-1 overflow-y-auto custom-scrollbar mt-0">
+                    <DietAnalysis entries={dietEntries} />
+                </TabsContent>
+            </Tabs>
 
             {/* Food Search Dialog */}
             <FoodSearchDialog
@@ -443,9 +458,3 @@ export function DietLog() {
     );
 }
 
-// Data Provider needs to be updated to support 'updateDietEntry'?
-// Assuming useData has updateDietEntry, or I should implement it.
-// If not, delete + add works for now, but preserving ID is better.
-// Checking useData... actually the user didn't ask to check useData but I should be careful.
-// I will assume for now. If it breaks, I will fix.
-// Wait, I should check DataProvider to be sure.

@@ -13,7 +13,8 @@ import { Dumbbell, Plus, Trash2, Calendar as CalendarIcon, Timer, Trophy, Footpr
 import { format } from 'date-fns';
 import { ExerciseCategory, ExerciseSession } from '@/types';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
-
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { ExerciseAnalysis } from './ExerciseAnalysis';
 // Expanded Types with Detailed Weight Training
 const EXERCISE_TYPES = [
     // Weight / Fitness
@@ -98,9 +99,13 @@ export function ExerciseLog() {
     const [count, setCount] = useState(''); // Laps/Count
 
     // Sets State (Weight)
+    // Sets State (Weight)
     const [sets, setSets] = useState<{ id: string; setNumber: number; weight: number; reps: number; completed: boolean }[]>([]);
     const [tempWeight, setTempWeight] = useState('');
     const [tempReps, setTempReps] = useState('');
+
+    // Batch Entry State
+    const [pendingSessions, setPendingSessions] = useState<ExerciseSession[]>([]);
 
     const filteredTypes = useMemo(() => {
         if (!searchQuery) return EXERCISE_TYPES;
@@ -133,7 +138,7 @@ export function ExerciseLog() {
         setSets(newSets);
     };
 
-    const handleSave = () => {
+    const handleAddToPending = () => {
         if (!type) return;
 
         // Calculate total minutes (float)
@@ -162,10 +167,20 @@ export function ExerciseLog() {
         }
         // fitness falls through (just duration & memo)
 
-        addExerciseSession(session);
-        setIsDialogOpen(false);
+        setPendingSessions([...pendingSessions, session]);
         resetForm();
     };
+
+    const handleSaveAll = () => {
+        pendingSessions.forEach(session => addExerciseSession(session));
+        setPendingSessions([]);
+        setIsDialogOpen(false);
+    };
+
+    const handleDeletePending = (id: string) => {
+        setPendingSessions(pendingSessions.filter(s => s.id !== id));
+    };
+
 
     const resetForm = () => {
         setType('');
@@ -182,6 +197,11 @@ export function ExerciseLog() {
         setTempWeight('');
         setTempReps('');
         setSearchQuery('');
+    };
+
+    const resetAll = () => {
+        resetForm();
+        setPendingSessions([]);
     };
 
     const sortedSessions = exerciseSessions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
@@ -247,191 +267,233 @@ export function ExerciseLog() {
     };
 
     return (
-        <div className="h-full flex flex-col gap-6 p-6 overflow-y-auto custom-scrollbar">
-            <div className="flex items-center justify-end mb-2">
-                <Button onClick={() => setIsDialogOpen(true)} className="bg-primary hover:bg-primary/90">
+        <div className="h-full flex flex-col p-6 overflow-hidden">
+            <div className="flex items-center justify-between mb-4 shrink-0">
+                <Tabs defaultValue="log" className="w-[300px]">
+                    <TabsList className="grid w-full grid-cols-2">
+                        <TabsTrigger value="log">기록 & 추이</TabsTrigger>
+                        <TabsTrigger value="analysis">상세 분석</TabsTrigger>
+                    </TabsList>
+                </Tabs>
+
+                <Button onClick={() => { resetAll(); setIsDialogOpen(true); }} className="bg-primary hover:bg-primary/90">
                     <Plus className="w-4 h-4 mr-2" /> 운동 기록하기
                 </Button>
             </div>
 
-            {/* Growth Chart */}
-            {availableTypes.length > 0 && trendData.length >= 2 && (
-                <Card className="border-none shadow-sm bg-gradient-to-br from-white to-blue-50/30">
-                    <CardContent className="p-4 pt-6">
-                        <div className="flex justify-between items-center mb-4">
-                            <h3 className="font-bold text-lg flex items-center gap-2">
-                                <TrendingUp className="w-5 h-5 text-blue-600" />
-                                <select
-                                    className="bg-transparent border-none font-bold text-lg cursor-pointer focus:ring-0 outline-none hover:text-blue-600 transition-colors"
-                                    value={trendType}
-                                    onChange={(e) => setTrendType(e.target.value)}
-                                >
-                                    {availableTypes.map(t => (
-                                        <option key={t} value={t}>{t}</option>
-                                    ))}
-                                </select>
-                                <span className="text-muted-foreground text-sm font-normal">성장 추이</span>
-                            </h3>
-                        </div>
-                        <div className="h-[200px] w-full">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <LineChart data={trendData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
-                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                                    <XAxis dataKey="date" fontSize={11} tickLine={false} axisLine={false} tick={{ fill: '#64748b' }} />
-                                    <YAxis fontSize={11} tickLine={false} axisLine={false} tick={{ fill: '#64748b' }} width={30} domain={['auto', 'auto']} />
-                                    <RechartsTooltip
-                                        contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                                        labelStyle={{ color: '#64748b', marginBottom: '0.25rem' }}
-                                    />
-                                    <Line
-                                        type="monotone"
-                                        dataKey="value"
-                                        name={trendData[0]?.label || '기록'}
-                                        stroke="#3b82f6"
-                                        strokeWidth={3}
-                                        dot={{ r: 4, fill: '#3b82f6', strokeWidth: 2, stroke: '#fff' }}
-                                        activeDot={{ r: 6, strokeWidth: 0 }}
-                                        isAnimationActive={true}
-                                    />
-                                </LineChart>
-                            </ResponsiveContainer>
-                        </div>
-                    </CardContent>
-                </Card>
-            )}
-
-            {/* List */}
-            {sortedSessions.length === 0 ? (
-                <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground opacity-50">
-                    <Dumbbell className="w-16 h-16 mb-4" />
-                    <p>아직 운동 기록이 없습니다. 시작해볼까요?</p>
-                </div>
-            ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {sortedSessions.map(session => (
-                        <Card key={session.id} className="hover:shadow-md transition-shadow">
-                            <CardContent className="p-4">
-                                <div className="flex justify-between items-start mb-2">
-                                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                        <CalendarIcon className="w-3 h-3" />
-                                        {format(new Date(session.date), 'yyyy.MM.dd HH:mm')}
-                                    </div>
-                                    <Button variant="ghost" size="icon" className="h-6 w-6 -mr-2 text-muted-foreground hover:text-red-400" onClick={() => deleteExerciseSession(session.id)}>
-                                        <Trash2 className="w-3 h-3" />
-                                    </Button>
+            <Tabs defaultValue="log" className="flex-1 overflow-hidden flex flex-col">
+                <TabsContent value="log" className="flex-1 overflow-y-auto custom-scrollbar space-y-6 mt-0">
+                    {/* Growth Chart */}
+                    {availableTypes.length > 0 && trendData.length >= 2 && (
+                        <Card className="border-none shadow-sm bg-gradient-to-br from-white to-blue-50/30 shrink-0">
+                            {/* ... Existing Chart Content ... */}
+                            <CardContent className="p-4 pt-6">
+                                <div className="flex justify-between items-center mb-4">
+                                    <h3 className="font-bold text-lg flex items-center gap-2">
+                                        <TrendingUp className="w-5 h-5 text-blue-600" />
+                                        <select
+                                            className="bg-transparent border-none font-bold text-lg cursor-pointer focus:ring-0 outline-none hover:text-blue-600 transition-colors"
+                                            value={trendType}
+                                            onChange={(e) => setTrendType(e.target.value)}
+                                        >
+                                            {availableTypes.map(t => (
+                                                <option key={t} value={t}>{t}</option>
+                                            ))}
+                                        </select>
+                                        <span className="text-muted-foreground text-sm font-normal">성장 추이</span>
+                                    </h3>
                                 </div>
-                                <div className="flex items-center gap-2 mb-2">
-                                    <span className={cn(
-                                        "text-[10px] font-bold px-2 py-0.5 rounded text-white",
-                                        session.category === 'cardio' ? "bg-blue-400" :
-                                            session.category === 'sport' ? "bg-orange-400" :
-                                                session.category === 'fitness' ? "bg-purple-400" : "bg-green-400"
-                                    )}>
-                                        {session.category === 'cardio' ? '유산소' :
-                                            session.category === 'sport' ? '스포츠' :
-                                                session.category === 'fitness' ? '피트니스' : '웨이트'}
-                                    </span>
-                                    <h3 className="text-xl font-bold text-primary">{session.type}</h3>
+                                <div className="h-[200px] w-full">
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <LineChart data={trendData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
+                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                                            <XAxis dataKey="date" fontSize={11} tickLine={false} axisLine={false} tick={{ fill: '#64748b' }} />
+                                            <YAxis fontSize={11} tickLine={false} axisLine={false} tick={{ fill: '#64748b' }} width={30} domain={['auto', 'auto']} />
+                                            <RechartsTooltip
+                                                contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                                                labelStyle={{ color: '#64748b', marginBottom: '0.25rem' }}
+                                            />
+                                            <Line
+                                                type="monotone"
+                                                dataKey="value"
+                                                name={trendData[0]?.label || '기록'}
+                                                stroke="#3b82f6"
+                                                strokeWidth={3}
+                                                dot={{ r: 4, fill: '#3b82f6', strokeWidth: 2, stroke: '#fff' }}
+                                                activeDot={{ r: 6, strokeWidth: 0 }}
+                                                isAnimationActive={true}
+                                            />
+                                        </LineChart>
+                                    </ResponsiveContainer>
                                 </div>
-
-                                {session.targetPart && (
-                                    <div className="text-xs font-bold text-green-600 mb-2 bg-green-50 inline-block px-1.5 py-0.5 rounded">
-                                        타겟: {session.targetPart}
-                                    </div>
-                                )}
-
-                                {session.category === 'weight' && session.sets && (
-                                    <div className="space-y-1 mb-3">
-                                        <div className="text-xs font-medium text-muted-foreground flex justify-between border-b pb-1">
-                                            <span>Set</span>
-                                            <span>kg</span>
-                                            <span>Reps</span>
-                                        </div>
-                                        {session.sets.slice(0, 5).map((set) => (
-                                            <div key={set.id} className="flex justify-between text-sm">
-                                                <span className="text-muted-foreground font-mono w-4">{set.setNumber}</span>
-                                                <span className="font-bold">{set.weight}</span>
-                                                <span>{set.reps}</span>
-                                            </div>
-                                        ))}
-                                        {session.sets.length > 5 && (
-                                            <div className="text-xs text-center text-muted-foreground pt-1">
-                                                + {session.sets.length - 5} more sets
-                                            </div>
-                                        )}
-                                        <div className="border-t pt-1 mt-1 text-xs text-right font-medium text-blue-600">
-                                            Total: {session.sets.reduce((acc, curr) => acc + (curr.weight * curr.reps), 0).toLocaleString()} kg
-                                        </div>
-                                    </div>
-                                )}
-
-                                {(session.category === 'cardio' || session.category === 'fitness') && (
-                                    <div className={cn(
-                                        "grid gap-2 mb-3",
-                                        session.category === 'cardio' ? "grid-cols-2" : "grid-cols-1"
-                                    )}>
-                                        <div className="bg-blue-50 p-2 rounded-lg text-center">
-                                            <div className="text-xs text-muted-foreground flex items-center justify-center gap-1">
-                                                <Timer className="w-3 h-3" /> 시간
-                                            </div>
-                                            <div className="font-bold text-blue-700">{formatDuration(session.duration)}</div>
-                                        </div>
-                                        {session.category === 'cardio' && (
-                                            <div className="bg-blue-50 p-2 rounded-lg text-center">
-                                                <div className="text-xs text-muted-foreground flex items-center justify-center gap-1">
-                                                    {session.type === '수영' ? <Activity className="w-3 h-3" /> : <Footprints className="w-3 h-3" />}
-                                                    {session.type === '수영' ? '랩/횟수' : '거리'}
-                                                </div>
-                                                <div className="font-bold text-blue-700">
-                                                    {session.type === '수영' && session.count
-                                                        ? `${session.count} laps`
-                                                        : `${session.distance || 0} km`
-                                                    }
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-
-                                {session.category === 'sport' && (
-                                    <div className="space-y-2 mb-3">
-                                        <div className="flex items-center gap-2 text-sm">
-                                            <Timer className="w-4 h-4 text-orange-500" />
-                                            <span>{formatDuration(session.duration)} 플레이</span>
-                                        </div>
-                                        {(session.score !== undefined && session.score !== null) && (
-                                            <div className="flex items-center gap-2 text-sm font-bold bg-orange-50 p-2 rounded text-orange-700">
-                                                <Target className="w-4 h-4" />
-                                                <span>점수: {session.score}</span>
-                                            </div>
-                                        )}
-                                        {session.result && !session.score && (
-                                            <div className="flex items-center gap-2 text-sm font-bold bg-orange-50 p-2 rounded text-orange-700">
-                                                <Trophy className="w-4 h-4" />
-                                                {session.result}
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-
-                                {session.memo && (
-                                    <p className="text-sm bg-muted/40 p-2 rounded-md text-muted-foreground">
-                                        {session.memo}
-                                    </p>
-                                )}
                             </CardContent>
                         </Card>
-                    ))}
-                </div>
-            )}
+                    )}
+
+                    {/* List */}
+                    {sortedSessions.length === 0 ? (
+                        <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground opacity-50 min-h-[200px]">
+                            <Dumbbell className="w-16 h-16 mb-4" />
+                            <p>아직 운동 기록이 없습니다. 시작해볼까요?</p>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-4">
+                            {sortedSessions.map(session => (
+                                <Card key={session.id} className="hover:shadow-md transition-shadow">
+                                    {/* ... Existing Card Content ... */}
+                                    <CardContent className="p-4">
+                                        <div className="flex justify-between items-start mb-2">
+                                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                                <CalendarIcon className="w-3 h-3" />
+                                                {format(new Date(session.date), 'yyyy.MM.dd HH:mm')}
+                                            </div>
+                                            <Button variant="ghost" size="icon" className="h-6 w-6 -mr-2 text-muted-foreground hover:text-red-400" onClick={() => deleteExerciseSession(session.id)}>
+                                                <Trash2 className="w-3 h-3" />
+                                            </Button>
+                                        </div>
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <span className={cn(
+                                                "text-[10px] font-bold px-2 py-0.5 rounded text-white",
+                                                session.category === 'cardio' ? "bg-blue-400" :
+                                                    session.category === 'sport' ? "bg-orange-400" :
+                                                        session.category === 'fitness' ? "bg-purple-400" : "bg-green-400"
+                                            )}>
+                                                {session.category === 'cardio' ? '유산소' :
+                                                    session.category === 'sport' ? '스포츠' :
+                                                        session.category === 'fitness' ? '피트니스' : '웨이트'}
+                                            </span>
+                                            <h3 className="text-xl font-bold text-primary">{session.type}</h3>
+                                        </div>
+
+                                        {session.targetPart && (
+                                            <div className="text-xs font-bold text-green-600 mb-2 bg-green-50 inline-block px-1.5 py-0.5 rounded">
+                                                타겟: {session.targetPart}
+                                            </div>
+                                        )}
+
+                                        {session.category === 'weight' && session.sets && (
+                                            <div className="space-y-1 mb-3">
+                                                <div className="text-xs font-medium text-muted-foreground flex justify-between border-b pb-1">
+                                                    <span>Set</span>
+                                                    <span>kg</span>
+                                                    <span>Reps</span>
+                                                </div>
+                                                {session.sets.slice(0, 5).map((set) => (
+                                                    <div key={set.id} className="flex justify-between text-sm">
+                                                        <span className="text-muted-foreground font-mono w-4">{set.setNumber}</span>
+                                                        <span className="font-bold">{set.weight}</span>
+                                                        <span>{set.reps}</span>
+                                                    </div>
+                                                ))}
+                                                {session.sets.length > 5 && (
+                                                    <div className="text-xs text-center text-muted-foreground pt-1">
+                                                        + {session.sets.length - 5} more sets
+                                                    </div>
+                                                )}
+                                                <div className="border-t pt-1 mt-1 text-xs text-right font-medium text-blue-600">
+                                                    Total: {session.sets.reduce((acc, curr) => acc + (curr.weight * curr.reps), 0).toLocaleString()} kg
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {(session.category === 'cardio' || session.category === 'fitness') && (
+                                            <div className={cn(
+                                                "grid gap-2 mb-3",
+                                                session.category === 'cardio' ? "grid-cols-2" : "grid-cols-1"
+                                            )}>
+                                                <div className="bg-blue-50 p-2 rounded-lg text-center">
+                                                    <div className="text-xs text-muted-foreground flex items-center justify-center gap-1">
+                                                        <Timer className="w-3 h-3" /> 시간
+                                                    </div>
+                                                    <div className="font-bold text-blue-700">{formatDuration(session.duration)}</div>
+                                                </div>
+                                                {session.category === 'cardio' && (
+                                                    <div className="bg-blue-50 p-2 rounded-lg text-center">
+                                                        <div className="text-xs text-muted-foreground flex items-center justify-center gap-1">
+                                                            {session.type === '수영' ? <Activity className="w-3 h-3" /> : <Footprints className="w-3 h-3" />}
+                                                            {session.type === '수영' ? '랩/횟수' : '거리'}
+                                                        </div>
+                                                        <div className="font-bold text-blue-700">
+                                                            {session.type === '수영' && session.count
+                                                                ? `${session.count} laps`
+                                                                : `${session.distance || 0} km`
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+
+                                        {session.category === 'sport' && (
+                                            <div className="space-y-2 mb-3">
+                                                <div className="flex items-center gap-2 text-sm">
+                                                    <Timer className="w-4 h-4 text-orange-500" />
+                                                    <span>{formatDuration(session.duration)} 플레이</span>
+                                                </div>
+                                                {(session.score !== undefined && session.score !== null) && (
+                                                    <div className="flex items-center gap-2 text-sm font-bold bg-orange-50 p-2 rounded text-orange-700">
+                                                        <Target className="w-4 h-4" />
+                                                        <span>점수: {session.score}</span>
+                                                    </div>
+                                                )}
+                                                {session.result && !session.score && (
+                                                    <div className="flex items-center gap-2 text-sm font-bold bg-orange-50 p-2 rounded text-orange-700">
+                                                        <Trophy className="w-4 h-4" />
+                                                        {session.result}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+
+                                        {session.memo && (
+                                            <p className="text-sm bg-muted/40 p-2 rounded-md text-muted-foreground">
+                                                {session.memo}
+                                            </p>
+                                        )}
+                                    </CardContent>
+                                </Card>
+                            ))}
+                        </div>
+                    )}
+                </TabsContent>
+
+                <TabsContent value="analysis" className="flex-1 overflow-y-auto custom-scrollbar mt-0">
+                    <ExerciseAnalysis sessions={exerciseSessions} />
+                </TabsContent>
+            </Tabs>
+
 
             {/* Dialog */}
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogContent className="sm:max-w-[500px]">
+                <DialogContent className="sm:max-w-[500px] max-h-[80vh] overflow-y-auto custom-scrollbar">
                     <DialogHeader>
                         <DialogTitle>운동 기록 추가</DialogTitle>
                     </DialogHeader>
                     <div className="grid gap-4 py-4">
+                        {/* Pending Items List */}
+                        {pendingSessions.length > 0 && (
+                            <div className="mb-4 space-y-2 bg-muted/30 p-3 rounded-lg border">
+                                <Label className="text-xs font-bold text-muted-foreground">추가 대기 중 ({pendingSessions.length})</Label>
+                                {pendingSessions.map((s, idx) => (
+                                    <div key={s.id} className="flex items-center justify-between text-sm bg-white p-2 rounded shadow-sm border">
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-xs font-bold text-primary w-4">{idx + 1}.</span>
+                                            <span className="font-medium">{s.type}</span>
+                                            <span className="text-xs text-muted-foreground border-l pl-2">
+                                                {s.category === 'weight' && `타겟: ${s.targetPart || '-'} / ${s.sets?.length} sets`}
+                                                {s.category === 'cardio' && `${s.distance || 0} km`}
+                                                {s.category === 'fitness' && `${Math.floor(s.duration)}분`}
+                                                {s.category === 'sport' && `${Math.floor(s.duration)}분`}
+                                            </span>
+                                        </div>
+                                        <button onClick={() => handleDeletePending(s.id)} className="text-red-400 hover:text-red-600">
+                                            <Trash2 className="w-3 h-3" />
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
                         <div className="grid gap-2">
                             <Label>운동 종류</Label>
                             <Popover open={isTypeOpen} onOpenChange={setIsTypeOpen}>
@@ -777,8 +839,14 @@ export function ExerciseLog() {
                             />
                         </div>
                     </div>
-                    <DialogFooter>
-                        <Button onClick={handleSave} disabled={!type}>저장</Button>
+                    <DialogFooter className="flex gap-2">
+                        <Button variant="outline" onClick={handleAddToPending} disabled={!type} className="flex-1">
+                            <Plus className="w-4 h-4 mr-2" /> 목록에 담기
+                        </Button>
+                        <Button onClick={handleSaveAll} disabled={pendingSessions.length === 0 && !type} className="flex-1 bg-green-600 hover:bg-green-700">
+                            <Check className="w-4 h-4 mr-2" />
+                            {pendingSessions.length > 0 ? `${pendingSessions.length}개 항목 저장` : '저장'}
+                        </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
