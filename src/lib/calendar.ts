@@ -24,83 +24,84 @@ export const getEventStyle = (event: CalendarEvent, pixelsPerHour: number) => {
 };
 
 export const getEventColors = (event: CalendarEvent) => {
+    // Sophisticated Palette (Modern & Clean)
     if ((event as any).isHabit) return {
-        bg: 'rgba(251, 146, 60, 0.05)', // Even lighter background
-        border: 'transparent', // No border as requested
-        text: '#ea580c',
-        accent: '#fb923c'
+        bg: '#F5F5F7', // Warm Gray (Apple style)
+        border: 'transparent',
+        text: '#64748B', // Slate 500
+        accent: '#94A3B8' // Slate 400
     };
 
     switch (event.type) {
         case 'work':
             return {
-                bg: 'rgba(16, 185, 129, 0.08)',
-                border: 'rgba(16, 185, 129, 0.2)',
-                text: '#059669',
-                accent: '#10b981'
+                bg: '#EFF6FF', // Blue 50
+                border: '#DBEAFE', // Blue 100
+                text: '#1E40AF', // Blue 800
+                accent: '#3B82F6' // Blue 500
             };
         case 'study':
             return {
-                bg: 'rgba(59, 130, 246, 0.08)',
-                border: 'rgba(59, 130, 246, 0.2)',
-                text: '#2563eb',
-                accent: '#3b82f6'
+                bg: '#F5F3FF', // Violet 50
+                border: '#EDE9FE', // Violet 100
+                text: '#5B21B6', // Violet 800
+                accent: '#8B5CF6' // Violet 500
             };
         case 'hobby':
             return {
-                bg: 'rgba(245, 158, 11, 0.08)',
-                border: 'rgba(245, 158, 11, 0.2)',
-                text: '#d97706',
-                accent: '#f59e0b'
+                bg: '#FFF7ED', // Orange 50
+                border: '#FFEDD5', // Orange 100
+                text: '#9A3412', // Orange 800
+                accent: '#F97316' // Orange 500
             };
         case 'health':
             return {
-                bg: 'rgba(239, 68, 68, 0.08)',
-                border: 'rgba(239, 68, 68, 0.2)',
-                text: '#dc2626',
-                accent: '#ef4444'
+                bg: '#ECFDF5', // Emerald 50
+                border: '#D1FAE5', // Emerald 100
+                text: '#065F46', // Emerald 800
+                accent: '#10B981' // Emerald 500
             };
         case 'finance':
             return {
-                bg: 'rgba(34, 197, 94, 0.08)',
-                border: 'rgba(34, 197, 94, 0.2)',
-                text: '#16a34a',
-                accent: '#22c55e'
+                bg: '#F0FDF4', // Green 50
+                border: '#DCFCE7', // Green 100
+                text: '#166534', // Green 800
+                accent: '#22C55E' // Green 500
             };
         case 'social':
             return {
-                bg: 'rgba(236, 72, 153, 0.08)',
-                border: 'rgba(236, 72, 153, 0.2)',
-                text: '#db2777',
-                accent: '#ec4899'
+                bg: '#FDF2F8', // Pink 50
+                border: '#FCE7F3', // Pink 100
+                text: '#9D174D', // Pink 800
+                accent: '#EC4899' // Pink 500
             };
         case 'travel':
             return {
-                bg: 'rgba(6, 182, 212, 0.08)',
-                border: 'rgba(6, 182, 212, 0.2)',
-                text: '#0891b2',
-                accent: '#06b6d4'
+                bg: '#ECFEFF', // Cyan 50
+                border: '#CFFAFE', // Cyan 100
+                text: '#155E75', // Cyan 800
+                accent: '#06B6D4' // Cyan 500
             };
         case 'meal':
             return {
-                bg: 'rgba(249, 115, 22, 0.08)',
-                border: 'rgba(249, 115, 22, 0.2)',
-                text: '#ea580c',
-                accent: '#f97316'
+                bg: '#FEFCEC', // Yellow 50 (Softer)
+                border: '#FEF9C3', // Yellow 100
+                text: '#854D0E', // Yellow 800
+                accent: '#EAB308' // Yellow 500
             };
         case 'personal':
             return {
-                bg: 'rgba(99, 102, 241, 0.08)',
-                border: 'rgba(99, 102, 241, 0.2)',
-                text: '#4f46e5',
-                accent: '#6366f1'
+                bg: '#F8FAFC', // Slate 50
+                border: '#F1F5F9', // Slate 100
+                text: '#475569', // Slate 600
+                accent: '#94A3B8' // Slate 400
             };
         default:
             return {
-                bg: 'rgba(107, 114, 128, 0.08)',
-                border: 'rgba(107, 114, 128, 0.2)',
-                text: '#4b5563',
-                accent: '#6b7280'
+                bg: '#F3F4F6', // Gray 100
+                border: '#E5E7EB', // Gray 200
+                text: '#374151', // Gray 700
+                accent: '#9CA3AF' // Gray 400
             };
     }
 };

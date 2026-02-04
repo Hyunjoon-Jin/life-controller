@@ -587,6 +587,22 @@ export function DayView({ currentDate, showProjectTasks }: { currentDate: Date; 
                                             )}
                                             {event.isMeeting && <Users className="w-3 h-3 opacity-80 shrink-0 text-blue-600 dark:text-blue-400" strokeWidth={2} />}
                                             {event.isAppointment && <Handshake className="w-3 h-3 opacity-80 shrink-0 text-green-600 dark:text-green-400" strokeWidth={2} />}
+
+                                            {/* Category Tag */}
+                                            {!isShort && !isHabit && (
+                                                <span className="text-[9px] font-semibold opacity-70 px-1 py-0.5 rounded-sm bg-black/5 dark:bg-white/10 shrink-0">
+                                                    {event.type === 'work' ? '업무' :
+                                                        event.type === 'study' ? '학습' :
+                                                            event.type === 'hobby' ? '취미' :
+                                                                event.type === 'health' ? '운동' :
+                                                                    event.type === 'finance' ? '금융' :
+                                                                        event.type === 'social' ? '약속' :
+                                                                            event.type === 'travel' ? '여행' :
+                                                                                event.type === 'meal' ? '식사' :
+                                                                                    event.type === 'personal' ? '개인' : '기타'}
+                                                </span>
+                                            )}
+
                                             <span className={cn("truncate leading-none", getTextSizeClass(fontSize, 'title'))}>
                                                 {event.title}
                                             </span>

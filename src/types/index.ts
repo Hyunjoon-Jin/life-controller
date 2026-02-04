@@ -354,12 +354,13 @@ export type BodyCompositionGoal = {
 export type Transaction = {
     id: string;
     date: Date;
-    type: 'income' | 'expense' | 'transfer';
-    category: string; // e.g., Food, Transport, Salary
+    type: 'income' | 'expense' | 'transfer' | 'investment' | 'saving'; // Expanded types
+    category: string;
     amount: number;
     description: string;
     assetId?: string; // Linked account
-    tags?: string[]; // New: Tags
+    targetAssetId?: string; // New: For transfer/investment target
+    tags?: string[];
 };
 
 export type Asset = {
@@ -368,59 +369,32 @@ export type Asset = {
     type: 'bank' | 'cash' | 'stock' | 'real_estate' | 'crypto' | 'loan' | 'credit_card';
     balance: number;
     currency: string;
-    color?: string; // For chart
-    // New Fields
+    color?: string;
     accountNumber?: string;
-    interestRate?: number; // %
+    interestRate?: number;
     memo?: string;
 };
 
 export type Certificate = {
     id: string;
     name: string;
-    issuer: string; // 발급 기관
-    date: Date; // 취득일
-    expiryDate?: Date; // 만료일
-    score?: string; // 점수/등급 (e.g. 900, Level 6, 1급)
+    issuer: string;
+    date: Date; // acquiredDate
+    expiryDate?: Date;
+    score?: string;
+    credentialId?: string; // New: License Number
+    fileUrl?: string; // New: Attachment
     status: 'studying' | 'acquired' | 'expired';
     memo?: string;
 };
 
-export type PortfolioItem = {
-    id: string;
+// Expanded Career Type
+export type CareerProject = {
     title: string;
-    period: string; // e.g. "2023.01 - 2023.06"
+    description: string;
     role?: string;
-    description: string; // 상세 설명
-    techStack?: string[]; // 사용 기술
-    links?: { label: string; url: string }[]; // 관련 링크 (GitHub, Demo)
-    images?: string[]; // 스크린샷 (Base64)
-    thumbnail?: string; // 썸네일
-};
-
-export type UserProfile = {
-    id: string;
-    name: string;
-    englishName?: string;
-    jobTitle: string; // e.g. "Frontend Developer"
-    email: string;
-    phone: string;
-    address?: string; // location
-    bio: string; // Markdown supported
-    photo?: string; // Base64
-    socialLinks?: { platform: string; url: string }[];
-};
-
-export type Education = {
-    id: string;
-    school: string;
-    degree: string;
-    major: string; // 전공
-    startDate: Date;
-    endDate?: Date;
-    isCurrent: boolean; // 재학 중
-    gpa?: string; // 학점
-    description?: string;
+    period?: string;
+    techStack?: string[];
 };
 
 export type Career = {
@@ -429,10 +403,65 @@ export type Career = {
     position: string;
     startDate: Date;
     endDate?: Date;
-    isCurrent: boolean; // 재직 중
-    description?: string; // 상세 업무
-    team?: string; // 소속 팀
+    isCurrent: boolean;
+    description?: string; // Detailed job description
+    team?: string;
     techStack?: string[];
+    projects?: CareerProject[]; // New: Detailed projects
+    files?: { name: string; url: string }[]; // New: Proof/Portfolio files
+};
+
+// New Activity Type
+export type ActivityType = 'club' | 'external' | 'award' | 'overseas' | 'volunteering' | 'other';
+
+export type Activity = {
+    id: string;
+    type: ActivityType;
+    title: string;
+    organization?: string;
+    startDate: Date;
+    endDate?: Date;
+    description?: string;
+    role?: string; // e.g. President, Member
+    files?: { name: string; url: string }[];
+};
+
+export type PortfolioItem = {
+    id: string;
+    title: string;
+    period: string;
+    role?: string;
+    description: string;
+    techStack?: string[];
+    links?: { label: string; url: string }[];
+    images?: string[];
+    thumbnail?: string;
+};
+
+export type UserProfile = {
+    id: string;
+    name: string;
+    englishName?: string;
+    jobTitle: string;
+    email: string;
+    phone: string;
+    address?: string;
+    bio: string;
+    photo?: string;
+    socialLinks?: { platform: string; url: string }[];
+};
+
+export type Education = {
+    id: string;
+    school: string;
+    degree: string;
+    major: string;
+    startDate: Date;
+    endDate?: Date;
+    isCurrent: boolean; // Enrolled
+    gpa?: string;
+    description?: string;
+    files?: { name: string; url: string }[]; // New: Transcript etc
 };
 
 export type LanguageResource = {
@@ -440,11 +469,11 @@ export type LanguageResource = {
     title: string;
     type: 'video' | 'article' | 'lecture' | 'book' | 'other';
     url: string;
-    thumbnail?: string; // Auto-fetched or manual
-    category: string; // e.g. 'Grammar', 'Listening', 'Reading', 'Culture'
-    language: string; // e.g. 'English', 'Japanese'
+    thumbnail?: string;
+    category: string;
+    language: string;
     status: 'tostudy' | 'studying' | 'completed';
-    isRecommended?: boolean; // If true, it's a system recommendation
+    isRecommended?: boolean;
     tags?: string[];
     createdAt: Date;
     memo?: string;

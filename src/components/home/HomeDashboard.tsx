@@ -17,7 +17,11 @@ import {
     Palette,
     Lightbulb,
     Languages,
-    Briefcase
+    Briefcase,
+    Settings2,
+    Plus,
+    X,
+    GripVertical
 } from 'lucide-react';
 import { format, isValid } from 'date-fns';
 import { ko } from 'date-fns/locale';
@@ -25,29 +29,44 @@ import { WeatherCard } from '@/components/widgets/WeatherCard';
 import { SearchWidget } from '@/components/tools/SearchWidget';
 import { cn } from '@/lib/utils';
 import { useSession } from 'next-auth/react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
+import { AppIcon } from './AppIcon';
+import { useWeather } from '@/hooks/useWeather';
 
 interface HomeDashboardProps {
     onNavigate: (mode: 'home' | 'schedule' | 'work') => void;
     onQuickLink: (mode: 'home' | 'schedule' | 'work', category: 'basic' | 'growth' | 'record', tab: string) => void;
 }
 
-import { useWeather } from '@/hooks/useWeather';
-
-// ... (imports)
+// Define all available shortcuts
+const ALL_SHORTCUTS = [
+    { id: 'calendar', label: '일정', icon: CalendarIcon, color: 'bg-blue-50 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400', mode: 'schedule', cat: 'basic', tab: 'calendar' },
+    { id: 'tasks', label: '할일', icon: CheckSquare, color: 'bg-red-50 text-red-600 dark:bg-red-900/40 dark:text-red-400', mode: 'schedule', cat: 'basic', tab: 'tasks' },
+    { id: 'goals', label: '목표', icon: TrendingUp, color: 'bg-orange-50 text-orange-600 dark:bg-orange-900/40 dark:text-orange-400', mode: 'schedule', cat: 'growth', tab: 'goals' },
+    { id: 'reading', label: '독서', icon: BookOpen, color: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/40 dark:text-emerald-400', mode: 'schedule', cat: 'growth', tab: 'reading' },
+    { id: 'language', label: '어학', icon: Languages, color: 'bg-indigo-50 text-indigo-600 dark:bg-indigo-900/40 dark:text-indigo-400', mode: 'schedule', cat: 'growth', tab: 'language' },
+    { id: 'exercise', label: '운동', icon: Dumbbell, color: 'bg-cyan-50 text-cyan-600 dark:bg-cyan-900/40 dark:text-cyan-400', mode: 'schedule', cat: 'growth', tab: 'exercise' },
+    { id: 'diet', label: '식단', icon: Utensils, color: 'bg-green-50 text-green-600 dark:bg-green-900/40 dark:text-green-400', mode: 'schedule', cat: 'growth', tab: 'diet' },
+    { id: 'ideas', label: '아이디어', icon: Lightbulb, color: 'bg-yellow-50 text-yellow-600 dark:bg-yellow-900/40 dark:text-yellow-400', mode: 'schedule', cat: 'record', tab: 'ideas' },
+    { id: 'work', label: '업무', icon: Briefcase, color: 'bg-slate-50 text-slate-600 dark:bg-slate-800 dark:text-slate-300', mode: 'work', cat: 'basic', tab: 'calendar' },
+    { id: 'hobby', label: '취미', icon: Palette, color: 'bg-pink-50 text-pink-600 dark:bg-pink-900/40 dark:text-pink-400', mode: 'schedule', cat: 'growth', tab: 'hobby' },
+] as const;
 
 export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
-    const { events, tasks, userProfile } = useData(); // Added userProfile
+    const { events, tasks, userProfile, homeShortcuts, setHomeShortcuts } = useData();
     const { data: session } = useSession();
     const [currentTime, setCurrentTime] = useState<Date | null>(null);
-    const { weather, loading: weatherLoading, getWeatherIcon, getWeatherLabel } = useWeather(); // Added weather hook
+    const { weather, loading: weatherLoading, getWeatherIcon, getWeatherLabel } = useWeather();
+
+    // Manage Shortcuts Dialog
+    const [isManageDialogOpen, setIsManageDialogOpen] = useState(false);
+    const [tempShortcuts, setTempShortcuts] = useState<string[]>([]);
 
     useEffect(() => {
         setCurrentTime(new Date());
         const timer = setInterval(() => setCurrentTime(new Date()), 1000);
         return () => clearInterval(timer);
     }, []);
-
-    // ... (todaysEvents, todaysTasks logic remains same)
 
     const todaysEvents = events
         .filter(e => {
@@ -77,6 +96,27 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
     });
 
     const displayName = userProfile?.name || session?.user?.name || '사용자';
+
+    // Filter active shortcuts
+    const activeShortcuts = ALL_SHORTCUTS.filter(s => homeShortcuts.includes(s.id));
+
+    const handleOpenManage = () => {
+        setTempShortcuts([...homeShortcuts]);
+        setIsManageDialogOpen(true);
+    };
+
+    const handleSaveShortcuts = () => {
+        setHomeShortcuts(tempShortcuts);
+        setIsManageDialogOpen(false);
+    };
+
+    const toggleShortcut = (id: string) => {
+        if (tempShortcuts.includes(id)) {
+            setTempShortcuts(prev => prev.filter(mid => mid !== id));
+        } else {
+            setTempShortcuts(prev => [...prev, id]);
+        }
+    };
 
     return (
         <div className="flex flex-col gap-6 max-w-4xl mx-auto p-4 pb-20">
@@ -158,21 +198,36 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
                 <SearchWidget />
             </div>
 
-            {/* 3. App Icon Grid (Toss Home Style) */}
-            <div className="bg-white dark:bg-[#202022] rounded-[24px] p-6 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150">
-                <h3 className="text-lg font-bold text-[#333D4B] dark:text-gray-200 mb-5">내 서비스</h3>
-                <div className="grid grid-cols-4 md:grid-cols-5 gap-y-6 gap-x-2">
-                    <AppIcon icon={CalendarIcon} label="일정" colorClass="bg-blue-50 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400" onClick={() => onQuickLink('schedule', 'basic', 'calendar')} />
-                    <AppIcon icon={CheckSquare} label="할일" colorClass="bg-red-50 text-red-600 dark:bg-red-900/40 dark:text-red-400" onClick={() => onQuickLink('schedule', 'basic', 'tasks')} />
-                    <AppIcon icon={TrendingUp} label="목표" colorClass="bg-orange-50 text-orange-600 dark:bg-orange-900/40 dark:text-orange-400" onClick={() => onQuickLink('schedule', 'growth', 'goals')} />
-                    <AppIcon icon={BookOpen} label="독서" colorClass="bg-emerald-50 text-emerald-600 dark:bg-emerald-900/40 dark:text-emerald-400" onClick={() => onQuickLink('schedule', 'growth', 'reading')} />
-                    <AppIcon icon={Languages} label="어학" colorClass="bg-indigo-50 text-indigo-600 dark:bg-indigo-900/40 dark:text-indigo-400" onClick={() => onQuickLink('schedule', 'growth', 'language')} />
+            {/* 3. Icons (Customizable) */}
+            <div className="bg-white dark:bg-[#202022] rounded-[24px] p-6 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150 relative group/section">
+                <div className="flex items-center justify-between mb-5">
+                    <h3 className="text-lg font-bold text-[#333D4B] dark:text-gray-200">내 서비스</h3>
+                    <Button variant="ghost" size="sm" onClick={handleOpenManage} className="h-8 text-xs text-muted-foreground hover:text-primary gap-1">
+                        <Settings2 className="w-3.5 h-3.5" /> 편집
+                    </Button>
+                </div>
 
-                    <AppIcon icon={Dumbbell} label="운동" colorClass="bg-cyan-50 text-cyan-600 dark:bg-cyan-900/40 dark:text-cyan-400" onClick={() => onQuickLink('schedule', 'growth', 'exercise')} />
-                    <AppIcon icon={Utensils} label="식단" colorClass="bg-green-50 text-green-600 dark:bg-green-900/40 dark:text-green-400" onClick={() => onQuickLink('schedule', 'growth', 'diet')} />
-                    <AppIcon icon={Lightbulb} label="아이디어" colorClass="bg-yellow-50 text-yellow-600 dark:bg-yellow-900/40 dark:text-yellow-400" onClick={() => onQuickLink('schedule', 'record', 'ideas')} />
-                    <AppIcon icon={Briefcase} label="업무" colorClass="bg-slate-50 text-slate-600 dark:bg-slate-800 dark:text-slate-300" onClick={() => onQuickLink('work', 'basic', 'calendar')} />
-                    <AppIcon icon={Palette} label="취미" colorClass="bg-pink-50 text-pink-600 dark:bg-pink-900/40 dark:text-pink-400" onClick={() => onQuickLink('schedule', 'growth', 'hobby')} />
+                <div className="grid grid-cols-4 md:grid-cols-5 gap-y-6 gap-x-2">
+                    {activeShortcuts.map(item => (
+                        <AppIcon
+                            key={item.id}
+                            icon={item.icon}
+                            label={item.label}
+                            colorClass={item.color}
+                            onClick={() => onQuickLink(item.mode as any, item.cat as any, item.tab)}
+                        />
+                    ))}
+                    <button
+                        onClick={handleOpenManage}
+                        className="flex flex-col items-center justify-center gap-3 group"
+                    >
+                        <div className="w-[52px] h-[52px] rounded-2xl bg-gray-50 text-gray-400 dark:bg-gray-800 dark:text-gray-500 flex items-center justify-center text-xl shadow-sm group-hover:scale-105 transition-transform duration-300 border border-gray-100 dark:border-gray-700 border-dashed">
+                            <Plus className="w-6 h-6" />
+                        </div>
+                        <span className="text-xs font-medium text-gray-400 dark:text-gray-500 group-hover:text-gray-600 transition-colors">
+                            추가
+                        </span>
+                    </button>
                 </div>
             </div>
 
@@ -188,37 +243,96 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
                             </div>
                             <Sun className="w-8 h-8 text-orange-400" />
                         </div>
-                        {/* Placeholder for Weather Card Content if we want to inline it or just keep simple */}
                         <div className="mt-2">
                             <WeatherCard />
                         </div>
                     </div>
 
-                    <div className="bg-white dark:bg-[#202022] rounded-[24px] p-5 shadow-sm flex flex-col justify-between min-h-[160px]">
-                        <div className="flex justify-between items-start">
+                    <div className="bg-white dark:bg-[#202022] rounded-[24px] p-5 shadow-sm flex flex-col min-h-[160px]">
+                        <div className="flex justify-between items-start mb-4">
                             <div>
                                 <h3 className="font-bold text-lg text-[#333D4B] dark:text-gray-200">다음 일정</h3>
-                                {todaysEvents.length > 0 ? (
-                                    <p className="text-[#8B95A1] text-sm mt-1">{format(new Date(todaysEvents[0].start), 'a h:mm')} · {todaysEvents[0].title}</p>
-                                ) : (
-                                    <p className="text-[#8B95A1] text-sm mt-1">예정된 일정이 없어요</p>
-                                )}
+                                <p className="text-[#8B95A1] text-sm mt-1">오늘 남은 일정을 확인하세요</p>
                             </div>
                             <Clock className="w-8 h-8 text-blue-400" />
                         </div>
-                        <Button
-                            variant="secondary"
-                            className="w-full mt-4 bg-[#F2F4F6] hover:bg-[#E5E8EB] text-[#4E5968] dark:bg-white/10 dark:text-gray-300 rounded-xl h-10 text-sm font-semibold border-none"
-                            onClick={() => onQuickLink('schedule', 'basic', 'calendar')}
-                        >
-                            전체 일정 보기
-                        </Button>
+
+                        <div className="flex-1 overflow-y-auto custom-scrollbar max-h-[160px] pr-2 -mr-2 space-y-2">
+                            {todaysEvents.length > 0 ? (
+                                todaysEvents.map((event, idx) => (
+                                    <div key={event.id} className="flex items-center gap-3 p-2 rounded-xl bg-gray-50/50 dark:bg-black/20 text-sm">
+                                        <div className="flex flex-col items-center min-w-[50px] text-xs font-medium text-muted-foreground border-r pr-3">
+                                            <span>{format(new Date(event.start), 'HH:mm')}</span>
+                                            {/* ~ {format(new Date(event.end), 'HH:mm')} */}
+                                        </div>
+                                        <div className="flex-1 truncate">
+                                            <p className="font-semibold text-gray-800 dark:text-gray-200 truncate">{event.title}</p>
+                                        </div>
+                                        <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: (event as any).isHabit ? '#fb923c' : '#3b82f6' }} />
+                                    </div>
+                                ))
+                            ) : (
+                                <div className="h-full flex flex-col items-center justify-center text-muted-foreground text-sm opacity-60">
+                                    <p>예정된 일정이 없습니다.</p>
+                                </div>
+                            )}
+                        </div>
+
+                        {todaysEvents.length > 3 && (
+                            <Button
+                                variant="ghost"
+                                className="w-full mt-2 h-8 text-xs text-muted-foreground hover:bg-gray-100 dark:hover:bg-gray-800"
+                                onClick={() => onQuickLink('schedule', 'basic', 'calendar')}
+                            >
+                                전체 일정 보기 <ArrowRight className="w-3 h-3 ml-1" />
+                            </Button>
+                        )}
                     </div>
                 </div>
             </div>
+
+            {/* Manage Shortcuts Dialog */}
+            <Dialog open={isManageDialogOpen} onOpenChange={setIsManageDialogOpen}>
+                <DialogContent className="max-w-lg">
+                    <DialogHeader>
+                        <DialogTitle>내 서비스 관리</DialogTitle>
+                        <DialogDescription>
+                            자주 사용하는 메뉴를 선택하여 홈 화면에 추가하세요.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid grid-cols-4 gap-4 py-6 max-h-[60vh] overflow-y-auto">
+                        {ALL_SHORTCUTS.map(item => {
+                            const isSelected = tempShortcuts.includes(item.id);
+                            return (
+                                <button
+                                    key={item.id}
+                                    onClick={() => toggleShortcut(item.id)}
+                                    className={cn(
+                                        "flex flex-col items-center justify-center gap-2 p-3 rounded-2xl border-2 transition-all relative",
+                                        isSelected
+                                            ? "border-primary bg-primary/5"
+                                            : "border-transparent bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700"
+                                    )}
+                                >
+                                    {isSelected && (
+                                        <div className="absolute top-2 right-2 w-5 h-5 bg-primary text-white rounded-full flex items-center justify-center text-xs">
+                                            <CheckSquare className="w-3 h-3" />
+                                        </div>
+                                    )}
+                                    <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center", isSelected ? "bg-white shadow-sm" : "bg-gray-200/50 dark:bg-gray-700")}>
+                                        <item.icon className={cn("w-5 h-5", isSelected ? "text-primary" : "text-gray-400")} />
+                                    </div>
+                                    <span className={cn("text-xs font-medium", isSelected ? "text-primary" : "text-gray-500")}>{item.label}</span>
+                                </button>
+                            );
+                        })}
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setIsManageDialogOpen(false)}>취소</Button>
+                        <Button onClick={handleSaveShortcuts}>저장하기</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }
-
-// Helper component for Icon
-import { AppIcon } from './AppIcon';

@@ -6,7 +6,7 @@ import {
     LanguageEntry, Book, ExerciseSession, DietEntry, InBodyEntry, HobbyEntry,
     Transaction, Asset, Certificate, PortfolioItem, ArchiveDocument,
     UserProfile, Education, Career, BodyCompositionGoal, LanguageResource,
-    Hobby, HobbyPost
+    Hobby, HobbyPost, Activity
 } from '@/types';
 
 type AppState = {
@@ -38,6 +38,8 @@ type AppState = {
     languageResources: LanguageResource[];
     hobbies: Hobby[];
     hobbyPosts: HobbyPost[];
+    homeShortcuts: string[];
+    activities: Activity[]; // New
 };
 
 export function useCloudSync() {

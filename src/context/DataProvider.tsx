@@ -6,7 +6,7 @@ import {
     LanguageEntry, Book, ExerciseSession, DietEntry, InBodyEntry, HobbyEntry,
     Transaction, Asset, Certificate, PortfolioItem, ArchiveDocument,
     UserProfile, Education, Career, BodyCompositionGoal, LanguageResource,
-    Hobby, HobbyPost // New Hobby Types
+    Hobby, HobbyPost, Activity // New
 } from '@/types';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useCloudSync } from '@/hooks/useCloudSync';
@@ -15,6 +15,7 @@ import { toast } from 'sonner';
 import { differenceInMinutes, isSameDay } from 'date-fns';
 
 interface DataContextType {
+    // ... existing types
     tasks: Task[];
     setTasks: (tasks: Task[]) => void;
     projects: Project[];
@@ -157,16 +158,27 @@ interface DataContextType {
     updateEducation: (edu: Education) => void;
     deleteEducation: (id: string) => void;
     careers: Career[];
+    setCareers: (careers: Career[]) => void;
     addCareer: (career: Career) => void;
     updateCareer: (career: Career) => void;
     deleteCareer: (id: string) => void;
+
+    // Activities (New)
+    activities: Activity[];
+    setActivities: (val: Activity[]) => void;
+    addActivity: (act: Activity) => void;
+    updateActivity: (act: Activity) => void;
+    deleteActivity: (id: string) => void;
+
+    bodyCompositionGoal: BodyCompositionGoal | null;
+    setBodyCompositionGoal: (goal: BodyCompositionGoal) => void;
+
+    // Home Shortcuts
+    homeShortcuts: string[];
+    setHomeShortcuts: (shortcuts: string[]) => void;
     // Sync
     isSyncing: boolean;
     forceSync: () => Promise<void>;
-
-    // New: Body Composition Goal
-    bodyCompositionGoal?: BodyCompositionGoal;
-    setBodyCompositionGoal: (goal: BodyCompositionGoal) => void;
 }
 
 
@@ -230,11 +242,15 @@ export function DataProvider({ children }: { children: ReactNode }) {
     });
     const [educations, setEducations] = useLocalStorage<Education[]>('educations', []);
     const [careers, setCareers] = useLocalStorage<Career[]>('careers', []);
+    const [activities, setActivities] = useLocalStorage<Activity[]>('activities', []); // New
 
     // Body Composition Goal State
     const [bodyCompositionGoal, setBodyCompositionGoal] = useLocalStorage<BodyCompositionGoal>('bodyCompositionGoal', {
         targetDate: new Date()
     });
+
+    // Home Shortcuts State
+    const [homeShortcuts, setHomeShortcuts] = useLocalStorage<string[]>('homeShortcuts', ['calendar', 'tasks', 'goals', 'reading', 'language', 'people', 'diet', 'ideas', 'work', 'hobby']);
 
     // Cloud Sync Integration
     const { saveData, loadData, isSyncing } = useCloudSync();
@@ -255,6 +271,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
                     if (data.habits) setHabits(data.habits);
                     if (data.events) setEvents(data.events);
                     if (data.userProfile) setUserProfile(data.userProfile);
+                    if (data.homeShortcuts) setHomeShortcuts(data.homeShortcuts);
                     // Load other states
                     if (data.journals) setJournals(data.journals);
                     if (data.memos) setMemos(data.memos);
@@ -267,8 +284,6 @@ export function DataProvider({ children }: { children: ReactNode }) {
                     if (data.dietEntries) setDietEntries(data.dietEntries);
                     if (data.inBodyEntries) setInBodyEntries(data.inBodyEntries);
                     if (data.hobbyEntries) setHobbyEntries(data.hobbyEntries);
-
-                    // Hobby Revamp
                     if (data.hobbies) setHobbies(data.hobbies);
                     if (data.hobbyPosts) setHobbyPosts(data.hobbyPosts);
                     if (data.transactions) setTransactions(data.transactions);
@@ -278,6 +293,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
                     if (data.archiveDocuments) setArchiveDocuments(data.archiveDocuments);
                     if (data.educations) setEducations(data.educations);
                     if (data.careers) setCareers(data.careers);
+                    if (data.activities) setActivities(data.activities);
                     if (data.bodyCompositionGoal) setBodyCompositionGoal(data.bodyCompositionGoal);
                 }
                 setIsLoadedFromCloud(true);
@@ -285,37 +301,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         }
     }, [session?.user?.email, loadData]);
 
-    // 2. Save data to cloud on change
-    useEffect(() => {
-        if (session?.user && isLoadedFromCloud) {
-            saveData({
-                tasks, projects, goals, habits, events, journals, memos, people, scraps,
-                languageEntries, languageResources, books, exerciseSessions, dietEntries, inBodyEntries, hobbyEntries,
-                hobbies, hobbyPosts,
-                transactions, assets, certificates, portfolios, archiveDocuments,
-                userProfile, educations, careers, bodyCompositionGoal
-            });
-        }
-    }, [
-        session?.user, isLoadedFromCloud, saveData,
-        tasks, projects, goals, habits, events, journals, memos, people, scraps,
-        languageEntries, languageResources, books, exerciseSessions, dietEntries, inBodyEntries, hobbyEntries,
-        hobbies, hobbyPosts,
-        transactions, assets, certificates, portfolios, archiveDocuments,
-        userProfile, educations, careers, bodyCompositionGoal
-    ]);
 
-    const forceSync = async () => {
-        if (session?.user) {
-            await saveData({
-                tasks, projects, goals, habits, events, journals, memos, people, scraps,
-                languageEntries, languageResources, books, exerciseSessions, dietEntries, inBodyEntries, hobbyEntries,
-                hobbies, hobbyPosts,
-                transactions, assets, certificates, portfolios, archiveDocuments,
-                userProfile, educations, careers, bodyCompositionGoal
-            });
-        }
-    };
 
     // Helper Functions
     const addTask = (task: Task) => setTasks([...tasks, task]);
@@ -415,18 +401,76 @@ export function DataProvider({ children }: { children: ReactNode }) {
     const updateHobby = (updatedHobby: Hobby) => setHobbies(hobbies.map(h => h.id === updatedHobby.id ? updatedHobby : h));
     const deleteHobby = (id: string) => {
         setHobbies(hobbies.filter(h => h.id !== id));
-        // Also delete posts? Maybe, or keep them orphaned? Let's keep them logic simple for now.
-        // Or filter posts that belong to this hobby? user might want to keep data. 
-        // Let's just delete the hobby container for now.
     };
 
     const addHobbyPost = (post: HobbyPost) => setHobbyPosts([...hobbyPosts, post]);
     const updateHobbyPost = (updatedPost: HobbyPost) => setHobbyPosts(hobbyPosts.map(p => p.id === updatedPost.id ? updatedPost : p));
     const deleteHobbyPost = (id: string) => setHobbyPosts(hobbyPosts.filter(p => p.id !== id));
 
-    const addTransaction = (transaction: Transaction) => setTransactions([...transactions, transaction]);
+    // Finance Logic (Updated for Asset Sync)
+    const addTransaction = (transaction: Transaction) => {
+        setTransactions([...transactions, transaction]);
+
+        // Sync Asset Balance
+        const { type, assetId, targetAssetId, amount } = transaction;
+        let newAssets = [...assets];
+
+        if (assetId) {
+            newAssets = newAssets.map(asset => {
+                if (asset.id === assetId) {
+                    if (type === 'expense') {
+                        return { ...asset, balance: asset.balance - amount };
+                    } else if (type === 'income') {
+                        return { ...asset, balance: asset.balance + amount };
+                    } else if (type === 'transfer' || type === 'investment' || type === 'saving') {
+                        return { ...asset, balance: asset.balance - amount };
+                    }
+                }
+                return asset;
+            });
+        }
+
+        if (targetAssetId && (type === 'transfer' || type === 'investment' || type === 'saving')) {
+            newAssets = newAssets.map(asset => {
+                if (asset.id === targetAssetId) {
+                    return { ...asset, balance: asset.balance + amount };
+                }
+                return asset;
+            });
+        }
+
+        setAssets(newAssets);
+    };
+
     const updateTransaction = (updatedTransaction: Transaction) => setTransactions(transactions.map(t => t.id === updatedTransaction.id ? updatedTransaction : t));
-    const deleteTransaction = (id: string) => setTransactions(transactions.filter(t => t.id !== id));
+    const deleteTransaction = (id: string) => {
+        const tx = transactions.find(t => t.id === id);
+        setTransactions(transactions.filter(t => t.id !== id));
+
+        // Revert Asset Balance (Optional but good UX)
+        if (tx) {
+            const { type, assetId, targetAssetId, amount } = tx;
+            let newAssets = [...assets];
+
+            if (assetId) {
+                newAssets = newAssets.map(asset => {
+                    if (asset.id === assetId) {
+                        if (type === 'expense') return { ...asset, balance: asset.balance + amount };
+                        if (type === 'income') return { ...asset, balance: asset.balance - amount };
+                        if (type === 'transfer' || type === 'investment' || type === 'saving') return { ...asset, balance: asset.balance + amount };
+                    }
+                    return asset;
+                });
+            }
+            if (targetAssetId && (type === 'transfer' || type === 'investment' || type === 'saving')) {
+                newAssets = newAssets.map(asset => {
+                    if (asset.id === targetAssetId) return { ...asset, balance: asset.balance - amount };
+                    return asset;
+                });
+            }
+            setAssets(newAssets);
+        }
+    };
 
     const addAsset = (asset: Asset) => setAssets([...assets, asset]);
     const updateAsset = (updatedAsset: Asset) => setAssets(assets.map(a => a.id === updatedAsset.id ? updatedAsset : a));
@@ -450,8 +494,44 @@ export function DataProvider({ children }: { children: ReactNode }) {
     const updateCareer = (career: Career) => setCareers(careers.map(c => c.id === career.id ? career : c));
     const deleteCareer = (id: string) => setCareers(careers.filter(c => c.id !== id));
 
+    const addActivity = (act: Activity) => setActivities([...activities, act]);
+    const updateActivity = (act: Activity) => setActivities(activities.map(a => a.id === act.id ? act : a));
+    const deleteActivity = (id: string) => setActivities(activities.filter(a => a.id !== id));
+
     // Alarm State
     const alertedEventIdsRef = React.useRef<Set<string>>(new Set());
+
+    // 2. Save data to cloud on change
+    useEffect(() => {
+        if (session?.user && isLoadedFromCloud) {
+            saveData({
+                tasks, projects, goals, habits, events, journals, memos, people, scraps,
+                languageEntries, languageResources, books, exerciseSessions, dietEntries, inBodyEntries, hobbyEntries,
+                hobbies, hobbyPosts,
+                transactions, assets, certificates, portfolios, archiveDocuments,
+                userProfile, educations, careers, activities, bodyCompositionGoal, homeShortcuts // Added homeShortcuts
+            });
+        }
+    }, [
+        session?.user, isLoadedFromCloud, saveData,
+        tasks, projects, goals, habits, events, journals, memos, people, scraps,
+        languageEntries, languageResources, books, exerciseSessions, dietEntries, inBodyEntries, hobbyEntries,
+        hobbies, hobbyPosts,
+        transactions, assets, certificates, portfolios, archiveDocuments,
+        userProfile, educations, careers, activities, bodyCompositionGoal, homeShortcuts
+    ]);
+
+    const forceSync = async () => {
+        if (session?.user) {
+            await saveData({
+                tasks, projects, goals, habits, events, journals, memos, people, scraps,
+                languageEntries, languageResources, books, exerciseSessions, dietEntries, inBodyEntries, hobbyEntries,
+                hobbies, hobbyPosts,
+                transactions, assets, certificates, portfolios, archiveDocuments,
+                userProfile, educations, careers, activities, bodyCompositionGoal, homeShortcuts // Added homeShortcuts
+            });
+        }
+    };
 
     useEffect(() => {
         const checkAlarms = () => {
@@ -551,14 +631,17 @@ export function DataProvider({ children }: { children: ReactNode }) {
             addEducation,
             updateEducation,
             deleteEducation,
-            careers,
+            careers, setCareers, // Added setCareers back
             addCareer,
             updateCareer,
             deleteCareer,
+            activities, setActivities, addActivity, updateActivity, deleteActivity, // New
+
             isSyncing,
             forceSync,
             bodyCompositionGoal,
-            setBodyCompositionGoal
+            setBodyCompositionGoal,
+            homeShortcuts, setHomeShortcuts
         }}>
             {children}
         </DataContext.Provider>
