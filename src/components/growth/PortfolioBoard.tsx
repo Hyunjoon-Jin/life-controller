@@ -55,7 +55,7 @@ export function PortfolioBoard() {
     const [schoolResults, setSchoolResults] = useState<SchoolInfo[]>([]);
     const [isSearching, setIsSearching] = useState(false);
 
-    const openModal = (type: 'profile' | 'education' | 'career' | 'project' | 'activity', id?: string) => {
+    const openModal = (type: 'profile' | 'education' | 'career' | 'project' | 'activity' | 'language', id?: string) => {
         setModal({ type, id });
         if (type === 'profile') {
             setProfileForm(userProfile);
