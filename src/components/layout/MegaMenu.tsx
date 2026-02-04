@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { CATEGORIES, SUB_MENUS, CategoryType } from '@/constants/menu';
+import { CATEGORIES, SUB_MENUS, CategoryType, WORK_NAV_ITEMS } from '@/constants/menu';
 
 // TabType is now imported or we use string for flexibility in props as defined in interface
 interface MegaMenuNavProps {
@@ -17,16 +17,38 @@ export function MegaMenuNav({ activeCategory, activeTab, onSelect, appMode = 'li
     const [isOpen, setIsOpen] = useState(false);
     const [hoveredCategory, setHoveredCategory] = useState<CategoryType>(activeCategory);
 
-    // Filter categories based on mode
-    const visibleCategories = CATEGORIES.filter(cat => {
-        if (appMode === 'work') {
-            // In Work Mode, only show 'Basic' (Schedule, Tasks, People)
-            // 'Projects' is handled separately via the button, but maybe we could add it here too if we had a category for it.
-            // For now, sticking to the requirement: Schedule, Todo, Networking -> which are in 'basic'.
-            return cat.id === 'basic';
-        }
-        return true;
-    });
+    // If Work Mode, we use a flat list and direct navigation
+    if (appMode === 'work') {
+        return (
+            <div className="w-full relative z-50">
+                <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-2">
+                    <div className="px-4 font-bold text-sm h-10 flex items-center bg-blue-50 text-blue-700 rounded-full cursor-default shrink-0">
+                        <span className="mr-1">💼</span> 업무 모드
+                    </div>
+                    <div className="h-4 w-[1px] bg-gray-200 mx-2" />
+
+                    {WORK_NAV_ITEMS.map(item => (
+                        <button
+                            key={item.id}
+                            onClick={() => onSelect('basic', item.id)}
+                            className={cn(
+                                "flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all whitespace-nowrap",
+                                activeTab === item.id
+                                    ? "bg-black text-white shadow-md"
+                                    : "bg-white border border-gray-100 text-gray-500 hover:bg-gray-50 hover:text-black hover:border-gray-300"
+                            )}
+                        >
+                            <item.icon className="w-4 h-4" />
+                            {item.label}
+                        </button>
+                    ))}
+                </div>
+            </div>
+        );
+    }
+
+    // Life Mode Logic (Existing)
+    const visibleCategories = CATEGORIES; // In Life mode show all categories
 
     return (
         <div className="w-full relative z-50" onMouseLeave={() => setIsOpen(false)}>
@@ -41,7 +63,7 @@ export function MegaMenuNav({ activeCategory, activeTab, onSelect, appMode = 'li
                     onMouseEnter={() => setIsOpen(true)}
                     onClick={() => setIsOpen(!isOpen)}
                 >
-                    <span className="mr-1">≡</span> {appMode === 'work' ? '업무 메뉴' : '전체 메뉴'}
+                    <span className="mr-1">≡</span> 전체 메뉴
                 </Button>
 
                 <div className="h-4 w-[1px] bg-gray-200 mx-2" />

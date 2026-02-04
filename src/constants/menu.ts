@@ -1,11 +1,12 @@
 import {
     Calendar, ListTodo, UsersRound, Target, Book, Sparkles, Award, Briefcase,
     NotebookPen, Lightbulb, Bookmark, CheckSquare, Scale, ChevronRight,
-    Utensils, Dumbbell, Wallet, PieChart, Building, TrendingUp as TrendingUpIcon, FileText
+    Utensils, Dumbbell, Wallet, PieChart, Building, TrendingUp as TrendingUpIcon, FileText,
+    Clock, LayoutTemplate
 } from 'lucide-react';
 
 export type CategoryType = 'basic' | 'health' | 'growth' | 'record' | 'finance';
-export type TabType = 'calendar' | 'tasks' | 'projects' | 'people' | 'goals' | 'language' | 'reading' | 'exercise' | 'diet' | 'inbody' | 'hobby' | 'learning' | 'certificate' | 'portfolio' | 'journal' | 'ideas' | 'scraps' | 'report' | 'ledger' | 'assets' | 'fund' | 'realestate' | 'investment';
+export type TabType = 'calendar' | 'tasks' | 'projects' | 'people' | 'goals' | 'language' | 'reading' | 'exercise' | 'diet' | 'inbody' | 'hobby' | 'learning' | 'certificate' | 'portfolio' | 'journal' | 'ideas' | 'scraps' | 'report' | 'ledger' | 'assets' | 'fund' | 'realestate' | 'investment' | 'work_time' | 'templates';
 
 export interface MenuItem {
     id: string;
@@ -20,6 +21,14 @@ export const CATEGORIES: { id: CategoryType; label: string }[] = [
     { id: 'growth', label: '자기 성장' },
     { id: 'record', label: '기록 보관' },
     { id: 'finance', label: '자산 관리' },
+];
+
+export const WORK_NAV_ITEMS = [
+    { id: 'calendar', label: '일정 관리', icon: Calendar },
+    { id: 'projects', label: '프로젝트별 관리', icon: Briefcase },
+    { id: 'people', label: '인력 관리', icon: UsersRound },
+    { id: 'work_time', label: '근무시간 관리', icon: Clock },
+    { id: 'templates', label: '각종 템플릿', icon: LayoutTemplate },
 ];
 
 export const SUB_MENUS: Record<CategoryType, MenuItem[]> = {

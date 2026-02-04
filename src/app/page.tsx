@@ -14,6 +14,9 @@ import { ScrapManager } from '@/components/scraps/ScrapManager';
 import { Pomodoro } from '@/components/tools/Pomodoro';
 import { GuideModal } from '@/components/guide/GuideModal';
 import { WorkLayout } from '@/components/project/WorkLayout';
+import { WorkTimeSection } from '@/components/work/sections/WorkTimeSection';
+import { WorkTemplateSection } from '@/components/work/sections/WorkTemplateSection';
+import { WorkPeopleSection } from '@/components/work/sections/WorkPeopleSection';
 import { HomeDashboard } from '@/components/home/HomeDashboard';
 import { LanguageLog } from '@/components/growth/LanguageLog';
 import { ReadingLog } from '@/components/growth/ReadingLog';
@@ -24,7 +27,7 @@ import { HobbyLog } from '@/components/growth/HobbyLog';
 import { MegaMenuNav } from '@/components/layout/MegaMenu';
 import { MobileHeader } from '@/components/layout/MobileHeader';
 import { CloudSyncStatus } from '@/components/layout/CloudSyncStatus'; // Added
-import { CATEGORIES, SUB_MENUS, CategoryType } from '@/constants/menu';
+import { CATEGORIES, SUB_MENUS, CategoryType, WORK_NAV_ITEMS } from '@/constants/menu';
 import { TabHeader } from '@/components/layout/TabHeader';
 
 import { CertificateManager } from '@/components/growth/CertificateManager';
@@ -37,7 +40,7 @@ import { InvestmentTab } from '@/components/finance/InvestmentTab';
 import { LearningPlanner } from '@/components/growth/LearningPlanner';
 import { ReportGenerator } from '@/components/report/ReportGenerator';
 import { WeatherWidget } from '@/components/weather/WeatherWidget';
-import { HelpCircle, Calendar, Lightbulb, Users as UsersIcon, Link as LinkIcon, Target, Book, CheckSquare, ListTodo, Sparkles, Trophy, NotebookPen, UsersRound, Bookmark, Scale, Award, Briefcase, Home as HomeIcon } from 'lucide-react';
+import { HelpCircle, Calendar, Lightbulb, Users as UsersIcon, Link as LinkIcon, Target, Book, CheckSquare, ListTodo, Sparkles, Trophy, NotebookPen, UsersRound, Bookmark, Scale, Award, Briefcase, Home as HomeIcon, Clock, LayoutTemplate } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { Logo } from '@/components/ui/Logo';
@@ -50,7 +53,7 @@ export default function Home() {
   const [appMode, setAppMode] = useState<'life' | 'work'>('life');
   const [mainMode, setMainMode] = useState<'home' | 'schedule' | 'work'>('home');
   const [activeCategory, setActiveCategory] = useState<'basic' | 'health' | 'growth' | 'record' | 'finance'>('basic');
-  const [activeTab, setActiveTab] = useState<'calendar' | 'tasks' | 'projects' | 'people' | 'goals' | 'language' | 'reading' | 'exercise' | 'diet' | 'inbody' | 'hobby' | 'learning' | 'report' | 'ideas' | 'journal' | 'scraps' | 'widgets' | 'ledger' | 'assets' | 'fund' | 'realestate' | 'investment' | 'certificate' | 'portfolio'>('calendar');
+  const [activeTab, setActiveTab] = useState<'calendar' | 'tasks' | 'projects' | 'people' | 'goals' | 'language' | 'reading' | 'exercise' | 'diet' | 'inbody' | 'hobby' | 'learning' | 'report' | 'ideas' | 'journal' | 'scraps' | 'widgets' | 'ledger' | 'assets' | 'fund' | 'realestate' | 'investment' | 'certificate' | 'portfolio' | 'work_time' | 'templates'>('calendar');
   const [isGuideOpen, setIsGuideOpen] = useState(false);
   const [todayDate, setTodayDate] = useState('');
 
@@ -163,8 +166,6 @@ export default function Home() {
             }}
           />
         </div>
-
-        {/* Only show 'Work Management' in Work Mode - REMOVED (Integrated into Menu) */}
       </div>
 
       {
@@ -179,6 +180,19 @@ export default function Home() {
               <div className="flex-1 relative">
                 {/* Dynamic Tab Header */}
                 {(() => {
+                  if (appMode === 'work') {
+                    const item = WORK_NAV_ITEMS.find(i => i.id === activeTab);
+                    if (item) {
+                      return (
+                        <TabHeader
+                          title={item.label}
+                          description="업무 효율을 높이는 공간"
+                          icon={item.icon}
+                        />
+                      );
+                    }
+                  }
+
                   const currentCategoryItems = SUB_MENUS[activeCategory];
                   const currentItem = currentCategoryItems?.find(item => item.id === activeTab);
 
@@ -211,7 +225,17 @@ export default function Home() {
                 )}
                 {activeTab === 'people' && (
                   <div className="h-full animate-in fade-in zoom-in-95 duration-200">
-                    <PeopleManager />
+                    {appMode === 'work' ? <WorkPeopleSection /> : <PeopleManager />}
+                  </div>
+                )}
+                {activeTab === 'work_time' && (
+                  <div className="h-full animate-in fade-in zoom-in-95 duration-200">
+                    <WorkTimeSection />
+                  </div>
+                )}
+                {activeTab === 'templates' && (
+                  <div className="h-full animate-in fade-in zoom-in-95 duration-200">
+                    <WorkTemplateSection />
                   </div>
                 )}
 
@@ -345,7 +369,6 @@ export default function Home() {
         initialCategory={activeCategory || 'basic'}
         onNavigate={(cat, tab) => handleQuickLink('schedule', cat, tab)}
       />
-    </main >
+    </main>
   );
 }
-
