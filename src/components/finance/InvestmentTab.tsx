@@ -73,7 +73,7 @@ export function InvestmentTab() {
                 else if (urlObj.hostname.includes('investing.com')) {
                     const parts = urlObj.pathname.split('/');
                     if (parts.length > 0) {
-                        extractedSymbol = parts[parts.length - 1].replace(/-/g, ' ').toUpperCase(); // Rough guess
+                        extractedSymbol = parts[parts.length - 1].replace(/-/g, ' ').toUpperCase();
                     }
                 }
 
@@ -83,8 +83,6 @@ export function InvestmentTab() {
                     setName(extractedSymbol); // Default to symbol
 
                     if (extractedSymbol === 'NVDA') {
-                        // Keep the easter egg for NVDA just for fun/demo if they specifically asked for it? 
-                        // No, better to be clean.
                         setName("NVIDIA Corporation");
                         setTags("AI, 반도체");
                     } else if (extractedSymbol === 'TSLA') {
@@ -95,13 +93,16 @@ export function InvestmentTab() {
                         setTags("IT, 하드웨어, 스마트폰");
                     }
 
-                    setRating('hold'); // Default to hold
+                    setRating('hold');
                     setContent(`[자동 추출] ${extractedSymbol}에 대한 ${urlObj.hostname} 링크입니다.`);
                 } else {
-                    setName("분석 종목");
+                    // Fail case: do not default to anything, just alert or set name to empty
+                    setName("");
+                    alert("URL에서 종목 코드를 추출하지 못했습니다. 직접 입력해주세요.");
                 }
             } catch (e) {
                 console.error("URL Parse Error", e);
+                alert("유효하지 않은 URL입니다.");
             }
             setIsFetching(false);
         }, 800);
@@ -118,7 +119,11 @@ export function InvestmentTab() {
     };
 
     const handleExternalSearch = () => {
-        const query = searchQuery || 'NVDA';
+        if (!searchQuery) {
+            alert("검색할 티커를 입력해주세요.");
+            return;
+        }
+        const query = searchQuery;
         window.open(`https://finance.yahoo.com/quote/${query}`, '_blank');
     };
 
