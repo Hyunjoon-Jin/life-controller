@@ -113,6 +113,17 @@ export function ExerciseLog() {
     // Batch Entry State for Active Mode
     const [pendingSessions, setPendingSessions] = useState<ExerciseSession[]>([]);
 
+    // Routine Creation State
+    const [isRoutineDialogOpen, setIsRoutineDialogOpen] = useState(false);
+    const [routineName, setRoutineName] = useState('');
+    const [routineCategory, setRoutineCategory] = useState<ExerciseCategory>('weight');
+    const [routineItems, setRoutineItems] = useState<{ type: string; sets?: { weight: number; reps: number }[]; duration?: number; distance?: number }[]>([]);
+
+    // Temp state for adding item to routine
+    const [routineAddType, setRoutineAddType] = useState('');
+    const [routineAddSets, setRoutineAddSets] = useState<{ weight: number; reps: number }[]>([]);
+    const [routineAddDuration, setRoutineAddDuration] = useState('');
+
     // Timer Logic
     useMemo(() => {
         let interval: NodeJS.Timeout;
@@ -472,7 +483,12 @@ export function ExerciseLog() {
                         <h3 className="font-bold text-lg flex items-center gap-2">
                             <Flower2 className="w-5 h-5 text-purple-600" /> 나의 운동 루틴
                         </h3>
-                        <Button size="sm" onClick={() => { }}>
+                        <Button size="sm" onClick={() => {
+                            setRoutineName('');
+                            setRoutineCategory('weight');
+                            setRoutineItems([]);
+                            setIsRoutineDialogOpen(true);
+                        }}>
                             <Plus className="w-4 h-4 mr-2" /> 새 루틴 만들기
                         </Button>
                     </div>
@@ -634,6 +650,108 @@ export function ExerciseLog() {
                             </div>
                         </div>
                     )}
+                </DialogContent>
+            </Dialog>
+            <Dialog open={isRoutineDialogOpen} onOpenChange={setIsRoutineDialogOpen}>
+                <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto custom-scrollbar">
+                    <DialogHeader>
+                        <DialogTitle>새 루틴 만들기</DialogTitle>
+                    </DialogHeader>
+                    <div className="py-4 space-y-6">
+                        <div className="space-y-4">
+                            <div className="grid gap-2">
+                                <Label>루틴 이름</Label>
+                                <Input value={routineName} onChange={e => setRoutineName(e.target.value)} placeholder="예: 가슴/삼두 루틴 A" />
+                            </div>
+                            <div className="grid gap-2">
+                                <Label>카테고리</Label>
+                                <Select value={routineCategory} onValueChange={(v: any) => setRoutineCategory(v)}>
+                                    <SelectTrigger>
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="weight">웨이트</SelectItem>
+                                        <SelectItem value="cardio">유산소</SelectItem>
+                                        <SelectItem value="fitness">피트니스/맨몸</SelectItem>
+                                        <SelectItem value="sport">스포츠</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+
+                        <div className="space-y-4 border-t pt-4">
+                            <Label className="text-base font-bold">포함될 운동 목록</Label>
+
+                            <div className="p-4 bg-muted/50 rounded-xl space-y-4">
+                                <div className="grid gap-2">
+                                    <Label>운동 종목 추가</Label>
+                                    <div className="flex gap-2">
+                                        <Select value={routineAddType} onValueChange={setRoutineAddType}>
+                                            <SelectTrigger className="flex-1">
+                                                <SelectValue placeholder="운동 선택" />
+                                            </SelectTrigger>
+                                            <SelectContent className="max-h-[200px]">
+                                                {EXERCISE_TYPES.filter(t => t.category === routineCategory).map(t => (
+                                                    <SelectItem key={t.name} value={t.name}>{t.name}</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        <Button onClick={() => {
+                                            if (!routineAddType) return;
+                                            const newItem = {
+                                                type: routineAddType,
+                                                sets: routineCategory === 'weight' ? [{ weight: 20, reps: 10 }, { weight: 20, reps: 10 }, { weight: 20, reps: 10 }] : undefined,
+                                                duration: routineCategory !== 'weight' ? 30 : undefined
+                                            };
+                                            setRoutineItems([...routineItems, newItem]);
+                                            setRoutineAddType('');
+                                        }}>추가</Button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                {routineItems.length === 0 ? (
+                                    <div className="text-center py-6 text-muted-foreground bg-muted/20 rounded-lg border-2 border-dashed">
+                                        운동을 추가해주세요.
+                                    </div>
+                                ) : (
+                                    routineItems.map((item, idx) => (
+                                        <div key={idx} className="flex items-center justify-between p-3 bg-white border rounded-lg shadow-sm">
+                                            <div className="flex-1">
+                                                <div className="font-bold flex items-center gap-2">
+                                                    <span className="bg-primary/10 text-primary w-5 h-5 rounded-full flex items-center justify-center text-xs">{idx + 1}</span>
+                                                    {item.type}
+                                                </div>
+                                                <div className="text-xs text-muted-foreground pl-7">
+                                                    {item.sets ? `${item.sets.length}세트` : `${item.duration}분`}
+                                                </div>
+                                            </div>
+                                            <Button variant="ghost" size="sm" onClick={() => {
+                                                setRoutineItems(routineItems.filter((_, i) => i !== idx));
+                                            }}>
+                                                <Trash2 className="w-4 h-4 text-red-400" />
+                                            </Button>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button onClick={() => {
+                            if (!routineName || routineItems.length === 0) return;
+                            addExerciseRoutine({
+                                id: generateId(),
+                                name: routineName,
+                                category: routineCategory,
+                                items: routineItems
+                            });
+                            setIsRoutineDialogOpen(false);
+                        }} disabled={!routineName || routineItems.length === 0}>
+                            루틴 생성 완료
+                        </Button>
+                    </DialogFooter>
                 </DialogContent>
             </Dialog>
         </div>

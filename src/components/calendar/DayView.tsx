@@ -12,7 +12,7 @@ import { EventDialog } from './EventDialog';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 
-export function DayView({ currentDate, showProjectTasks }: { currentDate: Date; showProjectTasks: boolean }) {
+export function DayView({ currentDate, showProjectTasks, onNext, onPrev }: { currentDate: Date; showProjectTasks: boolean; onNext: () => void; onPrev: () => void }) {
     const hours = Array.from({ length: 24 }, (_, i) => i);
     const { events, addEvent, updateEvent, deleteEvent, habits, updateHabit, deleteHabit, tasks, projects } = useData();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -61,6 +61,18 @@ export function DayView({ currentDate, showProjectTasks }: { currentDate: Date; 
     // Habit Modification Choice State
     const [showHabitUpdateChoiceDialog, setShowHabitUpdateChoiceDialog] = useState(false);
     const [pendingHabitUpdate, setPendingHabitUpdate] = useState<CalendarEvent | null>(null);
+
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (isDialogOpen || showDeleteHabitDialog || showHabitUpdateChoiceDialog) return;
+            if ((e.target as HTMLElement).tagName === 'INPUT' || (e.target as HTMLElement).tagName === 'TEXTAREA') return;
+
+            if (e.key === 'ArrowLeft') onPrev();
+            if (e.key === 'ArrowRight') onNext();
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [isDialogOpen, showDeleteHabitDialog, showHabitUpdateChoiceDialog, onNext, onPrev]);
 
     useEffect(() => {
         const interval = setInterval(() => setNow(new Date()), 60000); // Update every minute

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useData } from '@/context/DataProvider';
+import { FinanceGoal } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,10 +10,18 @@ import { Label } from '@/components/ui/label';
 import { format, startOfMonth, endOfMonth, isSameMonth } from 'date-fns';
 import { TrendingUp, TrendingDown, Target, PiggyBank, Briefcase, Plus, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 
 export function FundManagement() {
-    const { transactions, assets } = useData();
+    const { transactions, assets, financeGoals, addFinanceGoal, updateFinanceGoal, deleteFinanceGoal } = useData();
     const [currentDate, setCurrentDate] = useState(new Date());
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [editingGoal, setEditingGoal] = useState<FinanceGoal | null>(null);
+
+    // Goal Form
+    const [goalTitle, setGoalTitle] = useState('');
+    const [goalTarget, setGoalTarget] = useState('');
+    const [goalCurrent, setGoalCurrent] = useState('');
 
     // Goals for the month (simplified persistence - could be moved to DataProvider later)
     const [monthlyGoals, setMonthlyGoals] = useState({
@@ -112,32 +121,122 @@ export function FundManagement() {
                     </CardHeader>
                     <CardContent className="space-y-6">
                         <div className="grid gap-4">
-                            <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border">
-                                <div>
-                                    <div className="font-bold">주택 마련 기금</div>
-                                    <div className="text-xs text-muted-foreground">목표: 500,000,000원</div>
+                            {financeGoals.map(goal => {
+                                const progress = Math.min(100, (goal.currentAmount / goal.targetAmount) * 100);
+                                return (
+                                    <div key={goal.id} className="group relative flex items-center justify-between p-4 bg-slate-50 rounded-xl border hover:shadow-sm transition-all cursor-pointer" onClick={() => {
+                                        setEditingGoal(goal);
+                                        setGoalTitle(goal.title);
+                                        setGoalTarget(goal.targetAmount.toString());
+                                        setGoalCurrent(goal.currentAmount.toString());
+                                        setIsDialogOpen(true);
+                                    }}>
+                                        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                className="h-6 w-6 text-slate-400 hover:text-red-500"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    deleteFinanceGoal(goal.id);
+                                                }}
+                                            >
+                                                <Trash2 className="w-3 h-3" />
+                                            </Button>
+                                        </div>
+                                        <div>
+                                            <div className="font-bold">{goal.title}</div>
+                                            <div className="text-xs text-muted-foreground">목표: {goal.targetAmount.toLocaleString()}원</div>
+                                        </div>
+                                        <div className="text-right">
+                                            <div className="font-bold text-primary">{progress.toFixed(1)}% 달성</div>
+                                            <div className="text-xs text-muted-foreground">현: {goal.currentAmount.toLocaleString()}원</div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                            {financeGoals.length === 0 && (
+                                <div className="text-center py-6 text-sm text-slate-400 border border-dashed rounded-xl">
+                                    등록된 장기 계획이 없습니다.
                                 </div>
-                                <div className="text-right">
-                                    <div className="font-bold text-primary">25% 달성</div>
-                                    <div className="text-xs text-muted-foreground">현: 125,000,000원</div>
-                                </div>
-                            </div>
-                            <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border">
-                                <div>
-                                    <div className="font-bold">노후 자금</div>
-                                    <div className="text-xs text-muted-foreground">목표: 1,000,000,000원</div>
-                                </div>
-                                <div className="text-right">
-                                    <div className="font-bold text-primary">10% 달성</div>
-                                    <div className="text-xs text-muted-foreground">현: 100,000,000원</div>
-                                </div>
-                            </div>
+                            )}
                         </div>
-                        <Button variant="outline" className="w-full dashed border-2">
+                        <Button variant="outline" className="w-full dashed border-2" onClick={() => {
+                            setEditingGoal(null);
+                            setGoalTitle('');
+                            setGoalTarget('');
+                            setGoalCurrent('0');
+                            setIsDialogOpen(true);
+                        }}>
                             <Plus className="w-4 h-4 mr-2" /> 새 계획 추가
                         </Button>
                     </CardContent>
                 </Card>
+
+                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>{editingGoal ? '자금 계획 수정' : '새 자금 계획 추가'}</DialogTitle>
+                        </DialogHeader>
+                        <div className="grid gap-4 py-4">
+                            <div className="grid gap-2">
+                                <Label>계획명</Label>
+                                <Input
+                                    placeholder="예: 주택 마련, 여행 자금 등"
+                                    value={goalTitle}
+                                    onChange={e => setGoalTitle(e.target.value)}
+                                />
+                            </div>
+                            <div className="grid gap-2">
+                                <Label>목표 금액 (원)</Label>
+                                <Input
+                                    type="number"
+                                    placeholder="0"
+                                    value={goalTarget}
+                                    onChange={e => setGoalTarget(e.target.value)}
+                                />
+                            </div>
+                            {editingGoal && (
+                                <div className="grid gap-2">
+                                    <Label>현재 모은 금액 (원)</Label>
+                                    <Input
+                                        type="number"
+                                        placeholder="0"
+                                        value={goalCurrent}
+                                        onChange={e => setGoalCurrent(e.target.value)}
+                                    />
+                                </div>
+                            )}
+                        </div>
+                        <DialogFooter>
+                            <Button
+                                onClick={() => {
+                                    if (!goalTitle || !goalTarget) return;
+                                    if (editingGoal) {
+                                        updateFinanceGoal({
+                                            ...editingGoal,
+                                            title: goalTitle,
+                                            targetAmount: parseInt(goalTarget),
+                                            currentAmount: parseInt(goalCurrent) || 0,
+                                        });
+                                    } else {
+                                        addFinanceGoal({
+                                            id: Math.random().toString(36).substr(2, 9),
+                                            title: goalTitle,
+                                            targetAmount: parseInt(goalTarget),
+                                            currentAmount: parseInt(goalCurrent) || 0,
+                                            createdAt: new Date()
+                                        });
+                                    }
+                                    setIsDialogOpen(false);
+                                }}
+                                disabled={!goalTitle || !goalTarget}
+                            >
+                                {editingGoal ? '수정하기' : '추가하기'}
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
 
                 <Card>
                     <CardHeader>

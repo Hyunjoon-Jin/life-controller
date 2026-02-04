@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Building2, Search, Plus, ExternalLink, MapPin, Trash2, Home } from 'lucide-react';
+import { Building2, Search, Plus, ExternalLink, MapPin, Trash2, Home, Loader2, Sparkles } from 'lucide-react';
 import { generateId } from '@/lib/utils';
 import { RealEstateScrap } from '@/types';
 
@@ -15,6 +15,7 @@ export function RealEstateTab() {
     const { realEstateScraps, addRealEstateScrap, deleteRealEstateScrap } = useData();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+    const [isFetching, setIsFetching] = useState(false);
 
     // Form
     const [title, setTitle] = useState('');
@@ -50,8 +51,27 @@ export function RealEstateTab() {
     };
 
     const handleExternalSearch = () => {
-        const query = searchQuery || '네이버 부동산';
-        window.open(`https://search.naver.com/search.naver?query=${encodeURIComponent(query)}`, '_blank');
+        const query = searchQuery || '아파트';
+        window.open(`https://land.naver.com/search/search.naver?query=${encodeURIComponent(query)}`, '_blank');
+    };
+
+    const handleUrlFetch = async () => {
+        if (!url || !url.includes('naver.com')) return;
+
+        setIsFetching(true);
+        // Simulate URL parsing
+        setTimeout(() => {
+            if (url.includes('articleDetail')) {
+                setTitle("반포자이 84㎡ (샘플 데이타)");
+                setLocation("서울시 서초구 신반포로 270");
+                setPrice("35억 5,000만");
+                setMemo("고층, 올수리, 채광 좋음");
+            } else {
+                setTitle("네이버 매물 정보");
+                setLocation("지역 정보 자동 탐색");
+            }
+            setIsFetching(false);
+        }, 1500);
     };
 
     return (
@@ -141,6 +161,26 @@ export function RealEstateTab() {
                     </DialogHeader>
                     <div className="grid gap-4 py-4">
                         <div className="grid gap-2">
+                            <Label>URL (매뉴얼 스크랩)</Label>
+                            <div className="flex gap-2">
+                                <Input
+                                    placeholder="네이버 부동산 매물 주소"
+                                    value={url}
+                                    onChange={e => setUrl(e.target.value)}
+                                />
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="icon"
+                                    title="정보 가져오기"
+                                    onClick={handleUrlFetch}
+                                    disabled={isFetching || !url}
+                                >
+                                    {isFetching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4 text-amber-500" />}
+                                </Button>
+                            </div>
+                        </div>
+                        <div className="grid gap-2">
                             <Label>매물명</Label>
                             <Input placeholder="예: 반포자이 84㎡" value={title} onChange={e => setTitle(e.target.value)} />
                         </div>
@@ -151,10 +191,6 @@ export function RealEstateTab() {
                         <div className="grid gap-2">
                             <Label>희망가/시세</Label>
                             <Input placeholder="예: 35억 (매매)" value={price} onChange={e => setPrice(e.target.value)} />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label>URL (매뉴얼 스크랩)</Label>
-                            <Input placeholder="플랫폼 매물 주소 복사/붙여넣기" value={url} onChange={e => setUrl(e.target.value)} />
                         </div>
                         <div className="grid gap-2">
                             <Label>임장 메모 / 체크리스트</Label>

@@ -19,10 +19,10 @@ export function WorkMainDashboard({ onOpenProject }: WorkMainDashboardProps) {
 
     const tabs = [
         { id: 'schedule', label: '일정 관리', icon: Calendar },
-        { id: 'project', label: '프로젝트', icon: Briefcase },
-        { id: 'people', label: '인맥/CRM', icon: Users },
-        { id: 'time', label: '업무 시간', icon: Clock },
-        { id: 'template', label: '템플릿', icon: Layout },
+        { id: 'project', label: '프로젝트별 관리', icon: Briefcase },
+        { id: 'people', label: '인력 관리', icon: Users },
+        { id: 'time', label: '근무시간 관리', icon: Clock },
+        { id: 'template', label: '각종 템플릿', icon: Layout },
     ] as const;
     return (
         <div className="h-full flex flex-col gap-6 overflow-hidden">

@@ -35,8 +35,24 @@ export function CalendarView() {
                         showProjectTasks={showProjectTasks}
                     />
                 )}
-                {view === 'week' && <WeekView currentDate={currentDate} showProjectTasks={showProjectTasks} />}
-                {view === 'day' && <DayView currentDate={currentDate} showProjectTasks={showProjectTasks} />}
+                {view === 'week' && (
+                    <WeekView
+                        currentDate={currentDate}
+                        showProjectTasks={showProjectTasks}
+                        onDateClick={(date) => {
+                            setCurrentDate(date);
+                            setView('day');
+                        }}
+                    />
+                )}
+                {view === 'day' && (
+                    <DayView
+                        currentDate={currentDate}
+                        showProjectTasks={showProjectTasks}
+                        onNext={next}
+                        onPrev={prev}
+                    />
+                )}
             </div>
         </div>
     );

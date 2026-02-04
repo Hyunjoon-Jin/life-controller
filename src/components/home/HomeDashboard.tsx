@@ -18,10 +18,12 @@ import {
     Lightbulb,
     Languages,
     Briefcase,
-    Settings2,
     Plus,
     X,
-    GripVertical
+    GripVertical,
+    NotebookPen,
+    PiggyBank,
+    Settings2
 } from 'lucide-react';
 import { format, isValid } from 'date-fns';
 import { ko } from 'date-fns/locale';
@@ -50,6 +52,9 @@ const ALL_SHORTCUTS = [
     { id: 'ideas', label: '아이디어', icon: Lightbulb, color: 'bg-yellow-50 text-yellow-600 dark:bg-yellow-900/40 dark:text-yellow-400', mode: 'schedule', cat: 'record', tab: 'ideas' },
     { id: 'work', label: '업무', icon: Briefcase, color: 'bg-slate-50 text-slate-600 dark:bg-slate-800 dark:text-slate-300', mode: 'work', cat: 'basic', tab: 'calendar' },
     { id: 'hobby', label: '취미', icon: Palette, color: 'bg-pink-50 text-pink-600 dark:bg-pink-900/40 dark:text-pink-400', mode: 'schedule', cat: 'growth', tab: 'hobby' },
+    { id: 'journal', label: '일기', icon: NotebookPen, color: 'bg-violet-50 text-violet-600 dark:bg-violet-900/40 dark:text-violet-400', mode: 'schedule', cat: 'record', tab: 'journal' },
+    { id: 'finance', label: '가계부', icon: PiggyBank, color: 'bg-amber-50 text-amber-600 dark:bg-amber-900/40 dark:text-amber-400', mode: 'schedule', cat: 'record', tab: 'finance' },
+    { id: 'portfolio', label: '커리어', icon: Briefcase, color: 'bg-orange-50 text-orange-600 dark:bg-orange-900/40 dark:text-orange-400', mode: 'schedule', cat: 'growth', tab: 'portfolio' },
 ] as const;
 
 export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {

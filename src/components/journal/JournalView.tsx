@@ -6,10 +6,16 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { JournalEditor } from './JournalEditor';
-import { NotebookPen, Plus, Pencil, Trash2 } from 'lucide-react';
+import { NotebookPen, Plus, Pencil, Trash2, MoreVertical } from 'lucide-react';
 import { JournalEntry } from '@/types';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export function JournalView() {
     const { journals, deleteJournal } = useData();
@@ -114,25 +120,42 @@ export function JournalView() {
                 ) : (
                     sortedJournals.map(entry => (
                         <div key={entry.id} className="p-3 rounded-lg border border-border bg-muted/5 space-y-2 group relative">
-                            {/* Edit/Delete Actions */}
-                            <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <button onClick={() => handleEdit(entry)} className="text-muted-foreground hover:text-primary transition-colors">
-                                    <Pencil className="w-3.5 h-3.5" />
-                                </button>
-                                <button onClick={() => handleDelete(entry.id)} className="text-muted-foreground hover:text-destructive transition-colors">
-                                    <Trash2 className="w-3.5 h-3.5" />
-                                </button>
-                            </div>
-
                             <div className="flex justify-between items-start">
                                 <div className="text-xs font-medium text-muted-foreground uppercase">
                                     {format(new Date(entry.date), 'yyyy년 MMMM d일 a h:mm', { locale: ko })}
                                 </div>
-                                <div className="text-xl" title="Mood">{entry.mood}</div>
+                                <div className="flex items-center gap-2">
+                                    <div className="text-xl" title="Mood">{entry.mood}</div>
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
+                                                <MoreVertical className="w-4 h-4" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end">
+                                            <DropdownMenuItem onClick={() => handleEdit(entry)}>
+                                                <Pencil className="w-4 h-4 mr-2" /> 수정
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem onClick={() => handleDelete(entry.id)} className="text-destructive focus:text-destructive">
+                                                <Trash2 className="w-4 h-4 mr-2" /> 삭제
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                </div>
                             </div>
-                            <p className="text-sm whitespace-pre-wrap leading-relaxed">
-                                {entry.content}
-                            </p>
+                            <div className="space-y-1">
+                                <p className="text-sm whitespace-pre-wrap leading-relaxed truncate-3-lines">
+                                    {entry.content}
+                                </p>
+                                {entry.content.length > 150 && (
+                                    <button
+                                        className="text-[10px] text-primary hover:underline font-medium"
+                                        onClick={() => handleEdit(entry)}
+                                    >
+                                        더 보기...
+                                    </button>
+                                )}
+                            </div>
                             {entry.images && entry.images.length > 0 && (
                                 <div className="flex gap-2 overflow-x-auto mt-2 pt-2 border-t border-border/50">
                                     {entry.images.map((img, i) => (

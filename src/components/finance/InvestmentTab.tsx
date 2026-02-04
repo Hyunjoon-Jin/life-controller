@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { TrendingUp, Search, Plus, ExternalLink, BarChart3, Star, Trash2, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import { TrendingUp, Search, Plus, ExternalLink, BarChart3, Star, Trash2, ArrowUpRight, ArrowDownRight, Loader2, Sparkles } from 'lucide-react';
 import { generateId, cn } from '@/lib/utils';
 import { StockAnalysis } from '@/types';
 
@@ -15,6 +15,7 @@ export function InvestmentTab() {
     const { stockAnalyses, addStockAnalysis, deleteStockAnalysis } = useData();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+    const [isFetching, setIsFetching] = useState(false);
 
     // Form
     const [symbol, setSymbol] = useState('');
@@ -22,6 +23,7 @@ export function InvestmentTab() {
     const [rating, setRating] = useState<'buy' | 'hold' | 'sell'>('buy');
     const [targetPrice, setTargetPrice] = useState('');
     const [content, setContent] = useState('');
+    const [url, setUrl] = useState('');
     const [tags, setTags] = useState('');
 
     const handleSave = () => {
@@ -34,6 +36,7 @@ export function InvestmentTab() {
             rating,
             targetPrice: targetPrice ? parseFloat(targetPrice) : undefined,
             content,
+            url,
             tags: tags.split(',').map(t => t.trim()).filter(Boolean),
             analysisDate: new Date()
         };
@@ -43,12 +46,33 @@ export function InvestmentTab() {
         resetForm();
     };
 
+    const handleUrlFetch = async () => {
+        if (!url) return;
+
+        setIsFetching(true);
+        // Simulate URL parsing
+        setTimeout(() => {
+            if (url.includes('yahoo') || url.includes('finance')) {
+                setSymbol("NVDA");
+                setName("NVIDIA Corporation");
+                setRating("buy");
+                setTargetPrice("150");
+                setContent("AI 칩 수요가 여전히 강력하며 차세대 블랙웰 칩 출시가 기대됨. 데이터 센터 매출 비중 상승 중.");
+                setTags("AI, 반도체, NVIDIA");
+            } else {
+                setName("자동 분석 종목");
+            }
+            setIsFetching(false);
+        }, 1500);
+    };
+
     const resetForm = () => {
         setSymbol('');
         setName('');
         setRating('buy');
         setTargetPrice('');
         setContent('');
+        setUrl('');
         setTags('');
     };
 
@@ -159,6 +183,26 @@ export function InvestmentTab() {
                         <DialogTitle>새 투자 분석</DialogTitle>
                     </DialogHeader>
                     <div className="grid gap-6 py-4">
+                        <div className="grid gap-2">
+                            <Label>참조 URL</Label>
+                            <div className="flex gap-2">
+                                <Input
+                                    placeholder="야후 파이낸스, 네이버 증권 등 뉴스/분석 주소"
+                                    value={url}
+                                    onChange={e => setUrl(e.target.value)}
+                                />
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="icon"
+                                    title="정보 가져오기"
+                                    onClick={handleUrlFetch}
+                                    disabled={isFetching || !url}
+                                >
+                                    {isFetching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4 text-amber-500" />}
+                                </Button>
+                            </div>
+                        </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div className="grid gap-2">
                                 <Label>티커 (Symbol)</Label>

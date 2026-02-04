@@ -9,10 +9,12 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Briefcase, GraduationCap, User, Plus, Trash2, Edit2, Link as LinkIcon, Calendar, ExternalLink, Mail, Phone, MapPin, Linkedin, Github, Trophy, Languages, Award, Building2, Search, Paperclip, X } from 'lucide-react';
+import { Briefcase, GraduationCap, User, Plus, Trash2, Edit2, Link as LinkIcon, Calendar, ExternalLink, Mail, Phone, MapPin, Linkedin, Github, Trophy, Languages, Award, Building2, Search, Paperclip, X, FileText, File, Loader2, Image as ImageIcon, Presentation as FilePieChart } from 'lucide-react';
 import { format } from 'date-fns';
+import { ko } from 'date-fns/locale';
 import { PortfolioItem, UserProfile, Education, Career, Activity, CareerProject } from '@/types';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { searchSchools, SchoolInfo } from '@/lib/schoolApi';
 
 export function PortfolioBoard() {
     const {
@@ -43,6 +45,10 @@ export function PortfolioBoard() {
 
     // --- Activity Modal State ---
     const [activityForm, setActivityForm] = useState<Partial<Activity>>({});
+
+    // --- Search & Upload State ---
+    const [schoolResults, setSchoolResults] = useState<SchoolInfo[]>([]);
+    const [isSearching, setIsSearching] = useState(false);
 
     const openModal = (type: 'profile' | 'education' | 'career' | 'project' | 'activity', id?: string) => {
         setModal({ type, id });
@@ -85,6 +91,66 @@ export function PortfolioBoard() {
                 setActivityForm({ type: 'other', title: '', organization: '', startDate: new Date(), description: '' });
             }
         }
+    };
+
+    const handleSchoolSearch = async () => {
+        if (!schoolSearch.trim()) return;
+        setIsSearching(true);
+        try {
+            const results = await searchSchools(schoolSearch);
+            setSchoolResults(results);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setIsSearching(false);
+        }
+    };
+
+    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, target: 'project' | 'activity' | 'education' | 'career') => {
+        const files = e.target.files;
+        if (!files) return;
+
+        Array.from(files).forEach(file => {
+            const allowedExtensions = ['.pdf', '.ppt', '.pptx', '.jpg', '.jpeg', '.png', '.gif'];
+            const fileExtension = file.name.slice(file.name.lastIndexOf('.')).toLowerCase();
+
+            if (!allowedExtensions.includes(fileExtension)) {
+                alert(`${file.name}은(는) 지원되지 않는 형식입니다. (이미지, PDF, PPT 가능)`);
+                return;
+            }
+
+            if (file.size > 5 * 1024 * 1024) {
+                alert(`${file.name}의 크기가 너무 큽니다. 5MB 이하의 파일을 업로드해 주세요.`);
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const base64String = reader.result as string;
+                const newFileData = { name: file.name, url: base64String };
+
+                if (target === 'project') setProjectForm(prev => ({ ...prev, files: [...(prev.files || []), newFileData] }));
+                if (target === 'activity') setActivityForm(prev => ({ ...prev, files: [...(prev.files || []), newFileData] }));
+                if (target === 'education') setEduForm(prev => ({ ...prev, files: [...(prev.files || []), newFileData] }));
+                if (target === 'career') setCareerForm(prev => ({ ...prev, files: [...(prev.files || []), newFileData] }));
+            };
+            reader.readAsDataURL(file);
+        });
+    };
+
+    const removeFile = (idx: number, target: 'project' | 'activity' | 'education' | 'career') => {
+        if (target === 'project') setProjectForm(prev => ({ ...prev, files: (prev.files || []).filter((_, i) => i !== idx) }));
+        if (target === 'activity') setActivityForm(prev => ({ ...prev, files: (prev.files || []).filter((_, i) => i !== idx) }));
+        if (target === 'education') setEduForm(prev => ({ ...prev, files: (prev.files || []).filter((_, i) => i !== idx) }));
+        if (target === 'career') setCareerForm(prev => ({ ...prev, files: (prev.files || []).filter((_, i) => i !== idx) }));
+    };
+
+    const getFileIcon = (fileName: string) => {
+        const ext = fileName.slice(fileName.lastIndexOf('.')).toLowerCase();
+        if (['.jpg', '.jpeg', '.png', '.gif'].includes(ext)) return <ImageIcon className="w-4 h-4 text-blue-500" />;
+        if (ext === '.pdf') return <FileText className="w-4 h-4 text-red-500" />;
+        if (['.ppt', '.pptx'].includes(ext)) return <FilePieChart className="w-4 h-4 text-orange-500" />;
+        return <File className="w-4 h-4 text-slate-400" />;
     };
 
     const handleSaveProfile = () => {
@@ -520,21 +586,54 @@ export function PortfolioBoard() {
                         <DialogTitle>학력 추가/수정</DialogTitle>
                     </DialogHeader>
                     <div className="grid gap-4 py-4">
-                        <div className="space-y-2">
+                        <div className="space-y-2 text-left">
                             <Label>학교명</Label>
                             <div className="flex gap-2">
-                                <Input
-                                    placeholder="학교명을 입력하세요"
-                                    value={schoolSearch}
-                                    onChange={e => {
-                                        setSchoolSearch(e.target.value);
-                                        setEduForm({ ...eduForm, school: e.target.value });
-                                    }}
-                                />
-                                <Button variant="outline" size="icon" title="학교 검색">
+                                <div className="relative flex-1">
+                                    <Input
+                                        placeholder="학교명을 입력하세요"
+                                        value={schoolSearch}
+                                        onChange={e => {
+                                            setSchoolSearch(e.target.value);
+                                            setEduForm({ ...eduForm, school: e.target.value });
+                                        }}
+                                        onKeyDown={e => {
+                                            if (e.key === 'Enter') {
+                                                e.preventDefault();
+                                                handleSchoolSearch();
+                                            }
+                                        }}
+                                    />
+                                    {isSearching && <Loader2 className="absolute right-3 top-2.5 w-4 h-4 animate-spin text-slate-400" />}
+                                </div>
+                                <Button variant="outline" size="icon" title="학교 검색" onClick={handleSchoolSearch} disabled={isSearching}>
                                     <Search className="w-4 h-4" />
                                 </Button>
                             </div>
+
+                            {schoolResults.length > 0 && (
+                                <div className="mt-2 border rounded-md max-h-40 overflow-y-auto bg-white shadow-sm absolute z-20 w-[calc(100%-48px)]">
+                                    {schoolResults.map((s, idx) => (
+                                        <div
+                                            key={idx}
+                                            className="p-2 hover:bg-slate-50 cursor-pointer text-sm flex justify-between items-center border-b last:border-0"
+                                            onClick={() => {
+                                                setEduForm({ ...eduForm, school: s.schoolName });
+                                                setSchoolSearch(s.schoolName);
+                                                setSchoolResults([]);
+                                            }}
+                                        >
+                                            <div>
+                                                <div className="font-medium text-slate-900">{s.schoolName}</div>
+                                                <div className="text-xs text-slate-500">{s.address}</div>
+                                            </div>
+                                            <div className="text-[10px] bg-slate-100 px-1.5 py-0.5 rounded text-slate-600">
+                                                {s.region}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <Input placeholder="학위 (예: 학사, 석사)" value={eduForm.degree || ''} onChange={e => setEduForm({ ...eduForm, degree: e.target.value })} />
@@ -543,7 +642,7 @@ export function PortfolioBoard() {
                         <div className="grid grid-cols-2 gap-4">
                             <div className="grid gap-2">
                                 <Label>입학일</Label>
-                                <Input type="date" value={eduForm.startDate ? format(new Date(eduForm.startDate), 'yyyy-MM-dd') : ''} onChange={e => setEduForm({ ...eduForm, startDate: new Date(e.target.value) })} />
+                                <Input type="date" value={eduForm.startDate ? format(new Date(eduForm.startDate), ko ? 'yyyy-MM-dd' : 'yyyy-MM-dd') : ''} onChange={e => setEduForm({ ...eduForm, startDate: new Date(e.target.value) })} />
                             </div>
                             <div className="grid gap-2">
                                 <Label>졸업일 (예정)</Label>
@@ -563,6 +662,41 @@ export function PortfolioBoard() {
                             />
                             <Label htmlFor="eduCurrent">재학 중</Label>
                         </div>
+                        <div className="space-y-2 border-t pt-4">
+                            <div className="flex items-center justify-between">
+                                <Label className="flex items-center gap-2">
+                                    <Paperclip className="w-4 h-4 text-slate-500" />
+                                    첨부 파일 (졸업증명서, 성적증명서 등)
+                                </Label>
+                                <Button
+                                    size="sm" variant="outline" className="h-7 text-xs"
+                                    onClick={() => document.getElementById('education-file-upload')?.click()}
+                                >
+                                    <Plus className="w-3 h-3 mr-1" /> 추가
+                                </Button>
+                                <input
+                                    id="education-file-upload" type="file" className="hidden" multiple
+                                    accept=".pdf,.ppt,.pptx,.jpg,.jpeg,.png,.gif"
+                                    onChange={(e) => handleFileUpload(e, 'education')}
+                                />
+                            </div>
+                            <div className="grid grid-cols-1 gap-2">
+                                {(eduForm.files || []).map((file, idx) => (
+                                    <div key={idx} className="flex items-center justify-between p-2 bg-slate-50 rounded-md border border-slate-100 group">
+                                        <div className="flex items-center gap-2 overflow-hidden">
+                                            {getFileIcon(file.name)}
+                                            <span className="text-xs truncate text-slate-600">{file.name}</span>
+                                        </div>
+                                        <Button
+                                            size="icon" variant="ghost" className="h-6 w-6 opacity-0 group-hover:opacity-100 text-slate-400 hover:text-red-500"
+                                            onClick={() => removeFile(idx, 'education')}
+                                        >
+                                            <X className="w-3 h-3" />
+                                        </Button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
                     </div>
                     <DialogFooter><Button onClick={handleSaveEducation}>저장</Button></DialogFooter>
                 </DialogContent>
@@ -575,7 +709,6 @@ export function PortfolioBoard() {
                         <DialogTitle>경력 추가/수정</DialogTitle>
                     </DialogHeader>
                     <div className="flex-1 overflow-y-auto p-6 space-y-8">
-                        {/* Basic Info */}
                         <section className="space-y-4">
                             <h3 className="text-sm font-bold text-slate-500 uppercase">기본 정보</h3>
                             <div className="grid grid-cols-2 gap-4">
@@ -608,134 +741,36 @@ export function PortfolioBoard() {
                             <Textarea placeholder="주요 업무 내용 (Summary)" value={careerForm.description || ''} onChange={e => setCareerForm({ ...careerForm, description: e.target.value })} />
                         </section>
 
-                        {/* Projects (Simple List Implementation) */}
                         <section className="space-y-4">
                             <div className="flex items-center justify-between">
-                                <h3 className="text-sm font-bold text-slate-500 uppercase">주요 프로젝트</h3>
-                                <Button size="sm" variant="outline" onClick={() => {
-                                    const newProj: CareerProject = { title: '새 프로젝트', description: '' };
-                                    setCareerForm({ ...careerForm, projects: [...(careerForm.projects || []), newProj] });
-                                }}>
-                                    <Plus className="w-3 h-3 mr-1" /> 프로젝트 추가
+                                <Label className="flex items-center gap-2">
+                                    <Paperclip className="w-4 h-4 text-slate-500" />
+                                    첨부 파일 (증빙자료, 포트폴리오 등)
+                                </Label>
+                                <Button
+                                    size="sm" variant="outline" className="h-7 text-xs"
+                                    onClick={() => document.getElementById('career-file-upload')?.click()}
+                                >
+                                    <Plus className="w-3 h-3 mr-1" /> 추가
                                 </Button>
+                                <input
+                                    id="career-file-upload" type="file" className="hidden" multiple
+                                    accept=".pdf,.ppt,.pptx,.jpg,.jpeg,.png,.gif"
+                                    onChange={(e) => handleFileUpload(e, 'career')}
+                                />
                             </div>
-                            <div className="space-y-4">
-                                {(careerForm.projects || []).map((proj, idx) => (
-                                    <div key={idx} className="border rounded-lg p-4 space-y-3 bg-slate-50 relative group">
+                            <div className="grid grid-cols-1 gap-2">
+                                {(careerForm.files || []).map((file, idx) => (
+                                    <div key={idx} className="flex items-center justify-between p-2 bg-slate-50 rounded-md border border-slate-100 group">
+                                        <div className="flex items-center gap-2 overflow-hidden">
+                                            {getFileIcon(file.name)}
+                                            <span className="text-xs truncate text-slate-600">{file.name}</span>
+                                        </div>
                                         <Button
-                                            size="icon" variant="ghost" className="h-6 w-6 absolute top-2 right-2 text-slate-400 hover:text-red-500"
-                                            onClick={() => {
-                                                const newProjs = [...(careerForm.projects || [])];
-                                                newProjs.splice(idx, 1);
-                                                setCareerForm({ ...careerForm, projects: newProjs });
-                                            }}
+                                            size="icon" variant="ghost" className="h-6 w-6 opacity-0 group-hover:opacity-100 text-slate-400 hover:text-red-500"
+                                            onClick={() => removeFile(idx, 'career')}
                                         >
                                             <X className="w-3 h-3" />
-                                        </Button>
-
-                                        <div className="grid grid-cols-2 gap-2">
-                                            <Input
-                                                placeholder="프로젝트명"
-                                                value={proj.title}
-                                                onChange={e => {
-                                                    const newProjs = [...(careerForm.projects || [])];
-                                                    newProjs[idx].title = e.target.value;
-                                                    setCareerForm({ ...careerForm, projects: newProjs });
-                                                }}
-                                                className="bg-white"
-                                            />
-                                            <Input
-                                                placeholder="역할 (Role)"
-                                                value={proj.role || ''}
-                                                onChange={e => {
-                                                    const newProjs = [...(careerForm.projects || [])];
-                                                    newProjs[idx].role = e.target.value;
-                                                    setCareerForm({ ...careerForm, projects: newProjs });
-                                                }}
-                                                className="bg-white"
-                                            />
-                                        </div>
-                                        <Textarea
-                                            placeholder="성과 및 상세 설명"
-                                            value={proj.description}
-                                            onChange={e => {
-                                                const newProjs = [...(careerForm.projects || [])];
-                                                newProjs[idx].description = e.target.value;
-                                                setCareerForm({ ...careerForm, projects: newProjs });
-                                            }}
-                                            className="bg-white text-sm"
-                                        />
-
-                                        <div className="grid grid-cols-2 gap-2">
-                                            <Input
-                                                placeholder="기간 (예: 2023.01 - 2023.06)"
-                                                value={proj.period || ''}
-                                                onChange={e => {
-                                                    const newProjs = [...(careerForm.projects || [])];
-                                                    newProjs[idx].period = e.target.value;
-                                                    setCareerForm({ ...careerForm, projects: newProjs });
-                                                }}
-                                                className="bg-white text-xs h-8"
-                                            />
-                                            <Input
-                                                placeholder="사용 기술 (Tech Stack)"
-                                                value={proj.techStack?.join(', ') || ''}
-                                                onChange={e => {
-                                                    const newProjs = [...(careerForm.projects || [])];
-                                                    newProjs[idx].techStack = e.target.value.split(',').map(s => s.trim()).filter(Boolean);
-                                                    setCareerForm({ ...careerForm, projects: newProjs });
-                                                }}
-                                                className="bg-white text-xs h-8"
-                                            />
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </section>
-
-                        {/* Files / Attachments */}
-                        <section className="space-y-4">
-                            <div className="flex items-center justify-between">
-                                <h3 className="text-sm font-bold text-slate-500 uppercase">증빙 자료 / 첨부 파일</h3>
-                                <Button size="sm" variant="outline" onClick={() => {
-                                    const newFile = { name: '', url: '' };
-                                    setCareerForm({ ...careerForm, files: [...(careerForm.files || []), newFile] });
-                                }}>
-                                    <Paperclip className="w-3 h-3 mr-1" /> 파일 추가
-                                </Button>
-                            </div>
-                            <div className="space-y-2">
-                                {(careerForm.files || []).map((file, idx) => (
-                                    <div key={idx} className="flex gap-2 items-center text-sm">
-                                        <Input
-                                            placeholder="파일명 (예: 경력증명서)"
-                                            value={file.name}
-                                            onChange={e => {
-                                                const newFiles = [...(careerForm.files || [])];
-                                                newFiles[idx].name = e.target.value;
-                                                setCareerForm({ ...careerForm, files: newFiles });
-                                            }}
-                                            className="flex-1"
-                                        />
-                                        <Input
-                                            placeholder="URL (Link)"
-                                            value={file.url}
-                                            onChange={e => {
-                                                const newFiles = [...(careerForm.files || [])];
-                                                newFiles[idx].url = e.target.value;
-                                                setCareerForm({ ...careerForm, files: newFiles });
-                                            }}
-                                            className="flex-[2]"
-                                        />
-                                        <Button
-                                            size="icon" variant="ghost" className="h-8 w-8 text-slate-400 hover:text-red-500"
-                                            onClick={() => {
-                                                const newFiles = [...(careerForm.files || [])];
-                                                newFiles.splice(idx, 1);
-                                                setCareerForm({ ...careerForm, files: newFiles });
-                                            }}
-                                        >
-                                            <X className="w-4 h-4" />
                                         </Button>
                                     </div>
                                 ))}
@@ -748,11 +783,83 @@ export function PortfolioBoard() {
                 </DialogContent>
             </Dialog>
 
+            {/* Project Modal */}
+            <Dialog open={modal?.type === 'project'} onOpenChange={(open) => !open && setModal(null)}>
+                <DialogContent className="max-w-2xl">
+                    <DialogHeader>
+                        <DialogTitle>프로젝트 추가/수정</DialogTitle>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4 max-h-[70vh] overflow-y-auto pr-2">
+                        <div className="grid gap-2">
+                            <Label>프로젝트명</Label>
+                            <Input value={projectForm.title || ''} onChange={e => setProjectForm({ ...projectForm, title: e.target.value })} />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="grid gap-2">
+                                <Label>기간</Label>
+                                <Input placeholder="예: 2023.01 - 2023.06" value={projectForm.period || ''} onChange={e => setProjectForm({ ...projectForm, period: e.target.value })} />
+                            </div>
+                            <div className="grid gap-2">
+                                <Label>역할</Label>
+                                <Input placeholder="예: 프론트엔드 개발" value={projectForm.role || ''} onChange={e => setProjectForm({ ...projectForm, role: e.target.value })} />
+                            </div>
+                        </div>
+                        <div className="grid gap-2">
+                            <Label>사용 기술 (쉼표로 구분)</Label>
+                            <Input placeholder="React, TypeScript, TailwindCSS" value={projectTechStack} onChange={e => setProjectTechStack(e.target.value)} />
+                        </div>
+                        <div className="grid gap-2">
+                            <Label>설명</Label>
+                            <Textarea className="h-24" value={projectForm.description || ''} onChange={e => setProjectForm({ ...projectForm, description: e.target.value })} />
+                        </div>
+
+                        <div className="space-y-2 border-t pt-4">
+                            <div className="flex items-center justify-between">
+                                <Label className="flex items-center gap-2">
+                                    <Paperclip className="w-4 h-4 text-slate-500" />
+                                    첨부 파일 (이미지, PDF, PPT)
+                                </Label>
+                                <Button
+                                    size="sm" variant="outline" className="h-7 text-xs"
+                                    onClick={() => document.getElementById('project-file-upload')?.click()}
+                                >
+                                    <Plus className="w-3 h-3 mr-1" /> 추가
+                                </Button>
+                                <input
+                                    id="project-file-upload" type="file" className="hidden" multiple
+                                    accept=".pdf,.ppt,.pptx,.jpg,.jpeg,.png,.gif"
+                                    onChange={(e) => handleFileUpload(e, 'project')}
+                                />
+                            </div>
+                            <div className="grid grid-cols-1 gap-2">
+                                {(projectForm.files || []).map((file, idx) => (
+                                    <div key={idx} className="flex items-center justify-between p-2 bg-slate-50 rounded-md border border-slate-100 group">
+                                        <div className="flex items-center gap-2 overflow-hidden">
+                                            {getFileIcon(file.name)}
+                                            <span className="text-xs truncate text-slate-600">{file.name}</span>
+                                        </div>
+                                        <Button
+                                            size="icon" variant="ghost" className="h-6 w-6 opacity-0 group-hover:opacity-100 text-slate-400 hover:text-red-500"
+                                            onClick={() => removeFile(idx, 'project')}
+                                        >
+                                            <X className="w-3 h-3" />
+                                        </Button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button onClick={handleSaveProject}>저장</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
             {/* Activity Modal */}
             <Dialog open={modal?.type === 'activity'} onOpenChange={(open) => !open && setModal(null)}>
                 <DialogContent>
                     <DialogHeader><DialogTitle>대외활동 추가/수정</DialogTitle></DialogHeader>
-                    <div className="grid gap-4 py-4">
+                    <div className="grid gap-4 py-4 max-h-[70vh] overflow-y-auto pr-2">
                         <div className="grid gap-2">
                             <Label>활동 구분</Label>
                             <select
@@ -786,72 +893,43 @@ export function PortfolioBoard() {
 
                         <div className="space-y-2 border-t pt-4">
                             <div className="flex items-center justify-between">
-                                <Label>증빙 자료 / 관련 링크</Label>
-                                <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => {
-                                    const newFile = { name: '', url: '' };
-                                    setActivityForm({ ...activityForm, files: [...(activityForm.files || []), newFile] });
-                                }}>
+                                <Label className="flex items-center gap-2">
+                                    <Paperclip className="w-4 h-4 text-slate-500" />
+                                    첨부 파일 (이미지, PDF, PPT)
+                                </Label>
+                                <Button
+                                    size="sm" variant="outline" className="h-7 text-xs"
+                                    onClick={() => document.getElementById('activity-file-upload-input-final')?.click()}
+                                >
                                     <Plus className="w-3 h-3 mr-1" /> 추가
                                 </Button>
+                                <input
+                                    id="activity-file-upload-input-final" type="file" className="hidden" multiple
+                                    accept=".pdf,.ppt,.pptx,.jpg,.jpeg,.png,.gif"
+                                    onChange={(e) => handleFileUpload(e, 'activity')}
+                                />
                             </div>
-                            {(activityForm.files || []).map((file, idx) => (
-                                <div key={idx} className="flex gap-2 items-center text-sm">
-                                    <Input
-                                        placeholder="이름"
-                                        value={file.name}
-                                        onChange={e => {
-                                            const newFiles = [...(activityForm.files || [])];
-                                            newFiles[idx].name = e.target.value;
-                                            setActivityForm({ ...activityForm, files: newFiles });
-                                        }}
-                                        className="h-8 flex-1"
-                                    />
-                                    <Input
-                                        placeholder="URL"
-                                        value={file.url}
-                                        onChange={e => {
-                                            const newFiles = [...(activityForm.files || [])];
-                                            newFiles[idx].url = e.target.value;
-                                            setActivityForm({ ...activityForm, files: newFiles });
-                                        }}
-                                        className="h-8 flex-[2]"
-                                    />
-                                    <Button
-                                        size="icon" variant="ghost" className="h-8 w-8 hover:text-red-500"
-                                        onClick={() => {
-                                            const newFiles = [...(activityForm.files || [])];
-                                            newFiles.splice(idx, 1);
-                                            setActivityForm({ ...activityForm, files: newFiles });
-                                        }}
-                                    >
-                                        <X className="w-3 h-3" />
-                                    </Button>
-                                </div>
-                            ))}
+                            <div className="grid grid-cols-1 gap-2">
+                                {(activityForm.files || []).map((file, idx) => (
+                                    <div key={idx} className="flex items-center justify-between p-2 bg-slate-50 rounded-md border border-slate-100 group">
+                                        <div className="flex items-center gap-2 overflow-hidden">
+                                            {getFileIcon(file.name)}
+                                            <span className="text-xs truncate text-slate-600">{file.name}</span>
+                                        </div>
+                                        <Button
+                                            size="icon" variant="ghost" className="h-6 w-6 opacity-0 group-hover:opacity-100 text-slate-400 hover:text-red-500"
+                                            onClick={() => removeFile(idx, 'activity')}
+                                        >
+                                            <X className="w-3 h-3" />
+                                        </Button>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
-
-
                     </div>
                     <DialogFooter><Button onClick={handleSaveActivity}>저장</Button></DialogFooter>
-                </DialogContent >
-            </Dialog >
-
-            {/* Project Modal */}
-            <Dialog open={modal?.type === 'project'} onOpenChange={(open) => !open && setModal(null)}>
-                <DialogContent>
-                    <DialogHeader><DialogTitle>프로젝트 추가/수정</DialogTitle></DialogHeader>
-                    <div className="grid gap-4 py-4">
-                        <Input placeholder="프로젝트 명" value={projectForm.title || ''} onChange={e => setProjectForm({ ...projectForm, title: e.target.value })} />
-                        <div className="grid grid-cols-2 gap-4">
-                            <Input placeholder="역할" value={projectForm.role || ''} onChange={e => setProjectForm({ ...projectForm, role: e.target.value })} />
-                            <Input placeholder="기간" value={projectForm.period || ''} onChange={e => setProjectForm({ ...projectForm, period: e.target.value })} />
-                        </div>
-                        <Textarea placeholder="설명" value={projectForm.description || ''} onChange={e => setProjectForm({ ...projectForm, description: e.target.value })} />
-                        <Input placeholder="기술 스택 (콤마 구분)" value={projectTechStack} onChange={e => setProjectTechStack(e.target.value)} />
-                    </div>
-                    <DialogFooter><Button onClick={handleSaveProject}>저장</Button></DialogFooter>
                 </DialogContent>
             </Dialog>
-        </div >
+        </div>
     );
 }

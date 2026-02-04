@@ -6,7 +6,8 @@ import {
     LanguageEntry, Book, ExerciseSession, DietEntry, InBodyEntry, HobbyEntry,
     Transaction, Asset, Certificate, PortfolioItem, ArchiveDocument,
     UserProfile, Education, Career, BodyCompositionGoal, LanguageResource,
-    Hobby, HobbyPost, Activity, RealEstateScrap, StockAnalysis, WorkLog, ExerciseRoutine
+    Hobby, HobbyPost, Activity, RealEstateScrap, StockAnalysis, WorkLog, ExerciseRoutine,
+    FinanceGoal, CustomFood
 } from '@/types';
 
 type AppState = {
@@ -44,6 +45,8 @@ type AppState = {
     stockAnalyses: StockAnalysis[];
     workLogs: WorkLog[];
     exerciseRoutines: ExerciseRoutine[];
+    financeGoals: FinanceGoal[];
+    customFoods: CustomFood[];
 };
 
 export function useCloudSync() {

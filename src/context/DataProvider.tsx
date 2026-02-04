@@ -7,13 +7,13 @@ import {
     Transaction, Asset, Certificate, PortfolioItem, ArchiveDocument,
     UserProfile, Education, Career, BodyCompositionGoal, LanguageResource,
     Hobby, HobbyPost, Activity, RealEstateScrap, StockAnalysis, WorkLog,
-    ExerciseRoutine // Added ExerciseRoutine
+    ExerciseRoutine, FinanceGoal, CustomFood // Added CustomFood
 } from '@/types';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useCloudSync } from '@/hooks/useCloudSync';
 import { useSession } from 'next-auth/react';
 import { toast } from 'sonner';
-import { differenceInMinutes, isSameDay } from 'date-fns';
+import { differenceInMinutes, isSameDay, startOfWeek, endOfWeek, eachDayOfInterval, format } from 'date-fns';
 
 interface DataContextType {
     // ... existing types
@@ -199,8 +199,19 @@ interface DataContextType {
     forceSync: () => Promise<void>;
     bodyCompositionGoal: BodyCompositionGoal | null;
     setBodyCompositionGoal: (goal: BodyCompositionGoal) => void;
+    financeGoals: FinanceGoal[];
+    setFinanceGoals: (goals: FinanceGoal[]) => void;
+    addFinanceGoal: (goal: FinanceGoal) => void;
+    updateFinanceGoal: (goal: FinanceGoal) => void;
+    deleteFinanceGoal: (id: string) => void;
+
     homeShortcuts: string[];
     setHomeShortcuts: (shortcuts: string[]) => void;
+
+    customFoods: CustomFood[];
+    setCustomFoods: (foods: CustomFood[]) => void;
+    addCustomFood: (food: CustomFood) => void;
+    deleteCustomFood: (id: string) => void;
 }
 
 
@@ -255,6 +266,11 @@ export function DataProvider({ children }: { children: ReactNode }) {
     const [stockAnalyses, setStockAnalyses] = useLocalStorage<StockAnalysis[]>('stockAnalyses', []);
     const [workLogs, setWorkLogs] = useLocalStorage<WorkLog[]>('workLogs', []);
     const [exerciseRoutines, setExerciseRoutines] = useLocalStorage<ExerciseRoutine[]>('exerciseRoutines', []);
+    const [financeGoals, setFinanceGoals] = useLocalStorage<FinanceGoal[]>('financeGoals', [
+        { id: '1', title: '주택 마련 기금', targetAmount: 500000000, currentAmount: 125000000, createdAt: new Date() },
+        { id: '2', title: '노후 자금', targetAmount: 1000000000, currentAmount: 100000000, createdAt: new Date() }
+    ]);
+    const [customFoods, setCustomFoods] = useLocalStorage<CustomFood[]>('customFoods', []);
 
     // Resume States
     const [userProfile, setUserProfile] = useLocalStorage<UserProfile>('userProfile', {
@@ -323,6 +339,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
                     if (data.bodyCompositionGoal) setBodyCompositionGoal(data.bodyCompositionGoal);
                     if (data.workLogs) setWorkLogs(data.workLogs);
                     if (data.exerciseRoutines) setExerciseRoutines(data.exerciseRoutines);
+                    if (data.financeGoals) setFinanceGoals(data.financeGoals);
+                    if (data.customFoods) setCustomFoods(data.customFoods);
                 }
                 setIsLoadedFromCloud(true);
             });
@@ -566,6 +584,55 @@ export function DataProvider({ children }: { children: ReactNode }) {
     // Alarm State
     const alertedEventIdsRef = React.useRef<Set<string>>(new Set());
 
+    useEffect(() => {
+        if ('Notification' in window && Notification.permission !== 'granted' && Notification.permission !== 'denied') {
+            Notification.requestPermission();
+        }
+    }, []);
+
+    useEffect(() => {
+        const checkAlarms = () => {
+            const now = new Date();
+            events.forEach(event => {
+                if (!event.start) return;
+                const start = new Date(event.start);
+                const prep = event.prepTime || 0;
+                const travel = event.travelTime || 0;
+
+                // Alarm triggers at: Start - (Prep + Travel)
+                const alarmTime = new Date(start.getTime() - (prep + travel) * 60 * 1000);
+
+                // Trigger if alarm time is passed within last 60 seconds (to avoid spamming old alarms on refresh)
+                // OR just simply if passed and not alerted, assuming we only care about future alarms from session start?
+                // But alertedEventIdsRef is reset on refresh. So old events would trigger immediately.
+                // Constraint: Only trigger if alarmTime is within recent past (e.g. 1 min) or future?
+                // Actually, for a daily scheduler, maybe we only care about alarms happening NOW.
+                // Let's say: if alarmTime <= now && alarmTime > now - 1 minute.
+
+                const timeDiff = now.getTime() - alarmTime.getTime();
+
+                // If it's time (within last 60 seconds) and not alerted
+                if (timeDiff >= 0 && timeDiff < 60000 && !alertedEventIdsRef.current.has(event.id)) {
+                    const message = `${format(start, 'HH:mm')} 시작` +
+                        (prep > 0 ? `, 준비 ${prep}분` : '') +
+                        (travel > 0 ? `, 이동 ${travel}분` : '') + ' 전입니다.';
+
+                    if (Notification.permission === 'granted') {
+                        new Notification(`[일정 알림] ${event.title}`, {
+                            body: message,
+                        });
+                    }
+                    toast.info(`[일정] ${event.title}`, { description: message });
+
+                    alertedEventIdsRef.current.add(event.id);
+                }
+            });
+        };
+
+        const interval = setInterval(checkAlarms, 10000); // Check every 10s
+        return () => clearInterval(interval);
+    }, [events]);
+
     // 2. Save data to cloud on change
     useEffect(() => {
         if (session?.user && isLoadedFromCloud) {
@@ -575,7 +642,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
                 hobbies, hobbyPosts,
                 transactions, assets, certificates, portfolios, archiveDocuments,
                 userProfile, educations, careers, activities, bodyCompositionGoal, homeShortcuts,
-                realEstateScraps, stockAnalyses, workLogs, exerciseRoutines
+                realEstateScraps, stockAnalyses, workLogs, exerciseRoutines, financeGoals, customFoods
             });
         }
     }, [
@@ -585,7 +652,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         hobbies, hobbyPosts,
         transactions, assets, certificates, portfolios, archiveDocuments,
         userProfile, educations, careers, activities, bodyCompositionGoal, homeShortcuts,
-        realEstateScraps, stockAnalyses, workLogs, exerciseRoutines
+        realEstateScraps, stockAnalyses, workLogs, exerciseRoutines, financeGoals, customFoods
     ]);
 
     const forceSync = async () => {
@@ -596,7 +663,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
                 hobbies, hobbyPosts,
                 transactions, assets, certificates, portfolios, archiveDocuments,
                 userProfile, educations, careers, activities, bodyCompositionGoal, homeShortcuts,
-                realEstateScraps, stockAnalyses, workLogs, exerciseRoutines
+                realEstateScraps, stockAnalyses, workLogs, exerciseRoutines, financeGoals, customFoods
             });
         }
     };
@@ -650,6 +717,13 @@ export function DataProvider({ children }: { children: ReactNode }) {
     const addExerciseRoutine = (routine: ExerciseRoutine) => setExerciseRoutines([...exerciseRoutines, routine]);
     const updateExerciseRoutine = (updatedRoutine: ExerciseRoutine) => setExerciseRoutines(exerciseRoutines.map(r => r.id === updatedRoutine.id ? updatedRoutine : r));
     const deleteExerciseRoutine = (id: string) => setExerciseRoutines(exerciseRoutines.filter(r => r.id !== id));
+
+    const addFinanceGoal = (goal: FinanceGoal) => setFinanceGoals([...financeGoals, goal]);
+    const updateFinanceGoal = (updatedGoal: FinanceGoal) => setFinanceGoals(financeGoals.map(g => g.id === updatedGoal.id ? updatedGoal : g));
+    const deleteFinanceGoal = (id: string) => setFinanceGoals(financeGoals.filter(g => g.id !== id));
+
+    const addCustomFood = (food: CustomFood) => setCustomFoods([...customFoods, food]);
+    const deleteCustomFood = (id: string) => setCustomFoods(customFoods.filter(f => f.id !== id));
 
     return (
         <DataContext.Provider value={{
@@ -729,7 +803,9 @@ export function DataProvider({ children }: { children: ReactNode }) {
             forceSync,
             bodyCompositionGoal,
             setBodyCompositionGoal,
-            homeShortcuts, setHomeShortcuts
+            financeGoals, setFinanceGoals, addFinanceGoal, updateFinanceGoal, deleteFinanceGoal,
+            homeShortcuts, setHomeShortcuts,
+            customFoods, setCustomFoods, addCustomFood, deleteCustomFood
         }}>
             {children}
         </DataContext.Provider>

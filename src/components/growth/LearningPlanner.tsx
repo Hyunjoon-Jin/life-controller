@@ -8,8 +8,23 @@ import { Progress } from '@/components/ui/progress';
 import { format, addDays, isAfter } from 'date-fns';
 import { ko } from 'date-fns/locale';
 
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useState } from 'react';
+import { generateId } from '@/lib/utils';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+
 export function LearningPlanner() {
-    const { certificates = [], languageResources = [], tasks = [] } = useData();
+    const { certificates = [], languageResources = [], tasks = [], addCertificate, addLanguageResource } = useData();
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+    // Form State
+    const [goalType, setGoalType] = useState<'certificate' | 'language'>('certificate');
+    const [title, setTitle] = useState('');
+    const [date, setDate] = useState('');
+    const [issuer, setIssuer] = useState(''); // for cert
+    const [langType, setLangType] = useState('English'); // for language
 
     // Upcoming exams (certificates and language tests from tasks/certificates)
     const upcomingExams = [
@@ -26,7 +41,14 @@ export function LearningPlanner() {
                 </div>
                 <div className="flex gap-2">
                     <Button variant="outline"><Calendar className="w-4 h-4 mr-2" /> 스케줄러</Button>
-                    <Button><Plus className="w-4 h-4 mr-2" /> 새 목표 추가</Button>
+                    <Button onClick={() => {
+                        setTitle('');
+                        setDate('');
+                        setIssuer('');
+                        setIsDialogOpen(true);
+                    }}>
+                        <Plus className="w-4 h-4 mr-2" /> 새 목표 추가
+                    </Button>
                 </div>
             </div>
 
@@ -131,6 +153,88 @@ export function LearningPlanner() {
                     </div>
                 </div>
             </div>
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>새 학습 목표 추가</DialogTitle>
+                    </DialogHeader>
+
+                    <Tabs value={goalType} onValueChange={(v: any) => setGoalType(v)} className="w-full">
+                        <TabsList className="grid w-full grid-cols-2">
+                            <TabsTrigger value="certificate">자격증</TabsTrigger>
+                            <TabsTrigger value="language">외국어</TabsTrigger>
+                        </TabsList>
+
+                        <div className="py-4 space-y-4">
+                            <div className="grid gap-2">
+                                <Label>목표 명칭</Label>
+                                <Input value={title} onChange={e => setTitle(e.target.value)} placeholder={goalType === 'certificate' ? '예: 정보처리기사' : '예: 비즈니스 회화 마스터'} />
+                            </div>
+
+                            {goalType === 'certificate' && (
+                                <>
+                                    <div className="grid gap-2">
+                                        <Label>시행 기관</Label>
+                                        <Input value={issuer} onChange={e => setIssuer(e.target.value)} placeholder="예: 한국산업인력공단" />
+                                    </div>
+                                    <div className="grid gap-2">
+                                        <Label>시험 예정일 (선택)</Label>
+                                        <Input type="date" value={date} onChange={e => setDate(e.target.value)} />
+                                    </div>
+                                </>
+                            )}
+
+                            {goalType === 'language' && (
+                                <div className="grid gap-2">
+                                    <Label>언어 종류</Label>
+                                    <select
+                                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                                        value={langType}
+                                        onChange={e => setLangType(e.target.value)}
+                                    >
+                                        <option value="English">영어</option>
+                                        <option value="Japanese">일본어</option>
+                                        <option value="Chinese">중국어</option>
+                                        <option value="Spanish">스페인어</option>
+                                        <option value="French">프랑스어</option>
+                                        <option value="German">독일어</option>
+                                        <option value="Other">기타</option>
+                                    </select>
+                                </div>
+                            )}
+                        </div>
+                    </Tabs>
+
+                    <DialogFooter>
+                        <Button onClick={() => {
+                            if (!title) return;
+                            if (goalType === 'certificate') {
+                                addCertificate({
+                                    id: generateId(),
+                                    name: title,
+                                    issuer: issuer || 'Self',
+                                    date: date ? new Date(date) : new Date(),
+                                    status: 'studying'
+                                });
+                            } else {
+                                addLanguageResource({
+                                    id: generateId(),
+                                    title: title,
+                                    type: 'book', // Default to book or add selector if needed
+                                    language: langType,
+                                    status: 'tostudy',
+                                    url: '',
+                                    category: 'General',
+                                    createdAt: new Date()
+                                });
+                            }
+                            setIsDialogOpen(false);
+                        }}>
+                            목표 추가
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

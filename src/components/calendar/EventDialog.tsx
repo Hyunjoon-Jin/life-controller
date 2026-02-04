@@ -42,6 +42,9 @@ export function EventDialog({ isOpen, onOpenChange, event, initialDate, initialE
     const [connectedProjectId, setConnectedProjectId] = useState<string | undefined>(undefined);
     const [connectedGoalId, setConnectedGoalId] = useState<string | undefined>(undefined);
 
+    const [prepTime, setPrepTime] = useState<number>(0);
+    const [travelTime, setTravelTime] = useState<number>(0);
+
     // Generate 15-minute intervals
     const generateTimeOptions = () => {
         const options = [];
@@ -76,6 +79,8 @@ export function EventDialog({ isOpen, onOpenChange, event, initialDate, initialE
             setEndTime(format(roundToNearest15(event.end), 'H:mm'));
             setConnectedProjectId(event.connectedProjectId);
             setConnectedGoalId(event.connectedGoalId);
+            setPrepTime(event.prepTime || 0);
+            setTravelTime(event.travelTime || 0);
         } else if (isOpen && initialDate) {
             // Reset for new event
             setTitle('');
@@ -85,6 +90,8 @@ export function EventDialog({ isOpen, onOpenChange, event, initialDate, initialE
             setIsAppointment(false);
             setConnectedProjectId(undefined);
             setConnectedGoalId(undefined);
+            setPrepTime(0);
+            setTravelTime(0);
 
             const start = roundToNearest15(initialDate);
             setStartTime(format(start, 'HH:mm'));
@@ -128,7 +135,9 @@ export function EventDialog({ isOpen, onOpenChange, event, initialDate, initialE
             isAppointment,
             color: event?.color,
             connectedProjectId,
-            connectedGoalId
+            connectedGoalId,
+            prepTime: prepTime > 0 ? prepTime : undefined,
+            travelTime: travelTime > 0 ? travelTime : undefined
         };
 
         onSave(updatedEvent);
@@ -210,6 +219,34 @@ export function EventDialog({ isOpen, onOpenChange, event, initialDate, initialE
                                     ))}
                                 </DropdownMenuContent>
                             </DropdownMenu>
+                        </div>
+                    </div>
+
+                    {/* Prep & Travel Time */}
+                    <div className="grid grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                            <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                                <Clock className="w-3 h-3 text-primary" /> 준비 시간 (분)
+                            </Label>
+                            <Input
+                                type="number"
+                                value={prepTime === 0 ? '' : prepTime}
+                                onChange={e => setPrepTime(Number(e.target.value))}
+                                placeholder="0"
+                                className="border-0 border-b-2 border-muted bg-transparent rounded-none px-0 py-2 focus-visible:ring-0 focus-visible:border-primary"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                                <Clock className="w-3 h-3 text-primary" /> 이동 시간 (분)
+                            </Label>
+                            <Input
+                                type="number"
+                                value={travelTime === 0 ? '' : travelTime}
+                                onChange={e => setTravelTime(Number(e.target.value))}
+                                placeholder="0"
+                                className="border-0 border-b-2 border-muted bg-transparent rounded-none px-0 py-2 focus-visible:ring-0 focus-visible:border-primary"
+                            />
                         </div>
                     </div>
 
@@ -364,6 +401,6 @@ export function EventDialog({ isOpen, onOpenChange, event, initialDate, initialE
                     </div>
                 </DialogFooter>
             </DialogContent>
-        </Dialog>
+        </Dialog >
     );
 }

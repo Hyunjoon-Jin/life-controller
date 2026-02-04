@@ -10,7 +10,7 @@ import { CalendarEvent } from '@/types';
 import { EventDialog } from './EventDialog';
 import { getEventStyle, getEventColors } from '@/lib/calendar';
 
-export function WeekView({ currentDate, showProjectTasks }: { currentDate: Date; showProjectTasks: boolean }) {
+export function WeekView({ currentDate, showProjectTasks, onDateClick }: { currentDate: Date; showProjectTasks: boolean; onDateClick: (date: Date) => void }) {
     const weekStart = startOfWeek(currentDate, { weekStartsOn: 0 }); // Sunday start
     const weekEnd = endOfWeek(currentDate, { weekStartsOn: 0 });
     const weekDays = eachDayOfInterval({ start: weekStart, end: weekEnd });
@@ -269,9 +269,10 @@ export function WeekView({ currentDate, showProjectTasks }: { currentDate: Date;
                         <div
                             key={day.toString()}
                             className={cn(
-                                "flex-1 py-3 px-1 text-center border-r border-border/[0.05] last:border-r-0 flex flex-col gap-1 min-w-[100px]",
+                                "flex-1 py-3 px-1 text-center border-r border-border/[0.05] last:border-r-0 flex flex-col gap-1 min-w-[100px] cursor-pointer hover:bg-gray-50/80 transition-colors",
                                 isToday(day) ? "bg-primary/5" : "bg-transparent"
                             )}
+                            onClick={() => onDateClick(day)}
                         >
                             <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">{format(day, 'EEE', { locale: ko })}</div>
                             <div

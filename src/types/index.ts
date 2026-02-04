@@ -166,6 +166,8 @@ export type CalendarEvent = {
     };
     connectedProjectId?: string; // New: Linked Project
     connectedGoalId?: string;    // New: Linked Goal
+    prepTime?: number;           // New: Preparation time in minutes
+    travelTime?: number;         // New: Travel time in minutes
 };
 
 export type Memo = {
@@ -309,6 +311,20 @@ export type DietItem = {
         protein: number;
         fat: number;
     };
+};
+
+export type CustomFood = {
+    id: string;
+    name: string;
+    brand?: string;
+    calories: number;
+    macros: {
+        carbs: number;
+        protein: number;
+        fat: number;
+    };
+    servingSize?: string;
+    isCustom?: boolean;
 };
 
 export type DietEntry = {
@@ -469,7 +485,18 @@ export type StockAnalysis = {
     rating: 'buy' | 'hold' | 'sell';
     targetPrice?: number;
     content: string; // Markdown analysis
+    url?: string; // New: Reference URL
     tags?: string[];
+};
+
+export type FinanceGoal = {
+    id: string;
+    title: string;
+    targetAmount: number;
+    currentAmount: number;
+    description?: string;
+    createdAt: Date;
+    targetDate?: Date;
 };
 
 export type WorkLog = {
@@ -505,6 +532,7 @@ export type PortfolioItem = {
     links?: { label: string; url: string }[];
     images?: string[];
     thumbnail?: string;
+    files?: { name: string; url: string }[];
 };
 
 export type UserProfile = {
