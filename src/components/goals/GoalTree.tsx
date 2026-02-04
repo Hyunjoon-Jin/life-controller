@@ -382,7 +382,7 @@ export function GoalTree() {
                                     <SelectTrigger className="w-full">
                                         <SelectValue />
                                     </SelectTrigger>
-                                    <SelectContent>
+                                    <SelectContent className="z-[99999]">
                                         <SelectItem value="financial">재테크</SelectItem>
                                         <SelectItem value="health">건강</SelectItem>
                                         <SelectItem value="career">커리어</SelectItem>
@@ -401,7 +401,7 @@ export function GoalTree() {
                                     <SelectTrigger className="w-full">
                                         <SelectValue />
                                     </SelectTrigger>
-                                    <SelectContent>
+                                    <SelectContent className="z-[99999]">
                                         <SelectItem value="short-term">단기 목표</SelectItem>
                                         <SelectItem value="long-term">장기 목표</SelectItem>
                                         <SelectItem value="project">프로젝트</SelectItem>

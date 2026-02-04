@@ -25,6 +25,8 @@ export function CertificateManager() {
     const [score, setScore] = useState('');
     const [status, setStatus] = useState<Certificate['status']>('studying');
     const [memo, setMemo] = useState('');
+    const [credentialId, setCredentialId] = useState('');
+    const [fileUrl, setFileUrl] = useState('');
 
     const handleSave = () => {
         if (!name) return;
@@ -37,7 +39,9 @@ export function CertificateManager() {
             expiryDate: expiryDate ? new Date(expiryDate) : undefined,
             score,
             status,
-            memo
+            memo,
+            credentialId,
+            fileUrl
         };
 
         if (editingId) {
@@ -59,6 +63,8 @@ export function CertificateManager() {
         setScore(c.score || '');
         setStatus(c.status);
         setMemo(c.memo || '');
+        setCredentialId(c.credentialId || '');
+        setFileUrl(c.fileUrl || '');
         setIsDialogOpen(true);
     };
 
@@ -71,6 +77,8 @@ export function CertificateManager() {
         setScore('');
         setStatus('studying');
         setMemo('');
+        setCredentialId('');
+        setFileUrl('');
     };
 
     const getStatusColor = (status: Certificate['status']) => {
@@ -148,6 +156,16 @@ export function CertificateManager() {
                                         {format(new Date(cert.date), 'yyyy.MM.dd')}
                                     </span>
                                 </div>
+                                {cert.credentialId && (
+                                    <div className="text-xs text-slate-400 mt-1">
+                                        자격번호: {cert.credentialId}
+                                    </div>
+                                )}
+                                {cert.fileUrl && (
+                                    <a href={cert.fileUrl} target="_blank" rel="noreferrer" className="text-xs text-blue-500 hover:underline mt-1 block">
+                                        증빙서류 보기
+                                    </a>
+                                )}
                             </div>
 
                             <div className="absolute top-4 right-4 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -228,9 +246,23 @@ export function CertificateManager() {
                         <div className="grid gap-2">
                             <Label>메모 (선택)</Label>
                             <Input
-                                placeholder="추가 메모"
-                                value={memo}
                                 onChange={e => setMemo(e.target.value)}
+                            />
+                        </div>
+                        <div className="grid gap-2">
+                            <Label>자격 번호 (선택)</Label>
+                            <Input
+                                placeholder="자격증 번호"
+                                value={credentialId}
+                                onChange={e => setCredentialId(e.target.value)}
+                            />
+                        </div>
+                        <div className="grid gap-2">
+                            <Label>증빙 서류 URL (선택)</Label>
+                            <Input
+                                placeholder="https://..."
+                                value={fileUrl}
+                                onChange={e => setFileUrl(e.target.value)}
                             />
                         </div>
                     </div>
@@ -239,6 +271,6 @@ export function CertificateManager() {
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
-        </div>
+        </div >
     );
 }

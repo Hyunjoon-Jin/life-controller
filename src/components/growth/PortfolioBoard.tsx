@@ -8,10 +8,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Briefcase, GraduationCap, User, Plus, Trash2, Edit2, Link as LinkIcon, Calendar, ExternalLink, Mail, Phone, MapPin, Linkedin, Github, Trophy, Languages, Award } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Briefcase, GraduationCap, User, Plus, Trash2, Edit2, Calendar, ExternalLink, Mail, Phone, MapPin, Trophy, Languages, Award } from 'lucide-react';
 import { format } from 'date-fns';
-import { PortfolioItem, UserProfile, Education, Career } from '@/types';
+import { PortfolioItem, UserProfile, Education, Career, Activity } from '@/types';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 export function PortfolioBoard() {
@@ -20,11 +20,12 @@ export function PortfolioBoard() {
         educations, addEducation, updateEducation, deleteEducation,
         careers, addCareer, updateCareer, deleteCareer,
         portfolios, addPortfolio, updatePortfolio, deletePortfolio,
-        certificates, // Read-only view
-        languageEntries // Read-only view
+        activities, addActivity, updateActivity, deleteActivity,
+        certificates,
+        languageEntries
     } = useData();
 
-    const [modal, setModal] = useState<{ type: 'profile' | 'education' | 'career' | 'project', id?: string } | null>(null);
+    const [modal, setModal] = useState<{ type: 'profile' | 'education' | 'career' | 'project' | 'activity', id?: string } | null>(null);
 
     // --- Profile Modal State ---
     const [profileForm, setProfileForm] = useState<UserProfile>(userProfile);
@@ -34,12 +35,16 @@ export function PortfolioBoard() {
 
     // --- Career Modal State ---
     const [careerForm, setCareerForm] = useState<Partial<Career>>({});
+    const [careerProjects, setCareerProjects] = useState<NonNullable<Career['projects']>>([]);
 
     // --- Project Modal State ---
     const [projectForm, setProjectForm] = useState<Partial<PortfolioItem>>({});
     const [projectTechStack, setProjectTechStack] = useState('');
 
-    const openModal = (type: 'profile' | 'education' | 'career' | 'project', id?: string) => {
+    // --- Activity Modal State ---
+    const [activityForm, setActivityForm] = useState<Partial<Activity>>({});
+
+    const openModal = (type: 'profile' | 'education' | 'career' | 'project' | 'activity', id?: string) => {
         setModal({ type, id });
         if (type === 'profile') {
             setProfileForm(userProfile);
@@ -53,9 +58,13 @@ export function PortfolioBoard() {
         } else if (type === 'career') {
             if (id) {
                 const car = careers.find(c => c.id === id);
-                if (car) setCareerForm(car);
+                if (car) {
+                    setCareerForm(car);
+                    setCareerProjects(car.projects || []);
+                }
             } else {
                 setCareerForm({ company: '', position: '', startDate: new Date(), isCurrent: false, techStack: [] });
+                setCareerProjects([]);
             }
         } else if (type === 'project') {
             if (id) {
@@ -67,6 +76,13 @@ export function PortfolioBoard() {
             } else {
                 setProjectForm({ title: '', period: '', description: '', techStack: [], links: [] });
                 setProjectTechStack('');
+            }
+        } else if (type === 'activity') {
+            if (id) {
+                const act = activities.find(a => a.id === id);
+                if (act) setActivityForm(act);
+            } else {
+                setActivityForm({ type: 'other', title: '', organization: '', startDate: new Date() });
             }
         }
     };
@@ -104,7 +120,8 @@ export function PortfolioBoard() {
             isCurrent: careerForm.isCurrent || false,
             description: careerForm.description,
             techStack: careerForm.techStack,
-            team: careerForm.team
+            team: careerForm.team,
+            projects: careerProjects
         };
         if (careerForm.id) updateCareer(car); else addCareer(car);
         setModal(null);
@@ -125,13 +142,28 @@ export function PortfolioBoard() {
         setModal(null);
     };
 
+    const handleSaveActivity = () => {
+        if (!activityForm.title) return;
+        const act: Activity = {
+            id: activityForm.id || generateId(),
+            type: activityForm.type || 'other',
+            title: activityForm.title!,
+            organization: activityForm.organization,
+            startDate: activityForm.startDate || new Date(),
+            endDate: activityForm.endDate,
+            description: activityForm.description,
+            role: activityForm.role
+        };
+        if (activityForm.id) updateActivity(act); else addActivity(act);
+        setModal(null);
+    };
+
     return (
         <div className="h-full overflow-y-auto custom-scrollbar bg-slate-50/50 p-4 md:p-8">
             <div className="max-w-5xl mx-auto space-y-8">
 
                 {/* Header / Profile Section */}
                 <div className="bg-white rounded-2xl p-8 shadow-sm border border-slate-100 flex flex-col md:flex-row gap-8 items-start relative group">
-                    {/* Edit Profile Button */}
                     <Button
                         size="icon" variant="ghost"
                         className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity"
@@ -173,7 +205,7 @@ export function PortfolioBoard() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    {/* Left Column: Education, Certifications, Languages, Skills */}
+                    {/* Left Column: Education, Certifications, Languages */}
                     <div className="space-y-8">
                         {/* Education */}
                         <section className="space-y-4">
@@ -213,7 +245,7 @@ export function PortfolioBoard() {
                             </div>
                         </section>
 
-                        {/* Languages (Read-only from LanguageLog) */}
+                        {/* Languages */}
                         <section className="space-y-4">
                             <div className="flex items-center justify-between">
                                 <h2 className="text-xl font-bold flex items-center gap-2 text-slate-800">
@@ -238,7 +270,7 @@ export function PortfolioBoard() {
                             </div>
                         </section>
 
-                        {/* Certificates (Read-only from CertificateManager) */}
+                        {/* Certificates */}
                         <section className="space-y-4">
                             <div className="flex items-center justify-between">
                                 <h2 className="text-xl font-bold flex items-center gap-2 text-slate-800">
@@ -267,7 +299,7 @@ export function PortfolioBoard() {
                         </section>
                     </div>
 
-                    {/* Right Column: Career, Projects */}
+                    {/* Right Column: Career, Projects, Activities */}
                     <div className="md:col-span-2 space-y-8">
                         {/* Career */}
                         <section className="space-y-4">
@@ -303,8 +335,21 @@ export function PortfolioBoard() {
                                                     {career.description}
                                                 </p>
 
+                                                {/* Career Projects Display */}
+                                                {career.projects && career.projects.length > 0 && (
+                                                    <div className="mt-4 space-y-3 pl-4 border-l-2 border-slate-100">
+                                                        {career.projects.map((p, idx) => (
+                                                            <div key={idx}>
+                                                                <div className="font-bold text-sm text-slate-800">{p.title}</div>
+                                                                <div className="text-xs text-slate-500">{p.description}</div>
+                                                                {p.role && <div className="text-xs text-primary mt-0.5">Role: {p.role}</div>}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
+
                                                 {career.techStack && career.techStack.length > 0 && (
-                                                    <div className="flex flex-wrap gap-1">
+                                                    <div className="flex flex-wrap gap-1 mt-3">
                                                         {career.techStack.map(tech => (
                                                             <span key={tech} className="text-xs bg-slate-50 text-slate-500 px-2 py-1 rounded-md border border-slate-100">
                                                                 {tech}
@@ -383,6 +428,52 @@ export function PortfolioBoard() {
                                 ))}
                             </div>
                         </section>
+
+                        {/* Activities */}
+                        <section className="space-y-4">
+                            <div className="flex items-center justify-between">
+                                <h2 className="text-xl font-bold flex items-center gap-2 text-slate-800">
+                                    <Award className="w-5 h-5 text-primary" /> 대외활동 및 기타
+                                </h2>
+                                <Button size="sm" variant="ghost" onClick={() => openModal('activity')}>
+                                    <Plus className="w-4 h-4" />
+                                </Button>
+                            </div>
+                            <div className="space-y-4">
+                                {activities.map(act => (
+                                    <div key={act.id} className="bg-white p-4 rounded-xl border border-slate-100 flex justify-between items-center group relative hover:shadow-sm">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-lg">
+                                                {act.type === 'award' ? '🏆' : (act.type === 'club' ? '👥' : '✨')}
+                                            </div>
+                                            <div>
+                                                <div className="font-bold text-slate-900">{act.title}</div>
+                                                <div className="text-sm text-slate-500">
+                                                    {act.organization} • {format(new Date(act.startDate), 'yyyy.MM')}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="text-sm font-medium text-slate-600 pr-10">
+                                            {act.role}
+                                        </div>
+
+                                        <div className="absolute right-2 opacity-0 group-hover:opacity-100 flex gap-1">
+                                            <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => openModal('activity', act.id)}>
+                                                <Edit2 className="w-4 h-4" />
+                                            </Button>
+                                            <Button size="icon" variant="ghost" className="h-8 w-8 hover:text-red-500" onClick={() => deleteActivity(act.id)}>
+                                                <Trash2 className="w-4 h-4" />
+                                            </Button>
+                                        </div>
+                                    </div>
+                                ))}
+                                {activities.length === 0 && (
+                                    <div className="text-center py-8 text-muted-foreground bg-white rounded-xl border border-dashed">
+                                        등록된 활동 내역이 없습니다.
+                                    </div>
+                                )}
+                            </div>
+                        </section>
                     </div>
                 </div>
             </div>
@@ -429,7 +520,6 @@ export function PortfolioBoard() {
                 </DialogContent>
             </Dialog>
 
-            {/* Abstract Modals for other sections would be similar - Implementing concise versions */}
             {/* Education Modal */}
             <Dialog open={modal?.type === 'education'} onOpenChange={(open) => !open && setModal(null)}>
                 <DialogContent>
@@ -445,15 +535,25 @@ export function PortfolioBoard() {
                         <div className="grid grid-cols-2 gap-4">
                             <div className="grid gap-2">
                                 <Label>입학일</Label>
-                                <Input type="date" value={eduForm.startDate ? format(new Date(eduForm.startDate), 'yyyy-MM-dd') : ''} onChange={e => setEduForm({ ...eduForm, startDate: new Date(e.target.value) })} />
+                                <Input type="date" value={eduForm.startDate ? format(new Date(eduForm.startDate!), 'yyyy-MM-dd') : ''} onChange={e => setEduForm({ ...eduForm, startDate: new Date(e.target.value) })} />
                             </div>
                             <div className="grid gap-2">
                                 <Label>졸업일 (예정)</Label>
-                                <Input type="date" value={eduForm.endDate ? format(new Date(eduForm.endDate), 'yyyy-MM-dd') : ''} onChange={e => setEduForm({ ...eduForm, endDate: new Date(e.target.value) })} />
+                                <Input
+                                    type="date"
+                                    disabled={eduForm.isCurrent}
+                                    value={eduForm.endDate ? format(new Date(eduForm.endDate!), 'yyyy-MM-dd') : ''}
+                                    onChange={e => setEduForm({ ...eduForm, endDate: new Date(e.target.value) })}
+                                />
                             </div>
                         </div>
                         <div className="flex items-center gap-2">
-                            <input type="checkbox" id="eduCurrent" checked={eduForm.isCurrent || false} onChange={e => setEduForm({ ...eduForm, isCurrent: e.target.checked })} />
+                            <input
+                                type="checkbox"
+                                id="eduCurrent"
+                                checked={eduForm.isCurrent || false}
+                                onChange={e => setEduForm({ ...eduForm, isCurrent: e.target.checked, endDate: e.target.checked ? undefined : eduForm.endDate })}
+                            />
                             <Label htmlFor="eduCurrent">재학 중</Label>
                         </div>
                     </div>
@@ -471,18 +571,83 @@ export function PortfolioBoard() {
                         <div className="grid grid-cols-2 gap-4">
                             <div className="grid gap-2">
                                 <Label>입사일</Label>
-                                <Input type="date" value={careerForm.startDate ? format(new Date(careerForm.startDate), 'yyyy-MM-dd') : ''} onChange={e => setCareerForm({ ...careerForm, startDate: new Date(e.target.value) })} />
+                                <Input type="date" value={careerForm.startDate ? format(new Date(careerForm.startDate!), 'yyyy-MM-dd') : ''} onChange={e => setCareerForm({ ...careerForm, startDate: new Date(e.target.value) })} />
                             </div>
                             <div className="grid gap-2">
                                 <Label>퇴사일</Label>
-                                <Input type="date" value={careerForm.endDate ? format(new Date(careerForm.endDate), 'yyyy-MM-dd') : ''} onChange={e => setCareerForm({ ...careerForm, endDate: new Date(e.target.value) })} />
+                                <Input
+                                    type="date"
+                                    disabled={careerForm.isCurrent}
+                                    value={careerForm.endDate ? format(new Date(careerForm.endDate!), 'yyyy-MM-dd') : ''}
+                                    onChange={e => setCareerForm({ ...careerForm, endDate: new Date(e.target.value) })}
+                                />
                             </div>
                         </div>
                         <div className="flex items-center gap-2">
-                            <input type="checkbox" id="carCurrent" checked={careerForm.isCurrent || false} onChange={e => setCareerForm({ ...careerForm, isCurrent: e.target.checked })} />
+                            <input
+                                type="checkbox"
+                                id="carCurrent"
+                                checked={careerForm.isCurrent || false}
+                                onChange={e => setCareerForm({ ...careerForm, isCurrent: e.target.checked, endDate: e.target.checked ? undefined : careerForm.endDate })}
+                            />
                             <Label htmlFor="carCurrent">재직 중</Label>
                         </div>
                         <Textarea placeholder="주요 업무 내용" value={careerForm.description || ''} onChange={e => setCareerForm({ ...careerForm, description: e.target.value })} />
+                        <Input placeholder="기술 스택 (콤마 구분)" value={careerForm.techStack?.join(', ') || ''} onChange={e => setCareerForm({ ...careerForm, techStack: e.target.value.split(',').map(t => t.trim()).filter(Boolean) })} />
+
+                        <div className="space-y-3 pt-4 border-t border-slate-100">
+                            <div className="flex items-center justify-between">
+                                <Label>진행 프로젝트</Label>
+                                <Button size="sm" variant="outline" onClick={() => setCareerProjects([...careerProjects, { title: '', description: '' }])}>
+                                    <Plus className="w-3 h-3 mr-1" /> 프로젝트 추가
+                                </Button>
+                            </div>
+                            {careerProjects.map((proj, idx) => (
+                                <div key={idx} className="bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-2">
+                                    <div className="flex justify-between items-start">
+                                        <Label className="text-xs text-slate-500">프로젝트 {idx + 1}</Label>
+                                        <Button size="icon" variant="ghost" className="h-5 w-5 text-red-400" onClick={() => setCareerProjects(careerProjects.filter((_, i) => i !== idx))}>
+                                            <Trash2 className="w-3 h-3" />
+                                        </Button>
+                                    </div>
+                                    <Input
+                                        placeholder="프로젝트명"
+                                        className="h-8 text-sm"
+                                        value={proj.title}
+                                        onChange={e => {
+                                            const newProjects = [...careerProjects];
+                                            newProjects[idx].title = e.target.value;
+                                            setCareerProjects(newProjects);
+                                        }}
+                                    />
+                                    <Input
+                                        placeholder="역할 (Role)"
+                                        className="h-8 text-sm"
+                                        value={proj.role || ''}
+                                        onChange={e => {
+                                            const newProjects = [...careerProjects];
+                                            newProjects[idx].role = e.target.value;
+                                            setCareerProjects(newProjects);
+                                        }}
+                                    />
+                                    <Textarea
+                                        placeholder="프로젝트 설명"
+                                        className="min-h-[60px] text-sm"
+                                        value={proj.description}
+                                        onChange={e => {
+                                            const newProjects = [...careerProjects];
+                                            newProjects[idx].description = e.target.value;
+                                            setCareerProjects(newProjects);
+                                        }}
+                                    />
+                                </div>
+                            ))}
+                            {careerProjects.length === 0 && (
+                                <div className="text-center py-4 text-xs text-slate-400 bg-slate-50 rounded-lg border border-dashed">
+                                    등록된 프로젝트가 없습니다.
+                                </div>
+                            )}
+                        </div>
                     </div>
                     <DialogFooter><Button onClick={handleSaveCareer}>저장</Button></DialogFooter>
                 </DialogContent>
@@ -502,6 +667,45 @@ export function PortfolioBoard() {
                         <Input placeholder="기술 스택 (콤마 구분)" value={projectTechStack} onChange={e => setProjectTechStack(e.target.value)} />
                     </div>
                     <DialogFooter><Button onClick={handleSaveProject}>저장</Button></DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* Activity Modal */}
+            <Dialog open={modal?.type === 'activity'} onOpenChange={(open) => !open && setModal(null)}>
+                <DialogContent>
+                    <DialogHeader><DialogTitle>대외활동/수상이력 추가</DialogTitle></DialogHeader>
+                    <div className="grid gap-4 py-4">
+                        <div className="grid gap-2">
+                            <Label>구분</Label>
+                            <select
+                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                                value={activityForm.type || 'other'}
+                                onChange={e => setActivityForm({ ...activityForm, type: e.target.value as any })}
+                            >
+                                <option value="club">동아리/학회</option>
+                                <option value="award">수상</option>
+                                <option value="external">대외활동</option>
+                                <option value="volunteering">봉사활동</option>
+                                <option value="overseas">해외연수</option>
+                                <option value="other">기타</option>
+                            </select>
+                        </div>
+                        <Input placeholder="활동명" value={activityForm.title || ''} onChange={e => setActivityForm({ ...activityForm, title: e.target.value })} />
+                        <Input placeholder="기관/단체명" value={activityForm.organization || ''} onChange={e => setActivityForm({ ...activityForm, organization: e.target.value })} />
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="grid gap-2">
+                                <Label>시작일</Label>
+                                <Input type="date" value={activityForm.startDate ? format(new Date(activityForm.startDate!), 'yyyy-MM-dd') : ''} onChange={e => setActivityForm({ ...activityForm, startDate: new Date(e.target.value) })} />
+                            </div>
+                            <div className="grid gap-2">
+                                <Label>종료일(선택)</Label>
+                                <Input type="date" value={activityForm.endDate ? format(new Date(activityForm.endDate!), 'yyyy-MM-dd') : ''} onChange={e => setActivityForm({ ...activityForm, endDate: new Date(e.target.value) })} />
+                            </div>
+                        </div>
+                        <Input placeholder="역할 / 수상 등급" value={activityForm.role || ''} onChange={e => setActivityForm({ ...activityForm, role: e.target.value })} />
+                        <Textarea placeholder="설명" value={activityForm.description || ''} onChange={e => setActivityForm({ ...activityForm, description: e.target.value })} />
+                    </div>
+                    <DialogFooter><Button onClick={handleSaveActivity}>저장</Button></DialogFooter>
                 </DialogContent>
             </Dialog>
         </div>
