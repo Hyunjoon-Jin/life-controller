@@ -200,22 +200,25 @@ export function InBodyLog() {
 
     // Goal Summary Calculation
     let goalSummary = null;
-    if (bodyCompositionGoal && latestEntry) {
-        const daysLeft = differenceInDays(new Date(bodyCompositionGoal.targetDate), new Date());
-        const weightDiff = bodyCompositionGoal.targetWeight ? bodyCompositionGoal.targetWeight - latestEntry.weight : 0;
-        const color = weightDiff < 0 ? 'text-blue-600' : 'text-red-600'; // Losing weight is blue (cool), gaining is red (hot/bulk)? Or standard logic?
-        // Usually Green/Blue is good. Let's stick to neutral or context.
-        // Weight Loss: Negative Diff.
+    if (bodyCompositionGoal) {
+        const daysLeft = bodyCompositionGoal.targetDate ? differenceInDays(new Date(bodyCompositionGoal.targetDate), new Date()) : 0;
+
+        // Default values if no entry exists
+        const currentWeight = latestEntry?.weight || 0;
+        const currentMuscle = latestEntry?.skeletalMuscleMass || 0;
+        const currentFat = latestEntry?.bodyFatPercent || 0;
+
+        const weightDiff = bodyCompositionGoal.targetWeight && latestEntry ? bodyCompositionGoal.targetWeight - latestEntry.weight : 0;
 
         goalSummary = {
             daysLeft,
             weightDiff,
             targetWeight: bodyCompositionGoal.targetWeight,
-            currentWeight: latestEntry.weight,
+            currentWeight,
             targetMuscle: bodyCompositionGoal.targetMuscle,
-            currentMuscle: latestEntry.skeletalMuscleMass,
+            currentMuscle,
             targetFat: bodyCompositionGoal.targetFatPercent,
-            currentFat: latestEntry.bodyFatPercent
+            currentFat
         };
     }
 
@@ -258,12 +261,20 @@ export function InBodyLog() {
                                 <div className="flex flex-col items-center">
                                     <span className="text-xs text-muted-foreground">체중</span>
                                     <div className="flex items-center gap-2">
-                                        <span className="font-bold text-lg">{goalSummary.currentWeight}</span>
-                                        <ArrowRight className="w-3 h-3 text-muted-foreground" />
+                                        {latestEntry ? (
+                                            <>
+                                                <span className="font-bold text-lg">{goalSummary.currentWeight}</span>
+                                                <ArrowRight className="w-3 h-3 text-muted-foreground" />
+                                            </>
+                                        ) : (
+                                            <span className="text-xs text-muted-foreground mr-1">목표</span>
+                                        )}
                                         <span className="font-bold text-lg text-primary">{goalSummary.targetWeight}</span>
-                                        <span className="text-xs font-medium bg-white px-1.5 py-0.5 rounded border ml-1">
-                                            {goalSummary.weightDiff > 0 ? '+' : ''}{goalSummary.weightDiff.toFixed(1)}kg
-                                        </span>
+                                        {latestEntry && (
+                                            <span className="text-xs font-medium bg-white px-1.5 py-0.5 rounded border ml-1">
+                                                {goalSummary.weightDiff > 0 ? '+' : ''}{goalSummary.weightDiff.toFixed(1)}kg
+                                            </span>
+                                        )}
                                     </div>
                                 </div>
                             )}
@@ -271,8 +282,14 @@ export function InBodyLog() {
                                 <div className="flex flex-col items-center hidden sm:flex">
                                     <span className="text-xs text-muted-foreground">골격근량</span>
                                     <div className="flex items-center gap-2">
-                                        <span className="font-bold text-lg">{goalSummary.currentMuscle}</span>
-                                        <ArrowRight className="w-3 h-3 text-muted-foreground" />
+                                        {latestEntry ? (
+                                            <>
+                                                <span className="font-bold text-lg">{goalSummary.currentMuscle}</span>
+                                                <ArrowRight className="w-3 h-3 text-muted-foreground" />
+                                            </>
+                                        ) : (
+                                            <span className="text-xs text-muted-foreground mr-1">목표</span>
+                                        )}
                                         <span className="font-bold text-lg text-primary">{goalSummary.targetMuscle}</span>
                                     </div>
                                 </div>
@@ -281,8 +298,14 @@ export function InBodyLog() {
                                 <div className="flex flex-col items-center hidden sm:flex">
                                     <span className="text-xs text-muted-foreground">체지방률</span>
                                     <div className="flex items-center gap-2">
-                                        <span className="font-bold text-lg">{goalSummary.currentFat}%</span>
-                                        <ArrowRight className="w-3 h-3 text-muted-foreground" />
+                                        {latestEntry ? (
+                                            <>
+                                                <span className="font-bold text-lg">{goalSummary.currentFat}%</span>
+                                                <ArrowRight className="w-3 h-3 text-muted-foreground" />
+                                            </>
+                                        ) : (
+                                            <span className="text-xs text-muted-foreground mr-1">목표</span>
+                                        )}
                                         <span className="font-bold text-lg text-primary">{goalSummary.targetFat}%</span>
                                     </div>
                                 </div>
