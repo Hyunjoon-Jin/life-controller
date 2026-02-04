@@ -10,7 +10,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { format, isSameMonth, parseISO } from 'date-fns';
 import { ko } from 'date-fns/locale';
-import { Plus, Trash2, Edit2, TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
+import { Plus, Trash2, Edit2, TrendingUp, TrendingDown, DollarSign, CheckSquare, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Transaction } from '@/types';
 
 export function LedgerView() {
@@ -103,8 +103,122 @@ export function LedgerView() {
 
     return (
         <div className="h-full flex flex-col gap-6 p-6 overflow-y-auto custom-scrollbar">
-            {/* Header ... */}
-            {/* List ... */}
+            {/* Header */}
+            <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+                <div>
+                    <h2 className="text-2xl font-bold flex items-center gap-2">
+                        <CheckSquare className="w-6 h-6 text-primary" /> 가계부
+                    </h2>
+                    <p className="text-muted-foreground text-sm">이번 달 수입과 지출을 관리하세요.</p>
+                </div>
+
+                <div className="flex items-center gap-4 bg-white p-1 rounded-xl border shadow-sm">
+                    <Button variant="ghost" size="icon" onClick={() => setCurrentDate(new Date(currentDate.setMonth(currentDate.getMonth() - 1)))}>
+                        <ChevronLeft className="w-4 h-4" />
+                    </Button>
+                    <span className="font-bold text-lg min-w-[100px] text-center">
+                        {format(currentDate, 'yyyy년 M월')}
+                    </span>
+                    <Button variant="ghost" size="icon" onClick={() => setCurrentDate(new Date(currentDate.setMonth(currentDate.getMonth() + 1)))}>
+                        <ChevronRight className="w-4 h-4" />
+                    </Button>
+                </div>
+
+                <Button onClick={() => { resetForm(); setIsDialogOpen(true); }} className="bg-primary hover:bg-primary/90">
+                    <Plus className="w-4 h-4 mr-2" /> 내역 추가
+                </Button>
+            </div>
+
+            {/* Summary Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Card>
+                    <CardContent className="p-6 flex items-center justify-between">
+                        <div>
+                            <p className="text-sm font-medium text-muted-foreground">이번 달 수입</p>
+                            <h3 className="text-2xl font-bold text-blue-600">+{totalIncome.toLocaleString()}원</h3>
+                        </div>
+                        <div className="p-3 bg-blue-50 rounded-full">
+                            <TrendingUp className="w-6 h-6 text-blue-600" />
+                        </div>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardContent className="p-6 flex items-center justify-between">
+                        <div>
+                            <p className="text-sm font-medium text-muted-foreground">이번 달 지출</p>
+                            <h3 className="text-2xl font-bold text-red-600">-{totalExpense.toLocaleString()}원</h3>
+                        </div>
+                        <div className="p-3 bg-red-50 rounded-full">
+                            <TrendingDown className="w-6 h-6 text-red-600" />
+                        </div>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardContent className="p-6 flex items-center justify-between">
+                        <div>
+                            <p className="text-sm font-medium text-muted-foreground">남은 금액</p>
+                            <h3 className={cn("text-2xl font-bold", balance >= 0 ? "text-green-600" : "text-red-600")}>
+                                {balance.toLocaleString()}원
+                            </h3>
+                        </div>
+                        <div className="p-3 bg-green-50 rounded-full">
+                            <DollarSign className="w-6 h-6 text-green-600" />
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+
+            {/* Transaction List */}
+            <Card className="flex-1 overflow-hidden flex flex-col">
+                <CardContent className="flex-1 overflow-y-auto p-0">
+                    {monthlyTransactions.length === 0 ? (
+                        <div className="h-64 flex flex-col items-center justify-center text-muted-foreground">
+                            <CheckSquare className="w-12 h-12 mb-4 opacity-20" />
+                            <p>이 달의 거래 내역이 없습니다.</p>
+                        </div>
+                    ) : (
+                        <div className="divide-y">
+                            {monthlyTransactions.map(t => (
+                                <div key={t.id} className="p-4 hover:bg-slate-50 transition-colors flex items-center justify-between group">
+                                    <div className="flex items-center gap-4">
+                                        <div className={cn(
+                                            "w-10 h-10 rounded-full flex items-center justify-center text-white font-bold",
+                                            t.type === 'income' ? "bg-blue-500" :
+                                                t.type === 'expense' ? "bg-red-500" : "bg-purple-500"
+                                        )}>
+                                            {t.date ? format(new Date(t.date), 'dd') : ''}
+                                        </div>
+                                        <div>
+                                            <p className="font-bold text-slate-800">{t.category} <span className="text-xs font-normal text-muted-foreground block md:inline md:ml-2">{t.description}</span></p>
+                                            <p className="text-xs text-muted-foreground">
+                                                {format(new Date(t.date), 'HH:mm')} • {t.type === 'income' ? '수입' : t.type === 'expense' ? '지출' : '이체/기타'}
+                                                {t.tags && t.tags.length > 0 && <span className="ml-2 text-blue-500">#{t.tags.join(' #')}</span>}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-4">
+                                        <span className={cn(
+                                            "font-bold text-lg",
+                                            t.type === 'income' ? "text-blue-600" :
+                                                t.type === 'expense' ? "text-red-600" : "text-purple-600"
+                                        )}>
+                                            {t.type === 'income' ? '+' : t.type === 'expense' ? '-' : ''}{t.amount.toLocaleString()}원
+                                        </span>
+                                        <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
+                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-blue-600" onClick={() => handleEdit(t)}>
+                                                <Edit2 className="w-4 h-4" />
+                                            </Button>
+                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-red-600" onClick={() => deleteTransaction(t.id)}>
+                                                <Trash2 className="w-4 h-4" />
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
 
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogContent>

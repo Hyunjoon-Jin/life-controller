@@ -64,17 +64,27 @@ export function RealEstateTab() {
             let extractedTitle = "부동산 매물";
             let extractedMemo = "";
             let extractedLocation = "";
+            let extractedPrice = "";
 
             try {
                 const urlObj = new URL(url);
                 if (urlObj.hostname.includes('naver.com')) {
-                    // Try to extract some ID or just indicate it's from Naver
-                    if (url.includes('articleNo') || url.includes('articleDetail')) {
-                        extractedTitle = "네이버 부동산 매물 (정보 입력 필요)";
-                        extractedMemo = `링크: ${urlObj.origin}${urlObj.pathname}...`;
+                    // Try to extract Article No
+                    // Example: https://new.land.naver.com/complexes/111555?articleNo=2402123456
+                    const articleNo = urlObj.searchParams.get('articleNo');
+                    const complexNo = urlObj.pathname.split('/')[2];
+
+                    if (articleNo) {
+                        extractedTitle = `네이버 부동산 매물 [${articleNo}]`;
+                        extractedMemo = `매물 번호: ${articleNo}\n링크: ${url}`;
+                        extractedPrice = "가격 정보 확인 필요"; // Cannot scrape, but better placeholder
+                    } else if (complexNo) {
+                        extractedTitle = `단지 정보 [${complexNo}]`;
+                        extractedMemo = `단지 번호: ${complexNo}`;
                     } else {
-                        extractedTitle = "네이버 부동산 Link";
+                        extractedTitle = "네이버 부동산 링크";
                     }
+
                     extractedLocation = "위치 정보 직접 입력";
                 }
             } catch (e) {
@@ -83,7 +93,7 @@ export function RealEstateTab() {
 
             setTitle(extractedTitle);
             setLocation(extractedLocation);
-            // setPrice(""); // Leave empty for user to fill
+            setPrice(extractedPrice);
             setMemo(extractedMemo);
 
             setIsFetching(false);

@@ -62,24 +62,40 @@ export function WorkPeopleSection() {
         setIsDialogOpen(false);
     };
 
-    const filteredPeople = people.filter(p =>
-        p.name.toLowerCase().includes(search.toLowerCase()) ||
-        p.company?.toLowerCase().includes(search.toLowerCase()) ||
-        p.role?.toLowerCase().includes(search.toLowerCase()) ||
-        p.jobTitle?.toLowerCase().includes(search.toLowerCase())
-    );
+    const [showWorkOnly, setShowWorkOnly] = useState(true);
+
+    const filteredPeople = people.filter(p => {
+        const matchesSearch = p.name.toLowerCase().includes(search.toLowerCase()) ||
+            p.company?.toLowerCase().includes(search.toLowerCase()) ||
+            p.role?.toLowerCase().includes(search.toLowerCase()) ||
+            p.jobTitle?.toLowerCase().includes(search.toLowerCase());
+
+        if (showWorkOnly) {
+            return matchesSearch && (p.relationship === 'work' || !p.relationship); // Default to work if undefined, or explicit work
+        }
+        return matchesSearch;
+    });
 
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
-                <div className="relative flex-1 max-w-md">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                    <Input
-                        placeholder="이름, 회사, 직함으로 검색"
-                        className="pl-10"
-                        value={search}
-                        onChange={e => setSearch(e.target.value)}
-                    />
+                <div className="flex items-center gap-4 flex-1">
+                    <div className="relative flex-1 max-w-md">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                        <Input
+                            placeholder="이름, 회사, 직함으로 검색"
+                            className="pl-10"
+                            value={search}
+                            onChange={e => setSearch(e.target.value)}
+                        />
+                    </div>
+                    <Button
+                        variant={showWorkOnly ? "secondary" : "ghost"}
+                        onClick={() => setShowWorkOnly(!showWorkOnly)}
+                        className="text-xs"
+                    >
+                        {showWorkOnly ? "업무 연락처만" : "모든 연락처"}
+                    </Button>
                 </div>
                 <Button onClick={handleOpenCreate}>
                     <Users className="w-4 h-4 mr-2" /> 새 연락처 추가

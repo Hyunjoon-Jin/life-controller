@@ -343,10 +343,16 @@ export function ExerciseLog() {
         <div className="h-full flex flex-col p-6 overflow-hidden max-w-7xl mx-auto w-full">
             <div className="flex items-center justify-between mb-4 shrink-0">
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-[450px]">
-                    <TabsList className="grid w-full grid-cols-3">
-                        <TabsTrigger value="log">기록 & 추이</TabsTrigger>
-                        <TabsTrigger value="routines">운동 루틴</TabsTrigger>
-                        <TabsTrigger value="analysis">상세 분석</TabsTrigger>
+                    <TabsList className="grid w-full grid-cols-3 h-12 bg-slate-100 p-1 rounded-xl">
+                        <TabsTrigger value="log" className="h-full rounded-lg data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm font-bold transition-all">
+                            기록 & 추이
+                        </TabsTrigger>
+                        <TabsTrigger value="routines" className="h-full rounded-lg data-[state=active]:bg-white data-[state=active]:text-purple-600 data-[state=active]:shadow-sm font-bold transition-all">
+                            운동 루틴
+                        </TabsTrigger>
+                        <TabsTrigger value="analysis" className="h-full rounded-lg data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-sm font-bold transition-all">
+                            상세 분석
+                        </TabsTrigger>
                     </TabsList>
                 </Tabs>
                 {!isWorkoutActive && (
