@@ -10,9 +10,9 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dumbbell, Plus, Trash2, Calendar as CalendarIcon, Timer, Trophy, Footprints, Target, Activity, TrendingUp, Search, ChevronDown, Check, Flower2 } from 'lucide-react';
+import { Dumbbell, Plus, Trash2, Calendar as CalendarIcon, Timer, Trophy, Footprints, Target, Activity, TrendingUp, Search, ChevronDown, Check, Flower2, Play } from 'lucide-react';
 import { format } from 'date-fns';
-import { ExerciseCategory, ExerciseSession } from '@/types';
+import { ExerciseCategory, ExerciseSession, ExerciseRoutine } from '@/types'; // Added ExerciseRoutine
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { ExerciseAnalysis } from './ExerciseAnalysis';
@@ -79,7 +79,7 @@ const EXERCISE_TYPES = [
 const TARGET_PARTS = ['가슴', '등', '하체', '어깨', '팔', '복근', '전신'];
 
 export function ExerciseLog() {
-    const { exerciseSessions, addExerciseSession, deleteExerciseSession, inBodyEntries = [] } = useData();
+    const { exerciseSessions, addExerciseSession, deleteExerciseSession, exerciseRoutines, addExerciseRoutine, updateExerciseRoutine, deleteExerciseRoutine, inBodyEntries = [] } = useData();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isTypeOpen, setIsTypeOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
@@ -331,9 +331,10 @@ export function ExerciseLog() {
     return (
         <div className="h-full flex flex-col p-6 overflow-hidden max-w-7xl mx-auto w-full">
             <div className="flex items-center justify-between mb-4 shrink-0">
-                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-[300px]">
-                    <TabsList className="grid w-full grid-cols-2">
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-[450px]">
+                    <TabsList className="grid w-full grid-cols-3">
                         <TabsTrigger value="log">기록 & 추이</TabsTrigger>
+                        <TabsTrigger value="routines">운동 루틴</TabsTrigger>
                         <TabsTrigger value="analysis">상세 분석</TabsTrigger>
                     </TabsList>
                 </Tabs>
@@ -464,6 +465,70 @@ export function ExerciseLog() {
                             </div>
                         </div>
                     )}
+                </TabsContent>
+
+                <TabsContent value="routines" className="flex-1 overflow-y-auto custom-scrollbar mt-0 space-y-6">
+                    <div className="flex items-center justify-between mb-2">
+                        <h3 className="font-bold text-lg flex items-center gap-2">
+                            <Flower2 className="w-5 h-5 text-purple-600" /> 나의 운동 루틴
+                        </h3>
+                        <Button size="sm" onClick={() => { }}>
+                            <Plus className="w-4 h-4 mr-2" /> 새 루틴 만들기
+                        </Button>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {exerciseRoutines.map(routine => (
+                            <Card key={routine.id} className="hover:shadow-md transition-all">
+                                <CardContent className="p-5">
+                                    <div className="flex justify-between items-start mb-3">
+                                        <div className="font-bold text-lg">{routine.name}</div>
+                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-red-500" onClick={() => deleteExerciseRoutine(routine.id)}>
+                                            <Trash2 className="w-4 h-4" />
+                                        </Button>
+                                    </div>
+                                    <div className="space-y-1 mb-4">
+                                        {routine.items.map((item, i) => (
+                                            <div key={i} className="text-xs text-muted-foreground flex items-center gap-2">
+                                                <Check className="w-3 h-3 text-green-500" />
+                                                {item.type} {item.sets ? `(${item.sets.length}세트)` : item.duration ? `(${item.duration}분)` : ''}
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <Button className="w-full bg-purple-600 hover:bg-purple-700 font-bold" onClick={() => {
+                                        startWorkout();
+                                        routine.items.forEach(item => {
+                                            const session: any = {
+                                                id: generateId(),
+                                                date: new Date(),
+                                                type: item.type,
+                                                category: routine.category,
+                                                duration: item.duration || 0,
+                                                sets: item.sets?.map((s, idx) => ({
+                                                    id: generateId(),
+                                                    setNumber: idx + 1,
+                                                    weight: s.weight,
+                                                    reps: s.reps,
+                                                    completed: false
+                                                })) || []
+                                            };
+                                            setPendingSessions(prev => [...prev, session]);
+                                        });
+                                        setActiveTab('log');
+                                    }}>
+                                        <Play className="w-4 h-4 mr-2" /> 루틴 시작하기
+                                    </Button>
+                                </CardContent>
+                            </Card>
+                        ))}
+
+                        {exerciseRoutines.length === 0 && (
+                            <div className="col-span-full py-20 text-center text-muted-foreground bg-muted/5 rounded-2xl border-2 border-dashed">
+                                <Dumbbell className="w-12 h-12 mx-auto mb-4 opacity-20" />
+                                <p>등록된 루틴이 없습니다. 자주 하는 운동을 루틴으로 저장해보세요!</p>
+                            </div>
+                        )}
+                    </div>
                 </TabsContent>
 
                 <TabsContent value="analysis" className="flex-1 overflow-y-auto custom-scrollbar mt-0">

@@ -90,14 +90,26 @@ export function PeopleMap({ onClose }: PeopleMapProps) {
                     reasons.push('school');
                 }
 
+                // 4. Shared Industry
+                if (p1.industry && p2.industry && p1.industry === p2.industry) {
+                    reasons.push('industry');
+                }
+
+                // 5. Shared Group
+                if (p1.group && p2.group && p1.group === p2.group) {
+                    reasons.push('group');
+                }
+
                 if (reasons.length > 0) {
                     // Determine link color/width based on strongest connection
                     let type = 'tag';
                     if (reasons.includes('me')) type = 'me';
+                    if (reasons.includes('industry')) type = 'industry';
+                    if (reasons.includes('group')) type = 'group';
                     if (reasons.includes('company')) type = 'company';
                     if (reasons.includes('school')) type = 'school';
 
-                    // Priority: School/Company > Me > Tag (Actually Me links should be subtle but visible)
+                    // Priority: School/Company > Industry/Group > Me > Tag
                     if (reasons.includes('company') || reasons.includes('school')) {
                         type = reasons.includes('company') ? 'company' : 'school';
                     }
@@ -158,11 +170,13 @@ export function PeopleMap({ onClose }: PeopleMapProps) {
                             switch ((link as any).type) {
                                 case 'company': return '#60a5fa'; // Blue
                                 case 'school': return '#f472b6'; // Pink
-                                case 'me': return '#fbbf24'; // Solid Gold (was transparent)
+                                case 'industry': return '#10b981'; // Emerald
+                                case 'group': return '#8b5cf6'; // Violet
+                                case 'me': return '#fbbf24'; // Solid Gold
                                 default: return '#cbd5e1'; // Gray
                             }
                         }}
-                        linkWidth={link => (link as any).type === 'me' ? 1 : 2}
+                        linkWidth={link => ((link as any).type === 'me' || (link as any).type === 'tag') ? 1 : 2}
                         linkDirectionalParticles={2}
                         linkDirectionalParticleSpeed={d => (d as any).value * 0.001}
                         // Custom Render for Nodes

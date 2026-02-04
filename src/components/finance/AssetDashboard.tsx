@@ -22,6 +22,9 @@ export function AssetDashboard() {
     const [balance, setBalance] = useState('');
     const [accountNumber, setAccountNumber] = useState('');
     const [interestRate, setInterestRate] = useState('');
+    const [limit, setLimit] = useState(''); // New
+    const [billingDate, setBillingDate] = useState(''); // New
+    const [linkedAssetId, setLinkedAssetId] = useState(''); // New: Settlement account
     const [memo, setMemo] = useState('');
 
     const totalAssets = assets
@@ -46,6 +49,9 @@ export function AssetDashboard() {
             color: getTypeColor(type),
             accountNumber,
             interestRate: interestRate ? parseFloat(interestRate) : undefined,
+            limit: limit ? parseInt(limit) : undefined,
+            billingDate: billingDate ? parseInt(billingDate) : undefined,
+            linkedAssetId: linkedAssetId || undefined,
             memo
         };
 
@@ -66,6 +72,9 @@ export function AssetDashboard() {
         setBalance(a.balance.toString());
         setAccountNumber(a.accountNumber || '');
         setInterestRate(a.interestRate?.toString() || '');
+        setLimit(a.limit?.toString() || '');
+        setBillingDate(a.billingDate?.toString() || '');
+        setLinkedAssetId(a.linkedAssetId || '');
         setMemo(a.memo || '');
         setIsDialogOpen(true);
     };
@@ -77,6 +86,9 @@ export function AssetDashboard() {
         setBalance('');
         setAccountNumber('');
         setInterestRate('');
+        setLimit('');
+        setBillingDate('');
+        setLinkedAssetId('');
         setMemo('');
     };
 
@@ -201,25 +213,45 @@ export function AssetDashboard() {
                         const Icon = getTypeIcon(asset.type);
                         return (
                             <div key={asset.id} className="flex items-center justify-between p-4 bg-white rounded-lg border hover:shadow-md transition-all group">
-                                <div className="flex items-center gap-4">
-                                    <div className={cn("w-10 h-10 rounded-full flex items-center justify-center text-white", getTypeColor(asset.type))}>
-                                        <Icon className="w-5 h-5" />
+                                <div className="flex-1">
+                                    <div className="flex items-center justify-between mb-1">
+                                        <div className="flex items-center gap-4">
+                                            <div className={cn("w-10 h-10 rounded-full flex items-center justify-center text-white", getTypeColor(asset.type))}>
+                                                <Icon className="w-5 h-5" />
+                                            </div>
+                                            <div>
+                                                <div className="font-bold">{asset.name}</div>
+                                                <div className="text-xs text-muted-foreground">
+                                                    {getTypeLabel(asset.type)} {asset.interestRate ? `· ${asset.interestRate}%` : ''}
+                                                    {asset.type === 'credit_card' && asset.billingDate ? ` · 결제일 ${asset.billingDate}일` : ''}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-4">
+                                            <div className="text-right">
+                                                <div className="font-bold text-lg text-red-600">{asset.balance.toLocaleString()}원</div>
+                                                {asset.type === 'credit_card' && asset.limit && (
+                                                    <div className="text-xs text-muted-foreground">한도: {asset.limit.toLocaleString()}원</div>
+                                                )}
+                                            </div>
+                                            <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => handleEdit(asset)}>
+                                                    <Edit2 className="w-3.5 h-3.5 text-slate-400" />
+                                                </Button>
+                                                <Button size="icon" variant="ghost" className="h-8 w-8 hover:text-red-500" onClick={() => deleteAsset(asset.id)}>
+                                                    <Trash2 className="w-3.5 h-3.5" />
+                                                </Button>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <div className="font-bold">{asset.name}</div>
-                                        <div className="text-xs text-muted-foreground">{getTypeLabel(asset.type)}</div>
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-4">
-                                    <span className="font-bold text-lg text-red-600">{asset.balance.toLocaleString()}원</span>
-                                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => handleEdit(asset)}>
-                                            <Edit2 className="w-3.5 h-3.5 text-slate-400" />
-                                        </Button>
-                                        <Button size="icon" variant="ghost" className="h-8 w-8 hover:text-red-500" onClick={() => deleteAsset(asset.id)}>
-                                            <Trash2 className="w-3.5 h-3.5" />
-                                        </Button>
-                                    </div>
+                                    {asset.type === 'credit_card' && asset.limit && (
+                                        <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden mt-2">
+                                            <div
+                                                className="h-full bg-orange-500 rounded-full"
+                                                style={{ width: `${Math.min(100, (asset.balance / asset.limit) * 100)}%` }}
+                                            ></div>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         );
@@ -290,7 +322,54 @@ export function AssetDashboard() {
                                     onChange={e => setInterestRate(e.target.value)}
                                 />
                             </div>
+                            {type === 'credit_card' ? (
+                                <div className="grid gap-2">
+                                    <Label>결제일 (일)</Label>
+                                    <Input
+                                        type="number"
+                                        placeholder="1~31"
+                                        value={billingDate}
+                                        onChange={e => setBillingDate(e.target.value)}
+                                    />
+                                </div>
+                            ) : (
+                                <div className="grid gap-2">
+                                    <Label>한도/약정액 (선택)</Label>
+                                    <Input
+                                        type="number"
+                                        placeholder="한도액"
+                                        value={limit}
+                                        onChange={e => setLimit(e.target.value)}
+                                    />
+                                </div>
+                            )}
                         </div>
+                        {type === 'credit_card' && (
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="grid gap-2">
+                                    <Label>이용한도</Label>
+                                    <Input
+                                        type="number"
+                                        placeholder="총 한도"
+                                        value={limit}
+                                        onChange={e => setLimit(e.target.value)}
+                                    />
+                                </div>
+                                <div className="grid gap-2">
+                                    <Label>결제 계좌</Label>
+                                    <select
+                                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
+                                        value={linkedAssetId}
+                                        onChange={e => setLinkedAssetId(e.target.value)}
+                                    >
+                                        <option value="">선택 안 함</option>
+                                        {assets.filter(a => a.type === 'bank').map(a => (
+                                            <option key={a.id} value={a.id}>{a.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+                        )}
                         <div className="grid gap-2">
                             <Label>메모 (선택)</Label>
                             <Input

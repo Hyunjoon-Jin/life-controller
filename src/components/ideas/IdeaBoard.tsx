@@ -6,9 +6,12 @@ import { Memo } from '@/types';
 import { generateId, cn, safeFormat } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Plus, X, Trash2, Image as ImageIcon, Tag, Paperclip, Sparkles } from 'lucide-react';
+import { Plus, X, Trash2, Image as ImageIcon, Tag, Paperclip, Sparkles, Star, Target, Briefcase, Eye, Edit3 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const COLORS = [
     { name: 'yellow', value: 'bg-yellow-200 text-yellow-900 border-yellow-300' },
@@ -19,9 +22,10 @@ const COLORS = [
 ];
 
 export function IdeaBoard() {
-    const { memos, addMemo, updateMemo, deleteMemo } = useData();
+    const { memos, addMemo, updateMemo, deleteMemo, projects, goals } = useData();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [editingMemo, setEditingMemo] = useState<Memo | null>(null);
+    const [editMode, setEditMode] = useState<'edit' | 'preview'>('edit');
 
     // Form States
     const [title, setTitle] = useState('');
@@ -30,10 +34,14 @@ export function IdeaBoard() {
     const [tagInput, setTagInput] = useState('');
     const [attachments, setAttachments] = useState<string[]>([]);
     const [selectedColor, setSelectedColor] = useState(COLORS[0]);
+    const [connectedProjectId, setConnectedProjectId] = useState<string | undefined>(undefined);
+    const [connectedGoalId, setConnectedGoalId] = useState<string | undefined>(undefined);
+    const [isFavorite, setIsFavorite] = useState(false);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleOpen = (memo?: Memo) => {
+        setEditMode('edit');
         if (memo) {
             setEditingMemo(memo);
             setTitle(memo.title || '');
@@ -42,6 +50,9 @@ export function IdeaBoard() {
             setTagInput('');
             setAttachments(memo.attachments || []);
             setSelectedColor(COLORS.find(c => c.value.includes(memo.color.split(' ')[0])) || COLORS[0]);
+            setConnectedProjectId(memo.connectedProjectId);
+            setConnectedGoalId(memo.connectedGoalId);
+            setIsFavorite(memo.isFavorite || false);
         } else {
             setEditingMemo(null);
             setTitle('');
@@ -50,6 +61,9 @@ export function IdeaBoard() {
             setTagInput('');
             setAttachments([]);
             setSelectedColor(COLORS[0]);
+            setConnectedProjectId(undefined);
+            setConnectedGoalId(undefined);
+            setIsFavorite(false);
         }
         setIsDialogOpen(true);
     };
@@ -64,7 +78,10 @@ export function IdeaBoard() {
                 content,
                 tags,
                 attachments,
-                color: selectedColor.value
+                color: selectedColor.value,
+                connectedProjectId,
+                connectedGoalId,
+                isFavorite
             });
         } else {
             addMemo({
@@ -75,6 +92,9 @@ export function IdeaBoard() {
                 attachments,
                 color: selectedColor.value,
                 createdAt: new Date(),
+                connectedProjectId,
+                connectedGoalId,
+                isFavorite
             });
         }
         setIsDialogOpen(false);
@@ -125,62 +145,94 @@ export function IdeaBoard() {
                         <p>떠오르는 영감을 기록해보세요!</p>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                        {memos.map(memo => (
-                            <div
-                                key={memo.id}
-                                onClick={() => handleOpen(memo)}
-                                className={cn(
-                                    "aspect-square p-4 rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer transform hover:-translate-y-1 relative group flex flex-col gap-2 border border-transparent/10",
-                                    memo.color
-                                )}
-                            >
-                                {memo.title && (
-                                    <div className="font-bold text-lg truncate border-b border-black/10 pb-1 mb-1">
-                                        {memo.title}
-                                    </div>
-                                )}
-                                <div className={cn(
-                                    "text-sm whitespace-pre-wrap overflow-hidden leading-relaxed opacity-90",
-                                    memo.title ? "line-clamp-4" : "line-clamp-[8]"
-                                )}>
-                                    {memo.content}
-                                </div>
-
-                                <div className="mt-auto flex flex-col gap-1">
-                                    {memo.attachments && memo.attachments.length > 0 && (
-                                        <div className="flex items-center gap-1 text-xs opacity-70">
-                                            <Paperclip className="w-3 h-3" /> {memo.attachments.length}개의 첨부파일
+                    <div className="columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-4 space-y-4">
+                        <AnimatePresence>
+                            {(memos || []).sort((a, b) => (b.isFavorite ? 1 : 0) - (a.isFavorite ? 1 : 0)).map(memo => (
+                                <motion.div
+                                    layout
+                                    initial={{ opacity: 0, scale: 0.9 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.9 }}
+                                    key={memo.id}
+                                    onClick={() => handleOpen(memo)}
+                                    className={cn(
+                                        "break-inside-avoid mb-4 p-5 rounded-2xl shadow-sm hover:shadow-xl transition-all cursor-pointer transform hover:-translate-y-1 relative group flex flex-col gap-3 border border-black/5 overflow-hidden",
+                                        memo.color
+                                    )}
+                                >
+                                    {memo.isFavorite && (
+                                        <div className="absolute top-3 right-3 text-yellow-500">
+                                            <Star className="w-4 h-4 fill-current" />
                                         </div>
                                     )}
-                                    <div className="flex flex-wrap gap-1">
-                                        {memo.tags?.map(tag => (
-                                            <span key={tag} className="text-[10px] px-1.5 py-0.5 bg-black/5 rounded-full font-medium">
-                                                #{tag}
-                                            </span>
-                                        ))}
-                                    </div>
-                                    <div className="text-[10px] opacity-60 text-right mt-1">
-                                        {safeFormat(memo.createdAt, 'yy.MM.dd')}
-                                    </div>
-                                </div>
 
-                                <button
-                                    onClick={(e) => { e.stopPropagation(); deleteMemo(memo.id); }}
-                                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-50 hover:!opacity-100 transition-opacity p-1 rounded-full hover:bg-black/10"
-                                >
-                                    <X className="w-3 h-3" />
-                                </button>
-                            </div>
-                        ))}
+                                    {memo.title && (
+                                        <div className="font-bold text-lg border-b border-black/5 pb-2">
+                                            {memo.title}
+                                        </div>
+                                    )}
+
+                                    <div className="text-sm whitespace-pre-wrap leading-relaxed opacity-90">
+                                        {memo.content}
+                                    </div>
+
+                                    {(memo.connectedProjectId || memo.connectedGoalId) && (
+                                        <div className="flex flex-wrap gap-2 mt-2">
+                                            {memo.connectedProjectId && (
+                                                <div className="flex items-center gap-1 text-[10px] font-bold bg-black/5 px-2 py-1 rounded-md">
+                                                    <Briefcase className="w-3 h-3" /> {projects.find(p => p.id === memo.connectedProjectId)?.title || '연결됨'}
+                                                </div>
+                                            )}
+                                            {memo.connectedGoalId && (
+                                                <div className="flex items-center gap-1 text-[10px] font-bold bg-black/5 px-2 py-1 rounded-md">
+                                                    <Target className="w-3 h-3" /> {goals.find(g => g.id === memo.connectedGoalId)?.title || '연결됨'}
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    <div className="mt-auto flex flex-col gap-2 pt-2">
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex flex-wrap gap-1">
+                                                {memo.tags?.map(tag => (
+                                                    <span key={tag} className="text-[10px] px-2 py-0.5 bg-black/10 rounded-full font-bold">
+                                                        #{tag}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                            <div className="text-[10px] opacity-60 font-mono">
+                                                {safeFormat(memo.createdAt, 'yy.MM.dd')}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <button
+                                        onClick={(e) => { e.stopPropagation(); deleteMemo(memo.id); }}
+                                        className="absolute top-2 right-2 opacity-0 group-hover:opacity-50 hover:!opacity-100 transition-opacity p-1 rounded-full hover:bg-black/10"
+                                    >
+                                        <X className="w-3 h-3" />
+                                    </button>
+                                </motion.div>
+                            ))}
+                        </AnimatePresence>
                     </div>
                 )}
             </div>
 
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogContent className="sm:max-w-[600px]">
-                    <DialogHeader>
-                        <DialogTitle>{editingMemo ? '메모 수정' : '새 메모'}</DialogTitle>
+                    <DialogHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <DialogTitle className="text-xl font-bold">
+                            {editingMemo ? '메모 수정' : '새 메모'}
+                        </DialogTitle>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className={cn("h-8 w-8 hover:text-yellow-500", isFavorite && "text-yellow-500")}
+                            onClick={() => setIsFavorite(!isFavorite)}
+                        >
+                            <Star className={cn("w-5 h-5", isFavorite && "fill-current")} />
+                        </Button>
                     </DialogHeader>
 
                     <div className="space-y-4 py-4">
@@ -191,12 +243,66 @@ export function IdeaBoard() {
                             onChange={e => setTitle(e.target.value)}
                         />
 
-                        <textarea
-                            className="w-full h-40 bg-muted border-transparent rounded-xl p-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none custom-scrollbar"
-                            placeholder="내용을 입력하세요..."
-                            value={content}
-                            onChange={e => setContent(e.target.value)}
-                        />
+                        <div className="flex items-center justify-between border-b pb-2 mb-2">
+                            <Tabs value={editMode} onValueChange={(v) => setEditMode(v as any)} className="w-auto">
+                                <TabsList className="bg-muted/50 h-8 p-1">
+                                    <TabsTrigger value="edit" className="text-xs gap-1.5 h-6">
+                                        <Edit3 className="w-3.5 h-3.5" /> 편집
+                                    </TabsTrigger>
+                                    <TabsTrigger value="preview" className="text-xs gap-1.5 h-6">
+                                        <Eye className="w-3.5 h-3.5" /> 미리보기
+                                    </TabsTrigger>
+                                </TabsList>
+                            </Tabs>
+                        </div>
+
+                        {editMode === 'edit' ? (
+                            <textarea
+                                className="w-full h-48 bg-muted border-transparent rounded-xl p-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none custom-scrollbar font-mono"
+                                placeholder="내용을 입력하세요... (Markdown 지원)"
+                                value={content}
+                                onChange={e => setContent(e.target.value)}
+                            />
+                        ) : (
+                            <div className="w-full h-48 bg-muted/30 border rounded-xl p-4 text-sm overflow-y-auto prose prose-sm dark:prose-invert">
+                                {content ? (
+                                    <div className="whitespace-pre-wrap">{content}</div>
+                                ) : (
+                                    <span className="text-muted-foreground italic">내용이 없습니다.</span>
+                                )}
+                            </div>
+                        )}
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-1.5">
+                                <Label className="text-[10px] text-muted-foreground font-bold uppercase">연관 프로젝트</Label>
+                                <Select value={connectedProjectId} onValueChange={setConnectedProjectId}>
+                                    <SelectTrigger className="h-9 bg-muted/50 border-transparent text-xs">
+                                        <SelectValue placeholder="프로젝트 선택" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="none">없음</SelectItem>
+                                        {projects.map(p => (
+                                            <SelectItem key={p.id} value={p.id}>{p.title}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="space-y-1.5">
+                                <Label className="text-[10px] text-muted-foreground font-bold uppercase">하위 목표</Label>
+                                <Select value={connectedGoalId} onValueChange={setConnectedGoalId}>
+                                    <SelectTrigger className="h-9 bg-muted/50 border-transparent text-xs">
+                                        <SelectValue placeholder="목표 선택" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="none">없음</SelectItem>
+                                        {goals.map(g => (
+                                            <SelectItem key={g.id} value={g.id}>{g.title}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
 
                         <div className="flex items-center gap-3">
                             <div className="flex-1 flex flex-col gap-2">

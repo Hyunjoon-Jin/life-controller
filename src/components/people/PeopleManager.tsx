@@ -14,7 +14,9 @@ import { Label } from '@/components/ui/label';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { DatePicker } from '@/components/ui/date-picker';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { PeopleMap } from './PeopleMap';
+import { format } from 'date-fns';
 
 
 export function PeopleManager() {
@@ -36,25 +38,39 @@ export function PeopleManager() {
         businessCardImage: '',
         school: '',
         major: '',
+        industry: '',
+        group: '',
         isMe: false,
-        tags: [] // Initialize tags
+        tags: [],
+        interactions: []
     });
     const [tagInput, setTagInput] = useState('');
+    const [interactionType, setInteractionType] = useState<'call' | 'meeting' | 'email' | 'event' | 'other'>('call');
+    const [interactionContent, setInteractionContent] = useState('');
+    const [interactionDate, setInteractionDate] = useState<Date>(new Date());
 
 
     // Preview state for View Mode
     const [viewImage, setViewImage] = useState<string | null>(null);
 
     const filteredPeople = people.filter(p => {
-        const matchSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            p.contact.includes(searchQuery);
+        const searchLower = searchQuery.toLowerCase();
+        const matchSearch = p.name.toLowerCase().includes(searchLower) ||
+            p.contact.includes(searchQuery) ||
+            p.industry?.toLowerCase().includes(searchLower) ||
+            p.group?.toLowerCase().includes(searchLower) ||
+            p.company?.toLowerCase().includes(searchLower);
         const matchRel = selectedRelation === 'all' || p.relationship === selectedRelation;
         return matchSearch && matchRel;
     });
 
     const handleOpenCreate = () => {
         setEditingId(null);
-        setFormData({ name: '', relationship: 'friend', contact: '', notes: '', businessCardImage: '', company: '', department: '', jobTitle: '', school: '', major: '', isMe: false, tags: [] });
+        setFormData({
+            name: '', relationship: 'friend', contact: '', notes: '', businessCardImage: '',
+            company: '', department: '', jobTitle: '', school: '', major: '',
+            industry: '', group: '', isMe: false, tags: [], interactions: []
+        });
         setTagInput('');
         setIsDialogOpen(true);
     };
@@ -125,6 +141,29 @@ export function PeopleManager() {
             const lastTag = formData.tags[formData.tags.length - 1];
             handleRemoveTag(lastTag);
         }
+    };
+
+    const handleAddInteraction = () => {
+        if (!interactionContent.trim()) return;
+        const newLog = {
+            id: generateId(),
+            date: interactionDate,
+            type: interactionType,
+            content: interactionContent
+        };
+        setFormData(prev => ({
+            ...prev,
+            interactions: [newLog, ...(prev.interactions || [])]
+        }));
+        setInteractionContent('');
+        setInteractionDate(new Date());
+    };
+
+    const handleRemoveInteraction = (id: string) => {
+        setFormData(prev => ({
+            ...prev,
+            interactions: prev.interactions?.filter(log => log.id !== id) || []
+        }));
     };
 
     const getRelationBadge = (rel: RelationshipType) => {
@@ -281,204 +320,288 @@ export function PeopleManager() {
                         <DialogTitle className="text-xl">{editingId ? '정보 수정' : '새 인맥 추가'}</DialogTitle>
                     </DialogHeader>
 
-                    <div className="flex-1 overflow-y-auto custom-scrollbar p-6 py-2">
-                        <div className="grid gap-6">
-                            {/* Basic Info Group */}
-                            <div className="grid gap-4">
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-2">
-                                        <Label htmlFor="person-name">이름 <span className="text-red-500">*</span></Label>
-                                        <Input
-                                            id="person-name"
-                                            name="name"
-                                            value={formData.name}
-                                            onChange={e => setFormData({ ...formData, name: e.target.value })}
-                                            placeholder="이름 입력"
-                                            className="bg-muted/50"
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="person-relationship">관계</Label>
-                                        <div className="relative">
-                                            <select
-                                                id="person-relationship"
-                                                name="relationship"
-                                                value={formData.relationship}
-                                                onChange={e => setFormData({ ...formData, relationship: e.target.value as RelationshipType })}
-                                                className="flex h-10 w-full rounded-md border border-input bg-muted/50 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 appearance-none"
-                                            >
-                                                <option value="family">가족</option>
-                                                <option value="friend">친구</option>
-                                                <option value="work">직장</option>
-                                                <option value="other">기타</option>
-                                            </select>
-                                            <ChevronDown className="absolute right-3 top-2.5 h-4 w-4 opacity-50 pointer-events-none" />
+                    <Tabs defaultValue="profile" className="flex-1 flex flex-col overflow-hidden">
+                        <div className="px-6 pt-2">
+                            <TabsList className="grid w-full grid-cols-2 bg-muted/50 p-1 h-9">
+                                <TabsTrigger value="profile" className="text-xs">기본 정보</TabsTrigger>
+                                <TabsTrigger value="interactions" className="text-xs">기록 및 히스토리</TabsTrigger>
+                            </TabsList>
+                        </div>
+
+                        <TabsContent value="profile" className="flex-1 overflow-y-auto custom-scrollbar p-6 py-4 mt-0 space-y-6">
+                            <div className="grid gap-6">
+                                {/* Basic Info Group */}
+                                <div className="grid gap-4">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <Label htmlFor="person-name">이름 <span className="text-red-500">*</span></Label>
+                                            <Input
+                                                id="person-name"
+                                                name="name"
+                                                value={formData.name}
+                                                onChange={e => setFormData({ ...formData, name: e.target.value })}
+                                                placeholder="이름 입력"
+                                                className="bg-muted/50"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="person-relationship">관계</Label>
+                                            <div className="relative">
+                                                <select
+                                                    id="person-relationship"
+                                                    name="relationship"
+                                                    value={formData.relationship}
+                                                    onChange={e => setFormData({ ...formData, relationship: e.target.value as RelationshipType })}
+                                                    className="flex h-10 w-full rounded-md border border-input bg-muted/50 px-3 py-2 text-sm appearance-none"
+                                                >
+                                                    <option value="family">가족</option>
+                                                    <option value="friend">친구</option>
+                                                    <option value="work">직장</option>
+                                                    <option value="other">기타</option>
+                                                </select>
+                                                <ChevronDown className="absolute right-3 top-2.5 h-4 w-4 opacity-50 pointer-events-none" />
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox
-                                        id="person-isMe"
-                                        checked={formData.isMe}
-                                        onCheckedChange={(checked) => setFormData({ ...formData, isMe: checked === true })}
-                                    />
-                                    <label htmlFor="person-isMe" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer">
-                                        이 프로필이 '나'입니다 (본인 표시)
-                                    </label>
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-2">
-                                        <Label htmlFor="person-contact">연락처</Label>
-                                        <Input
-                                            id="person-contact"
-                                            name="contact"
-                                            value={formData.contact}
-                                            onChange={e => setFormData({ ...formData, contact: e.target.value })}
-                                            placeholder="010-0000-0000"
-                                            className="bg-muted/50"
+                                    <div className="flex items-center space-x-2">
+                                        <Checkbox
+                                            id="person-isMe"
+                                            checked={formData.isMe}
+                                            onCheckedChange={(checked) => setFormData({ ...formData, isMe: checked === true })}
                                         />
+                                        <label htmlFor="person-isMe" className="text-sm font-medium leading-none cursor-pointer">
+                                            이 프로필이 '나'입니다 (본인 표시)
+                                        </label>
                                     </div>
-                                    <div className="space-y-2 flex flex-col">
-                                        <Label>생일</Label>
-                                        <DatePicker
-                                            date={(() => {
-                                                if (!formData.birthdate) return undefined;
-                                                const d = new Date(formData.birthdate);
-                                                return isNaN(d.getTime()) ? undefined : d;
-                                            })()}
-                                            setDate={(date) => setFormData({ ...formData, birthdate: date })}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
 
-                            <div className="h-px bg-border/50" />
-
-                            {/* Social / Work Group */}
-                            <div className="grid gap-4">
-                                <Label className="text-muted-foreground text-xs uppercase font-bold tracking-wider">소속 및 학력</Label>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <Input
-                                        value={formData.company || ''}
-                                        onChange={e => setFormData({ ...formData, company: e.target.value })}
-                                        placeholder="회사/소속명"
-                                        className="col-span-2 bg-muted/50"
-                                    />
-                                    <Input
-                                        value={formData.department || ''}
-                                        onChange={e => setFormData({ ...formData, department: e.target.value })}
-                                        placeholder="부서"
-                                        className="bg-muted/50"
-                                    />
-                                    <Input
-                                        value={formData.jobTitle || ''}
-                                        onChange={e => setFormData({ ...formData, jobTitle: e.target.value })}
-                                        placeholder="직책/직위"
-                                        className="bg-muted/50"
-                                    />
-                                </div>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <Input
-                                        value={formData.school || ''}
-                                        onChange={e => setFormData({ ...formData, school: e.target.value })}
-                                        placeholder="학교명"
-                                        className="bg-muted/50"
-                                    />
-                                    <Input
-                                        value={formData.major || ''}
-                                        onChange={e => setFormData({ ...formData, major: e.target.value })}
-                                        placeholder="전공"
-                                        className="bg-muted/50"
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="h-px bg-border/50" />
-
-                            {/* Additional Info */}
-                            <div className="space-y-4">
-                                <Label className="text-muted-foreground text-xs uppercase font-bold tracking-wider">추가 정보</Label>
-
-                                <div className="space-y-2">
-                                    <Label>태그</Label>
-                                    <div className="flex flex-wrap gap-2 p-3 bg-muted/50 rounded-xl border border-input/50 focus-within:ring-2 focus-within:ring-ring ring-offset-background transition-all">
-                                        {(formData.tags || []).map(tag => (
-                                            <Badge key={tag} variant="secondary" className="px-2 py-1 text-sm font-normal rounded-md bg-background border shadow-sm hover:bg-accent transition-colors">
-                                                {tag}
-                                                <button
-                                                    type="button"
-                                                    onClick={() => handleRemoveTag(tag)}
-                                                    className="ml-1 text-muted-foreground hover:text-red-500 rounded-full"
-                                                >
-                                                    <X className="w-3 h-3" />
-                                                </button>
-                                            </Badge>
-                                        ))}
-                                        <input
-                                            id="person-tags"
-                                            value={tagInput}
-                                            onChange={e => setTagInput(e.target.value)}
-                                            onKeyDown={handleTagKeyDown}
-                                            onBlur={handleAddTag}
-                                            className="flex-1 min-w-[120px] bg-transparent outline-none text-sm h-6 placeholder:text-muted-foreground"
-                                            placeholder={formData.tags?.length ? "" : "태그 입력 (Enter)"}
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="person-notes">메모</Label>
-                                    <textarea
-                                        id="person-notes"
-                                        name="notes"
-                                        value={formData.notes || ''}
-                                        onChange={e => setFormData({ ...formData, notes: e.target.value })}
-                                        className="flex min-h-[80px] w-full rounded-md border border-input bg-muted/50 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-y"
-                                        placeholder="기억해야 할 특징, 취미, 특이사항 등..."
-                                    />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label>명함 이미지</Label>
-                                    <div className="border-2 border-dashed border-muted-foreground/25 rounded-xl p-4 transition-colors hover:bg-muted/50">
-                                        <div className="flex flex-col items-center justify-center gap-2">
-                                            {formData.businessCardImage ? (
-                                                <div className="relative w-full h-[200px] rounded-lg overflow-hidden border bg-background">
-                                                    <img src={formData.businessCardImage} alt="Business Card" className="w-full h-full object-contain" />
-                                                    <Button
-                                                        type="button"
-                                                        size="icon"
-                                                        variant="destructive"
-                                                        onClick={() => setFormData(prev => ({ ...prev, businessCardImage: '' }))}
-                                                        className="absolute top-2 right-2 h-6 w-6 rounded-full shadow-md"
-                                                    >
-                                                        <X className="w-3 h-3" />
-                                                    </Button>
-                                                </div>
-                                            ) : (
-                                                <div className="flex flex-col items-center text-center py-4">
-                                                    <ImageIcon className="w-8 h-8 text-muted-foreground/50 mb-2" />
-                                                    <p className="text-xs text-muted-foreground mb-3">명함 이미지를 업로드하세요</p>
-                                                    <Button type="button" variant="outline" size="sm" onClick={() => document.getElementById('card-upload')?.click()}>
-                                                        이미지 선택
-                                                    </Button>
-                                                </div>
-                                            )}
-                                            <input
-                                                id="card-upload"
-                                                type="file"
-                                                accept="image/*"
-                                                className="hidden"
-                                                onChange={handleImageUpload}
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <Label>연락처</Label>
+                                            <Input
+                                                value={formData.contact}
+                                                onChange={e => setFormData({ ...formData, contact: e.target.value })}
+                                                placeholder="010-0000-0000"
+                                                className="bg-muted/50"
+                                            />
+                                        </div>
+                                        <div className="space-y-2 flex flex-col">
+                                            <Label>생일</Label>
+                                            <DatePicker
+                                                date={formData.birthdate ? new Date(formData.birthdate) : undefined}
+                                                setDate={(date) => setFormData({ ...formData, birthdate: date })}
                                             />
                                         </div>
                                     </div>
                                 </div>
+
+                                <div className="h-px bg-border/50" />
+
+                                {/* Industry / Group Group */}
+                                <div className="grid gap-4">
+                                    <Label className="text-muted-foreground text-xs uppercase font-bold tracking-wider">분류</Label>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <Label>산업 분야</Label>
+                                            <Input
+                                                value={formData.industry || ''}
+                                                onChange={e => setFormData({ ...formData, industry: e.target.value })}
+                                                placeholder="예: IT, 금융, 의료"
+                                                className="bg-muted/50"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label>그룹</Label>
+                                            <Input
+                                                value={formData.group || ''}
+                                                onChange={e => setFormData({ ...formData, group: e.target.value })}
+                                                placeholder="예: 고등학교 친구, 독서모임"
+                                                className="bg-muted/50"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="h-px bg-border/50" />
+
+                                {/* Social / Work Group */}
+                                <div className="grid gap-4">
+                                    <Label className="text-muted-foreground text-xs uppercase font-bold tracking-wider">소속 및 학력</Label>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <Input
+                                            value={formData.company || ''}
+                                            onChange={e => setFormData({ ...formData, company: e.target.value })}
+                                            placeholder="회사/소속명"
+                                            className="col-span-2 bg-muted/50"
+                                        />
+                                        <Input
+                                            value={formData.department || ''}
+                                            onChange={e => setFormData({ ...formData, department: e.target.value })}
+                                            placeholder="부서"
+                                            className="bg-muted/50"
+                                        />
+                                        <Input
+                                            value={formData.jobTitle || ''}
+                                            onChange={e => setFormData({ ...formData, jobTitle: e.target.value })}
+                                            placeholder="직책/직위"
+                                            className="bg-muted/50"
+                                        />
+                                        <Input
+                                            value={formData.school || ''}
+                                            onChange={e => setFormData({ ...formData, school: e.target.value })}
+                                            placeholder="학교명"
+                                            className="bg-muted/50"
+                                        />
+                                        <Input
+                                            value={formData.major || ''}
+                                            onChange={e => setFormData({ ...formData, major: e.target.value })}
+                                            placeholder="전공"
+                                            className="bg-muted/50"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="h-px bg-border/50" />
+
+                                {/* Additional Info */}
+                                <div className="space-y-4">
+                                    <Label className="text-muted-foreground text-xs uppercase font-bold tracking-wider">추가 정보</Label>
+
+                                    <div className="space-y-2">
+                                        <Label>태그</Label>
+                                        <div className="flex flex-wrap gap-2 p-3 bg-muted/50 rounded-xl border border-input/50 transition-all">
+                                            {(formData.tags || []).map(tag => (
+                                                <Badge key={tag} variant="secondary" className="px-2 py-1 text-sm font-normal rounded-md bg-background border shadow-sm hover:bg-accent transition-colors">
+                                                    {tag}
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleRemoveTag(tag)}
+                                                        className="ml-1 text-muted-foreground hover:text-red-500 rounded-full"
+                                                    >
+                                                        <X className="w-3 h-3" />
+                                                    </button>
+                                                </Badge>
+                                            ))}
+                                            <input
+                                                id="person-tags"
+                                                value={tagInput}
+                                                onChange={e => setTagInput(e.target.value)}
+                                                onKeyDown={handleTagKeyDown}
+                                                onBlur={handleAddTag}
+                                                className="flex-1 min-w-[120px] bg-transparent outline-none text-sm h-6"
+                                                placeholder={formData.tags?.length ? "" : "태그 입력 (Enter)"}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label htmlFor="person-notes">메모</Label>
+                                        <textarea
+                                            id="person-notes"
+                                            name="notes"
+                                            value={formData.notes || ''}
+                                            onChange={e => setFormData({ ...formData, notes: e.target.value })}
+                                            className="flex min-h-[80px] w-full rounded-md border border-input bg-muted/50 px-3 py-2 text-sm"
+                                            placeholder="기억해야 할 특징 등..."
+                                        />
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label>명함 이미지</Label>
+                                        <div className="border-2 border-dashed border-muted-foreground/25 rounded-xl p-4 transition-colors hover:bg-muted/50">
+                                            <div className="flex flex-col items-center justify-center gap-2">
+                                                {formData.businessCardImage ? (
+                                                    <div className="relative w-full h-[150px] rounded-lg overflow-hidden border bg-background">
+                                                        <img src={formData.businessCardImage} alt="Business Card" className="w-full h-full object-contain" />
+                                                        <Button
+                                                            type="button"
+                                                            size="icon"
+                                                            variant="destructive"
+                                                            onClick={() => setFormData(prev => ({ ...prev, businessCardImage: '' }))}
+                                                            className="absolute top-2 right-2 h-6 w-6 rounded-full shadow-md"
+                                                        >
+                                                            <X className="w-3 h-3" />
+                                                        </Button>
+                                                    </div>
+                                                ) : (
+                                                    <div className="flex flex-col items-center text-center py-2" onClick={() => document.getElementById('card-upload')?.click()}>
+                                                        <ImageIcon className="w-6 h-6 text-muted-foreground/50 mb-1" />
+                                                        <p className="text-[10px] text-muted-foreground">명함 업로드</p>
+                                                    </div>
+                                                )}
+                                                <input
+                                                    id="card-upload"
+                                                    type="file"
+                                                    accept="image/*"
+                                                    className="hidden"
+                                                    onChange={handleImageUpload}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
+                        </TabsContent>
+
+                        <TabsContent value="interactions" className="flex-1 overflow-y-auto custom-scrollbar p-6 py-4 mt-0 space-y-6">
+                            <div className="grid gap-4">
+                                <Label className="text-muted-foreground text-xs uppercase font-bold">새 기록 추가</Label>
+                                <div className="p-4 bg-muted/30 rounded-xl border border-dashed border-primary/20 space-y-3">
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <select
+                                            value={interactionType}
+                                            onChange={e => setInteractionType(e.target.value as any)}
+                                            className="h-9 rounded-md border border-input bg-background px-3 text-xs"
+                                        >
+                                            <option value="call">전화</option>
+                                            <option value="meeting">미팅</option>
+                                            <option value="email">이메일</option>
+                                            <option value="event">경조사/행사</option>
+                                            <option value="other">기타</option>
+                                        </select>
+                                        <Input
+                                            type="date"
+                                            value={format(interactionDate, 'yyyy-MM-dd')}
+                                            onChange={e => setInteractionDate(new Date(e.target.value))}
+                                            className="h-9 text-xs"
+                                        />
+                                    </div>
+                                    <textarea
+                                        value={interactionContent}
+                                        onChange={e => setInteractionContent(e.target.value)}
+                                        placeholder="대화 내용, 논의 사항 등..."
+                                        className="w-full h-20 rounded-md border border-input bg-background p-3 text-xs resize-none"
+                                    />
+                                    <Button size="sm" className="w-full text-xs h-8" onClick={handleAddInteraction}>기록 저장</Button>
+                                </div>
+
+                                <Label className="text-muted-foreground text-xs uppercase font-bold pt-4">과거 타임라인</Label>
+                                <div className="space-y-3">
+                                    {(!formData.interactions || formData.interactions.length === 0) ? (
+                                        <p className="text-center text-xs text-muted-foreground py-8 opacity-50 italic">기록된 이력이 없습니다.</p>
+                                    ) : (
+                                        formData.interactions.map(log => (
+                                            <div key={log.id} className="relative pl-4 pb-4 border-l border-primary/20 last:pb-0">
+                                                <div className="absolute left-[-5px] top-1 w-2.5 h-2.5 rounded-full bg-primary" />
+                                                <div className="bg-muted/40 p-3 rounded-lg border border-border/50 text-xs">
+                                                    <div className="flex items-center justify-between mb-1">
+                                                        <div className="flex items-center gap-2">
+                                                            <Badge variant="outline" className="text-[10px] h-4 font-bold capitalize">{log.type}</Badge>
+                                                            <span className="text-muted-foreground opacity-60 font-mono">{format(new Date(log.date), 'yyyy.MM.dd')}</span>
+                                                        </div>
+                                                        <button onClick={() => handleRemoveInteraction(log.id)} className="text-muted-foreground hover:text-red-500 transition-opacity">
+                                                            <X className="w-3 h-3" />
+                                                        </button>
+                                                    </div>
+                                                    <p className="whitespace-pre-wrap">{log.content}</p>
+                                                </div>
+                                            </div>
+                                        ))
+                                    )}
+                                </div>
+                            </div>
+                        </TabsContent>
+                    </Tabs>
 
                     <DialogFooter className="p-6 pt-2 shrink-0">
                         <Button variant="ghost" onClick={() => setIsDialogOpen(false)}>취소</Button>

@@ -1,0 +1,61 @@
+'use client';
+
+import { useData } from '@/context/DataProvider';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Briefcase, Plus, MoreHorizontal, ArrowRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { WorkloadHeatmap } from '../WorkloadHeatmap';
+import { RecentWorkspace } from '../RecentWorkspace';
+
+interface ProjectSectionProps {
+    onOpenProject: (id: string) => void;
+}
+
+export function ProjectSection({ onOpenProject }: ProjectSectionProps) {
+    const { projects } = useData();
+
+    return (
+        <div className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <Card className="lg:col-span-2 border-none shadow-sm bg-slate-50">
+                    <CardHeader className="flex flex-row items-center justify-between pb-2">
+                        <CardTitle className="text-sm font-bold flex items-center gap-2">
+                            <Briefcase className="w-4 h-4 text-primary" />
+                            최근 진행한 프로젝트
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-0">
+                        <RecentWorkspace onOpenProject={onOpenProject} />
+                    </CardContent>
+                </Card>
+
+                <Card className="border-none shadow-sm h-fit">
+                    <CardHeader>
+                        <CardTitle className="text-sm font-bold">프로젝트 통계</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="flex justify-between items-center text-sm">
+                            <span className="text-muted-foreground">진행 중</span>
+                            <span className="font-bold">{projects.filter(p => !p.isArchived).length}개</span>
+                        </div>
+                        <div className="flex justify-between items-center text-sm">
+                            <span className="text-muted-foreground">완료됨</span>
+                            <span className="font-bold">{projects.filter(p => p.isArchived).length}개</span>
+                        </div>
+                        <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                            <div
+                                className="h-full bg-primary"
+                                style={{ width: `${(projects.filter(p => p.isArchived).length / (projects.length || 1)) * 100}%` }}
+                            />
+                        </div>
+                        <Button variant="outline" className="w-full text-xs" onClick={() => { }}>
+                            전체 분석 보기 <ArrowRight className="w-3 h-3 ml-2" />
+                        </Button>
+                    </CardContent>
+                </Card>
+            </div>
+
+            <WorkloadHeatmap />
+        </div>
+    );
+}

@@ -31,6 +31,11 @@ import { CertificateManager } from '@/components/growth/CertificateManager';
 import { PortfolioBoard } from '@/components/growth/PortfolioBoard';
 import { LedgerView } from '@/components/finance/LedgerView';
 import { AssetDashboard } from '@/components/finance/AssetDashboard';
+import { FundManagement } from '@/components/finance/FundManagement';
+import { RealEstateTab } from '@/components/finance/RealEstateTab';
+import { InvestmentTab } from '@/components/finance/InvestmentTab';
+import { LearningPlanner } from '@/components/growth/LearningPlanner';
+import { ReportGenerator } from '@/components/report/ReportGenerator';
 import { WeatherWidget } from '@/components/weather/WeatherWidget';
 import { HelpCircle, Calendar, Lightbulb, Users as UsersIcon, Link as LinkIcon, Target, Book, CheckSquare, ListTodo, Sparkles, Trophy, NotebookPen, UsersRound, Bookmark, Scale, Award, Briefcase, Home as HomeIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -45,7 +50,7 @@ export default function Home() {
   const [appMode, setAppMode] = useState<'life' | 'work'>('life');
   const [mainMode, setMainMode] = useState<'home' | 'schedule' | 'work'>('home');
   const [activeCategory, setActiveCategory] = useState<'basic' | 'health' | 'growth' | 'record' | 'finance'>('basic');
-  const [activeTab, setActiveTab] = useState<'calendar' | 'tasks' | 'projects' | 'people' | 'goals' | 'language' | 'reading' | 'exercise' | 'diet' | 'inbody' | 'hobby' | 'ideas' | 'journal' | 'scraps' | 'widgets' | 'ledger' | 'assets' | 'certificate' | 'portfolio'>('calendar');
+  const [activeTab, setActiveTab] = useState<'calendar' | 'tasks' | 'projects' | 'people' | 'goals' | 'language' | 'reading' | 'exercise' | 'diet' | 'inbody' | 'hobby' | 'learning' | 'report' | 'ideas' | 'journal' | 'scraps' | 'widgets' | 'ledger' | 'assets' | 'fund' | 'realestate' | 'investment' | 'certificate' | 'portfolio'>('calendar');
   const [isGuideOpen, setIsGuideOpen] = useState(false);
   const [todayDate, setTodayDate] = useState('');
 
@@ -246,6 +251,11 @@ export default function Home() {
                     <HobbyLog />
                   </div>
                 )}
+                {activeTab === 'learning' && (
+                  <div className="h-full animate-in fade-in zoom-in-95 duration-200">
+                    <LearningPlanner />
+                  </div>
+                )}
                 {activeTab === 'certificate' && (
                   <div className="h-full animate-in fade-in zoom-in-95 duration-200">
                     <CertificateManager />
@@ -273,6 +283,11 @@ export default function Home() {
                     <ScrapManager />
                   </div>
                 )}
+                {activeTab === 'report' && (
+                  <div className="h-full animate-in fade-in zoom-in-95 duration-200">
+                    <ReportGenerator />
+                  </div>
+                )}
 
                 {/* Finance Tabs */}
                 {activeTab === 'ledger' && (
@@ -283,6 +298,21 @@ export default function Home() {
                 {activeTab === 'assets' && (
                   <div className="h-full animate-in fade-in zoom-in-95 duration-200">
                     <AssetDashboard />
+                  </div>
+                )}
+                {activeTab === 'fund' && (
+                  <div className="h-full animate-in fade-in zoom-in-95 duration-200">
+                    <FundManagement />
+                  </div>
+                )}
+                {activeTab === 'realestate' && (
+                  <div className="h-full animate-in fade-in zoom-in-95 duration-200">
+                    <RealEstateTab />
+                  </div>
+                )}
+                {activeTab === 'investment' && (
+                  <div className="h-full animate-in fade-in zoom-in-95 duration-200">
+                    <InvestmentTab />
                   </div>
                 )}
 

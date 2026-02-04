@@ -23,12 +23,13 @@ export function LedgerView() {
 
     // Form State
     const [date, setDate] = useState<Date>(new Date());
-    const [type, setType] = useState<'income' | 'expense' | 'transfer' | 'investment' | 'saving'>('expense');
+    const [type, setType] = useState<'income' | 'expense' | 'transfer' | 'investment' | 'saving' | 'repayment' | 'card_bill'>('expense');
     const [category, setCategory] = useState('');
     const [amount, setAmount] = useState('');
     const [description, setDescription] = useState('');
     const [assetId, setAssetId] = useState<string>('');
-    const [targetAssetId, setTargetAssetId] = useState<string>(''); // New
+    const [targetAssetId, setTargetAssetId] = useState<string>('');
+    const [cardId, setCardId] = useState<string>(''); // New: For Credit Card expense
     const [tags, setTags] = useState('');
 
     const monthlyTransactions = transactions.filter(t =>
@@ -56,7 +57,8 @@ export function LedgerView() {
             amount: parseInt(amount),
             description,
             assetId: assetId || undefined,
-            targetAssetId: targetAssetId || undefined, // New
+            targetAssetId: targetAssetId || undefined,
+            cardId: cardId || undefined, // New
             tags: tags.split(',').map(t => t.trim()).filter(Boolean)
         };
 
@@ -78,7 +80,8 @@ export function LedgerView() {
         setAmount(t.amount.toString());
         setDescription(t.description);
         setAssetId(t.assetId || '');
-        setTargetAssetId(t.targetAssetId || ''); // New
+        setTargetAssetId(t.targetAssetId || '');
+        setCardId(t.cardId || ''); // New
         setTags(t.tags?.join(', ') || '');
         setIsDialogOpen(true);
     };
@@ -91,7 +94,8 @@ export function LedgerView() {
         setAmount('');
         setDescription('');
         setAssetId('');
-        setTargetAssetId(''); // New
+        setTargetAssetId('');
+        setCardId(''); // New
         setTags('');
     };
 
@@ -137,18 +141,20 @@ export function LedgerView() {
                                 </Button>
                                 <Button
                                     type="button"
-                                    variant={['transfer', 'investment', 'saving'].includes(type) ? 'default' : 'outline'}
-                                    className={cn("flex-1", ['transfer', 'investment', 'saving'].includes(type) && "bg-purple-600 hover:bg-purple-700")}
+                                    variant={['transfer', 'investment', 'saving', 'repayment', 'card_bill'].includes(type) ? 'default' : 'outline'}
+                                    className={cn("flex-1", ['transfer', 'investment', 'saving', 'repayment', 'card_bill'].includes(type) && "bg-purple-600 hover:bg-purple-700")}
                                     onClick={() => setType('transfer')}
                                 >
-                                    이체/투자
+                                    기타(이체/카드/대출)
                                 </Button>
                             </div>
-                            {['transfer', 'investment', 'saving'].includes(type) && (
-                                <div className="flex gap-2 mt-1">
+                            {['transfer', 'investment', 'saving', 'repayment', 'card_bill'].includes(type) && (
+                                <div className="flex gap-2 mt-1 flex-wrap">
                                     <Button size="sm" variant={type === 'transfer' ? 'secondary' : 'ghost'} onClick={() => setType('transfer')}>이체</Button>
                                     <Button size="sm" variant={type === 'investment' ? 'secondary' : 'ghost'} onClick={() => setType('investment')}>투자</Button>
                                     <Button size="sm" variant={type === 'saving' ? 'secondary' : 'ghost'} onClick={() => setType('saving')}>저축</Button>
+                                    <Button size="sm" variant={type === 'repayment' ? 'secondary' : 'ghost'} onClick={() => setType('repayment')}>대출상환</Button>
+                                    <Button size="sm" variant={type === 'card_bill' ? 'secondary' : 'ghost'} onClick={() => setType('card_bill')}>카드대금</Button>
                                 </div>
                             )}
                         </div>
@@ -170,30 +176,58 @@ export function LedgerView() {
                             />
                         </div>
                         <div className="grid gap-2">
-                            <Label>{['transfer', 'investment', 'saving'].includes(type) ? '출금 자산 (From)' : '연동 자산 (선택)'}</Label>
+                            <Label>
+                                {type === 'expense' ? '결제 수단' :
+                                    (['transfer', 'investment', 'saving', 'repayment', 'card_bill'].includes(type) ? '출금 자산 (From)' : '연동 자산 (선택)')}
+                            </Label>
                             <select
                                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
-                                value={assetId}
-                                onChange={e => setAssetId(e.target.value)}
+                                value={type === 'expense' && cardId ? cardId : assetId}
+                                onChange={e => {
+                                    const val = e.target.value;
+                                    const selectedAsset = assets.find(a => a.id === val);
+                                    if (type === 'expense') {
+                                        if (selectedAsset?.type === 'credit_card') {
+                                            setCardId(val);
+                                            setAssetId('');
+                                        } else {
+                                            setAssetId(val);
+                                            setCardId('');
+                                        }
+                                    } else {
+                                        setAssetId(val);
+                                    }
+                                }}
                             >
-                                <option value="">{['transfer', 'investment', 'saving'].includes(type) ? '선택 필수' : '선택 안 함'}</option>
-                                {assets.map(a => (
-                                    <option key={a.id} value={a.id}>
-                                        {a.name} ({a.balance.toLocaleString()}원)
-                                    </option>
-                                ))}
+                                <option value="">{['transfer', 'investment', 'saving', 'repayment', 'card_bill'].includes(type) ? '선택 필수' : '선택 안 함'}</option>
+                                <optgroup label="계좌 / 현금">
+                                    {assets.filter(a => a.type !== 'credit_card' && a.type !== 'loan').map(a => (
+                                        <option key={a.id} value={a.id}>
+                                            {a.name} ({a.balance.toLocaleString()}원)
+                                        </option>
+                                    ))}
+                                </optgroup>
+                                {type === 'expense' && (
+                                    <optgroup label="신용카드">
+                                        {assets.filter(a => a.type === 'credit_card').map(a => (
+                                            <option key={a.id} value={a.id}>
+                                                {a.name} (누적 {a.balance.toLocaleString()}원)
+                                            </option>
+                                        ))}
+                                    </optgroup>
+                                )}
                             </select>
                         </div>
-                        {['transfer', 'investment', 'saving'].includes(type) && (
+                        {['transfer', 'investment', 'saving', 'repayment'].includes(type) && (
                             <div className="grid gap-2">
-                                <Label>입금 자산 (To)</Label>
+                                <Label>{type === 'repayment' ? '상환할 대출 자산' : '입금 자산 (To)'}</Label>
                                 <select
                                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
                                     value={targetAssetId}
                                     onChange={e => setTargetAssetId(e.target.value)}
                                 >
                                     <option value="">선택 필수</option>
-                                    {assets.filter(a => a.id !== assetId).map(a => (
+                                    {assets.filter(a => a.id !== assetId && (type === 'repayment' ? a.type === 'loan' : a.type !== 'loan' && a.type !== 'credit_card')).map(a => (
                                         <option key={a.id} value={a.id}>
                                             {a.name} ({a.balance.toLocaleString()}원)
                                         </option>

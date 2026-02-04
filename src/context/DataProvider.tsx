@@ -6,7 +6,8 @@ import {
     LanguageEntry, Book, ExerciseSession, DietEntry, InBodyEntry, HobbyEntry,
     Transaction, Asset, Certificate, PortfolioItem, ArchiveDocument,
     UserProfile, Education, Career, BodyCompositionGoal, LanguageResource,
-    Hobby, HobbyPost, Activity // New
+    Hobby, HobbyPost, Activity, RealEstateScrap, StockAnalysis, WorkLog,
+    ExerciseRoutine // Added ExerciseRoutine
 } from '@/types';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useCloudSync } from '@/hooks/useCloudSync';
@@ -170,15 +171,36 @@ interface DataContextType {
     updateActivity: (act: Activity) => void;
     deleteActivity: (id: string) => void;
 
-    bodyCompositionGoal: BodyCompositionGoal | null;
-    setBodyCompositionGoal: (goal: BodyCompositionGoal) => void;
+    realEstateScraps: RealEstateScrap[];
+    setRealEstateScraps: (scraps: RealEstateScrap[]) => void;
+    addRealEstateScrap: (scrap: RealEstateScrap) => void;
+    updateRealEstateScrap: (scrap: RealEstateScrap) => void;
+    deleteRealEstateScrap: (id: string) => void;
 
-    // Home Shortcuts
-    homeShortcuts: string[];
-    setHomeShortcuts: (shortcuts: string[]) => void;
-    // Sync
+    stockAnalyses: StockAnalysis[];
+    setStockAnalyses: (analyses: StockAnalysis[]) => void;
+    addStockAnalysis: (analysis: StockAnalysis) => void;
+    updateStockAnalysis: (analysis: StockAnalysis) => void;
+    deleteStockAnalysis: (id: string) => void;
+
+    workLogs: WorkLog[];
+    setWorkLogs: (logs: WorkLog[]) => void;
+    addWorkLog: (log: WorkLog) => void;
+    updateWorkLog: (log: WorkLog) => void;
+    deleteWorkLog: (id: string) => void;
+
+    exerciseRoutines: ExerciseRoutine[];
+    setExerciseRoutines: (routines: ExerciseRoutine[]) => void;
+    addExerciseRoutine: (routine: ExerciseRoutine) => void;
+    updateExerciseRoutine: (routine: ExerciseRoutine) => void;
+    deleteExerciseRoutine: (id: string) => void;
+
     isSyncing: boolean;
     forceSync: () => Promise<void>;
+    bodyCompositionGoal: BodyCompositionGoal | null;
+    setBodyCompositionGoal: (goal: BodyCompositionGoal) => void;
+    homeShortcuts: string[];
+    setHomeShortcuts: (shortcuts: string[]) => void;
 }
 
 
@@ -229,6 +251,10 @@ export function DataProvider({ children }: { children: ReactNode }) {
     const [assets, setAssets] = useLocalStorage<Asset[]>('assets', []);
     const [certificates, setCertificates] = useLocalStorage<Certificate[]>('certificates', []);
     const [portfolios, setPortfolios] = useLocalStorage<PortfolioItem[]>('portfolios', []);
+    const [realEstateScraps, setRealEstateScraps] = useLocalStorage<RealEstateScrap[]>('realEstateScraps', []);
+    const [stockAnalyses, setStockAnalyses] = useLocalStorage<StockAnalysis[]>('stockAnalyses', []);
+    const [workLogs, setWorkLogs] = useLocalStorage<WorkLog[]>('workLogs', []);
+    const [exerciseRoutines, setExerciseRoutines] = useLocalStorage<ExerciseRoutine[]>('exerciseRoutines', []);
 
     // Resume States
     const [userProfile, setUserProfile] = useLocalStorage<UserProfile>('userProfile', {
@@ -295,6 +321,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
                     if (data.careers) setCareers(data.careers);
                     if (data.activities) setActivities(data.activities);
                     if (data.bodyCompositionGoal) setBodyCompositionGoal(data.bodyCompositionGoal);
+                    if (data.workLogs) setWorkLogs(data.workLogs);
+                    if (data.exerciseRoutines) setExerciseRoutines(data.exerciseRoutines);
                 }
                 setIsLoadedFromCloud(true);
             });
@@ -412,9 +440,10 @@ export function DataProvider({ children }: { children: ReactNode }) {
         setTransactions([...transactions, transaction]);
 
         // Sync Asset Balance
-        const { type, assetId, targetAssetId, amount } = transaction;
+        const { type, assetId, targetAssetId, amount, cardId } = transaction;
         let newAssets = [...assets];
 
+        // 1. Basic Income/Expense
         if (assetId) {
             newAssets = newAssets.map(asset => {
                 if (asset.id === assetId) {
@@ -424,15 +453,37 @@ export function DataProvider({ children }: { children: ReactNode }) {
                         return { ...asset, balance: asset.balance + amount };
                     } else if (type === 'transfer' || type === 'investment' || type === 'saving') {
                         return { ...asset, balance: asset.balance - amount };
+                    } else if (type === 'repayment') {
+                        return { ...asset, balance: asset.balance - amount };
+                    } else if (type === 'card_bill') {
+                        return { ...asset, balance: asset.balance - amount };
                     }
                 }
                 return asset;
             });
         }
 
-        if (targetAssetId && (type === 'transfer' || type === 'investment' || type === 'saving')) {
+        // 2. Transfer/Investment/Saving Target
+        if (targetAssetId && (type === 'transfer' || type === 'investment' || type === 'saving' || type === 'repayment')) {
             newAssets = newAssets.map(asset => {
                 if (asset.id === targetAssetId) {
+                    if (type === 'repayment') {
+                        // Repaying a loan reduces the loan balance (which is usually a positive number representing debt, or negative balance)
+                        // If loan balance is positive debt, we subtract. If it's negative balance, we add.
+                        // Assuming Asset balance for loan is debt amount (positive).
+                        return { ...asset, balance: asset.balance - amount };
+                    }
+                    return { ...asset, balance: asset.balance + amount };
+                }
+                return asset;
+            });
+        }
+
+        // 3. Credit Card Usage
+        if (cardId && type === 'expense') {
+            newAssets = newAssets.map(asset => {
+                if (asset.id === cardId) {
+                    // Credit card balance usually represents "used amount" (positive)
                     return { ...asset, balance: asset.balance + amount };
                 }
                 return asset;
@@ -449,7 +500,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
         // Revert Asset Balance (Optional but good UX)
         if (tx) {
-            const { type, assetId, targetAssetId, amount } = tx;
+            const { type, assetId, targetAssetId, amount, cardId } = tx;
             let newAssets = [...assets];
 
             if (assetId) {
@@ -457,17 +508,31 @@ export function DataProvider({ children }: { children: ReactNode }) {
                     if (asset.id === assetId) {
                         if (type === 'expense') return { ...asset, balance: asset.balance + amount };
                         if (type === 'income') return { ...asset, balance: asset.balance - amount };
-                        if (type === 'transfer' || type === 'investment' || type === 'saving') return { ...asset, balance: asset.balance + amount };
+                        if (type === 'transfer' || type === 'investment' || type === 'saving' || type === 'repayment' || type === 'card_bill') {
+                            return { ...asset, balance: asset.balance + amount };
+                        }
                     }
                     return asset;
                 });
             }
-            if (targetAssetId && (type === 'transfer' || type === 'investment' || type === 'saving')) {
+
+            if (targetAssetId && (type === 'transfer' || type === 'investment' || type === 'saving' || type === 'repayment')) {
                 newAssets = newAssets.map(asset => {
-                    if (asset.id === targetAssetId) return { ...asset, balance: asset.balance - amount };
+                    if (asset.id === targetAssetId) {
+                        if (type === 'repayment') return { ...asset, balance: asset.balance + amount };
+                        return { ...asset, balance: asset.balance - amount };
+                    }
                     return asset;
                 });
             }
+
+            if (cardId && type === 'expense') {
+                newAssets = newAssets.map(asset => {
+                    if (asset.id === cardId) return { ...asset, balance: asset.balance - amount };
+                    return asset;
+                });
+            }
+
             setAssets(newAssets);
         }
     };
@@ -509,7 +574,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
                 languageEntries, languageResources, books, exerciseSessions, dietEntries, inBodyEntries, hobbyEntries,
                 hobbies, hobbyPosts,
                 transactions, assets, certificates, portfolios, archiveDocuments,
-                userProfile, educations, careers, activities, bodyCompositionGoal, homeShortcuts // Added homeShortcuts
+                userProfile, educations, careers, activities, bodyCompositionGoal, homeShortcuts,
+                realEstateScraps, stockAnalyses, workLogs, exerciseRoutines
             });
         }
     }, [
@@ -518,7 +584,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
         languageEntries, languageResources, books, exerciseSessions, dietEntries, inBodyEntries, hobbyEntries,
         hobbies, hobbyPosts,
         transactions, assets, certificates, portfolios, archiveDocuments,
-        userProfile, educations, careers, activities, bodyCompositionGoal, homeShortcuts
+        userProfile, educations, careers, activities, bodyCompositionGoal, homeShortcuts,
+        realEstateScraps, stockAnalyses, workLogs, exerciseRoutines
     ]);
 
     const forceSync = async () => {
@@ -528,7 +595,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
                 languageEntries, languageResources, books, exerciseSessions, dietEntries, inBodyEntries, hobbyEntries,
                 hobbies, hobbyPosts,
                 transactions, assets, certificates, portfolios, archiveDocuments,
-                userProfile, educations, careers, activities, bodyCompositionGoal, homeShortcuts // Added homeShortcuts
+                userProfile, educations, careers, activities, bodyCompositionGoal, homeShortcuts,
+                realEstateScraps, stockAnalyses, workLogs, exerciseRoutines
             });
         }
     };
@@ -566,6 +634,22 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
         return () => clearInterval(interval);
     }, [events]);
+
+    const addRealEstateScrap = (scrap: RealEstateScrap) => setRealEstateScraps([...realEstateScraps, scrap]);
+    const updateRealEstateScrap = (updatedScrap: RealEstateScrap) => setRealEstateScraps(realEstateScraps.map(s => s.id === updatedScrap.id ? updatedScrap : s));
+    const deleteRealEstateScrap = (id: string) => setRealEstateScraps(realEstateScraps.filter(s => s.id !== id));
+
+    const addStockAnalysis = (analysis: StockAnalysis) => setStockAnalyses([...stockAnalyses, analysis]);
+    const updateStockAnalysis = (updatedAnalysis: StockAnalysis) => setStockAnalyses(stockAnalyses.map(s => s.id === updatedAnalysis.id ? updatedAnalysis : s));
+    const deleteStockAnalysis = (id: string) => setStockAnalyses(stockAnalyses.filter(s => s.id !== id));
+
+    const addWorkLog = (log: WorkLog) => setWorkLogs([...workLogs, log]);
+    const updateWorkLog = (updatedLog: WorkLog) => setWorkLogs(workLogs.map(l => l.id === updatedLog.id ? updatedLog : l));
+    const deleteWorkLog = (id: string) => setWorkLogs(workLogs.filter(l => l.id !== id));
+
+    const addExerciseRoutine = (routine: ExerciseRoutine) => setExerciseRoutines([...exerciseRoutines, routine]);
+    const updateExerciseRoutine = (updatedRoutine: ExerciseRoutine) => setExerciseRoutines(exerciseRoutines.map(r => r.id === updatedRoutine.id ? updatedRoutine : r));
+    const deleteExerciseRoutine = (id: string) => setExerciseRoutines(exerciseRoutines.filter(r => r.id !== id));
 
     return (
         <DataContext.Provider value={{
@@ -625,6 +709,10 @@ export function DataProvider({ children }: { children: ReactNode }) {
             addPortfolio,
             updatePortfolio,
             deletePortfolio,
+            realEstateScraps, setRealEstateScraps, addRealEstateScrap, updateRealEstateScrap, deleteRealEstateScrap,
+            stockAnalyses, setStockAnalyses, addStockAnalysis, updateStockAnalysis, deleteStockAnalysis,
+            workLogs, setWorkLogs, addWorkLog, updateWorkLog, deleteWorkLog,
+            exerciseRoutines, setExerciseRoutines, addExerciseRoutine, updateExerciseRoutine, deleteExerciseRoutine,
             userProfile,
             updateUserProfile,
             educations,

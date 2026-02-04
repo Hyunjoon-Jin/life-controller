@@ -18,6 +18,7 @@ export type Task = {
     progress?: number;
     connectedGoalId?: string; // New: Linked Goal
     source?: 'timeline' | 'daily'; // New: To separate Daily vs Timeline tasks
+    category?: string; // New: Task category (e.g. Work, Study)
 };
 
 export type ProjectStatus = 'preparation' | 'active' | 'completed' | 'hold';
@@ -92,6 +93,7 @@ export type Project = {
     stakeholders?: Stakeholder[]; // New: Team/Stakeholder Management
     resources?: ProjectResource[]; // New: Resource Library
     automationRules?: AutomationRule[]; // New: Automation
+    isArchived?: boolean; // New: Archive flag
 };
 
 export type ArchiveDocument = {
@@ -168,12 +170,15 @@ export type CalendarEvent = {
 
 export type Memo = {
     id: string;
-    title?: string;       // New: Memo Title
+    title?: string;
     content: string;
-    color: string; // 'yellow', 'blue', 'pink', 'green', 'purple'
-    tags?: string[];      // New: Tags
-    attachments?: string[]; // New: Base64 images/videos
+    color: string;
+    tags?: string[];
+    attachments?: string[];
     createdAt: Date;
+    connectedProjectId?: string; // New: Linked Project
+    connectedGoalId?: string;    // New: Linked Goal
+    isFavorite?: boolean;        // New: Pin/Favorite
     width?: number;
     height?: number;
     x?: number;
@@ -182,22 +187,35 @@ export type Memo = {
 
 export type RelationshipType = 'family' | 'friend' | 'work' | 'other';
 
+export type InteractionLog = {
+    id: string;
+    date: Date;
+    type: 'call' | 'meeting' | 'email' | 'event' | 'other';
+    content: string;
+};
+
 export type Person = {
     id: string;
     name: string;
     relationship: RelationshipType;
     contact: string;
     email?: string;
-    company?: string;      // New
-    department?: string;   // New
-    jobTitle?: string;     // New
+    company?: string;
+    department?: string;
+    jobTitle?: string;
     birthdate?: Date;
     notes?: string;
     tags?: string[];
-    businessCardImage?: string; // Base64
-    school?: string;       // New: Education
-    major?: string;        // New: Major
-    isMe?: boolean;        // New: Identify as Self
+    businessCardImage?: string;
+    school?: string;
+    major?: string;
+    industry?: string;       // New: Industry category
+    group?: string;          // New: Custom Grouping
+    isMe?: boolean;
+    interactions?: InteractionLog[]; // New: CRM Interaction Logs
+    role?: string; // Alias for jobTitle
+    phone?: string; // Alias for contact
+    avatar?: string; // Alias for photo
 };
 
 export type CalendarViewType = 'month' | 'week' | 'day';
@@ -265,6 +283,21 @@ export type ExerciseSession = {
     }[];
     intensity?: 'low' | 'medium' | 'high';
     memo?: string;
+};
+
+export type ExerciseRoutine = {
+    id: string;
+    name: string;
+    category: ExerciseCategory;
+    items: {
+        type: string;
+        sets?: {
+            weight: number;
+            reps: number;
+        }[];
+        duration?: number;
+        distance?: number;
+    }[];
 };
 
 export type DietItem = {
@@ -354,12 +387,13 @@ export type BodyCompositionGoal = {
 export type Transaction = {
     id: string;
     date: Date;
-    type: 'income' | 'expense' | 'transfer' | 'investment' | 'saving'; // Expanded types
+    type: 'income' | 'expense' | 'transfer' | 'investment' | 'saving' | 'repayment' | 'card_bill'; // Added repayment and card_bill
     category: string;
     amount: number;
     description: string;
     assetId?: string; // Linked account
-    targetAssetId?: string; // New: For transfer/investment target
+    targetAssetId?: string; // For transfer/investment/saving target
+    cardId?: string; // New: For tracking which card was used for expense
     tags?: string[];
 };
 
@@ -373,6 +407,11 @@ export type Asset = {
     accountNumber?: string;
     interestRate?: number;
     memo?: string;
+    // New fields for Credit Card / Loan
+    limit?: number; // For Credit Card
+    billingDate?: number; // Billing cycle date
+    repaymentDate?: Date; // For Loan
+    linkedAssetId?: string; // Settlement account for Card
 };
 
 export type Certificate = {
@@ -388,7 +427,6 @@ export type Certificate = {
     memo?: string;
 };
 
-// Expanded Career Type
 export type CareerProject = {
     title: string;
     description: string;
@@ -411,7 +449,38 @@ export type Career = {
     files?: { name: string; url: string }[]; // New: Proof/Portfolio files
 };
 
-// New Activity Type
+// New Finance Tabs
+export type RealEstateScrap = {
+    id: string;
+    title: string;
+    location: string;
+    price?: string;
+    url: string;
+    scrapedAt: Date;
+    memo?: string;
+    images?: string[];
+};
+
+export type StockAnalysis = {
+    id: string;
+    symbol: string;
+    name: string;
+    analysisDate: Date;
+    rating: 'buy' | 'hold' | 'sell';
+    targetPrice?: number;
+    content: string; // Markdown analysis
+    tags?: string[];
+};
+
+export type WorkLog = {
+    id: string;
+    date: Date;
+    startTime: Date;
+    endTime?: Date;
+    breakTime?: number; // Minutes
+    notes?: string;
+};
+
 export type ActivityType = 'club' | 'external' | 'award' | 'overseas' | 'volunteering' | 'other';
 
 export type Activity = {

@@ -1,11 +1,11 @@
 import {
     Calendar, ListTodo, UsersRound, Target, Book, Sparkles, Award, Briefcase,
     NotebookPen, Lightbulb, Bookmark, CheckSquare, Scale, ChevronRight,
-    Utensils, Dumbbell, Wallet
+    Utensils, Dumbbell, Wallet, PieChart, Building, TrendingUp as TrendingUpIcon, FileText
 } from 'lucide-react';
 
 export type CategoryType = 'basic' | 'health' | 'growth' | 'record' | 'finance';
-export type TabType = 'calendar' | 'tasks' | 'projects' | 'people' | 'goals' | 'language' | 'reading' | 'exercise' | 'diet' | 'inbody' | 'hobby' | 'certificate' | 'portfolio' | 'journal' | 'ideas' | 'scraps' | 'ledger' | 'assets';
+export type TabType = 'calendar' | 'tasks' | 'projects' | 'people' | 'goals' | 'language' | 'reading' | 'exercise' | 'diet' | 'inbody' | 'hobby' | 'learning' | 'certificate' | 'portfolio' | 'journal' | 'ideas' | 'scraps' | 'report' | 'ledger' | 'assets' | 'fund' | 'realestate' | 'investment';
 
 export interface MenuItem {
     id: string;
@@ -38,6 +38,7 @@ export const SUB_MENUS: Record<CategoryType, MenuItem[]> = {
         { id: 'goals', label: '목표', icon: Target, desc: '꿈을 향해 나아가세요' },
         { id: 'language', label: '어학', icon: Book, desc: '새로운 언어 배우기' },
         { id: 'reading', label: '독서', icon: Book, desc: '마음의 양식 쌓기' },
+        { id: 'learning', label: '학습 플래너', icon: Target, desc: '자격증 및 공부 계획' }, // Added Learning
         { id: 'hobby', label: '취미', icon: Sparkles, desc: '즐거운 여가 생활' },
         { id: 'certificate', label: '자격증', icon: Award, desc: '나의 스펙 업그레이드' },
         { id: 'portfolio', label: '포트폴리오', icon: Briefcase, desc: '나의 커리어 정리' },
@@ -46,9 +47,13 @@ export const SUB_MENUS: Record<CategoryType, MenuItem[]> = {
         { id: 'journal', label: '일기장', icon: NotebookPen, desc: '오늘의 감정을 기록하세요' },
         { id: 'ideas', label: '아이디어', icon: Lightbulb, desc: '번뜩이는 영감 메모' },
         { id: 'scraps', label: '스크랩', icon: Bookmark, desc: '유용한 정보 저장' },
+        { id: 'report', label: '활동 리포트', icon: FileText, desc: '성과 요약 및 데이터 추출' }, // Added Report
     ],
     finance: [
         { id: 'ledger', label: '가계부', icon: CheckSquare, desc: '수입과 지출 관리' },
         { id: 'assets', label: '자산 현황', icon: Wallet, desc: '나의 부를 한눈에' },
+        { id: 'fund', label: '자금 관리', icon: PieChart, desc: '중장기 자격 관리 계획' },
+        { id: 'realestate', label: '부동산', icon: Building, desc: '내 집 마련 및 투자' },
+        { id: 'investment', label: '투자 분석', icon: TrendingUpIcon, desc: '주식 및 금융상품 분석' },
     ],
 };

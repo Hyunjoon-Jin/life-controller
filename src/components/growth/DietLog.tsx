@@ -39,6 +39,23 @@ export function DietLog() {
     const [tempProtein, setTempProtein] = useState('');
     const [tempFat, setTempFat] = useState('');
 
+    const mealHistory = useMemo(() => {
+        const history: Record<string, DietItem> = {};
+        dietEntries.forEach(entry => {
+            entry.items?.forEach(item => {
+                if (!history[item.name]) {
+                    history[item.name] = item;
+                }
+            });
+        });
+        return Object.values(history).sort((a, b) => a.name.localeCompare(b.name));
+    }, [dietEntries]);
+
+    const suggestions = useMemo(() => {
+        if (!tempName || tempName.length < 1) return [];
+        return mealHistory.filter(h => h.name.toLowerCase().includes(tempName.toLowerCase())).slice(0, 5);
+    }, [mealHistory, tempName]);
+
     const handleAddItem = () => {
         if (!tempName) return;
 
@@ -412,12 +429,34 @@ export function DietLog() {
                             {/* Manual Add Form */}
                             <div className="pt-2 border-t mt-2">
                                 <div className="text-xs font-semibold mb-2 text-muted-foreground">직접 입력 추가</div>
-                                <div className="flex gap-2 mb-2">
-                                    <Input
-                                        placeholder="음식명"
-                                        className="flex-[2] h-8 text-sm"
-                                        value={tempName} onChange={e => setTempName(e.target.value)}
-                                    />
+                                <div className="flex gap-2 mb-2 relative">
+                                    <div className="flex-[2] relative">
+                                        <Input
+                                            placeholder="음식명"
+                                            className="w-full h-8 text-sm"
+                                            value={tempName} onChange={e => setTempName(e.target.value)}
+                                        />
+                                        {suggestions.length > 0 && (
+                                            <div className="absolute top-full left-0 w-full bg-white border rounded-md shadow-lg z-50 mt-1 max-h-40 overflow-y-auto">
+                                                {suggestions.map((s, idx) => (
+                                                    <div
+                                                        key={idx}
+                                                        className="p-2 hover:bg-slate-100 cursor-pointer text-xs border-b last:border-0"
+                                                        onClick={() => {
+                                                            setTempName(s.name);
+                                                            setTempCal(s.calories.toString());
+                                                            setTempCarbs(s.macros.carbs.toString());
+                                                            setTempProtein(s.macros.protein.toString());
+                                                            setTempFat(s.macros.fat.toString());
+                                                        }}
+                                                    >
+                                                        <div className="font-bold">{s.name}</div>
+                                                        <div className="text-[10px] text-muted-foreground">{Math.round(s.calories)} kcal | C:{Math.round(s.macros.carbs)} P:{Math.round(s.macros.protein)} F:{Math.round(s.macros.fat)}</div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
                                     <div className="relative flex-1">
                                         <Input
                                             placeholder="kcal"
@@ -430,35 +469,35 @@ export function DietLog() {
                                         <Plus className="w-4 h-4" />
                                     </Button>
                                 </div>
-                                <div className="flex gap-2">
-                                    <Input placeholder="탄(g)" type="number" className="h-7 text-xs" value={tempCarbs} onChange={e => setTempCarbs(e.target.value)} />
-                                    <Input placeholder="단(g)" type="number" className="h-7 text-xs" value={tempProtein} onChange={e => setTempProtein(e.target.value)} />
-                                    <Input placeholder="지(g)" type="number" className="h-7 text-xs" value={tempFat} onChange={e => setTempFat(e.target.value)} />
-                                </div>
+                            </div>
+                            <div className="flex gap-2">
+                                <Input placeholder="탄(g)" type="number" className="h-7 text-xs" value={tempCarbs} onChange={e => setTempCarbs(e.target.value)} />
+                                <Input placeholder="단(g)" type="number" className="h-7 text-xs" value={tempProtein} onChange={e => setTempProtein(e.target.value)} />
+                                <Input placeholder="지(g)" type="number" className="h-7 text-xs" value={tempFat} onChange={e => setTempFat(e.target.value)} />
                             </div>
                         </div>
+                    </div>
 
-                        <div className="grid gap-2">
-                            <Label>음식 사진 URL</Label>
-                            <div className="relative">
-                                <Camera className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                                <Input
-                                    className="pl-9"
-                                    placeholder="이미지 주소 붙여넣기..."
-                                    value={imageUrl}
-                                    onChange={e => setImageUrl(e.target.value)}
-                                />
-                            </div>
-                        </div>
-
-                        <div className="grid gap-2">
-                            <Label>메모</Label>
+                    <div className="grid gap-2">
+                        <Label>음식 사진 URL</Label>
+                        <div className="relative">
+                            <Camera className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                             <Input
-                                placeholder="식사 메모..."
-                                value={memo}
-                                onChange={e => setMemo(e.target.value)}
+                                className="pl-9"
+                                placeholder="이미지 주소 붙여넣기..."
+                                value={imageUrl}
+                                onChange={e => setImageUrl(e.target.value)}
                             />
                         </div>
+                    </div>
+
+                    <div className="grid gap-2">
+                        <Label>메모</Label>
+                        <Input
+                            placeholder="식사 메모..."
+                            value={memo}
+                            onChange={e => setMemo(e.target.value)}
+                        />
                     </div>
                     <DialogFooter>
                         <div className="flex justify-between items-center w-full">
