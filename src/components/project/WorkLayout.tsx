@@ -2,51 +2,36 @@
 
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { LayoutDashboard, GanttChart as GanttChartIcon, Network, Archive, FolderTree, Plus, MoreHorizontal, Edit2, Trash2 } from 'lucide-react';
+import { LayoutDashboard, GanttChart as GanttChartIcon, FolderTree, Plus, Users, Clock, LayoutTemplate, Briefcase, Calendar as CalendarIcon, Edit2, Trash2, Settings, Archive, BarChart2, Link2, Zap, Music, Target } from 'lucide-react';
 import { useData } from '@/context/DataProvider';
 import { ProjectDashboard } from './ProjectDashboard';
 import { GanttChart } from './GanttChart';
-import { ProjectStructure } from './ProjectStructure';
-import { ArchiveSystem } from './ArchiveSystem';
-import { ProjectKanban } from './ProjectKanban';
 import { ProjectDialog } from './ProjectDialog';
-import { WorkMainDashboard } from '@/components/work/WorkMainDashboard'; // Import
-import { ProjectWiki } from './ProjectWiki';
-import { ProjectOKR } from './ProjectOKR';
-import { ProjectTeam } from './ProjectTeam';
-import { ProjectResources } from './ProjectResources';
-import { AutomationRules } from './AutomationRules';
-import { FocusSounds } from './FocusSounds';
+import { WorkMainDashboard } from '@/components/work/WorkMainDashboard';
+import { TimeAnalytics } from './TimeAnalytics';
 import { GlobalScratchpad } from './GlobalScratchpad';
-import { TimeAnalytics } from './TimeAnalytics'; // Import
-import { RetrospectiveDialog } from './RetrospectiveDialog';
+import { FocusSounds } from './FocusSounds';
 import { MeetingMode } from '@/components/work/MeetingMode';
 import { Project } from '@/types';
 import { Button } from '@/components/ui/button';
-import { Clock, Book, RotateCw, Target, Users, Link2, Zap, Music } from 'lucide-react'; // Added Music icon
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'; // Import Popover
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuGroup
-} from '@/components/ui/dropdown-menu';
-import { ChevronDown, Settings, BarChart2 } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
-type ViewMode = 'dashboard' | 'kanban' | 'timeline' | 'team' | 'resources' | 'automation' | 'analytics' | 'structure' | 'archive' | 'wiki' | 'okr';
+// New Imports
+import { WorkPeopleSection } from './WorkPeopleSection';
+import { WorkTemplateSection } from './WorkTemplateSection';
+import { ProjectKanban } from './ProjectKanban'; // Keep for sub-navigation or inside Project?
+// We will use ProjectDashboard for 'Project Mgmt' tab, but maybe toggle inside?
+
+type ViewMode = 'schedule' | 'project' | 'personnel' | 'workhours' | 'templates';
 
 export function WorkLayout() {
-    const [viewMode, setViewMode] = useState<ViewMode>('dashboard');
+    const [viewMode, setViewMode] = useState<ViewMode>('project'); // Default to Project Dashboard
     const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
     const { projects, deleteProject } = useData();
 
     // Dialog State
     const [isProjectDialogOpen, setIsProjectDialogOpen] = useState(false);
     const [isMeetingModeOpen, setIsMeetingModeOpen] = useState(false);
-    const [isRetrospectiveOpen, setIsRetrospectiveOpen] = useState(false);
     const [editingProject, setEditingProject] = useState<Project | null>(null);
 
     const handleCreateProject = () => {
@@ -139,95 +124,44 @@ export function WorkLayout() {
                 {selectedProject && (
                     <div className="flex gap-2 bg-white p-1.5 rounded-full shadow-sm w-full md:w-fit border border-gray-100 overflow-x-auto no-scrollbar scroll-smooth">
                         <button
-                            onClick={() => setViewMode('dashboard')}
-                            className={cn("flex items-center gap-2 px-3 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap", viewMode === 'dashboard' ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-gray-100")}
+                            onClick={() => setViewMode('project')}
+                            className={cn("flex items-center gap-2 px-3 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap", viewMode === 'project' ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-gray-100")}
                         >
-                            <LayoutDashboard className="w-4 h-4" strokeWidth={1.5} /> 대시보드
+                            <LayoutDashboard className="w-4 h-4" /> 프로젝트 관리
                         </button>
                         <button
-                            onClick={() => setViewMode('kanban')}
-                            className={cn("flex items-center gap-2 px-3 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap", viewMode === 'kanban' ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-gray-100")}
+                            onClick={() => setViewMode('schedule')}
+                            className={cn("flex items-center gap-2 px-3 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap", viewMode === 'schedule' ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-gray-100")}
                         >
-                            <LayoutDashboard className="w-4 h-4" strokeWidth={1.5} /> 칸반
+                            <CalendarIcon className="w-4 h-4" /> 일정 관리
                         </button>
                         <button
-                            onClick={() => setViewMode('timeline')}
-                            className={cn("flex items-center gap-2 px-3 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap", viewMode === 'timeline' ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-gray-100")}
+                            onClick={() => setViewMode('personnel')}
+                            className={cn("flex items-center gap-2 px-3 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap", viewMode === 'personnel' ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-gray-100")}
                         >
-                            <GanttChartIcon className="w-4 h-4" strokeWidth={1.5} /> 타임라인
+                            <Users className="w-4 h-4" /> 인력 관리
                         </button>
                         <button
-                            onClick={() => setViewMode('okr')}
-                            className={cn("flex items-center gap-2 px-3 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap", viewMode === 'okr' ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-gray-100")}
+                            onClick={() => setViewMode('workhours')}
+                            className={cn("flex items-center gap-2 px-3 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap", viewMode === 'workhours' ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-gray-100")}
                         >
-                            <Target className="w-4 h-4" strokeWidth={1.5} /> 목표
+                            <Clock className="w-4 h-4" /> 근태 관리
+                        </button>
+                        <button
+                            onClick={() => setViewMode('templates')}
+                            className={cn("flex items-center gap-2 px-3 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap", viewMode === 'templates' ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-gray-100")}
+                        >
+                            <LayoutTemplate className="w-4 h-4" /> 템플릿
                         </button>
 
-                        <div className="w-[1px] h-4 bg-gray-200 mx-1" />
 
-                        {/* Management Dropdown */}
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <button
-                                    className={cn(
-                                        "flex items-center gap-2 px-3 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap outline-none",
-                                        ['team', 'resources', 'structure', 'archive'].includes(viewMode) ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-gray-100"
-                                    )}
-                                >
-                                    <Settings className="w-4 h-4" strokeWidth={1.5} /> 관리 <ChevronDown className="w-3 h-3 opacity-50" />
-                                </button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="start" className="w-48">
-                                <DropdownMenuLabel>프로젝트 관리</DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem onClick={() => setViewMode('team')} className="gap-2">
-                                    <Users className="w-4 h-4" /> 팀/멤버
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => setViewMode('resources')} className="gap-2">
-                                    <Link2 className="w-4 h-4" /> 리소스
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => setViewMode('structure')} className="gap-2">
-                                    <Network className="w-4 h-4" /> 구조 (WBS)
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem onClick={() => setViewMode('archive')} className="gap-2 text-muted-foreground">
-                                    <Archive className="w-4 h-4" /> 아카이브
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-
-                        {/* Tools/Analytics Dropdown */}
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <button
-                                    className={cn(
-                                        "flex items-center gap-2 px-3 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap outline-none",
-                                        ['automation', 'analytics'].includes(viewMode) ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-gray-100"
-                                    )}
-                                >
-                                    <BarChart2 className="w-4 h-4" strokeWidth={1.5} /> 도구 <ChevronDown className="w-3 h-3 opacity-50" />
-                                </button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="start" className="w-48">
-                                <DropdownMenuLabel>도구 및 분석</DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem onClick={() => setViewMode('automation')} className="gap-2">
-                                    <Zap className="w-4 h-4" /> 자동화 규칙
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => setViewMode('analytics')} className="gap-2">
-                                    <Clock className="w-4 h-4" /> 시간/진척도 분석
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-
-                        {/* Tools Divider & Buttons */}
+                        {/* Divider & Tools */}
                         <div className="w-[1px] h-6 bg-gray-200 mx-1" />
 
                         <Popover>
                             <PopoverTrigger asChild>
                                 <Button variant="outline" size="sm" className="h-8 w-8 p-0 rounded-full border-dashed border-gray-300 hover:border-pink-500 hover:text-pink-500" title="Focus Sounds">
                                     <Music className="w-4 h-4" />
-                                    <span className="sr-only">Focus Sounds</span>
                                 </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-80" align="end">
@@ -243,7 +177,6 @@ export function WorkLayout() {
                             title="회의 모드"
                         >
                             <Clock className="w-4 h-4" />
-                            <span className="sr-only">회의 모드</span>
                         </Button>
                     </div>
                 )}
@@ -258,22 +191,21 @@ export function WorkLayout() {
 
                 {/* Content View */}
                 <div className="flex-1 p-6 bg-white rounded-3xl shadow-sm border border-gray-100 overflow-y-auto custom-scrollbar relative">
-                    {!selectedProject ? (
+                    {!selectedProjectId ? (
                         <div className="h-full">
                             <WorkMainDashboard onOpenProject={setSelectedProjectId} />
                         </div>
-                    ) : (
+                    ) : selectedProject ? (
                         <div className="h-full animate-in fade-in zoom-in-95 duration-200">
-                            {viewMode === 'dashboard' && <ProjectDashboard project={selectedProject} />}
-                            {viewMode === 'kanban' && <ProjectKanban project={selectedProject} />}
-                            {viewMode === 'timeline' && <GanttChart project={selectedProject} />}
-                            {viewMode === 'okr' && <ProjectOKR project={selectedProject} />}
-                            {viewMode === 'team' && <ProjectTeam project={selectedProject} />}
-                            {viewMode === 'resources' && <ProjectResources project={selectedProject} />}
-                            {viewMode === 'automation' && <AutomationRules project={selectedProject} />}
-                            {viewMode === 'analytics' && <TimeAnalytics project={selectedProject} />}
-                            {viewMode === 'structure' && <ProjectStructure />}
-                            {viewMode === 'archive' && <ArchiveSystem project={selectedProject} />}
+                            {viewMode === 'project' && <ProjectDashboard project={selectedProject} />}
+                            {viewMode === 'schedule' && <GanttChart project={selectedProject} />}
+                            {viewMode === 'personnel' && <WorkPeopleSection project={selectedProject} />}
+                            {viewMode === 'workhours' && <TimeAnalytics project={selectedProject} />}
+                            {viewMode === 'templates' && <WorkTemplateSection />}
+                        </div>
+                    ) : (
+                        <div className="flex items-center justify-center h-full text-muted-foreground">
+                            프로젝트를 찾을 수 없습니다.
                         </div>
                     )}
                 </div>

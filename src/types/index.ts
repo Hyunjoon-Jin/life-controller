@@ -239,6 +239,9 @@ export type LanguageEntry = {
     studyTime: number; // Minutes
     vocabulary: { word: string; meaning: string }[];
     memo?: string;
+    // New: Test Score Support
+    testName?: string; // e.g., 'TOEIC', 'OPIc'
+    score?: string;    // e.g., '950', 'IH'
 };
 
 export type BookStatus = 'toread' | 'reading' | 'completed';

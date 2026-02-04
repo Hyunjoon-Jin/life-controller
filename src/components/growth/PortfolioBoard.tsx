@@ -10,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Briefcase, GraduationCap, User, Plus, Trash2, Edit2, Link as LinkIcon, Calendar, ExternalLink, Mail, Phone, MapPin, Linkedin, Github, Trophy, Languages, Award, Building2, Search, Paperclip, X, FileText, File, Loader2, Image as ImageIcon, Presentation as FilePieChart } from 'lucide-react';
-import { format } from 'date-fns';
+import { format, isValid } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { PortfolioItem, UserProfile, Education, Career, Activity, CareerProject } from '@/types';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -24,17 +24,17 @@ export function PortfolioBoard() {
         portfolios, addPortfolio, updatePortfolio, deletePortfolio,
         activities, addActivity, updateActivity, deleteActivity, // New
         certificates, // Read-only view
-        languageEntries // Read-only view
+        languageEntries, addLanguageEntry, deleteLanguageEntry // Updated
     } = useData();
 
-    const [modal, setModal] = useState<{ type: 'profile' | 'education' | 'career' | 'project' | 'activity', id?: string } | null>(null);
+    const [modal, setModal] = useState<{ type: 'profile' | 'education' | 'career' | 'project' | 'activity' | 'language', id?: string } | null>(null);
 
     // --- Profile Modal State ---
     const [profileForm, setProfileForm] = useState<UserProfile>(userProfile);
 
     // --- Education Modal State ---
     const [eduForm, setEduForm] = useState<Partial<Education>>({});
-    const [schoolSearch, setSchoolSearch] = useState(''); // New
+    const [schoolSearch, setSchoolSearch] = useState('');
 
     // --- Career Modal State ---
     const [careerForm, setCareerForm] = useState<Partial<Career>>({});
@@ -45,6 +45,11 @@ export function PortfolioBoard() {
 
     // --- Activity Modal State ---
     const [activityForm, setActivityForm] = useState<Partial<Activity>>({});
+
+    // --- Language Modal State ---
+    const [languageForm, setLanguageForm] = useState<{ language: string; testName: string; score: string; date: Date }>({
+        language: 'English', testName: '', score: '', date: new Date()
+    });
 
     // --- Search & Upload State ---
     const [schoolResults, setSchoolResults] = useState<SchoolInfo[]>([]);
@@ -89,6 +94,20 @@ export function PortfolioBoard() {
                 if (act) setActivityForm(act);
             } else {
                 setActivityForm({ type: 'other', title: '', organization: '', startDate: new Date(), description: '' });
+            }
+        } else if (type === 'language') {
+            if (id) {
+                const lang = languageEntries.find(l => l.id === id);
+                if (lang) {
+                    setLanguageForm({
+                        language: lang.language,
+                        testName: lang.testName || '',
+                        score: lang.score || '',
+                        date: lang.date
+                    });
+                }
+            } else {
+                setLanguageForm({ language: 'English', testName: '', score: '', date: new Date() });
             }
         }
     };
@@ -224,6 +243,29 @@ export function PortfolioBoard() {
         setModal(null);
     };
 
+    const handleSaveLanguage = () => {
+        if (!languageForm.testName || !languageForm.score) return;
+
+        const entry = {
+            id: modal?.id || generateId(),
+            language: languageForm.language,
+            date: new Date(languageForm.date),
+            studyTime: 0,
+            vocabulary: [],
+            testName: languageForm.testName,
+            score: languageForm.score,
+            memo: `${languageForm.testName} Score: ${languageForm.score}`
+        };
+
+        if (modal?.id) {
+            deleteLanguageEntry(modal.id);
+            addLanguageEntry(entry);
+        } else {
+            addLanguageEntry(entry);
+        }
+        setModal(null);
+    };
+
     return (
         <div className="h-full overflow-y-auto custom-scrollbar bg-slate-50/50 p-4 md:p-8">
             <div className="max-w-5xl mx-auto space-y-8">
@@ -312,24 +354,63 @@ export function PortfolioBoard() {
                             </div>
                         </section>
 
-                        {/* Languages (Read-only from LanguageLog) */}
+                        {/* Languages */}
                         <section className="space-y-4">
                             <div className="flex items-center justify-between">
                                 <h2 className="text-xl font-bold flex items-center gap-2 text-slate-800">
                                     <Languages className="w-5 h-5 text-primary" /> 어학
                                 </h2>
+                                <Button size="sm" variant="ghost" onClick={() => openModal('language')}>
+                                    <Plus className="w-4 h-4" />
+                                </Button>
                             </div>
-                            <div className="flex flex-col gap-2">
-                                {languageEntries.length > 0 ? (
-                                    languageEntries.map(lang => (
-                                        <div key={lang.id} className="bg-white p-3 rounded-xl border border-slate-100 flex justify-between items-center">
-                                            <span className="font-semibold text-slate-700">{lang.language}</span>
-                                            <span className="text-xs text-slate-400 bg-slate-50 px-2 py-1 rounded-md">
-                                                {format(new Date(lang.date), 'yyyy.MM.dd')} 기록
-                                            </span>
+
+                            <div className="space-y-3">
+                                {/* Test Scores */}
+                                {languageEntries.filter(l => l.score).length > 0 && (
+                                    <div className="grid grid-cols-1 gap-2">
+                                        {languageEntries.filter(l => l.score).map(lang => (
+                                            <div key={lang.id} className="bg-white p-3 rounded-xl border border-slate-100 flex justify-between items-center group relative hover:shadow-md transition-all">
+                                                <div>
+                                                    <div className="font-bold text-slate-800">{lang.testName}</div>
+                                                    <div className="text-xs text-slate-500 font-medium">
+                                                        {lang.language} · {format(new Date(lang.date), 'yyyy.MM.dd')}
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center gap-3">
+                                                    <span className="text-lg font-black text-blue-600 bg-blue-50 px-2 rounded-md">{lang.score}</span>
+                                                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                        <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => openModal('language', lang.id)}>
+                                                            <Edit2 className="w-3 h-3 text-slate-400" />
+                                                        </Button>
+                                                        <Button size="icon" variant="ghost" className="h-6 w-6 hover:text-red-500" onClick={() => deleteLanguageEntry(lang.id)}>
+                                                            <Trash2 className="w-3 h-3" />
+                                                        </Button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+
+                                {/* Daily Logs Preview (Recent 3) */}
+                                {languageEntries.filter(l => !l.score).length > 0 && (
+                                    <div className="bg-slate-50 rounded-xl p-3">
+                                        <div className="text-xs font-bold text-slate-500 mb-2 uppercase">최근 학습 기록</div>
+                                        <div className="space-y-2">
+                                            {languageEntries.filter(l => !l.score).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 3).map(lang => (
+                                                <div key={lang.id} className="flex justify-between items-center text-sm">
+                                                    <span className="font-semibold text-slate-700">{lang.language}</span>
+                                                    <span className="text-xs text-slate-400">
+                                                        {format(new Date(lang.date), 'MM.dd')} · {lang.studyTime}분
+                                                    </span>
+                                                </div>
+                                            ))}
                                         </div>
-                                    ))
-                                ) : (
+                                    </div>
+                                )}
+
+                                {languageEntries.length === 0 && (
                                     <div className="text-sm text-muted-foreground bg-slate-50 p-3 rounded-xl text-center">
                                         기록된 어학 정보가 없습니다.
                                     </div>
@@ -928,6 +1009,59 @@ export function PortfolioBoard() {
                         </div>
                     </div>
                     <DialogFooter><Button onClick={handleSaveActivity}>저장</Button></DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* Language Modal */}
+            <Dialog open={modal?.type === 'language'} onOpenChange={(val) => !val && setModal(null)}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>{modal?.id ? '어학 점수 수정' : '어학 점수 추가'}</DialogTitle>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                        <div className="grid gap-2">
+                            <Label>언어</Label>
+                            <select
+                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                                value={languageForm.language}
+                                onChange={e => setLanguageForm({ ...languageForm, language: e.target.value })}
+                            >
+                                <option value="English">영어</option>
+                                <option value="Japanese">일본어</option>
+                                <option value="Chinese">중국어</option>
+                                <option value="Spanish">스페인어</option>
+                                <option value="German">독일어</option>
+                                <option value="French">프랑스어</option>
+                            </select>
+                        </div>
+                        <div className="grid gap-2">
+                            <Label>시험명</Label>
+                            <Input
+                                placeholder="예: TOEIC, JLPT N1, OPIc"
+                                value={languageForm.testName}
+                                onChange={e => setLanguageForm({ ...languageForm, testName: e.target.value })}
+                            />
+                        </div>
+                        <div className="grid gap-2">
+                            <Label>점수 / 등급</Label>
+                            <Input
+                                placeholder="예: 950, IH, 180점"
+                                value={languageForm.score}
+                                onChange={e => setLanguageForm({ ...languageForm, score: e.target.value })}
+                            />
+                        </div>
+                        <div className="grid gap-2">
+                            <Label>취득일</Label>
+                            <Input
+                                type="date"
+                                value={isValid(new Date(languageForm.date)) ? format(new Date(languageForm.date), 'yyyy-MM-dd') : ''}
+                                onChange={e => setLanguageForm({ ...languageForm, date: new Date(e.target.value) })}
+                            />
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button onClick={handleSaveLanguage} disabled={!languageForm.testName || !languageForm.score}>저장</Button>
+                    </DialogFooter>
                 </DialogContent>
             </Dialog>
         </div>

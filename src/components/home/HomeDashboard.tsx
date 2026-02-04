@@ -34,6 +34,7 @@ import { useSession } from 'next-auth/react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { AppIcon } from './AppIcon';
 import { useWeather } from '@/hooks/useWeather';
+import { StockWidget } from '@/components/widgets/StockWidget';
 
 interface HomeDashboardProps {
     onNavigate: (mode: 'home' | 'schedule' | 'work') => void;
@@ -238,8 +239,8 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
 
             {/* 4. Feeds (Cards) */}
             <div className="space-y-4 animate-in fade-in slide-in-from-bottom-5 duration-700 delay-200">
-                {/* Weather & Info */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Weather & Info & Stock */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     <div className="bg-white dark:bg-[#202022] rounded-[24px] p-5 shadow-sm flex flex-col justify-between min-h-[160px]">
                         <div className="flex justify-between items-start">
                             <div>
@@ -293,6 +294,9 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
                             </Button>
                         )}
                     </div>
+
+                    {/* Stock Widget */}
+                    <StockWidget />
                 </div>
             </div>
 

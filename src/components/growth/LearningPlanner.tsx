@@ -15,7 +15,11 @@ import { useState } from 'react';
 import { generateId } from '@/lib/utils';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 
-export function LearningPlanner() {
+export interface LearningPlannerProps {
+    onNavigate?: (tab: string) => void;
+}
+
+export function LearningPlanner({ onNavigate }: LearningPlannerProps) {
     const { certificates = [], languageResources = [], tasks = [], addCertificate, addLanguageResource } = useData();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -40,7 +44,9 @@ export function LearningPlanner() {
                     <p className="text-muted-foreground">목표 달성을 위한 체계적인 학습 관리</p>
                 </div>
                 <div className="flex gap-2">
-                    <Button variant="outline"><Calendar className="w-4 h-4 mr-2" /> 스케줄러</Button>
+                    <Button variant="outline" onClick={() => onNavigate?.('calendar')}>
+                        <Calendar className="w-4 h-4 mr-2" /> 스케줄러
+                    </Button>
                     <Button onClick={() => {
                         setTitle('');
                         setDate('');

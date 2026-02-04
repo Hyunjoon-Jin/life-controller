@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ChevronLeft, ChevronRight, Activity, Timer, Dumbbell, Flame } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend, LineChart, Line } from 'recharts';
 
 interface ExerciseAnalysisProps {
     sessions: ExerciseSession[];
@@ -223,6 +223,41 @@ export function ExerciseAnalysis({ sessions, inBodyEntries = [] }: ExerciseAnaly
                     </CardContent>
                 </Card>
             </div>
+
+            {/* InBody Analysis Section */}
+            {inBodyEntries.length > 0 && (
+                <div className="space-y-4 pt-4 border-t">
+                    <h3 className="font-bold text-lg flex items-center gap-2">
+                        <Activity className="w-5 h-5 text-pink-500" /> 신체 변화 (Body Composition)
+                    </h3>
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>체중 및 골격근량 변화</CardTitle>
+                        </CardHeader>
+                        <CardContent className="h-[300px]">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <LineChart data={inBodyEntries.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())}>
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                    <XAxis
+                                        dataKey="date"
+                                        tickFormatter={(date) => format(new Date(date), 'MM.dd')}
+                                        fontSize={12}
+                                        tickLine={false}
+                                        axisLine={false}
+                                    />
+                                    <YAxis yAxisId="left" domain={['auto', 'auto']} fontSize={12} tickLine={false} axisLine={false} />
+                                    <YAxis yAxisId="right" orientation="right" domain={['auto', 'auto']} fontSize={12} tickLine={false} axisLine={false} />
+                                    <Tooltip labelFormatter={(label) => format(new Date(label), 'yyyy.MM.dd')} />
+                                    <Legend />
+                                    <Line yAxisId="left" type="monotone" dataKey="weight" name="체중(kg)" stroke="#3b82f6" strokeWidth={2} dot={{ r: 4 }} />
+                                    <Line yAxisId="left" type="monotone" dataKey="skeletalMuscleMass" name="골격근량(kg)" stroke="#8b5cf6" strokeWidth={2} dot={{ r: 4 }} />
+                                    <Line yAxisId="right" type="monotone" dataKey="bodyFatPercent" name="체지방률(%)" stroke="#ef4444" strokeWidth={2} dot={{ r: 4 }} />
+                                </LineChart>
+                            </ResponsiveContainer>
+                        </CardContent>
+                    </Card>
+                </div>
+            )}
         </div>
     );
 }

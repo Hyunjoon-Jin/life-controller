@@ -253,7 +253,7 @@ export default function Home() {
                 )}
                 {activeTab === 'learning' && (
                   <div className="h-full animate-in fade-in zoom-in-95 duration-200">
-                    <LearningPlanner />
+                    <LearningPlanner onNavigate={(tab) => handleQuickLink('schedule', 'basic', tab as any)} />
                   </div>
                 )}
                 {activeTab === 'certificate' && (
