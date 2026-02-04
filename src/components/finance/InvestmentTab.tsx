@@ -50,20 +50,61 @@ export function InvestmentTab() {
         if (!url) return;
 
         setIsFetching(true);
-        // Simulate URL parsing
+        // Parse URL for Ticker
         setTimeout(() => {
-            if (url.includes('yahoo') || url.includes('finance')) {
-                setSymbol("NVDA");
-                setName("NVIDIA Corporation");
-                setRating("buy");
-                setTargetPrice("150");
-                setContent("AI 칩 수요가 여전히 강력하며 차세대 블랙웰 칩 출시가 기대됨. 데이터 센터 매출 비중 상승 중.");
-                setTags("AI, 반도체, NVIDIA");
-            } else {
-                setName("자동 분석 종목");
+            let extractedSymbol = '';
+            let extractedName = '';
+
+            try {
+                const urlObj = new URL(url);
+                // Yahoo Finance: /quote/TSLA
+                if (urlObj.hostname.includes('yahoo.com') && urlObj.pathname.includes('/quote/')) {
+                    const parts = urlObj.pathname.split('/');
+                    const quoteIndex = parts.indexOf('quote');
+                    if (quoteIndex !== -1 && parts[quoteIndex + 1]) {
+                        extractedSymbol = parts[quoteIndex + 1].split('?')[0].toUpperCase();
+                    }
+                }
+                // Naver Finance: code=005930
+                else if (urlObj.hostname.includes('naver.com') && urlObj.searchParams.get('code')) {
+                    extractedSymbol = urlObj.searchParams.get('code') || '';
+                }
+                // Investing.com: /equities/tesla-motors
+                else if (urlObj.hostname.includes('investing.com')) {
+                    const parts = urlObj.pathname.split('/');
+                    if (parts.length > 0) {
+                        extractedSymbol = parts[parts.length - 1].replace(/-/g, ' ').toUpperCase(); // Rough guess
+                    }
+                }
+
+                if (extractedSymbol) {
+                    setSymbol(extractedSymbol);
+                    // Reset or try to guess name?
+                    setName(extractedSymbol); // Default to symbol
+
+                    if (extractedSymbol === 'NVDA') {
+                        // Keep the easter egg for NVDA just for fun/demo if they specifically asked for it? 
+                        // No, better to be clean.
+                        setName("NVIDIA Corporation");
+                        setTags("AI, 반도체");
+                    } else if (extractedSymbol === 'TSLA') {
+                        setName("Tesla, Inc.");
+                        setTags("EV, 자율주행, AI");
+                    } else if (extractedSymbol === 'AAPL') {
+                        setName("Apple Inc.");
+                        setTags("IT, 하드웨어, 스마트폰");
+                    }
+
+                    setRating('hold'); // Default to hold
+                    setContent(`[자동 추출] ${extractedSymbol}에 대한 ${urlObj.hostname} 링크입니다.`);
+                } else {
+                    setName("분석 종목");
+                }
+            } catch (e) {
+                console.error("URL Parse Error", e);
             }
             setIsFetching(false);
-        }, 1500);
+        }, 800);
     };
 
     const resetForm = () => {

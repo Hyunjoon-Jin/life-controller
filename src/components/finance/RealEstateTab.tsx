@@ -59,19 +59,35 @@ export function RealEstateTab() {
         if (!url || !url.includes('naver.com')) return;
 
         setIsFetching(true);
-        // Simulate URL parsing
+        // Parse URL for basic info
         setTimeout(() => {
-            if (url.includes('articleDetail')) {
-                setTitle("반포자이 84㎡ (샘플 데이타)");
-                setLocation("서울시 서초구 신반포로 270");
-                setPrice("35억 5,000만");
-                setMemo("고층, 올수리, 채광 좋음");
-            } else {
-                setTitle("네이버 매물 정보");
-                setLocation("지역 정보 자동 탐색");
+            let extractedTitle = "부동산 매물";
+            let extractedMemo = "";
+            let extractedLocation = "";
+
+            try {
+                const urlObj = new URL(url);
+                if (urlObj.hostname.includes('naver.com')) {
+                    // Try to extract some ID or just indicate it's from Naver
+                    if (url.includes('articleNo') || url.includes('articleDetail')) {
+                        extractedTitle = "네이버 부동산 매물 (정보 입력 필요)";
+                        extractedMemo = `링크: ${urlObj.origin}${urlObj.pathname}...`;
+                    } else {
+                        extractedTitle = "네이버 부동산 Link";
+                    }
+                    extractedLocation = "위치 정보 직접 입력";
+                }
+            } catch (e) {
+                console.error("URL Parse error", e);
             }
+
+            setTitle(extractedTitle);
+            setLocation(extractedLocation);
+            // setPrice(""); // Leave empty for user to fill
+            setMemo(extractedMemo);
+
             setIsFetching(false);
-        }, 1500);
+        }, 800);
     };
 
     return (
