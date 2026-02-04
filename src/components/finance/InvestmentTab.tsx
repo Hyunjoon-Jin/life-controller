@@ -11,6 +11,8 @@ import { TrendingUp, Search, Plus, ExternalLink, BarChart3, Star, Trash2, ArrowU
 import { generateId, cn } from '@/lib/utils';
 import { StockAnalysis } from '@/types';
 
+import { StockWidget } from '@/components/widgets/StockWidget';
+
 export function InvestmentTab() {
     const { stockAnalyses, addStockAnalysis, deleteStockAnalysis } = useData();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -165,6 +167,21 @@ export function InvestmentTab() {
                     </div>
                 </CardContent>
             </Card>
+
+            {/* My Stock Assets (Live Charts) */}
+            {stockAnalyses.length > 0 && (
+                <div className="space-y-4">
+                    <h3 className="font-bold text-lg flex items-center gap-2">
+                        <TrendingUp className="w-5 h-5 text-red-500" />
+                        내 관심 종목 시세
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {Array.from(new Set(stockAnalyses.map(a => a.symbol))).filter(Boolean).map(symbol => (
+                            <StockWidget key={symbol} symbol={symbol} height="200px" />
+                        ))}
+                    </div>
+                </div>
+            )}
 
             {/* Analysis List */}
             <div className="space-y-4 pb-10">
