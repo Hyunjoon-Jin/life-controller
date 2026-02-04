@@ -8,10 +8,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Card, CardContent } from '@/components/ui/card';
-import { Briefcase, GraduationCap, User, Plus, Trash2, Edit2, Calendar, ExternalLink, Mail, Phone, MapPin, Trophy, Languages, Award } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Briefcase, GraduationCap, User, Plus, Trash2, Edit2, Link as LinkIcon, Calendar, ExternalLink, Mail, Phone, MapPin, Linkedin, Github, Trophy, Languages, Award, Building2, Search, Paperclip, X } from 'lucide-react';
 import { format } from 'date-fns';
-import { PortfolioItem, UserProfile, Education, Career, Activity } from '@/types';
+import { PortfolioItem, UserProfile, Education, Career, Activity, CareerProject } from '@/types';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 export function PortfolioBoard() {
@@ -20,9 +20,9 @@ export function PortfolioBoard() {
         educations, addEducation, updateEducation, deleteEducation,
         careers, addCareer, updateCareer, deleteCareer,
         portfolios, addPortfolio, updatePortfolio, deletePortfolio,
-        activities, addActivity, updateActivity, deleteActivity,
-        certificates,
-        languageEntries
+        activities, addActivity, updateActivity, deleteActivity, // New
+        certificates, // Read-only view
+        languageEntries // Read-only view
     } = useData();
 
     const [modal, setModal] = useState<{ type: 'profile' | 'education' | 'career' | 'project' | 'activity', id?: string } | null>(null);
@@ -32,10 +32,10 @@ export function PortfolioBoard() {
 
     // --- Education Modal State ---
     const [eduForm, setEduForm] = useState<Partial<Education>>({});
+    const [schoolSearch, setSchoolSearch] = useState(''); // New
 
     // --- Career Modal State ---
     const [careerForm, setCareerForm] = useState<Partial<Career>>({});
-    const [careerProjects, setCareerProjects] = useState<NonNullable<Career['projects']>>([]);
 
     // --- Project Modal State ---
     const [projectForm, setProjectForm] = useState<Partial<PortfolioItem>>({});
@@ -51,20 +51,20 @@ export function PortfolioBoard() {
         } else if (type === 'education') {
             if (id) {
                 const edu = educations.find(e => e.id === id);
-                if (edu) setEduForm(edu);
+                if (edu) {
+                    setEduForm(edu);
+                    setSchoolSearch(edu.school);
+                }
             } else {
                 setEduForm({ school: '', degree: '', major: '', startDate: new Date(), isCurrent: false });
+                setSchoolSearch('');
             }
         } else if (type === 'career') {
             if (id) {
                 const car = careers.find(c => c.id === id);
-                if (car) {
-                    setCareerForm(car);
-                    setCareerProjects(car.projects || []);
-                }
+                if (car) setCareerForm(car);
             } else {
-                setCareerForm({ company: '', position: '', startDate: new Date(), isCurrent: false, techStack: [] });
-                setCareerProjects([]);
+                setCareerForm({ company: '', position: '', startDate: new Date(), isCurrent: false, techStack: [], projects: [], files: [] });
             }
         } else if (type === 'project') {
             if (id) {
@@ -82,7 +82,7 @@ export function PortfolioBoard() {
                 const act = activities.find(a => a.id === id);
                 if (act) setActivityForm(act);
             } else {
-                setActivityForm({ type: 'other', title: '', organization: '', startDate: new Date() });
+                setActivityForm({ type: 'other', title: '', organization: '', startDate: new Date(), description: '' });
             }
         }
     };
@@ -120,8 +120,7 @@ export function PortfolioBoard() {
             isCurrent: careerForm.isCurrent || false,
             description: careerForm.description,
             techStack: careerForm.techStack,
-            team: careerForm.team,
-            projects: careerProjects
+            team: careerForm.team
         };
         if (careerForm.id) updateCareer(car); else addCareer(car);
         setModal(null);
@@ -151,8 +150,9 @@ export function PortfolioBoard() {
             organization: activityForm.organization,
             startDate: activityForm.startDate || new Date(),
             endDate: activityForm.endDate,
-            description: activityForm.description,
-            role: activityForm.role
+            description: activityForm.description || '',
+            role: activityForm.role,
+            files: activityForm.files || []
         };
         if (activityForm.id) updateActivity(act); else addActivity(act);
         setModal(null);
@@ -164,6 +164,7 @@ export function PortfolioBoard() {
 
                 {/* Header / Profile Section */}
                 <div className="bg-white rounded-2xl p-8 shadow-sm border border-slate-100 flex flex-col md:flex-row gap-8 items-start relative group">
+                    {/* Edit Profile Button */}
                     <Button
                         size="icon" variant="ghost"
                         className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity"
@@ -205,7 +206,7 @@ export function PortfolioBoard() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    {/* Left Column: Education, Certifications, Languages */}
+                    {/* Left Column: Education, Certifications, Languages, Skills */}
                     <div className="space-y-8">
                         {/* Education */}
                         <section className="space-y-4">
@@ -245,7 +246,7 @@ export function PortfolioBoard() {
                             </div>
                         </section>
 
-                        {/* Languages */}
+                        {/* Languages (Read-only from LanguageLog) */}
                         <section className="space-y-4">
                             <div className="flex items-center justify-between">
                                 <h2 className="text-xl font-bold flex items-center gap-2 text-slate-800">
@@ -270,7 +271,7 @@ export function PortfolioBoard() {
                             </div>
                         </section>
 
-                        {/* Certificates */}
+                        {/* Certificates (Read-only from CertificateManager) */}
                         <section className="space-y-4">
                             <div className="flex items-center justify-between">
                                 <h2 className="text-xl font-bold flex items-center gap-2 text-slate-800">
@@ -299,7 +300,7 @@ export function PortfolioBoard() {
                         </section>
                     </div>
 
-                    {/* Right Column: Career, Projects, Activities */}
+                    {/* Right Column: Career, Projects */}
                     <div className="md:col-span-2 space-y-8">
                         {/* Career */}
                         <section className="space-y-4">
@@ -335,21 +336,8 @@ export function PortfolioBoard() {
                                                     {career.description}
                                                 </p>
 
-                                                {/* Career Projects Display */}
-                                                {career.projects && career.projects.length > 0 && (
-                                                    <div className="mt-4 space-y-3 pl-4 border-l-2 border-slate-100">
-                                                        {career.projects.map((p, idx) => (
-                                                            <div key={idx}>
-                                                                <div className="font-bold text-sm text-slate-800">{p.title}</div>
-                                                                <div className="text-xs text-slate-500">{p.description}</div>
-                                                                {p.role && <div className="text-xs text-primary mt-0.5">Role: {p.role}</div>}
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                )}
-
                                                 {career.techStack && career.techStack.length > 0 && (
-                                                    <div className="flex flex-wrap gap-1 mt-3">
+                                                    <div className="flex flex-wrap gap-1">
                                                         {career.techStack.map(tech => (
                                                             <span key={tech} className="text-xs bg-slate-50 text-slate-500 px-2 py-1 rounded-md border border-slate-100">
                                                                 {tech}
@@ -433,31 +421,40 @@ export function PortfolioBoard() {
                         <section className="space-y-4">
                             <div className="flex items-center justify-between">
                                 <h2 className="text-xl font-bold flex items-center gap-2 text-slate-800">
-                                    <Award className="w-5 h-5 text-primary" /> 대외활동 및 기타
+                                    <Building2 className="w-5 h-5 text-primary" /> 대외활동 및 기타
                                 </h2>
                                 <Button size="sm" variant="ghost" onClick={() => openModal('activity')}>
                                     <Plus className="w-4 h-4" />
                                 </Button>
                             </div>
-                            <div className="space-y-4">
+                            <div className="grid grid-cols-1 gap-4">
                                 {activities.map(act => (
-                                    <div key={act.id} className="bg-white p-4 rounded-xl border border-slate-100 flex justify-between items-center group relative hover:shadow-sm">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-lg">
-                                                {act.type === 'award' ? '🏆' : (act.type === 'club' ? '👥' : '✨')}
-                                            </div>
+                                    <div key={act.id} className="bg-white p-5 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow group relative">
+                                        <div className="flex justify-between items-start mb-2">
                                             <div>
-                                                <div className="font-bold text-slate-900">{act.title}</div>
-                                                <div className="text-sm text-slate-500">
-                                                    {act.organization} • {format(new Date(act.startDate), 'yyyy.MM')}
-                                                </div>
+                                                <h3 className="text-lg font-bold text-slate-900">{act.title}</h3>
+                                                <div className="text-sm text-slate-500 font-medium">{act.organization}</div>
                                             </div>
-                                        </div>
-                                        <div className="text-sm font-medium text-slate-600 pr-10">
-                                            {act.role}
+                                            <span className={cn(
+                                                "text-xs font-bold px-2 py-1 rounded-full border",
+                                                act.type === 'award' ? "text-purple-600 bg-purple-50 border-purple-200" :
+                                                    act.type === 'club' ? "text-blue-600 bg-blue-50 border-blue-200" :
+                                                        "text-slate-600 bg-slate-50 border-slate-200"
+                                            )}>
+                                                {act.type === 'award' ? '수상이력' : (act.type === 'club' ? '동아리' : (act.type === 'volunteering' ? '봉사활동' : '기타'))}
+                                            </span>
                                         </div>
 
-                                        <div className="absolute right-2 opacity-0 group-hover:opacity-100 flex gap-1">
+                                        <div className="text-sm text-slate-400 mb-3 flex items-center gap-1">
+                                            <Calendar className="w-3.5 h-3.5" />
+                                            {format(new Date(act.startDate), 'yyyy.MM')} - {act.endDate ? format(new Date(act.endDate), 'yyyy.MM') : '진행 중'}
+                                        </div>
+
+                                        <p className="text-slate-600 text-sm whitespace-pre-wrap">
+                                            {act.description}
+                                        </p>
+
+                                        <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 flex gap-1 bg-white/80 backdrop-blur-sm rounded-md p-1">
                                             <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => openModal('activity', act.id)}>
                                                 <Edit2 className="w-4 h-4" />
                                             </Button>
@@ -467,11 +464,6 @@ export function PortfolioBoard() {
                                         </div>
                                     </div>
                                 ))}
-                                {activities.length === 0 && (
-                                    <div className="text-center py-8 text-muted-foreground bg-white rounded-xl border border-dashed">
-                                        등록된 활동 내역이 없습니다.
-                                    </div>
-                                )}
                             </div>
                         </section>
                     </div>
@@ -520,6 +512,7 @@ export function PortfolioBoard() {
                 </DialogContent>
             </Dialog>
 
+            {/* Abstract Modals for other sections would be similar - Implementing concise versions */}
             {/* Education Modal */}
             <Dialog open={modal?.type === 'education'} onOpenChange={(open) => !open && setModal(null)}>
                 <DialogContent>
@@ -527,7 +520,22 @@ export function PortfolioBoard() {
                         <DialogTitle>학력 추가/수정</DialogTitle>
                     </DialogHeader>
                     <div className="grid gap-4 py-4">
-                        <Input placeholder="학교명" value={eduForm.school || ''} onChange={e => setEduForm({ ...eduForm, school: e.target.value })} />
+                        <div className="space-y-2">
+                            <Label>학교명</Label>
+                            <div className="flex gap-2">
+                                <Input
+                                    placeholder="학교명을 입력하세요"
+                                    value={schoolSearch}
+                                    onChange={e => {
+                                        setSchoolSearch(e.target.value);
+                                        setEduForm({ ...eduForm, school: e.target.value });
+                                    }}
+                                />
+                                <Button variant="outline" size="icon" title="학교 검색">
+                                    <Search className="w-4 h-4" />
+                                </Button>
+                            </div>
+                        </div>
                         <div className="grid grid-cols-2 gap-4">
                             <Input placeholder="학위 (예: 학사, 석사)" value={eduForm.degree || ''} onChange={e => setEduForm({ ...eduForm, degree: e.target.value })} />
                             <Input placeholder="전공" value={eduForm.major || ''} onChange={e => setEduForm({ ...eduForm, major: e.target.value })} />
@@ -535,22 +543,21 @@ export function PortfolioBoard() {
                         <div className="grid grid-cols-2 gap-4">
                             <div className="grid gap-2">
                                 <Label>입학일</Label>
-                                <Input type="date" value={eduForm.startDate ? format(new Date(eduForm.startDate!), 'yyyy-MM-dd') : ''} onChange={e => setEduForm({ ...eduForm, startDate: new Date(e.target.value) })} />
+                                <Input type="date" value={eduForm.startDate ? format(new Date(eduForm.startDate), 'yyyy-MM-dd') : ''} onChange={e => setEduForm({ ...eduForm, startDate: new Date(e.target.value) })} />
                             </div>
                             <div className="grid gap-2">
                                 <Label>졸업일 (예정)</Label>
                                 <Input
                                     type="date"
-                                    disabled={eduForm.isCurrent}
-                                    value={eduForm.endDate ? format(new Date(eduForm.endDate!), 'yyyy-MM-dd') : ''}
+                                    value={eduForm.endDate ? format(new Date(eduForm.endDate), 'yyyy-MM-dd') : ''}
                                     onChange={e => setEduForm({ ...eduForm, endDate: new Date(e.target.value) })}
+                                    disabled={eduForm.isCurrent}
                                 />
                             </div>
                         </div>
                         <div className="flex items-center gap-2">
                             <input
-                                type="checkbox"
-                                id="eduCurrent"
+                                type="checkbox" id="eduCurrent"
                                 checked={eduForm.isCurrent || false}
                                 onChange={e => setEduForm({ ...eduForm, isCurrent: e.target.checked, endDate: e.target.checked ? undefined : eduForm.endDate })}
                             />
@@ -563,95 +570,271 @@ export function PortfolioBoard() {
 
             {/* Career Modal */}
             <Dialog open={modal?.type === 'career'} onOpenChange={(open) => !open && setModal(null)}>
-                <DialogContent>
-                    <DialogHeader><DialogTitle>경력 추가/수정</DialogTitle></DialogHeader>
-                    <div className="grid gap-4 py-4">
-                        <Input placeholder="회사명" value={careerForm.company || ''} onChange={e => setCareerForm({ ...careerForm, company: e.target.value })} />
-                        <Input placeholder="직위/직책" value={careerForm.position || ''} onChange={e => setCareerForm({ ...careerForm, position: e.target.value })} />
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="grid gap-2">
-                                <Label>입사일</Label>
-                                <Input type="date" value={careerForm.startDate ? format(new Date(careerForm.startDate!), 'yyyy-MM-dd') : ''} onChange={e => setCareerForm({ ...careerForm, startDate: new Date(e.target.value) })} />
+                <DialogContent className="max-w-3xl h-[80vh] flex flex-col p-0">
+                    <DialogHeader className="p-6 border-b">
+                        <DialogTitle>경력 추가/수정</DialogTitle>
+                    </DialogHeader>
+                    <div className="flex-1 overflow-y-auto p-6 space-y-8">
+                        {/* Basic Info */}
+                        <section className="space-y-4">
+                            <h3 className="text-sm font-bold text-slate-500 uppercase">기본 정보</h3>
+                            <div className="grid grid-cols-2 gap-4">
+                                <Input placeholder="회사명" value={careerForm.company || ''} onChange={e => setCareerForm({ ...careerForm, company: e.target.value })} />
+                                <Input placeholder="직위/직책" value={careerForm.position || ''} onChange={e => setCareerForm({ ...careerForm, position: e.target.value })} />
                             </div>
-                            <div className="grid gap-2">
-                                <Label>퇴사일</Label>
-                                <Input
-                                    type="date"
-                                    disabled={careerForm.isCurrent}
-                                    value={careerForm.endDate ? format(new Date(careerForm.endDate!), 'yyyy-MM-dd') : ''}
-                                    onChange={e => setCareerForm({ ...careerForm, endDate: new Date(e.target.value) })}
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="grid gap-2">
+                                    <Label>입사일</Label>
+                                    <Input type="date" value={careerForm.startDate ? format(new Date(careerForm.startDate), 'yyyy-MM-dd') : ''} onChange={e => setCareerForm({ ...careerForm, startDate: new Date(e.target.value) })} />
+                                </div>
+                                <div className="grid gap-2">
+                                    <Label>퇴사일</Label>
+                                    <Input
+                                        type="date"
+                                        value={careerForm.endDate ? format(new Date(careerForm.endDate), 'yyyy-MM-dd') : ''}
+                                        onChange={e => setCareerForm({ ...careerForm, endDate: new Date(e.target.value) })}
+                                        disabled={careerForm.isCurrent}
+                                    />
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <input
+                                    type="checkbox" id="carCurrent"
+                                    checked={careerForm.isCurrent || false}
+                                    onChange={e => setCareerForm({ ...careerForm, isCurrent: e.target.checked, endDate: e.target.checked ? undefined : careerForm.endDate })}
                                 />
+                                <Label htmlFor="carCurrent">재직 중</Label>
                             </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <input
-                                type="checkbox"
-                                id="carCurrent"
-                                checked={careerForm.isCurrent || false}
-                                onChange={e => setCareerForm({ ...careerForm, isCurrent: e.target.checked, endDate: e.target.checked ? undefined : careerForm.endDate })}
-                            />
-                            <Label htmlFor="carCurrent">재직 중</Label>
-                        </div>
-                        <Textarea placeholder="주요 업무 내용" value={careerForm.description || ''} onChange={e => setCareerForm({ ...careerForm, description: e.target.value })} />
-                        <Input placeholder="기술 스택 (콤마 구분)" value={careerForm.techStack?.join(', ') || ''} onChange={e => setCareerForm({ ...careerForm, techStack: e.target.value.split(',').map(t => t.trim()).filter(Boolean) })} />
+                            <Textarea placeholder="주요 업무 내용 (Summary)" value={careerForm.description || ''} onChange={e => setCareerForm({ ...careerForm, description: e.target.value })} />
+                        </section>
 
-                        <div className="space-y-3 pt-4 border-t border-slate-100">
+                        {/* Projects (Simple List Implementation) */}
+                        <section className="space-y-4">
                             <div className="flex items-center justify-between">
-                                <Label>진행 프로젝트</Label>
-                                <Button size="sm" variant="outline" onClick={() => setCareerProjects([...careerProjects, { title: '', description: '' }])}>
+                                <h3 className="text-sm font-bold text-slate-500 uppercase">주요 프로젝트</h3>
+                                <Button size="sm" variant="outline" onClick={() => {
+                                    const newProj: CareerProject = { title: '새 프로젝트', description: '' };
+                                    setCareerForm({ ...careerForm, projects: [...(careerForm.projects || []), newProj] });
+                                }}>
                                     <Plus className="w-3 h-3 mr-1" /> 프로젝트 추가
                                 </Button>
                             </div>
-                            {careerProjects.map((proj, idx) => (
-                                <div key={idx} className="bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-2">
-                                    <div className="flex justify-between items-start">
-                                        <Label className="text-xs text-slate-500">프로젝트 {idx + 1}</Label>
-                                        <Button size="icon" variant="ghost" className="h-5 w-5 text-red-400" onClick={() => setCareerProjects(careerProjects.filter((_, i) => i !== idx))}>
-                                            <Trash2 className="w-3 h-3" />
+                            <div className="space-y-4">
+                                {(careerForm.projects || []).map((proj, idx) => (
+                                    <div key={idx} className="border rounded-lg p-4 space-y-3 bg-slate-50 relative group">
+                                        <Button
+                                            size="icon" variant="ghost" className="h-6 w-6 absolute top-2 right-2 text-slate-400 hover:text-red-500"
+                                            onClick={() => {
+                                                const newProjs = [...(careerForm.projects || [])];
+                                                newProjs.splice(idx, 1);
+                                                setCareerForm({ ...careerForm, projects: newProjs });
+                                            }}
+                                        >
+                                            <X className="w-3 h-3" />
+                                        </Button>
+
+                                        <div className="grid grid-cols-2 gap-2">
+                                            <Input
+                                                placeholder="프로젝트명"
+                                                value={proj.title}
+                                                onChange={e => {
+                                                    const newProjs = [...(careerForm.projects || [])];
+                                                    newProjs[idx].title = e.target.value;
+                                                    setCareerForm({ ...careerForm, projects: newProjs });
+                                                }}
+                                                className="bg-white"
+                                            />
+                                            <Input
+                                                placeholder="역할 (Role)"
+                                                value={proj.role || ''}
+                                                onChange={e => {
+                                                    const newProjs = [...(careerForm.projects || [])];
+                                                    newProjs[idx].role = e.target.value;
+                                                    setCareerForm({ ...careerForm, projects: newProjs });
+                                                }}
+                                                className="bg-white"
+                                            />
+                                        </div>
+                                        <Textarea
+                                            placeholder="성과 및 상세 설명"
+                                            value={proj.description}
+                                            onChange={e => {
+                                                const newProjs = [...(careerForm.projects || [])];
+                                                newProjs[idx].description = e.target.value;
+                                                setCareerForm({ ...careerForm, projects: newProjs });
+                                            }}
+                                            className="bg-white text-sm"
+                                        />
+
+                                        <div className="grid grid-cols-2 gap-2">
+                                            <Input
+                                                placeholder="기간 (예: 2023.01 - 2023.06)"
+                                                value={proj.period || ''}
+                                                onChange={e => {
+                                                    const newProjs = [...(careerForm.projects || [])];
+                                                    newProjs[idx].period = e.target.value;
+                                                    setCareerForm({ ...careerForm, projects: newProjs });
+                                                }}
+                                                className="bg-white text-xs h-8"
+                                            />
+                                            <Input
+                                                placeholder="사용 기술 (Tech Stack)"
+                                                value={proj.techStack?.join(', ') || ''}
+                                                onChange={e => {
+                                                    const newProjs = [...(careerForm.projects || [])];
+                                                    newProjs[idx].techStack = e.target.value.split(',').map(s => s.trim()).filter(Boolean);
+                                                    setCareerForm({ ...careerForm, projects: newProjs });
+                                                }}
+                                                className="bg-white text-xs h-8"
+                                            />
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
+
+                        {/* Files / Attachments */}
+                        <section className="space-y-4">
+                            <div className="flex items-center justify-between">
+                                <h3 className="text-sm font-bold text-slate-500 uppercase">증빙 자료 / 첨부 파일</h3>
+                                <Button size="sm" variant="outline" onClick={() => {
+                                    const newFile = { name: '', url: '' };
+                                    setCareerForm({ ...careerForm, files: [...(careerForm.files || []), newFile] });
+                                }}>
+                                    <Paperclip className="w-3 h-3 mr-1" /> 파일 추가
+                                </Button>
+                            </div>
+                            <div className="space-y-2">
+                                {(careerForm.files || []).map((file, idx) => (
+                                    <div key={idx} className="flex gap-2 items-center text-sm">
+                                        <Input
+                                            placeholder="파일명 (예: 경력증명서)"
+                                            value={file.name}
+                                            onChange={e => {
+                                                const newFiles = [...(careerForm.files || [])];
+                                                newFiles[idx].name = e.target.value;
+                                                setCareerForm({ ...careerForm, files: newFiles });
+                                            }}
+                                            className="flex-1"
+                                        />
+                                        <Input
+                                            placeholder="URL (Link)"
+                                            value={file.url}
+                                            onChange={e => {
+                                                const newFiles = [...(careerForm.files || [])];
+                                                newFiles[idx].url = e.target.value;
+                                                setCareerForm({ ...careerForm, files: newFiles });
+                                            }}
+                                            className="flex-[2]"
+                                        />
+                                        <Button
+                                            size="icon" variant="ghost" className="h-8 w-8 text-slate-400 hover:text-red-500"
+                                            onClick={() => {
+                                                const newFiles = [...(careerForm.files || [])];
+                                                newFiles.splice(idx, 1);
+                                                setCareerForm({ ...careerForm, files: newFiles });
+                                            }}
+                                        >
+                                            <X className="w-4 h-4" />
                                         </Button>
                                     </div>
-                                    <Input
-                                        placeholder="프로젝트명"
-                                        className="h-8 text-sm"
-                                        value={proj.title}
-                                        onChange={e => {
-                                            const newProjects = [...careerProjects];
-                                            newProjects[idx].title = e.target.value;
-                                            setCareerProjects(newProjects);
-                                        }}
-                                    />
-                                    <Input
-                                        placeholder="역할 (Role)"
-                                        className="h-8 text-sm"
-                                        value={proj.role || ''}
-                                        onChange={e => {
-                                            const newProjects = [...careerProjects];
-                                            newProjects[idx].role = e.target.value;
-                                            setCareerProjects(newProjects);
-                                        }}
-                                    />
-                                    <Textarea
-                                        placeholder="프로젝트 설명"
-                                        className="min-h-[60px] text-sm"
-                                        value={proj.description}
-                                        onChange={e => {
-                                            const newProjects = [...careerProjects];
-                                            newProjects[idx].description = e.target.value;
-                                            setCareerProjects(newProjects);
-                                        }}
-                                    />
-                                </div>
-                            ))}
-                            {careerProjects.length === 0 && (
-                                <div className="text-center py-4 text-xs text-slate-400 bg-slate-50 rounded-lg border border-dashed">
-                                    등록된 프로젝트가 없습니다.
-                                </div>
-                            )}
-                        </div>
+                                ))}
+                            </div>
+                        </section>
                     </div>
-                    <DialogFooter><Button onClick={handleSaveCareer}>저장</Button></DialogFooter>
+                    <DialogFooter className="p-6 border-t bg-white">
+                        <Button onClick={handleSaveCareer}>저장</Button>
+                    </DialogFooter>
                 </DialogContent>
             </Dialog>
+
+            {/* Activity Modal */}
+            <Dialog open={modal?.type === 'activity'} onOpenChange={(open) => !open && setModal(null)}>
+                <DialogContent>
+                    <DialogHeader><DialogTitle>대외활동 추가/수정</DialogTitle></DialogHeader>
+                    <div className="grid gap-4 py-4">
+                        <div className="grid gap-2">
+                            <Label>활동 구분</Label>
+                            <select
+                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                                value={activityForm.type}
+                                onChange={e => setActivityForm({ ...activityForm, type: e.target.value as any })}
+                            >
+                                <option value="club">동아리/학회</option>
+                                <option value="award">공모전/수상</option>
+                                <option value="volunteering">봉사활동</option>
+                                <option value="external">대외활동</option>
+                                <option value="overseas">해외연수</option>
+                                <option value="other">기타</option>
+                            </select>
+                        </div>
+                        <Input placeholder="활동명" value={activityForm.title || ''} onChange={e => setActivityForm({ ...activityForm, title: e.target.value })} />
+                        <Input placeholder="기관/주최" value={activityForm.organization || ''} onChange={e => setActivityForm({ ...activityForm, organization: e.target.value })} />
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="grid gap-2">
+                                <Label>시작일</Label>
+                                <Input type="date" value={activityForm.startDate ? format(new Date(activityForm.startDate), 'yyyy-MM-dd') : ''} onChange={e => setActivityForm({ ...activityForm, startDate: new Date(e.target.value) })} />
+                            </div>
+                            <div className="grid gap-2">
+                                <Label>종료일 (선택)</Label>
+                                <Input type="date" value={activityForm.endDate ? format(new Date(activityForm.endDate), 'yyyy-MM-dd') : ''} onChange={e => setActivityForm({ ...activityForm, endDate: new Date(e.target.value) })} />
+                            </div>
+                        </div>
+
+                        <Textarea placeholder="설명" value={activityForm.description || ''} onChange={e => setActivityForm({ ...activityForm, description: e.target.value })} />
+
+                        <div className="space-y-2 border-t pt-4">
+                            <div className="flex items-center justify-between">
+                                <Label>증빙 자료 / 관련 링크</Label>
+                                <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => {
+                                    const newFile = { name: '', url: '' };
+                                    setActivityForm({ ...activityForm, files: [...(activityForm.files || []), newFile] });
+                                }}>
+                                    <Plus className="w-3 h-3 mr-1" /> 추가
+                                </Button>
+                            </div>
+                            {(activityForm.files || []).map((file, idx) => (
+                                <div key={idx} className="flex gap-2 items-center text-sm">
+                                    <Input
+                                        placeholder="이름"
+                                        value={file.name}
+                                        onChange={e => {
+                                            const newFiles = [...(activityForm.files || [])];
+                                            newFiles[idx].name = e.target.value;
+                                            setActivityForm({ ...activityForm, files: newFiles });
+                                        }}
+                                        className="h-8 flex-1"
+                                    />
+                                    <Input
+                                        placeholder="URL"
+                                        value={file.url}
+                                        onChange={e => {
+                                            const newFiles = [...(activityForm.files || [])];
+                                            newFiles[idx].url = e.target.value;
+                                            setActivityForm({ ...activityForm, files: newFiles });
+                                        }}
+                                        className="h-8 flex-[2]"
+                                    />
+                                    <Button
+                                        size="icon" variant="ghost" className="h-8 w-8 hover:text-red-500"
+                                        onClick={() => {
+                                            const newFiles = [...(activityForm.files || [])];
+                                            newFiles.splice(idx, 1);
+                                            setActivityForm({ ...activityForm, files: newFiles });
+                                        }}
+                                    >
+                                        <X className="w-3 h-3" />
+                                    </Button>
+                                </div>
+                            ))}
+                        </div>
+
+
+                    </div>
+                    <DialogFooter><Button onClick={handleSaveActivity}>저장</Button></DialogFooter>
+                </DialogContent >
+            </Dialog >
 
             {/* Project Modal */}
             <Dialog open={modal?.type === 'project'} onOpenChange={(open) => !open && setModal(null)}>
@@ -669,45 +852,6 @@ export function PortfolioBoard() {
                     <DialogFooter><Button onClick={handleSaveProject}>저장</Button></DialogFooter>
                 </DialogContent>
             </Dialog>
-
-            {/* Activity Modal */}
-            <Dialog open={modal?.type === 'activity'} onOpenChange={(open) => !open && setModal(null)}>
-                <DialogContent>
-                    <DialogHeader><DialogTitle>대외활동/수상이력 추가</DialogTitle></DialogHeader>
-                    <div className="grid gap-4 py-4">
-                        <div className="grid gap-2">
-                            <Label>구분</Label>
-                            <select
-                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                                value={activityForm.type || 'other'}
-                                onChange={e => setActivityForm({ ...activityForm, type: e.target.value as any })}
-                            >
-                                <option value="club">동아리/학회</option>
-                                <option value="award">수상</option>
-                                <option value="external">대외활동</option>
-                                <option value="volunteering">봉사활동</option>
-                                <option value="overseas">해외연수</option>
-                                <option value="other">기타</option>
-                            </select>
-                        </div>
-                        <Input placeholder="활동명" value={activityForm.title || ''} onChange={e => setActivityForm({ ...activityForm, title: e.target.value })} />
-                        <Input placeholder="기관/단체명" value={activityForm.organization || ''} onChange={e => setActivityForm({ ...activityForm, organization: e.target.value })} />
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="grid gap-2">
-                                <Label>시작일</Label>
-                                <Input type="date" value={activityForm.startDate ? format(new Date(activityForm.startDate!), 'yyyy-MM-dd') : ''} onChange={e => setActivityForm({ ...activityForm, startDate: new Date(e.target.value) })} />
-                            </div>
-                            <div className="grid gap-2">
-                                <Label>종료일(선택)</Label>
-                                <Input type="date" value={activityForm.endDate ? format(new Date(activityForm.endDate!), 'yyyy-MM-dd') : ''} onChange={e => setActivityForm({ ...activityForm, endDate: new Date(e.target.value) })} />
-                            </div>
-                        </div>
-                        <Input placeholder="역할 / 수상 등급" value={activityForm.role || ''} onChange={e => setActivityForm({ ...activityForm, role: e.target.value })} />
-                        <Textarea placeholder="설명" value={activityForm.description || ''} onChange={e => setActivityForm({ ...activityForm, description: e.target.value })} />
-                    </div>
-                    <DialogFooter><Button onClick={handleSaveActivity}>저장</Button></DialogFooter>
-                </DialogContent>
-            </Dialog>
-        </div>
+        </div >
     );
 }
