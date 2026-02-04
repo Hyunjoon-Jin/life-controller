@@ -123,10 +123,6 @@ export function MegaMenuNav({ activeCategory, activeTab, onSelect, appMode = 'li
                         </h3>
                         <div className="flex flex-col gap-1">
                             {SUB_MENUS[hoveredCategory] ? SUB_MENUS[hoveredCategory]
-                                .filter(item => {
-                                    if (appMode === 'work' && hoveredCategory === 'basic' && item.id === 'tasks') return false;
-                                    return true;
-                                })
                                 .map((item: any) => (
 
                                     <button
