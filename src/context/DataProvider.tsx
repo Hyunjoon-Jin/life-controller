@@ -7,7 +7,7 @@ import {
     Transaction, Asset, Certificate, PortfolioItem, ArchiveDocument,
     UserProfile, Education, Career, BodyCompositionGoal, LanguageResource,
     Hobby, HobbyPost, Activity, RealEstateScrap, StockAnalysis, WorkLog,
-    ExerciseRoutine, FinanceGoal, CustomFood // Added CustomFood
+    ExerciseRoutine, FinanceGoal, CustomFood, MonthlyBudget // Added MonthlyBudget
 } from '@/types';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useCloudSync } from '@/hooks/useCloudSync';
@@ -204,6 +204,9 @@ interface DataContextType {
     addFinanceGoal: (goal: FinanceGoal) => void;
     updateFinanceGoal: (goal: FinanceGoal) => void;
     deleteFinanceGoal: (id: string) => void;
+    monthlyBudgets: MonthlyBudget[];
+    setMonthlyBudgets: (budgets: MonthlyBudget[]) => void;
+    updateMonthlyBudget: (budget: MonthlyBudget) => void;
 
     homeShortcuts: string[];
     setHomeShortcuts: (shortcuts: string[]) => void;
@@ -270,6 +273,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         { id: '1', title: '주택 마련 기금', targetAmount: 500000000, currentAmount: 125000000, createdAt: new Date() },
         { id: '2', title: '노후 자금', targetAmount: 1000000000, currentAmount: 100000000, createdAt: new Date() }
     ]);
+    const [monthlyBudgets, setMonthlyBudgets] = useLocalStorage<MonthlyBudget[]>('monthlyBudgets', []);
     const [customFoods, setCustomFoods] = useLocalStorage<CustomFood[]>('customFoods', []);
 
     // Resume States
@@ -340,6 +344,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
                     if (data.workLogs) setWorkLogs(data.workLogs);
                     if (data.exerciseRoutines) setExerciseRoutines(data.exerciseRoutines);
                     if (data.financeGoals) setFinanceGoals(data.financeGoals);
+                    if (data.monthlyBudgets) setMonthlyBudgets(data.monthlyBudgets);
                     if (data.customFoods) setCustomFoods(data.customFoods);
                 }
                 setIsLoadedFromCloud(true);
@@ -511,7 +516,83 @@ export function DataProvider({ children }: { children: ReactNode }) {
         setAssets(newAssets);
     };
 
-    const updateTransaction = (updatedTransaction: Transaction) => setTransactions(transactions.map(t => t.id === updatedTransaction.id ? updatedTransaction : t));
+    const updateTransaction = (updatedTransaction: Transaction) => {
+        setTransactions(transactions.map(t => t.id === updatedTransaction.id ? updatedTransaction : t));
+
+        // Sync Asset Balance: Revert Old -> Apply New
+        const oldTransaction = transactions.find(t => t.id === updatedTransaction.id);
+        if (oldTransaction) {
+            let newAssets = [...assets];
+
+            // 1. Revert Old Transaction
+            const { type: oldType, assetId: oldAssetId, targetAssetId: oldTargetAssetId, amount: oldAmount, cardId: oldCardId } = oldTransaction;
+
+            if (oldAssetId) {
+                newAssets = newAssets.map(asset => {
+                    if (asset.id === oldAssetId) {
+                        if (oldType === 'expense') return { ...asset, balance: asset.balance + oldAmount };
+                        if (oldType === 'income') return { ...asset, balance: asset.balance - oldAmount };
+                        if (['transfer', 'investment', 'saving', 'repayment', 'card_bill'].includes(oldType)) {
+                            return { ...asset, balance: asset.balance + oldAmount };
+                        }
+                    }
+                    return asset;
+                });
+            }
+
+            if (oldTargetAssetId && ['transfer', 'investment', 'saving', 'repayment'].includes(oldType)) {
+                newAssets = newAssets.map(asset => {
+                    if (asset.id === oldTargetAssetId) {
+                        if (oldType === 'repayment') return { ...asset, balance: asset.balance + oldAmount };
+                        return { ...asset, balance: asset.balance - oldAmount };
+                    }
+                    return asset;
+                });
+            }
+
+            if (oldCardId && oldType === 'expense') {
+                newAssets = newAssets.map(asset => {
+                    if (asset.id === oldCardId) return { ...asset, balance: asset.balance - oldAmount };
+                    return asset;
+                });
+            }
+
+            // 2. Apply New Transaction
+            const { type, assetId, targetAssetId, amount, cardId } = updatedTransaction;
+
+            if (assetId) {
+                newAssets = newAssets.map(asset => {
+                    if (asset.id === assetId) {
+                        if (type === 'expense') return { ...asset, balance: asset.balance - amount };
+                        if (type === 'income') return { ...asset, balance: asset.balance + amount };
+                        if (['transfer', 'investment', 'saving', 'repayment', 'card_bill'].includes(type)) {
+                            return { ...asset, balance: asset.balance - amount };
+                        }
+                    }
+                    return asset;
+                });
+            }
+
+            if (targetAssetId && ['transfer', 'investment', 'saving', 'repayment'].includes(type)) {
+                newAssets = newAssets.map(asset => {
+                    if (asset.id === targetAssetId) {
+                        if (type === 'repayment') return { ...asset, balance: asset.balance - amount };
+                        return { ...asset, balance: asset.balance + amount };
+                    }
+                    return asset;
+                });
+            }
+
+            if (cardId && type === 'expense') {
+                newAssets = newAssets.map(asset => {
+                    if (asset.id === cardId) return { ...asset, balance: asset.balance + amount };
+                    return asset;
+                });
+            }
+
+            setAssets(newAssets);
+        }
+    };
     const deleteTransaction = (id: string) => {
         const tx = transactions.find(t => t.id === id);
         setTransactions(transactions.filter(t => t.id !== id));
@@ -642,7 +723,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
                 hobbies, hobbyPosts,
                 transactions, assets, certificates, portfolios, archiveDocuments,
                 userProfile, educations, careers, activities, bodyCompositionGoal, homeShortcuts,
-                realEstateScraps, stockAnalyses, workLogs, exerciseRoutines, financeGoals, customFoods
+                realEstateScraps, stockAnalyses, workLogs, exerciseRoutines, financeGoals, customFoods,
+                monthlyBudgets
             });
         }
     }, [
@@ -651,8 +733,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
         languageEntries, languageResources, books, exerciseSessions, dietEntries, inBodyEntries, hobbyEntries,
         hobbies, hobbyPosts,
         transactions, assets, certificates, portfolios, archiveDocuments,
-        userProfile, educations, careers, activities, bodyCompositionGoal, homeShortcuts,
-        realEstateScraps, stockAnalyses, workLogs, exerciseRoutines, financeGoals, customFoods
+        realEstateScraps, stockAnalyses, workLogs, exerciseRoutines, financeGoals, customFoods,
+        monthlyBudgets
     ]);
 
     const forceSync = async () => {
@@ -663,7 +745,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
                 hobbies, hobbyPosts,
                 transactions, assets, certificates, portfolios, archiveDocuments,
                 userProfile, educations, careers, activities, bodyCompositionGoal, homeShortcuts,
-                realEstateScraps, stockAnalyses, workLogs, exerciseRoutines, financeGoals, customFoods
+                realEstateScraps, stockAnalyses, workLogs, exerciseRoutines, financeGoals, customFoods,
+                monthlyBudgets
             });
         }
     };
@@ -724,6 +807,15 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
     const addCustomFood = (food: CustomFood) => setCustomFoods([...customFoods, food]);
     const deleteCustomFood = (id: string) => setCustomFoods(customFoods.filter(f => f.id !== id));
+
+    const updateMonthlyBudget = (budget: MonthlyBudget) => {
+        const exists = monthlyBudgets.find(b => b.id === budget.id);
+        if (exists) {
+            setMonthlyBudgets(monthlyBudgets.map(b => b.id === budget.id ? budget : b));
+        } else {
+            setMonthlyBudgets([...monthlyBudgets, budget]);
+        }
+    };
 
     return (
         <DataContext.Provider value={{
@@ -787,6 +879,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
             stockAnalyses, setStockAnalyses, addStockAnalysis, updateStockAnalysis, deleteStockAnalysis,
             workLogs, setWorkLogs, addWorkLog, updateWorkLog, deleteWorkLog,
             exerciseRoutines, setExerciseRoutines, addExerciseRoutine, updateExerciseRoutine, deleteExerciseRoutine,
+            financeGoals, setFinanceGoals, addFinanceGoal, updateFinanceGoal, deleteFinanceGoal,
+            monthlyBudgets, setMonthlyBudgets, updateMonthlyBudget,
             userProfile,
             updateUserProfile,
             educations,
@@ -803,7 +897,6 @@ export function DataProvider({ children }: { children: ReactNode }) {
             forceSync,
             bodyCompositionGoal,
             setBodyCompositionGoal,
-            financeGoals, setFinanceGoals, addFinanceGoal, updateFinanceGoal, deleteFinanceGoal,
             homeShortcuts, setHomeShortcuts,
             customFoods, setCustomFoods, addCustomFood, deleteCustomFood
         }}>

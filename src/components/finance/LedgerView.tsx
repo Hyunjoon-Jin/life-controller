@@ -4,18 +4,21 @@ import { useState } from 'react';
 import { useData } from '@/context/DataProvider';
 import { generateId, cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { DateTimePicker } from '@/components/ui/date-time-picker';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Progress } from "@/components/ui/progress";
 import { format, isSameMonth, parseISO } from 'date-fns';
 import { ko } from 'date-fns/locale';
-import { Plus, Trash2, Edit2, TrendingUp, TrendingDown, DollarSign, CheckSquare, ChevronLeft, ChevronRight } from 'lucide-react';
-import { Transaction } from '@/types';
+import { Plus, Trash2, Edit2, TrendingUp, TrendingDown, DollarSign, CheckSquare, ChevronLeft, ChevronRight, Target, PieChart, Settings2 } from 'lucide-react';
+import { Transaction, MonthlyBudget } from '@/types';
 
 export function LedgerView() {
-    const { transactions, assets, addTransaction, deleteTransaction, updateTransaction } = useData();
+    const { transactions, assets, addTransaction, deleteTransaction, updateTransaction, monthlyBudgets, updateMonthlyBudget } = useData();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isBudgetDialogOpen, setIsBudgetDialogOpen] = useState(false); // New Dialog State
     const [editingId, setEditingId] = useState<string | null>(null);
 
     // Filter by month
@@ -32,6 +35,10 @@ export function LedgerView() {
     const [cardId, setCardId] = useState<string>(''); // New: For Credit Card expense
     const [tags, setTags] = useState('');
 
+    // Budget Form State
+    const [budgetAmount, setBudgetAmount] = useState('');
+    const [budgetGoal, setBudgetGoal] = useState('');
+
     const monthlyTransactions = transactions.filter(t =>
         isSameMonth(new Date(t.date), currentDate)
     ).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
@@ -45,6 +52,37 @@ export function LedgerView() {
         .reduce((sum, t) => sum + t.amount, 0);
 
     const balance = totalIncome - totalExpense;
+
+    // Budget Calculation
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth() + 1;
+    const currentBudgetId = `${currentYear}-${currentMonth.toString().padStart(2, '0')}`;
+    const currentBudget = monthlyBudgets.find(b => b.id === currentBudgetId);
+
+    const budgetProgress = currentBudget && currentBudget.amount > 0
+        ? Math.min((totalExpense / currentBudget.amount) * 100, 100)
+        : 0;
+
+    const handleSaveBudget = () => {
+        if (!budgetAmount) return;
+
+        const newBudget: MonthlyBudget = {
+            id: currentBudgetId,
+            year: currentYear,
+            month: currentMonth,
+            amount: parseInt(budgetAmount),
+            goal: budgetGoal
+        };
+
+        updateMonthlyBudget(newBudget);
+        setIsBudgetDialogOpen(false);
+    };
+
+    const openBudgetDialog = () => {
+        setBudgetAmount(currentBudget?.amount.toString() || '');
+        setBudgetGoal(currentBudget?.goal || '');
+        setIsBudgetDialogOpen(true);
+    };
 
     const handleSave = () => {
         if (!category || !amount) return;
@@ -130,7 +168,49 @@ export function LedgerView() {
             </div>
 
             {/* Summary Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                {/* Monthly Goal & Budget Card */}
+                <Card className="md:col-span-4 bg-gradient-to-r from-slate-50 to-white border-l-4 border-l-primary">
+                    <CardContent className="p-4 md:p-6 flex flex-col md:flex-row gap-6 items-center justify-between">
+                        <div className="flex-1 space-y-2 w-full">
+                            <div className="flex items-center justify-between">
+                                <h3 className="text-lg font-bold flex items-center gap-2 text-slate-800">
+                                    <Target className="w-5 h-5 text-primary" />
+                                    {currentMonth}월의 목표
+                                </h3>
+                                <Button variant="ghost" size="sm" onClick={openBudgetDialog} className="h-8 text-muted-foreground hover:text-primary">
+                                    <Settings2 className="w-4 h-4 mr-1" /> 설정
+                                </Button>
+                            </div>
+
+                            {currentBudget ? (
+                                <div className="space-y-4">
+                                    {currentBudget.goal && <p className="text-lg text-slate-700 font-medium">"{currentBudget.goal}"</p>}
+                                    <div className="space-y-1">
+                                        <div className="flex justify-between text-sm">
+                                            <span className="text-muted-foreground">예산 소진율 ({Math.round(budgetProgress)}%)</span>
+                                            <span className="font-bold">
+                                                {totalExpense.toLocaleString()} / {currentBudget.amount.toLocaleString()}원
+                                            </span>
+                                        </div>
+                                        <Progress value={budgetProgress} className={cn("h-3", budgetProgress >= 100 ? "bg-red-100 [&>div]:bg-red-500" : budgetProgress >= 80 ? "bg-orange-100 [&>div]:bg-orange-500" : "[&>div]:bg-primary")} />
+                                        {currentBudget.amount - totalExpense < 0 ? (
+                                            <p className="text-xs text-red-500 text-right font-medium">예산 {Math.abs(currentBudget.amount - totalExpense).toLocaleString()}원 초과!</p>
+                                        ) : (
+                                            <p className="text-xs text-muted-foreground text-right">남은 예산: {(currentBudget.amount - totalExpense).toLocaleString()}원</p>
+                                        )}
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="text-center py-2 text-muted-foreground">
+                                    <p className="mb-2">아직 이번 달 목표와 예산이 설정되지 않았습니다.</p>
+                                    <Button variant="outline" size="sm" onClick={openBudgetDialog}>목표 설정하기</Button>
+                                </div>
+                            )}
+                        </div>
+                    </CardContent>
+                </Card>
+
                 <Card>
                     <CardContent className="p-6 flex items-center justify-between">
                         <div>
@@ -228,11 +308,7 @@ export function LedgerView() {
                     <div className="grid gap-4 py-4">
                         <div className="grid gap-2">
                             <Label>날짜</Label>
-                            <Input
-                                type="datetime-local"
-                                value={date ? format(date, "yyyy-MM-dd'T'HH:mm") : ''}
-                                onChange={e => setDate(new Date(e.target.value))}
-                            />
+                            <DateTimePicker date={date} setDate={setDate} />
                         </div>
                         <div className="grid gap-2">
                             <Label>구분</Label>
@@ -368,6 +444,37 @@ export function LedgerView() {
                     </div>
                     <DialogFooter>
                         <Button onClick={handleSave} disabled={!amount || !category}>저장</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* Budget Setting Dialog */}
+            <Dialog open={isBudgetDialogOpen} onOpenChange={setIsBudgetDialogOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>{currentMonth}월 목표 및 예산 설정</DialogTitle>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                        <div className="grid gap-2">
+                            <Label>이번 달 목표 (다짐)</Label>
+                            <Input
+                                placeholder="예: 배달 음식 줄이기, 100만원 저축하기"
+                                value={budgetGoal}
+                                onChange={e => setBudgetGoal(e.target.value)}
+                            />
+                        </div>
+                        <div className="grid gap-2">
+                            <Label>월 예산 (목표 지출액)</Label>
+                            <Input
+                                type="number"
+                                placeholder="금액 입력 (원)"
+                                value={budgetAmount}
+                                onChange={e => setBudgetAmount(e.target.value)}
+                            />
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button onClick={handleSaveBudget} disabled={!budgetAmount}>저장</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

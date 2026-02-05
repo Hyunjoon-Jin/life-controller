@@ -502,6 +502,14 @@ export type FinanceGoal = {
     targetDate?: Date;
 };
 
+export type MonthlyBudget = {
+    id: string; // yyyy-MM
+    year: number;
+    month: number;
+    amount: number; // Budget Limit
+    goal?: string; // Memo/Goal Text
+};
+
 export type WorkLog = {
     id: string;
     date: Date;

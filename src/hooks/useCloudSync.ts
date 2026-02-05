@@ -7,7 +7,7 @@ import {
     Transaction, Asset, Certificate, PortfolioItem, ArchiveDocument,
     UserProfile, Education, Career, BodyCompositionGoal, LanguageResource,
     Hobby, HobbyPost, Activity, RealEstateScrap, StockAnalysis, WorkLog, ExerciseRoutine,
-    FinanceGoal, CustomFood
+    FinanceGoal, CustomFood, MonthlyBudget
 } from '@/types';
 
 type AppState = {
@@ -47,6 +47,7 @@ type AppState = {
     exerciseRoutines: ExerciseRoutine[];
     financeGoals: FinanceGoal[];
     customFoods: CustomFood[];
+    monthlyBudgets: MonthlyBudget[];
 };
 
 export function useCloudSync() {
