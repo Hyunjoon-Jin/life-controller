@@ -24,7 +24,7 @@ export const CATEGORIES: { id: CategoryType; label: string }[] = [
 ];
 
 export const WORK_NAV_ITEMS = [
-    { id: 'calendar', label: '일정 관리', icon: Calendar },
+    { id: 'calendar', label: '메인 대시보드', icon: Calendar },
     { id: 'projects', label: '프로젝트별 관리', icon: Briefcase },
     { id: 'people', label: '인력 관리', icon: UsersRound },
     { id: 'work_time', label: '근무시간 관리', icon: Clock },
