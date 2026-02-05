@@ -53,7 +53,10 @@ export function WorkLayout({ viewMode: propViewMode }: { viewMode?: ViewMode }) 
             {/* Main Content Area */}
             <div className="flex-1 h-full min-w-0 bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
                 {!selectedWorkProjectId ? (
-                    <WorkMainDashboard onOpenProject={setSelectedWorkProjectId} />
+                    <WorkMainDashboard
+                        onOpenProject={setSelectedWorkProjectId}
+                        viewMode={activeViewMode === 'schedule' || activeViewMode === 'project' ? activeViewMode : 'schedule'}
+                    />
                 ) : selectedProject ? (
                     <div className="h-full flex flex-col">
                         {/* Project Header / Navigation */}
