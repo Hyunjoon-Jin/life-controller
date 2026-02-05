@@ -38,7 +38,6 @@ export function MegaMenuNav({ activeCategory, activeTab, onSelect, appMode = 'li
                                     : "text-muted-foreground hover:bg-gray-100 hover:text-black"
                             )}
                         >
-                            <item.icon className="w-4 h-4" />
                             {item.label}
                         </button>
                     ))}
