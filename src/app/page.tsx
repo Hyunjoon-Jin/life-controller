@@ -64,22 +64,16 @@ export default function Home() {
   // When switching directly to 'Work Mode' via toggle, ensure we are in a compatible view
   useEffect(() => {
     if (appMode === 'work') {
-      // Allow 'schedule' (for Tasks/Calendar) or 'work' (for Projects). 
-      if (activeCategory !== 'basic' && mainMode === 'schedule') {
-        setActiveCategory('basic');
-        setActiveTab('calendar');
-      } else if (activeCategory === 'basic' && activeTab === 'tasks') {
-        // If on 'Tasks' tab (which is hidden in Work mode), switch to Calendar
-        setActiveTab('calendar');
-      }
-
+      // Always default to 'calendar' (Main Dashboard - Schedule) when entering Work Mode
+      setActiveCategory('basic');
+      setActiveTab('calendar');
     } else if (appMode === 'life') {
       // If switching to Life Mode while in Work Management, go back to Home
       if (mainMode === 'work') {
         setMainMode('home');
       }
     }
-  }, [appMode, activeCategory, mainMode]);
+  }, [appMode]);
 
   const handleQuickLink = (mode: 'home' | 'schedule' | 'work', category: CategoryType, tab: string) => {
     setMainMode(mode);

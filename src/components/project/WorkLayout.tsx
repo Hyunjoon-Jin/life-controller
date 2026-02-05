@@ -73,40 +73,7 @@ export function WorkLayout({ viewMode: propViewMode }: { viewMode?: ViewMode }) 
                                 If we are in 'projects' tab (propViewMode='project'), and we hide tabs, we validly restrict content.
                                 If we are in 'calendar' tab (propViewMode='schedule'), we validly restrict content.
                             */}
-                            {!propViewMode && (
-                                <div className="flex gap-1 bg-gray-100/50 p-1 rounded-xl ml-6">
-                                    <button
-                                        onClick={() => setLocalViewMode('project')}
-                                        className={cn("flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all", activeViewMode === 'project' ? "bg-white text-primary shadow-sm" : "text-muted-foreground hover:text-foreground")}
-                                    >
-                                        <LayoutDashboard className="w-3.5 h-3.5" /> 대시보드
-                                    </button>
-                                    <button
-                                        onClick={() => setLocalViewMode('schedule')}
-                                        className={cn("flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all", activeViewMode === 'schedule' ? "bg-white text-primary shadow-sm" : "text-muted-foreground hover:text-foreground")}
-                                    >
-                                        <CalendarIcon className="w-3.5 h-3.5" /> 일정
-                                    </button>
-                                    <button
-                                        onClick={() => setLocalViewMode('personnel')}
-                                        className={cn("flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all", activeViewMode === 'personnel' ? "bg-white text-primary shadow-sm" : "text-muted-foreground hover:text-foreground")}
-                                    >
-                                        <Users className="w-3.5 h-3.5" /> 멤버
-                                    </button>
-                                    <button
-                                        onClick={() => setLocalViewMode('workhours')}
-                                        className={cn("flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all", activeViewMode === 'workhours' ? "bg-white text-primary shadow-sm" : "text-muted-foreground hover:text-foreground")}
-                                    >
-                                        <Clock className="w-3.5 h-3.5" /> 시간
-                                    </button>
-                                    <button
-                                        onClick={() => setLocalViewMode('templates')}
-                                        className={cn("flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all", activeViewMode === 'templates' ? "bg-white text-primary shadow-sm" : "text-muted-foreground hover:text-foreground")}
-                                    >
-                                        <LayoutTemplate className="w-3.5 h-3.5" /> 템플릿
-                                    </button>
-                                </div>
-                            )}
+                            {/* Project Tabs - Internal navigation removed as per request to keep only Dashboard content */}
 
                             <div className="ml-auto flex gap-2">
                                 <Button variant="outline" size="sm" onClick={() => handleEditProject(selectedProject)}>
