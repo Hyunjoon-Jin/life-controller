@@ -26,6 +26,9 @@ export const CATEGORIES: { id: CategoryType; label: string }[] = [
 export const WORK_NAV_ITEMS = [
     { id: 'calendar', label: '일정 관리', icon: Calendar },
     { id: 'projects', label: '프로젝트별 관리', icon: Briefcase },
+    { id: 'people', label: '인력 관리', icon: UsersRound },
+    { id: 'work_time', label: '근무시간 관리', icon: Clock },
+    { id: 'templates', label: '각종 템플릿', icon: LayoutTemplate },
 ];
 
 export const SUB_MENUS: Record<CategoryType, MenuItem[]> = {

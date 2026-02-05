@@ -16,15 +16,15 @@ import { cn } from '@/lib/utils';
 import { DocumentTemplate } from '@/types';
 import { toast } from 'sonner';
 
-// Mock Data for Community Hub
+// Mock Data for Community Hub - Korean Translation
 const MOCK_STORE_TEMPLATES: DocumentTemplate[] = [
     {
         id: 'store-1',
         title: '주간 업무 보고서 (WBR)',
         category: 'report',
-        description: '주간 핵심 지표(KPI), 성과, 이슈 및 리스크를 요약하는 표준 주간 보고 양식입니다.',
-        content: '# 주간 업무 보고서 (WBR)\n\n## 1. 경영 요약 (Executive Summary)\n\n## 2. 주요 지표 (Key Metrics)\n\n## 3. 주요 성과 (Key Achievements)\n\n## 4. 이슈 및 리스크 (Issues & Risks)\n\n## 5. 차주 계획 (Next Week Plan)',
-        author: '제품 기획팀',
+        description: 'KPI, 성과, 이슈 및 리스크를 중심으로 한 표준 주간 업무 보고 양식입니다.',
+        content: '# 주간 업무 보고서 (WBR)\n\n## 1. 요약 (Executive Summary)\n\n## 2. 핵심 지표 (KPIs)\n\n## 3. 주요 성과\n\n## 4. 이슈 및 리스크\n\n## 5. 차주 계획',
+        author: '기획팀',
         downloads: 1250,
         likes: 342,
         isOfficial: true,
@@ -32,10 +32,10 @@ const MOCK_STORE_TEMPLATES: DocumentTemplate[] = [
     },
     {
         id: 'store-2',
-        title: '프로젝트 제안서 표준안',
+        title: '표준 프로젝트 제안서',
         category: 'proposal',
         description: '예산, 일정, 리소스 계획을 포함한 포괄적인 프로젝트 제안서 템플릿입니다.',
-        content: '# 프로젝트 제안서\n\n## 배경 (Background)\n\n## 목표 (Objectives)\n\n## 범위 (Scope)\n\n## 일정 (Timeline)\n\n## 예산 (Budget)\n\n## 리소스 (Resources)',
+        content: '# 프로젝트 제안서\n\n## 배경 및 목적\n\n## 목표\n\n## 범위 (Scope)\n\n## 일정 계획 (Timeline)\n\n## 예산 (Budget)\n\n## 필요 리소스',
         author: 'PMO',
         downloads: 890,
         likes: 215,
@@ -44,10 +44,10 @@ const MOCK_STORE_TEMPLATES: DocumentTemplate[] = [
     },
     {
         id: 'store-3',
-        title: '회의록 (애자일 스타일)',
+        title: '회의록 (Agile)',
         category: 'minutes',
-        description: '액션 아이템과 결정 사항을 중심으로 한 효율적인 회의록 양식입니다.',
-        content: '# 회의록\n\n**일시:** \n**참석자:** \n\n## 아젠다 (Agenda)\n\n## 논의 내용 (Discussion Points)\n\n## 결정 사항 (Decisions Made)\n\n## 액션 아이템 (Action Items)\n- [ ] 과제 1 (@담당자)\n- [ ] 과제 2 (@담당자)',
+        description: '액션 아이템과 결정 사항을 효율적으로 기록할 수 있는 회의록 양식입니다.',
+        content: '# 회의록\n\n**일시:** \n**참석자:** \n\n## 아젠다\n\n## 논의 내용\n\n## 결정 사항\n\n## 액션 아이템\n- [ ] 할 일 1 (@담당자)\n- [ ] 할 일 2 (@담당자)',
         author: '애자일 코치',
         downloads: 560,
         likes: 120,
@@ -56,10 +56,10 @@ const MOCK_STORE_TEMPLATES: DocumentTemplate[] = [
     },
     {
         id: 'store-4',
-        title: '컨설팅 용역 계약서',
+        title: '자문 용역 계약서',
         category: 'contract',
-        description: '표준 컨설팅 용역 계약서 템플릿입니다.',
-        content: '# 용역 계약서\n\n본 계약은 의뢰인과 수임인 간의...',
+        description: '표준 자문 용역 계약서 양식입니다.',
+        content: '# 자문 용역 계약서\n\n본 계약은...',
         author: '법무팀',
         downloads: 340,
         likes: 85,
@@ -68,10 +68,10 @@ const MOCK_STORE_TEMPLATES: DocumentTemplate[] = [
     },
     {
         id: 'store-5',
-        title: '일일 스탠드업 노트',
+        title: '일일 스크럼 노트',
         category: 'report',
-        description: '매일의 진행 상황을 공유하기 위한 간단한 노트 양식입니다.',
-        content: '# 일일 스탠드업\n\n- 어제 한 일:\n- 오늘 할 일:\n- 이슈/블로커:',
+        description: '매일의 진행 상황을 공유하기 위한 간단한 양식입니다.',
+        content: '# 일일 스크럼\n\n- 어제 한 일:\n- 오늘 할 일:\n- 방해 요소 (Blockers):',
         author: '개발팀',
         downloads: 2100,
         likes: 560,
@@ -176,7 +176,10 @@ export function WorkTemplateSection() {
                                         onClick={() => setSelectedCategory(cat === 'all' ? null : cat)}
                                         className="capitalize"
                                     >
-                                        {cat === 'all' ? 'All' : cat}
+                                        {cat === 'all' ? '전체' :
+                                            cat === 'report' ? '보고서' :
+                                                cat === 'proposal' ? '제안서' :
+                                                    cat === 'minutes' ? '회의록' : '계약서'}
                                     </Button>
                                 ))}
                             </div>
@@ -192,7 +195,7 @@ export function WorkTemplateSection() {
                                             <CardHeader className="p-4 pb-2">
                                                 <div className="flex justify-between items-start mb-2">
                                                     <Badge variant={template.isOfficial ? "default" : "secondary"} className="text-xs">
-                                                        {template.isOfficial ? "Official" : "Community"}
+                                                        {template.isOfficial ? "공식" : "커뮤니티"}
                                                     </Badge>
                                                     <div className="flex items-center text-xs text-muted-foreground gap-1">
                                                         <Heart className="w-3 h-3 fill-red-100 text-red-500" /> {template.likes}

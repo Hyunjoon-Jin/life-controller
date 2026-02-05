@@ -73,7 +73,8 @@ export function WorkLayout({ viewMode: propViewMode }: { viewMode?: ViewMode }) 
                                 If we are in 'projects' tab (propViewMode='project'), and we hide tabs, we validly restrict content.
                                 If we are in 'calendar' tab (propViewMode='schedule'), we validly restrict content.
                             */}
-                            {/* Project Tabs - Internal navigation removed as per request to keep only Dashboard content */}
+                            {/* Project Tabs - Removed as per user request to only show Dashboard in this view */}
+                            {/* {!propViewMode && ( ... )} */}
 
                             <div className="ml-auto flex gap-2">
                                 <Button variant="outline" size="sm" onClick={() => handleEditProject(selectedProject)}>
