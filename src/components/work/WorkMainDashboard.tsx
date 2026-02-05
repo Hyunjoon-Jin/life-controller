@@ -10,20 +10,21 @@ import { WorkTemplateSection } from './sections/WorkTemplateSection';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 
+import { GanttChart } from '@/components/project/GanttChart';
+// Removed ScheduleSection import
+
 interface WorkMainDashboardProps {
     onOpenProject: (id: string) => void;
 }
 
 export function WorkMainDashboard({ onOpenProject }: WorkMainDashboardProps) {
-    const [activeTab, setActiveTab] = useState<'schedule' | 'project' | 'people' | 'time' | 'template'>('schedule');
+    const [activeTab, setActiveTab] = useState<'schedule' | 'project'>('schedule');
 
     const tabs = [
         { id: 'schedule', label: '일정 관리', icon: Calendar },
         { id: 'project', label: '프로젝트별 관리', icon: Briefcase },
-        { id: 'people', label: '인력 관리', icon: Users },
-        { id: 'time', label: '근무시간 관리', icon: Clock },
-        { id: 'template', label: '각종 템플릿', icon: Layout },
     ] as const;
+
     return (
         <div className="h-full flex flex-col gap-6 overflow-hidden">
             {/* Tab Navigation */}
@@ -47,11 +48,8 @@ export function WorkMainDashboard({ onOpenProject }: WorkMainDashboardProps) {
 
             {/* Content Area */}
             <div className="flex-1 overflow-y-auto custom-scrollbar pr-1">
-                {activeTab === 'schedule' && <ScheduleSection />}
+                {activeTab === 'schedule' && <GanttChart />}
                 {activeTab === 'project' && <ProjectSection onOpenProject={onOpenProject} />}
-                {activeTab === 'people' && <WorkPeopleSection />}
-                {activeTab === 'time' && <WorkTimeSection />}
-                {activeTab === 'template' && <WorkTemplateSection />}
             </div>
         </div>
     );

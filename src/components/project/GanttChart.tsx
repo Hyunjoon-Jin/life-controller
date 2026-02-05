@@ -12,7 +12,7 @@ import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { TaskDialog } from './TaskDialog';
 
 interface GanttChartProps {
-    project: Project;
+    project?: Project; // Project is now optional
 }
 
 export function GanttChart({ project }: GanttChartProps) {
@@ -38,8 +38,12 @@ export function GanttChart({ project }: GanttChartProps) {
 
     // Filter tasks for this project AND ensure they are timeline tasks
     const projectTasks = useMemo(() => {
+        if (!project) {
+            // Global View: Show all timeline tasks
+            return tasks.filter(t => t.source === 'timeline');
+        }
         return tasks.filter(t => t.projectId === project.id && t.source === 'timeline');
-    }, [tasks, project.id]);
+    }, [tasks, project]);
 
     // Calculate timeline range
     const startDate = viewMode === 'month' ? startOfMonth(viewDate) : startOfWeek(viewDate, { weekStartsOn: 0 });
@@ -334,7 +338,7 @@ export function GanttChart({ project }: GanttChartProps) {
             <TaskDialog
                 isOpen={isTaskDialogOpen}
                 onOpenChange={setIsTaskDialogOpen}
-                projectId={project.id}
+                projectId={project?.id || ''} // Handle global task creation (might need logic to select project)
                 taskToEdit={editingTask}
             />
         </div>
