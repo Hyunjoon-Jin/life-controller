@@ -15,7 +15,7 @@ import { Pomodoro } from '@/components/tools/Pomodoro';
 import { GuideModal } from '@/components/guide/GuideModal';
 import { WorkLayout } from '@/components/project/WorkLayout';
 import { WorkTimeSection } from '@/components/work/sections/WorkTimeSection';
-import { WorkTemplateSection } from '@/components/work/sections/WorkTemplateSection';
+import { WorkTemplateSection } from '@/components/project/WorkTemplateSection';
 import { WorkPeopleSection } from '@/components/work/sections/WorkPeopleSection';
 import { HomeDashboard } from '@/components/home/HomeDashboard';
 import { LanguageLog } from '@/components/growth/LanguageLog';
