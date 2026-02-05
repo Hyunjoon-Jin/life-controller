@@ -733,6 +733,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         languageEntries, languageResources, books, exerciseSessions, dietEntries, inBodyEntries, hobbyEntries,
         hobbies, hobbyPosts,
         transactions, assets, certificates, portfolios, archiveDocuments,
+        userProfile, educations, careers, activities, bodyCompositionGoal, homeShortcuts,
         realEstateScraps, stockAnalyses, workLogs, exerciseRoutines, financeGoals, customFoods,
         monthlyBudgets
     ]);
