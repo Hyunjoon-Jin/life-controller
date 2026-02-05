@@ -53,7 +53,7 @@ export default function Home() {
   const [appMode, setAppMode] = useState<'life' | 'work'>('life');
   const [mainMode, setMainMode] = useState<'home' | 'schedule' | 'work'>('home');
   const [activeCategory, setActiveCategory] = useState<'basic' | 'health' | 'growth' | 'record' | 'finance'>('basic');
-  const [activeTab, setActiveTab] = useState<'calendar' | 'tasks' | 'projects' | 'people' | 'goals' | 'language' | 'reading' | 'exercise' | 'diet' | 'inbody' | 'hobby' | 'learning' | 'report' | 'ideas' | 'journal' | 'scraps' | 'widgets' | 'ledger' | 'assets' | 'fund' | 'realestate' | 'investment' | 'certificate' | 'portfolio' | 'work_time' | 'templates'>('calendar');
+  const [activeTab, setActiveTab] = useState<'calendar' | 'tasks' | 'projects' | 'people' | 'goals' | 'language' | 'reading' | 'exercise' | 'diet' | 'inbody' | 'hobby' | 'learning' | 'report' | 'ideas' | 'journal' | 'scraps' | 'widgets' | 'ledger' | 'assets' | 'fund' | 'realestate' | 'investment' | 'certificate' | 'portfolio' | 'work_time' | 'templates' | 'full_schedule'>('calendar');
   const [isGuideOpen, setIsGuideOpen] = useState(false);
   const [todayDate, setTodayDate] = useState('');
 
@@ -206,6 +206,11 @@ export default function Home() {
                 {activeTab === 'calendar' && (
                   <div className="space-y-6 animate-in fade-in zoom-in-95 duration-200 h-full">
                     {appMode === 'work' ? <WorkLayout viewMode="schedule" /> : <CalendarView />}
+                  </div>
+                )}
+                {activeTab === 'full_schedule' && (
+                  <div className="h-full animate-in fade-in zoom-in-95 duration-200">
+                    <CalendarView />
                   </div>
                 )}
                 {activeTab === 'tasks' && (
