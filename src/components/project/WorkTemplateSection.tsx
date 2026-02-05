@@ -1,132 +1,282 @@
 "use client"
 
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Plus, Copy, Trash2, FileText, Zap, LayoutTemplate } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { useData } from '@/context/DataProvider';
+// Removed ScrollArea import
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+    LayoutTemplate, Search, Download, Heart, Star, User,
+    FileText, FileCheck, FileSignature, FileSpreadsheet,
+    Plus, Trash2, Copy, ExternalLink, ThumbsUp
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { DocumentTemplate } from '@/types';
+import { toast } from 'sonner';
 
-type Template = {
-    id: string;
-    title: string;
-    category: 'project' | 'task' | 'email';
-    content: string; // JSON or Text
-    tags: string[];
-};
+// Mock Data for Community Hub
+const MOCK_STORE_TEMPLATES: DocumentTemplate[] = [
+    {
+        id: 'store-1',
+        title: 'Weekly Business Review (WBR)',
+        category: 'report',
+        description: 'Standard weekly business review format focusing on KPIs, highlights, and lowlights.',
+        content: '# Weekly Business Review\n\n## 1. Executive Summary\n\n## 2. Key Metrics (KPIs)\n\n## 3. Key Achievements\n\n## 4. Issues & Risks\n\n## 5. Next Week Plan',
+        author: 'Product Team',
+        downloads: 1250,
+        likes: 342,
+        isOfficial: true,
+        createdAt: new Date('2024-01-15')
+    },
+    {
+        id: 'store-2',
+        title: 'Project Proposal Standard',
+        category: 'proposal',
+        description: 'Comprehensive project proposal template including budget, timeline, and resource planning.',
+        content: '# Project Proposal\n\n## Background\n\n## Objectives\n\n## Scope\n\n## Timeline\n\n## Budget\n\n## Resources',
+        author: 'PMO',
+        downloads: 890,
+        likes: 215,
+        isOfficial: true,
+        createdAt: new Date('2024-02-10')
+    },
+    {
+        id: 'store-3',
+        title: 'Meeting Minutes (Agile)',
+        category: 'minutes',
+        description: 'Efficient meeting notes format with action items and decisions.',
+        content: '# Meeting Minutes\n\n**Date:** \n**Attendees:** \n\n## Agenda\n\n## Discussion Points\n\n## Decisions Made\n\n## Action Items\n- [ ] Task 1 (@Owner)\n- [ ] Task 2 (@Owner)',
+        author: 'Agile Coach',
+        downloads: 560,
+        likes: 120,
+        isOfficial: false,
+        createdAt: new Date('2024-03-05')
+    },
+    {
+        id: 'store-4',
+        title: 'Consulting Service Contract',
+        category: 'contract',
+        description: 'Standard consulting service agreement template.',
+        content: '# Service Agreement\n\nThis Agreement is made between...',
+        author: 'Legal Dept',
+        downloads: 340,
+        likes: 85,
+        isOfficial: true,
+        createdAt: new Date('2024-01-20')
+    },
+    {
+        id: 'store-5',
+        title: 'Daily Standup Notes',
+        category: 'report',
+        description: 'Simple template for tracking daily progress.',
+        content: '# Daily Standup\n\n- Yesterday:\n- Today:\n- Blockers:',
+        author: 'Dev Team',
+        downloads: 2100,
+        likes: 560,
+        isOfficial: false,
+        createdAt: new Date('2024-04-01')
+    }
+];
 
 export function WorkTemplateSection() {
-    // Mock Data for now, could be in DataProvider later
-    const [templates, setTemplates] = useState<Template[]>([
-        { id: '1', title: 'Standard Project Setup', category: 'project', content: 'Phase 1: Planning\nPhase 2: Design\nPhase 3: Dev', tags: ['Standard'] },
-        { id: '2', title: 'Daily Report Format', category: 'email', content: '- Accomplished:\n- Issues:\n- Plan:', tags: ['Report'] },
+    // Local state for "My Templates" (In a real app, this would persist)
+    const [myTemplates, setMyTemplates] = useState<DocumentTemplate[]>([
+        MOCK_STORE_TEMPLATES[0], // Pre-installed
+        MOCK_STORE_TEMPLATES[2]  // Pre-installed
     ]);
 
-    const [isAdding, setIsAdding] = useState(false);
-    const [newTemplate, setNewTemplate] = useState<Partial<Template>>({});
+    const [searchQuery, setSearchQuery] = useState('');
+    const [activeTab, setActiveTab] = useState('hub'); // Default to Hub to show off the store
+    const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
-    const handleAdd = () => {
-        if (!newTemplate.title) return;
-        setTemplates([...templates, {
-            id: Date.now().toString(),
-            title: newTemplate.title!,
-            category: (newTemplate.category as any) || 'task',
-            content: newTemplate.content || '',
-            tags: []
-        }]);
-        setIsAdding(false);
-        setNewTemplate({});
+    // Filter Logic
+    const filteredStoreTemplates = MOCK_STORE_TEMPLATES.filter(loading => {
+        const matchesSearch = loading.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            loading.description.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesCategory = selectedCategory ? loading.category === selectedCategory : true;
+        return matchesSearch && matchesCategory;
+    });
+
+    const handleDownload = (template: DocumentTemplate) => {
+        if (myTemplates.find(t => t.id === template.id)) {
+            toast.error("이미 다운로드한 템플릿입니다.");
+            return;
+        }
+        setMyTemplates(prev => [...prev, { ...template, id: `my-${Date.now()}` }]); // New ID for local copy
+        toast.success("템플릿이 보관함에 추가되었습니다.");
     };
 
     const handleDelete = (id: string) => {
-        setTemplates(templates.filter(t => t.id !== id));
+        setMyTemplates(prev => prev.filter(t => t.id !== id));
+        toast.success("템플릿이 삭제되었습니다.");
+    };
+
+    const getIconByCategory = (category: string) => {
+        switch (category) {
+            case 'report': return FileText;
+            case 'contract': return FileSignature;
+            case 'minutes': return FileCheck;
+            case 'proposal': return FileSpreadsheet;
+            default: return LayoutTemplate;
+        }
     };
 
     return (
         <div className="h-full flex flex-col space-y-6 animate-in fade-in duration-300">
-            <div className="flex justify-between items-center">
+            {/* Header */}
+            <div className="flex justify-between items-center shrink-0">
                 <div>
                     <h2 className="text-2xl font-bold flex items-center gap-2 text-slate-800">
-                        <LayoutTemplate className="w-6 h-6 text-primary" /> 템플릿 관리 (Templates)
+                        <LayoutTemplate className="w-6 h-6 text-primary" /> 문서 템플릿 허브 (Template Hub)
                     </h2>
                     <p className="text-muted-foreground text-sm mt-1">
-                        반복되는 업무를 위한 프로젝트, 태스크, 문서 템플릿을 관리하세요.
+                        전 세계 사용자들이 공유한 업무용 템플릿을 탐색하고 내 보관함에 저장하세요.
                     </p>
                 </div>
-                <Button onClick={() => setIsAdding(!isAdding)} className="gap-2">
-                    <Plus className="w-4 h-4" /> 템플릿 추가
-                </Button>
             </div>
 
-            {isAdding && (
-                <Card className="bg-slate-50 border-dashed">
-                    <CardContent className="p-4 space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
-                            <Input
-                                placeholder="템플릿 제목"
-                                value={newTemplate.title || ''}
-                                onChange={e => setNewTemplate({ ...newTemplate, title: e.target.value })}
-                            />
-                            <select
-                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                                value={newTemplate.category || 'task'}
-                                onChange={e => setNewTemplate({ ...newTemplate, category: e.target.value as any })}
-                            >
-                                <option value="project">프로젝트 템플릿</option>
-                                <option value="task">태스크 구조</option>
-                                <option value="email">문서/이메일 서식</option>
-                            </select>
-                        </div>
-                        <Textarea
-                            placeholder="템플릿 내용..."
-                            className="min-h-[100px]"
-                            value={newTemplate.content || ''}
-                            onChange={e => setNewTemplate({ ...newTemplate, content: e.target.value })}
-                        />
-                        <div className="flex justify-end gap-2">
-                            <Button variant="outline" onClick={() => setIsAdding(false)}>취소</Button>
-                            <Button onClick={handleAdd}>저장</Button>
-                        </div>
-                    </CardContent>
-                </Card>
-            )}
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col overflow-hidden">
+                <TabsList className="w-full justify-start border-b rounded-none h-12 bg-transparent p-0 space-x-6 shrink-0">
+                    <TabsTrigger
+                        value="hub"
+                        className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4 py-3 text-sm"
+                    >
+                        커뮤니티 허브
+                    </TabsTrigger>
+                    <TabsTrigger
+                        value="my"
+                        className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4 py-3 text-sm"
+                    >
+                        내 템플릿 ({myTemplates.length})
+                    </TabsTrigger>
+                </TabsList>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 overflow-y-auto pr-2 flex-1 content-start">
-                <Card className="hover:border-primary/50 cursor-pointer transition-colors border-dashed flex items-center justify-center p-6 text-muted-foreground bg-slate-50/50" onClick={() => setIsAdding(true)}>
-                    <div className="text-center">
-                        <Plus className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                        <span>새 템플릿 만들기</span>
-                    </div>
-                </Card>
-                {templates.map(template => (
-                    <Card key={template.id} className="group hover:shadow-md transition-all relative">
-                        <CardHeader className="pb-2">
-                            <div className="flex justify-between items-start">
-                                <div>
-                                    <Badge variant="secondary" className="mb-2">{template.category === 'project' ? '프로젝트' : (template.category === 'email' ? '문서' : '태스크')}</Badge>
-                                    <CardTitle className="text-lg">{template.title}</CardTitle>
+                <div className="flex-1 overflow-hidden mt-6 relative">
+                    {/* COMMUNITY HUB */}
+                    <TabsContent value="hub" className="h-full flex flex-col m-0 space-y-4 absolute inset-0">
+                        {/* Search & Filter */}
+                        <div className="flex gap-4 items-center shrink-0">
+                            <div className="relative flex-1 max-w-lg">
+                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                <Input
+                                    placeholder="템플릿 검색 (예: 회의록, 제안서...)"
+                                    className="pl-9"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                />
+                            </div>
+                            <div className="flex gap-2">
+                                {['all', 'report', 'proposal', 'minutes', 'contract'].map(cat => (
+                                    <Button
+                                        key={cat}
+                                        variant={selectedCategory === (cat === 'all' ? null : cat) ? "default" : "outline"}
+                                        size="sm"
+                                        onClick={() => setSelectedCategory(cat === 'all' ? null : cat)}
+                                        className="capitalize"
+                                    >
+                                        {cat === 'all' ? 'All' : cat}
+                                    </Button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Store Grid - Replaced ScrollArea with div */}
+                        <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 pb-10">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                                {filteredStoreTemplates.map(template => {
+                                    const Icon = getIconByCategory(template.category);
+                                    return (
+                                        <Card key={template.id} className="group hover:shadow-lg transition-all border-slate-200">
+                                            <CardHeader className="p-4 pb-2">
+                                                <div className="flex justify-between items-start mb-2">
+                                                    <Badge variant={template.isOfficial ? "default" : "secondary"} className="text-xs">
+                                                        {template.isOfficial ? "Official" : "Community"}
+                                                    </Badge>
+                                                    <div className="flex items-center text-xs text-muted-foreground gap-1">
+                                                        <Heart className="w-3 h-3 fill-red-100 text-red-500" /> {template.likes}
+                                                    </div>
+                                                </div>
+                                                <CardTitle className="text-base font-bold flex items-center gap-2">
+                                                    <div className="p-1.5 bg-primary/10 rounded-md text-primary">
+                                                        <Icon className="w-4 h-4" />
+                                                    </div>
+                                                    <span className="truncate">{template.title}</span>
+                                                </CardTitle>
+                                                <CardDescription className="text-xs line-clamp-2 min-h-[2.5em]">
+                                                    {template.description}
+                                                </CardDescription>
+                                            </CardHeader>
+                                            <CardContent className="p-4 pt-0">
+                                                <div className="flex items-center gap-2 mt-2 text-xs text-slate-500">
+                                                    <User className="w-3 h-3" /> {template.author}
+                                                    <span className="mx-1">•</span>
+                                                    <Download className="w-3 h-3" /> {template.downloads.toLocaleString()}
+                                                </div>
+                                            </CardContent>
+                                            <CardFooter className="p-3 bg-slate-50 border-t flex justify-end">
+                                                <Button size="sm" className="w-full gap-2" onClick={() => handleDownload(template)}>
+                                                    <Download className="w-4 h-4" /> 다운로드
+                                                </Button>
+                                            </CardFooter>
+                                        </Card>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    </TabsContent>
+
+                    {/* MY TEMPLATES */}
+                    <TabsContent value="my" className="h-full m-0 absolute inset-0">
+                        {/* Replaced ScrollArea with div */}
+                        <div className="h-full overflow-y-auto custom-scrollbar pr-2 pb-10">
+                            {myTemplates.length === 0 ? (
+                                <div className="flex flex-col items-center justify-center h-[400px] text-muted-foreground border-2 border-dashed rounded-xl">
+                                    <LayoutTemplate className="w-12 h-12 mb-4 opacity-20" />
+                                    <p className="text-lg font-medium">보관함이 비어있습니다</p>
+                                    <p className="text-sm">커뮤니티 허브에서 유용한 템플릿을 찾아보세요.</p>
+                                    <Button variant="link" onClick={() => setActiveTab('hub')}>허브로 이동</Button>
                                 </div>
-                                <Button variant="ghost" size="icon" onClick={() => handleDelete(template.id)} className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-red-500">
-                                    <Trash2 className="w-4 h-4" />
-                                </Button>
-                            </div>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="bg-slate-50 p-3 rounded-md text-xs text-slate-600 font-mono whitespace-pre-wrap line-clamp-4">
-                                {template.content}
-                            </div>
-                            <div className="mt-4 flex justify-end">
-                                <Button variant="outline" size="sm" className="w-full gap-2">
-                                    <Copy className="w-3.5 h-3.5" /> 사용하기 (복사)
-                                </Button>
-                            </div>
-                        </CardContent>
-                    </Card>
-                ))}
-            </div>
+                            ) : (
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    {myTemplates.map(template => {
+                                        const Icon = getIconByCategory(template.category);
+                                        return (
+                                            <Card key={template.id} className="group hover:border-primary/50 transition-all">
+                                                <CardHeader className="p-4">
+                                                    <div className="flex justify-between items-start">
+                                                        <Badge variant="outline">{template.category}</Badge>
+                                                        <div className="flex gap-1">
+                                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-red-500" onClick={() => handleDelete(template.id)}>
+                                                                <Trash2 className="w-4 h-4" />
+                                                            </Button>
+                                                        </div>
+                                                    </div>
+                                                    <CardTitle className="text-lg mt-2 flex items-center gap-2">
+                                                        <Icon className="w-5 h-5 text-primary" />
+                                                        {template.title}
+                                                    </CardTitle>
+                                                </CardHeader>
+                                                <CardContent className="p-4 pt-0">
+                                                    <div className="bg-slate-50 p-3 rounded-md text-xs text-slate-600 font-mono whitespace-pre-wrap line-clamp-4 h-[80px]">
+                                                        {template.content.slice(0, 150)}...
+                                                    </div>
+                                                </CardContent>
+                                                <CardFooter className="p-3 flex justify-end gap-2">
+                                                    <Button variant="outline" size="sm" className="w-full gap-2">
+                                                        <Copy className="w-3.5 h-3.5" /> 사용하기
+                                                    </Button>
+                                                </CardFooter>
+                                            </Card>
+                                        );
+                                    })}
+                                </div>
+                            )}
+                        </div>
+                    </TabsContent>
+                </div>
+            </Tabs>
         </div>
     );
 }

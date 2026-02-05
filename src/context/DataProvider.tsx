@@ -77,6 +77,10 @@ interface DataContextType {
     updateScrap: (scrap: Scrap) => void;
     deleteScrap: (id: string) => void;
 
+    // Work Mode
+    selectedWorkProjectId: string | null;
+    setSelectedWorkProjectId: (id: string | null) => void;
+
     // New Logs
     languageEntries: LanguageEntry[];
     setLanguageEntries: (entries: LanguageEntry[]) => void;
@@ -226,9 +230,9 @@ export function DataProvider({ children }: { children: ReactNode }) {
         { id: '2', title: 'Buy Groceries', completed: true, priority: 'low', projectId: '1' },
     ]);
     const [projects, setProjects] = useLocalStorage<Project[]>('projects', [
-        { id: '1', title: 'Personal Life', color: '#3b82f6', status: 'active', manager: 'Me', budget: { total: 0, spent: 0 }, startDate: new Date(), progress: 0 },
         { id: '2', title: 'Work Project', color: '#10b981', status: 'active', manager: 'Manager', budget: { total: 1000000, spent: 250000 }, startDate: new Date(), progress: 25 }
     ]);
+    const [selectedWorkProjectId, setSelectedWorkProjectId] = useState<string | null>(null);
     const [archiveDocuments, setArchiveDocuments] = useLocalStorage<ArchiveDocument[]>('archiveDocuments', []);
     const [goals, setGoals] = useLocalStorage<Goal[]>('goals', [
         {
@@ -838,6 +842,9 @@ export function DataProvider({ children }: { children: ReactNode }) {
             addMemo, updateMemo, deleteMemo,
             addPerson, updatePerson, deletePerson,
             addScrap, updateScrap, deleteScrap,
+
+            // Work Mode State
+            selectedWorkProjectId, setSelectedWorkProjectId,
 
             // New Logs
             languageEntries, setLanguageEntries,

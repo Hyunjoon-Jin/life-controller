@@ -24,10 +24,12 @@ import { ProjectKanban } from './ProjectKanban'; // Keep for sub-navigation or i
 
 type ViewMode = 'schedule' | 'project' | 'personnel' | 'workhours' | 'templates';
 
-export function WorkLayout() {
-    const [viewMode, setViewMode] = useState<ViewMode>('project'); // Default to Project Dashboard
-    const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
-    const { projects, deleteProject } = useData();
+export function WorkLayout({ viewMode: propViewMode }: { viewMode?: ViewMode }) {
+    const [localViewMode, setLocalViewMode] = useState<ViewMode>('project');
+    const { projects, deleteProject, selectedWorkProjectId, setSelectedWorkProjectId } = useData();
+
+    // specific view mode to use
+    const activeViewMode = propViewMode || localViewMode;
 
     // Dialog State
     const [isProjectDialogOpen, setIsProjectDialogOpen] = useState(false);
@@ -44,19 +46,19 @@ export function WorkLayout() {
         setIsProjectDialogOpen(true);
     };
 
-    const selectedProject = projects.find(p => p.id === selectedProjectId);
+    const selectedProject = projects.find(p => p.id === selectedWorkProjectId);
 
     return (
         <div className="h-full flex flex-col text-foreground">
             {/* Main Content Area */}
             <div className="flex-1 h-full min-w-0 bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-                {!selectedProjectId ? (
-                    <WorkMainDashboard onOpenProject={setSelectedProjectId} />
+                {!selectedWorkProjectId ? (
+                    <WorkMainDashboard onOpenProject={setSelectedWorkProjectId} />
                 ) : selectedProject ? (
                     <div className="h-full flex flex-col">
                         {/* Project Header / Navigation */}
                         <div className="flex items-center gap-4 p-4 border-b bg-white shrink-0">
-                            <Button variant="ghost" size="icon" onClick={() => setSelectedProjectId(null)}>
+                            <Button variant="ghost" size="icon" onClick={() => setSelectedWorkProjectId(null)}>
                                 <ArrowRight className="w-5 h-5 rotate-180" />
                             </Button>
                             <div>
@@ -66,39 +68,45 @@ export function WorkLayout() {
                                 </h2>
                             </div>
 
-                            {/* Project Tabs - Integrated in Header for cleanliness */}
-                            <div className="flex gap-1 bg-gray-100/50 p-1 rounded-xl ml-6">
-                                <button
-                                    onClick={() => setViewMode('project')}
-                                    className={cn("flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all", viewMode === 'project' ? "bg-white text-primary shadow-sm" : "text-muted-foreground hover:text-foreground")}
-                                >
-                                    <LayoutDashboard className="w-3.5 h-3.5" /> 대시보드
-                                </button>
-                                <button
-                                    onClick={() => setViewMode('schedule')}
-                                    className={cn("flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all", viewMode === 'schedule' ? "bg-white text-primary shadow-sm" : "text-muted-foreground hover:text-foreground")}
-                                >
-                                    <CalendarIcon className="w-3.5 h-3.5" /> 일정
-                                </button>
-                                <button
-                                    onClick={() => setViewMode('personnel')}
-                                    className={cn("flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all", viewMode === 'personnel' ? "bg-white text-primary shadow-sm" : "text-muted-foreground hover:text-foreground")}
-                                >
-                                    <Users className="w-3.5 h-3.5" /> 멤버
-                                </button>
-                                <button
-                                    onClick={() => setViewMode('workhours')}
-                                    className={cn("flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all", viewMode === 'workhours' ? "bg-white text-primary shadow-sm" : "text-muted-foreground hover:text-foreground")}
-                                >
-                                    <Clock className="w-3.5 h-3.5" /> 시간
-                                </button>
-                                <button
-                                    onClick={() => setViewMode('templates')}
-                                    className={cn("flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all", viewMode === 'templates' ? "bg-white text-primary shadow-sm" : "text-muted-foreground hover:text-foreground")}
-                                >
-                                    <LayoutTemplate className="w-3.5 h-3.5" /> 템플릿
-                                </button>
-                            </div>
+                            {/* Project Tabs - Only show if NO prop driven view mode is passed (legacy behavior) OR if we always want to show? 
+                                User asked to "keep only Project Management content" in Project Management tab.
+                                If we are in 'projects' tab (propViewMode='project'), and we hide tabs, we validly restrict content.
+                                If we are in 'calendar' tab (propViewMode='schedule'), we validly restrict content.
+                            */}
+                            {!propViewMode && (
+                                <div className="flex gap-1 bg-gray-100/50 p-1 rounded-xl ml-6">
+                                    <button
+                                        onClick={() => setLocalViewMode('project')}
+                                        className={cn("flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all", activeViewMode === 'project' ? "bg-white text-primary shadow-sm" : "text-muted-foreground hover:text-foreground")}
+                                    >
+                                        <LayoutDashboard className="w-3.5 h-3.5" /> 대시보드
+                                    </button>
+                                    <button
+                                        onClick={() => setLocalViewMode('schedule')}
+                                        className={cn("flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all", activeViewMode === 'schedule' ? "bg-white text-primary shadow-sm" : "text-muted-foreground hover:text-foreground")}
+                                    >
+                                        <CalendarIcon className="w-3.5 h-3.5" /> 일정
+                                    </button>
+                                    <button
+                                        onClick={() => setLocalViewMode('personnel')}
+                                        className={cn("flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all", activeViewMode === 'personnel' ? "bg-white text-primary shadow-sm" : "text-muted-foreground hover:text-foreground")}
+                                    >
+                                        <Users className="w-3.5 h-3.5" /> 멤버
+                                    </button>
+                                    <button
+                                        onClick={() => setLocalViewMode('workhours')}
+                                        className={cn("flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all", activeViewMode === 'workhours' ? "bg-white text-primary shadow-sm" : "text-muted-foreground hover:text-foreground")}
+                                    >
+                                        <Clock className="w-3.5 h-3.5" /> 시간
+                                    </button>
+                                    <button
+                                        onClick={() => setLocalViewMode('templates')}
+                                        className={cn("flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all", activeViewMode === 'templates' ? "bg-white text-primary shadow-sm" : "text-muted-foreground hover:text-foreground")}
+                                    >
+                                        <LayoutTemplate className="w-3.5 h-3.5" /> 템플릿
+                                    </button>
+                                </div>
+                            )}
 
                             <div className="ml-auto flex gap-2">
                                 <Button variant="outline" size="sm" onClick={() => handleEditProject(selectedProject)}>
@@ -112,17 +120,17 @@ export function WorkLayout() {
 
                         {/* Project Content */}
                         <div className="flex-1 overflow-y-auto custom-scrollbar p-6">
-                            {viewMode === 'project' && <ProjectDashboard project={selectedProject} />}
-                            {viewMode === 'schedule' && <GanttChart project={selectedProject} />}
-                            {viewMode === 'personnel' && <WorkPeopleSection project={selectedProject} />}
-                            {viewMode === 'workhours' && <TimeAnalytics project={selectedProject} />}
-                            {viewMode === 'templates' && <WorkTemplateSection />}
+                            {activeViewMode === 'project' && <ProjectDashboard project={selectedProject} />}
+                            {activeViewMode === 'schedule' && <GanttChart project={selectedProject} />}
+                            {activeViewMode === 'personnel' && <WorkPeopleSection project={selectedProject} />}
+                            {activeViewMode === 'workhours' && <TimeAnalytics project={selectedProject} />}
+                            {activeViewMode === 'templates' && <WorkTemplateSection />}
                         </div>
                     </div>
                 ) : (
                     <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
                         <p>프로젝트를 찾을 수 없습니다.</p>
-                        <Button variant="link" onClick={() => setSelectedProjectId(null)}>목록으로 돌아가기</Button>
+                        <Button variant="link" onClick={() => setSelectedWorkProjectId(null)}>목록으로 돌아가기</Button>
                     </div>
                 )}
             </div>

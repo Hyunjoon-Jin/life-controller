@@ -586,3 +586,17 @@ export type LanguageResource = {
     createdAt: Date;
     memo?: string;
 };
+
+export type DocumentTemplate = {
+    id: string;
+    title: string;
+    category: 'report' | 'proposal' | 'minutes' | 'contract' | 'other';
+    description: string;
+    content: string; // Markdown
+    author: string;
+    downloads: number;
+    likes: number;
+    tags?: string[];
+    isOfficial?: boolean;
+    createdAt: Date;
+};

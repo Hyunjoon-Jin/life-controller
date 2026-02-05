@@ -209,8 +209,8 @@ export default function Home() {
                 })()}
 
                 {activeTab === 'calendar' && (
-                  <div className="space-y-6 animate-in fade-in zoom-in-95 duration-200">
-                    <CalendarView />
+                  <div className="space-y-6 animate-in fade-in zoom-in-95 duration-200 h-full">
+                    {appMode === 'work' ? <WorkLayout viewMode="schedule" /> : <CalendarView />}
                   </div>
                 )}
                 {activeTab === 'tasks' && (
@@ -220,7 +220,7 @@ export default function Home() {
                 )}
                 {activeTab === 'projects' && (
                   <div className="h-full animate-in fade-in zoom-in-95 duration-200">
-                    <WorkLayout />
+                    <WorkLayout viewMode="project" />
                   </div>
                 )}
                 {activeTab === 'people' && (

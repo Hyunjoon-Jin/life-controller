@@ -34,7 +34,6 @@ import { useSession } from 'next-auth/react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { AppIcon } from './AppIcon';
 import { useWeather } from '@/hooks/useWeather';
-import { StockWidget } from '@/components/widgets/StockWidget';
 
 interface HomeDashboardProps {
     onNavigate: (mode: 'home' | 'schedule' | 'work') => void;
@@ -295,8 +294,6 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
                         )}
                     </div>
 
-                    {/* Stock Widget */}
-                    <StockWidget />
                 </div>
             </div>
 

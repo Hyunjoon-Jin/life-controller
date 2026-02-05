@@ -32,10 +32,10 @@ export function MegaMenuNav({ activeCategory, activeTab, onSelect, appMode = 'li
                             key={item.id}
                             onClick={() => onSelect('basic', item.id)}
                             className={cn(
-                                "flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all whitespace-nowrap",
+                                "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap",
                                 activeTab === item.id
                                     ? "bg-black text-white shadow-md"
-                                    : "bg-white border border-gray-100 text-gray-500 hover:bg-gray-50 hover:text-black hover:border-gray-300"
+                                    : "text-muted-foreground hover:bg-gray-100 hover:text-black"
                             )}
                         >
                             <item.icon className="w-4 h-4" />
