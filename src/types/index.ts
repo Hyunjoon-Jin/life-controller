@@ -132,6 +132,17 @@ export type Habit = {
     startDate?: Date;
     endDate?: Date;
     skippedDates?: string[]; // ISO Date strings (specific recurrences to skip)
+    // New: Event-like fields
+    type?: EventType;
+    priority?: EventPriority;
+    isMeeting?: boolean;
+    isAppointment?: boolean;
+    connectedProjectId?: string;
+    connectedGoalId?: string;
+    prepTime?: number; // Minutes
+    travelTime?: number; // Minutes
+    color?: string;
+    description?: string;
 };
 
 export type EventType = 'work' | 'personal' | 'study' | 'hobby' | 'health' | 'finance' | 'social' | 'travel' | 'meal' | 'vacation' | 'other';
@@ -168,6 +179,8 @@ export type CalendarEvent = {
     connectedGoalId?: string;    // New: Linked Goal
     prepTime?: number;           // New: Preparation time in minutes
     travelTime?: number;         // New: Travel time in minutes
+    habitId?: string;            // New: Source habit ID if auto-generated
+    isHabitEvent?: boolean;      // New: Flag for habit-generated events
 };
 
 export type Memo = {

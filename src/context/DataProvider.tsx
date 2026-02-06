@@ -398,9 +398,110 @@ export function DataProvider({ children }: { children: ReactNode }) {
         setGoals(deleteRecursive(goals));
     };
 
-    const addHabit = (habit: Habit) => setHabits([...habits, habit]);
-    const updateHabit = (updatedHabit: Habit) => setHabits(habits.map(h => h.id === updatedHabit.id ? updatedHabit : h));
-    const deleteHabit = (id: string) => setHabits(habits.filter(h => h.id !== id));
+    // Helper Function: Generate Calendar Events from Habit
+    const generateEventsFromHabit = (habit: Habit): CalendarEvent[] => {
+        // Only generate events if habit has both time and endTime
+        if (!habit.time || !habit.endTime) return [];
+
+        const generatedEvents: CalendarEvent[] = [];
+        const today = new Date();
+        const weekStart = startOfWeek(today, { weekStartsOn: 0 }); // Sunday
+        const weekEnd = endOfWeek(today, { weekStartsOn: 0 });
+        const daysToGenerate = eachDayOfInterval({ start: weekStart, end: weekEnd });
+
+        daysToGenerate.forEach(day => {
+            const dayOfWeek = day.getDay();
+
+            // Check if this habit should occur on this day
+            if (habit.days && !habit.days.includes(dayOfWeek)) return;
+
+            // Parse time strings
+            const [startHour, startMin] = habit.time!.split(':').map(Number);
+            const [endHour, endMin] = habit.endTime!.split(':').map(Number);
+
+            // Create start and end dates
+            const startDate = new Date(day);
+            startDate.setHours(startHour, startMin, 0, 0);
+
+            const endDate = new Date(day);
+            endDate.setHours(endHour, endMin, 0, 0);
+
+            // If end time is before start time, it means it ends the next day
+            if (endDate < startDate) {
+                endDate.setDate(endDate.getDate() + 1);
+            }
+
+            // Generate unique ID for this event instance
+            const eventId = `habit-${habit.id}-${format(day, 'yyyy-MM-dd')}`;
+
+            // Create calendar event with habit metadata
+            const event: CalendarEvent = {
+                id: eventId,
+                title: habit.title,
+                start: startDate,
+                end: endDate,
+                habitId: habit.id,
+                isHabitEvent: true,
+                type: habit.type,
+                priority: habit.priority,
+                isMeeting: habit.isMeeting,
+                isAppointment: habit.isAppointment,
+                connectedProjectId: habit.connectedProjectId,
+                connectedGoalId: habit.connectedGoalId,
+                prepTime: habit.prepTime,
+                travelTime: habit.travelTime,
+                color: habit.color,
+                description: habit.description
+            };
+
+            generatedEvents.push(event);
+        });
+
+        return generatedEvents;
+    };
+
+    const addHabit = (habit: Habit) => {
+        setHabits([...habits, habit]);
+
+        // Generate and add calendar events if habit has time slots
+        const newEvents = generateEventsFromHabit(habit);
+        if (newEvents.length > 0) {
+            setEvents([...events, ...newEvents]);
+        }
+    };
+
+    const updateHabit = (updatedHabit: Habit) => {
+        setHabits(habits.map(h => h.id === updatedHabit.id ? updatedHabit : h));
+
+        // Generate new events that should exist based on updated habit
+        const shouldExistEvents = generateEventsFromHabit(updatedHabit);
+
+        // Keep all existing events from this habit (user may have edited them)
+        const existingHabitEvents = events.filter(e => e.habitId === updatedHabit.id);
+        const existingEventIds = new Set(existingHabitEvents.map(e => e.id));
+
+        // Only add NEW events that don't already exist (preserves user edits to existing events)
+        const newEventsToAdd = shouldExistEvents.filter(e => !existingEventIds.has(e.id));
+
+        // Remove events that should no longer exist (e.g., if habit days changed from Mon-Fri to only Mon-Wed)
+        const shouldExistIds = new Set(shouldExistEvents.map(e => e.id));
+        const eventsToKeep = events.filter(e => {
+            // Keep non-habit events
+            if (e.habitId !== updatedHabit.id) return true;
+            // Keep habit events that should still exist
+            return shouldExistIds.has(e.id);
+        });
+
+        // Update events
+        setEvents([...eventsToKeep, ...newEventsToAdd]);
+    };
+
+    const deleteHabit = (id: string) => {
+        setHabits(habits.filter(h => h.id !== id));
+
+        // Remove all events generated from this habit
+        setEvents(events.filter(e => e.habitId !== id));
+    };
 
     const addEvent = (event: CalendarEvent) => setEvents([...events, event]);
     const updateEvent = (updatedEvent: CalendarEvent) => setEvents(events.map(e => e.id === updatedEvent.id ? updatedEvent : e));

@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useMemo } from 'react';
 import { useData } from '@/context/DataProvider';
 import { Memo } from '@/types';
 import { generateId, cn, safeFormat } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Plus, X, Trash2, Image as ImageIcon, Tag, Paperclip, Sparkles, Star, Target, Briefcase, Eye, Edit3 } from 'lucide-react';
+import { Plus, X, Trash2, Image as ImageIcon, Tag, Paperclip, Sparkles, Star, Target, Briefcase, Eye, Edit3, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -21,11 +21,14 @@ const COLORS = [
     { name: 'purple', value: 'bg-purple-200 text-purple-900 border-purple-300' },
 ];
 
+const MAX_PREVIEW_LENGTH = 150;
+
 export function IdeaBoard() {
     const { memos, addMemo, updateMemo, deleteMemo, projects, goals } = useData();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [editingMemo, setEditingMemo] = useState<Memo | null>(null);
     const [editMode, setEditMode] = useState<'edit' | 'preview'>('edit');
+    const [searchQuery, setSearchQuery] = useState('');
 
     // Form States
     const [title, setTitle] = useState('');
@@ -39,6 +42,30 @@ export function IdeaBoard() {
     const [isFavorite, setIsFavorite] = useState(false);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    // Filter memos based on search query
+    const filteredMemos = useMemo(() => {
+        if (!searchQuery.trim()) return memos;
+
+        const query = searchQuery.toLowerCase();
+        return memos.filter(memo => {
+            const titleMatch = memo.title?.toLowerCase().includes(query);
+            const contentMatch = memo.content.toLowerCase().includes(query);
+            const tagsMatch = memo.tags?.some(tag => tag.toLowerCase().includes(query));
+            const projectMatch = memo.connectedProjectId &&
+                projects.find(p => p.id === memo.connectedProjectId)?.title.toLowerCase().includes(query);
+            const goalMatch = memo.connectedGoalId &&
+                goals.find(g => g.id === memo.connectedGoalId)?.title.toLowerCase().includes(query);
+
+            return titleMatch || contentMatch || tagsMatch || projectMatch || goalMatch;
+        });
+    }, [memos, searchQuery, projects, goals]);
+
+    // Truncate content for preview
+    const truncateContent = (text: string, maxLength: number = MAX_PREVIEW_LENGTH) => {
+        if (text.length <= maxLength) return text;
+        return text.substring(0, maxLength) + '...';
+    };
 
     const handleOpen = (memo?: Memo) => {
         setEditMode('edit');
@@ -127,27 +154,50 @@ export function IdeaBoard() {
 
     return (
         <div className="h-full flex flex-col bg-card text-card-foreground rounded-3xl border border-transparent shadow-sm overflow-hidden">
-            <div className="p-6 border-b border-border flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                    <Sparkles className="w-5 h-5 text-primary" />
-                    <h2 className="text-xl font-bold">아이디어 보드</h2>
+            <div className="p-6 border-b border-border space-y-4">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        <Sparkles className="w-5 h-5 text-primary" />
+                        <h2 className="text-xl font-bold">아이디어 보드</h2>
+                    </div>
+                    <Button onClick={() => handleOpen()} size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl">
+                        <Plus className="w-4 h-4 mr-2" />
+                        새 메모
+                    </Button>
                 </div>
-                <Button onClick={() => handleOpen()} size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl">
-                    <Plus className="w-4 h-4 mr-2" />
-                    새 메모
-                </Button>
+
+                {/* Search Bar */}
+                <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                        placeholder="제목, 내용, 태그, 프로젝트, 목표로 검색..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="pl-10 bg-muted/50 border-transparent focus-visible:ring-primary/20"
+                    />
+                    {searchQuery && (
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7"
+                            onClick={() => setSearchQuery('')}
+                        >
+                            <X className="w-3.5 h-3.5" />
+                        </Button>
+                    )}
+                </div>
             </div>
 
             <div className="flex-1 p-6 overflow-y-auto custom-scrollbar">
-                {memos.length === 0 ? (
+                {filteredMemos.length === 0 ? (
                     <div className="flex flex-col items-center justify-center h-[300px] text-muted-foreground opacity-50">
-                        <span className="text-4xl mb-4">📝</span>
-                        <p>떠오르는 영감을 기록해보세요!</p>
+                        <span className="text-4xl mb-4">{searchQuery ? '🔍' : '📝'}</span>
+                        <p>{searchQuery ? '검색 결과가 없습니다.' : '떠오르는 영감을 기록해보세요!'}</p>
                     </div>
                 ) : (
                     <div className="columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-4 space-y-4">
                         <AnimatePresence>
-                            {(memos || []).sort((a, b) => (b.isFavorite ? 1 : 0) - (a.isFavorite ? 1 : 0)).map(memo => (
+                            {(filteredMemos || []).sort((a, b) => (b.isFavorite ? 1 : 0) - (a.isFavorite ? 1 : 0)).map(memo => (
                                 <motion.div
                                     layout
                                     initial={{ opacity: 0, scale: 0.9 }}
@@ -172,8 +222,8 @@ export function IdeaBoard() {
                                         </div>
                                     )}
 
-                                    <div className="text-sm whitespace-pre-wrap leading-relaxed opacity-90">
-                                        {memo.content}
+                                    <div className="text-sm whitespace-pre-wrap leading-relaxed opacity-90 min-h-[60px] line-clamp-4">
+                                        {truncateContent(memo.content)}
                                     </div>
 
                                     {(memo.connectedProjectId || memo.connectedGoalId) && (
@@ -276,7 +326,7 @@ export function IdeaBoard() {
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-1.5">
                                 <Label className="text-[10px] text-muted-foreground font-bold uppercase">연관 프로젝트</Label>
-                                <Select value={connectedProjectId} onValueChange={setConnectedProjectId}>
+                                <Select value={connectedProjectId || "none"} onValueChange={(value) => setConnectedProjectId(value === "none" ? undefined : value)}>
                                     <SelectTrigger className="h-9 bg-muted/50 border-transparent text-xs">
                                         <SelectValue placeholder="프로젝트 선택" />
                                     </SelectTrigger>
@@ -290,7 +340,7 @@ export function IdeaBoard() {
                             </div>
                             <div className="space-y-1.5">
                                 <Label className="text-[10px] text-muted-foreground font-bold uppercase">하위 목표</Label>
-                                <Select value={connectedGoalId} onValueChange={setConnectedGoalId}>
+                                <Select value={connectedGoalId || "none"} onValueChange={(value) => setConnectedGoalId(value === "none" ? undefined : value)}>
                                     <SelectTrigger className="h-9 bg-muted/50 border-transparent text-xs">
                                         <SelectValue placeholder="목표 선택" />
                                     </SelectTrigger>
