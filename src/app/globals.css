@@ -6,83 +6,88 @@
 
 @layer base {
   :root {
-    /* Toss Theme - Modern & Vivid */
-    --background: 210 14% 96%;
-    /* #F2F4F6 Cool Light Gray */
-    --foreground: 216 23% 13%;
-    /* #191F28 Toss Black */
+    /* Life Controller Premium Theme - Sophisticated Blue-Purple Palette */
+    --background: 210 20% 98%;
+    /* #F8F9FB Ultra Clean White-Blue */
+    --foreground: 222 47% 11%;
+    /* #0F172A Deep Slate for Strong Contrast */
 
     --card: 0 0% 100%;
-    /* White Base */
-    --card-foreground: 216 23% 13%;
+    /* Pure White Cards */
+    --card-foreground: 222 47% 11%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 216 23% 13%;
+    --popover-foreground: 222 47% 11%;
 
-    --primary: 215 91% 58%;
-    /* #3182F6 Toss Vivid Blue */
+    --primary: 217 91% 60%;
+    /* #3B82F6 Premium Blue - Trust & Professionalism */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 14% 96%;
-    /* Match BG for secondary buttons */
-    --secondary-foreground: 216 23% 13%;
+    --secondary: 263 70% 50%;
+    /* #8B5CF6 Royal Purple - Creativity & Premium */
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 210 14% 93%;
-    --muted-foreground: 213 11% 58%;
-    /* #8B95A1 Toss Cool Gray */
+    --muted: 210 20% 96%;
+    /* #F1F3F5 Subtle Gray */
+    --muted-foreground: 215 16% 47%;
+    /* #697586 Medium Gray for Readability */
 
-    --accent: 215 91% 95%;
-    /* Very light blue for hover */
-    --accent-foreground: 215 91% 58%;
+    --accent: 263 70% 95%;
+    /* Light Purple Tint */
+    --accent-foreground: 263 70% 50%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 98%;
+    /* #EF4444 Standard Red */
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 210 14% 89%;
-    /* #E5E8EB Soft Border */
-    --input: 210 14% 89%;
-    --ring: 215 91% 58%;
+    --border: 214 32% 91%;
+    /* #E2E8F0 Clean Border */
+    --input: 214 32% 91%;
+    --ring: 217 91% 60%;
 
-    --radius: 1.25rem;
-    /* 20px - Modern but not childish */
+    --radius: 1rem;
+    /* 16px - Modern & Clean */
   }
 
   .dark {
-    /* Dark Mode Theme - Enhanced Depth & Contrast */
-    --background: 224 71% 4%;
-    /* Slate 950 (Deepest) */
+    /* Life Controller Dark Mode - Deep Blue-Tinted Premium */
+    --background: 222 47% 8%;
+    /* #0A0F1A Deep Blue-Black */
     --foreground: 210 40% 98%;
-    /* Slate 50 (Brightest) */
+    /* #F8FAFC Crisp White */
 
     --card: 222 47% 11%;
-    /* Slate 900 (Slightly Lighter) */
+    /* #0F172A Elevated Cards */
     --card-foreground: 210 40% 98%;
 
     --popover: 222 47% 11%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 217 91% 60%;
-    /* Brighter Blue for visibility */
-    --primary-foreground: 222 47% 11.2%;
+    --primary: 217 91% 65%;
+    /* #60A5FA Brighter Blue for Dark BG */
+    --primary-foreground: 222 47% 11%;
 
-    --secondary: 217 32% 17%;
-    /* Slate 800 */
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 263 70% 60%;
+    /* #A78BFA Brighter Purple */
+    --secondary-foreground: 222 47% 11%;
 
-    --muted: 217 32% 17%;
-    --muted-foreground: 215 20% 75%;
-    /* Increased contrast (was 65%) */
+    --muted: 215 25% 15%;
+    /* #1E293B Subtle Elevation */
+    --muted-foreground: 215 16% 70%;
+    /* #94A3B8 High Contrast Gray */
 
-    --accent: 217 32% 17%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 215 25% 18%;
+    /* #1E293B Accent BG */
+    --accent-foreground: 217 91% 65%;
 
-    --destructive: 0 62% 30%;
+    --destructive: 0 72% 51%;
+    /* #EF4444 Vibrant Red */
     --destructive-foreground: 210 40% 98%;
 
-    --border: 217 32% 20%;
-    /* Slightly lighter border */
-    --input: 217 32% 17%;
-    --ring: 212 26% 87%;
+    --border: 215 25% 20%;
+    /* #1E293B Subtle Border */
+    --input: 215 25% 15%;
+    --ring: 217 91% 65%;
   }
 
   .gray {
@@ -176,5 +181,18 @@
 
   .rotate-y-180 {
     transform: rotateY(180deg);
+  }
+
+  /* Premium Gradient Utilities */
+  .gradient-primary {
+    background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+  }
+
+  .gradient-secondary {
+    background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
+  }
+
+  .gradient-accent {
+    background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
   }
 }

@@ -282,10 +282,10 @@ export function HabitTracker() {
                                                     }
                                                 }}
                                                 className={cn(
-                                                    "w-8 h-8 rounded-full text-xs font-medium transition-all border cursor-pointer select-none flex items-center justify-center",
+                                                    "w-9 h-9 rounded-full text-xs font-bold transition-all border-2 cursor-pointer select-none flex items-center justify-center",
                                                     isSelected
-                                                        ? "bg-primary text-primary-foreground border-primary shadow-sm scale-105"
-                                                        : "bg-white dark:bg-gray-800 text-muted-foreground border-border hover:bg-muted hover:scale-105"
+                                                        ? "bg-gradient-to-br from-blue-500 to-blue-600 text-white border-blue-600 shadow-lg shadow-blue-200 dark:shadow-blue-900/50 scale-110"
+                                                        : "bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-blue-950 hover:border-blue-300 hover:text-blue-600 hover:scale-105"
                                                 )}
                                             >
                                                 {day}
