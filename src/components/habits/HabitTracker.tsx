@@ -255,6 +255,7 @@ export function HabitTracker() {
                                     {['일', '월', '화', '수', '목', '금', '토'].map((day, idx) => (
                                         <button
                                             key={day}
+                                            type="button"
                                             onClick={() => {
                                                 if (newHabitDays.includes(idx)) {
                                                     setNewHabitDays(newHabitDays.filter(d => d !== idx));
