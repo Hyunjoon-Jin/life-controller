@@ -233,7 +233,13 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
                             icon={item.icon}
                             label={item.label}
                             colorClass={item.color}
-                            onClick={() => onQuickLink(item.mode as any, item.cat as any, item.tab)}
+                            onClick={() => {
+                                if (item.mode === 'work') {
+                                    onNavigate('work');
+                                } else {
+                                    onQuickLink(item.mode as any, item.cat as any, item.tab);
+                                }
+                            }}
                         />
                     ))}
                     <button
