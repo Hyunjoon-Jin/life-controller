@@ -388,7 +388,7 @@ export default function Home() {
             </div>
           </div>
         ) : (
-          <WorkLayout />
+          <WorkLayout viewMode="schedule" />
         )
       }
 
