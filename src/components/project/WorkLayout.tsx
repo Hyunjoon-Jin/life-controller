@@ -25,7 +25,7 @@ import { ProjectKanban } from './ProjectKanban'; // Keep for sub-navigation or i
 type ViewMode = 'schedule' | 'project' | 'personnel' | 'workhours' | 'templates';
 
 export function WorkLayout({ viewMode: propViewMode }: { viewMode?: ViewMode }) {
-    const [localViewMode, setLocalViewMode] = useState<ViewMode>('project');
+    const [localViewMode, setLocalViewMode] = useState<ViewMode>('schedule');
     const { projects, deleteProject, selectedWorkProjectId, setSelectedWorkProjectId } = useData();
 
     // specific view mode to use
