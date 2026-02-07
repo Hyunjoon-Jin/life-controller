@@ -85,7 +85,12 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen p-3 sm:p-4 md:p-6 lg:p-8 bg-background text-foreground flex flex-col">
+    <main className={cn(
+      "min-h-screen p-3 sm:p-4 md:p-6 lg:p-8 text-foreground flex flex-col transition-colors duration-500",
+      appMode === 'work'
+        ? "bg-gradient-to-br from-purple-50/50 via-background to-purple-50/30 dark:from-purple-950/10 dark:via-background dark:to-purple-900/5"
+        : "bg-gradient-to-br from-blue-50/40 via-background to-blue-50/20 dark:from-blue-950/10 dark:via-background dark:to-blue-900/5"
+    )}>
       {/* Mobile Header (Hidden on Desktop) */}
       <MobileHeader
         appMode={appMode}
@@ -100,7 +105,10 @@ export default function Home() {
       {/* Desktop Header (Hidden on Mobile) */}
       <header className="hidden md:flex mb-2 justify-between items-center w-full max-w-7xl mx-auto pt-2">
         <div className="flex items-center gap-4">
-          <button onClick={() => setMainMode('home')} className="hover:opacity-80 transition-opacity cursor-pointer">
+          <button onClick={() => {
+            setAppMode('life');
+            setMainMode('home');
+          }} className="hover:opacity-80 transition-opacity cursor-pointer">
             <Logo variant="full" className="scale-100" />
           </button>
 
@@ -129,7 +137,7 @@ export default function Home() {
                   : "text-gray-500 hover:text-gray-900 dark:text-gray-400"
               )}
             >
-              <Briefcase className="w-3 h-3 text-blue-500" /> 업무 모드
+              <Briefcase className="w-3 h-3 text-blue-500" /> 전체 메뉴
             </button>
           </div>
 

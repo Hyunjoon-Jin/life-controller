@@ -259,7 +259,7 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
             {/* 4. Feeds (Cards) */}
             <div className="space-y-4 animate-in fade-in slide-in-from-bottom-5 duration-700 delay-200">
                 {/* Row 1: Weather & Schedule */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     <div className="bg-white dark:bg-[#202022] rounded-[24px] p-5 shadow-sm flex flex-col justify-between min-h-[160px]">
                         <div className="flex justify-between items-start">
                             <div>
@@ -315,7 +315,7 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
                 </div>
 
                 {/* Row 2: Habits & Goals */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {/* Today's Habits */}
                     <div className="bg-white dark:bg-[#202022] rounded-[24px] p-5 shadow-sm flex flex-col min-h-[180px]">
                         <div className="flex justify-between items-start mb-4">
@@ -413,7 +413,7 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
                 </div>
 
                 {/* Row 3: Quick Actions & Quote */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {/* Quick Actions */}
                     <div className="bg-white dark:bg-[#202022] rounded-[24px] p-5 shadow-sm flex flex-col min-h-[140px]">
                         <div className="flex justify-between items-start mb-4">

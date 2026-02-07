@@ -122,7 +122,7 @@ export function MobileHeader({
 
                             {appMode === 'work' && (
                                 <div className="p-3 bg-blue-50 text-blue-700 rounded-lg text-sm text-center">
-                                    업무 모드 활성화됨 (기본 메뉴에서 '프로젝트 관리' 선택 가능)
+                                    전체 메뉴 활성화됨 (기본 메뉴에서 '프로젝트 관리' 선택 가능)
                                 </div>
                             )}
                         </div>

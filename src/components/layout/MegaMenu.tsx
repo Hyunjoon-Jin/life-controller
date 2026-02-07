@@ -23,7 +23,7 @@ export function MegaMenuNav({ activeCategory, activeTab, onSelect, appMode = 'li
             <div className="w-full relative z-50">
                 <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-2">
                     <div className="px-4 font-bold text-sm h-10 flex items-center bg-blue-50 text-blue-700 rounded-full cursor-default shrink-0">
-                        <span className="mr-1">💼</span> 업무 모드
+                        <span className="mr-1">💼</span> 전체 메뉴
                     </div>
                     <div className="h-4 w-[1px] bg-gray-200 mx-2" />
 
