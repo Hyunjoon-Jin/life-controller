@@ -23,7 +23,12 @@ import {
     GripVertical,
     NotebookPen,
     PiggyBank,
-    Settings2
+    Settings2,
+    FolderTree,
+    UsersRound,
+    Trophy,
+    Award,
+    Bookmark
 } from 'lucide-react';
 import { format, isValid } from 'date-fns';
 import { ko } from 'date-fns/locale';
@@ -44,17 +49,21 @@ interface HomeDashboardProps {
 const ALL_SHORTCUTS = [
     { id: 'calendar', label: '일정', icon: CalendarIcon, color: 'bg-blue-50 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400', mode: 'schedule', cat: 'basic', tab: 'calendar' },
     { id: 'tasks', label: '할일', icon: CheckSquare, color: 'bg-red-50 text-red-600 dark:bg-red-900/40 dark:text-red-400', mode: 'schedule', cat: 'basic', tab: 'tasks' },
-    { id: 'goals', label: '목표', icon: TrendingUp, color: 'bg-orange-50 text-orange-600 dark:bg-orange-900/40 dark:text-orange-400', mode: 'schedule', cat: 'growth', tab: 'goals' },
+    { id: 'projects', label: '프로젝트', icon: FolderTree, color: 'bg-purple-50 text-purple-600 dark:bg-purple-900/40 dark:text-purple-400', mode: 'schedule', cat: 'basic', tab: 'projects' },
+    { id: 'people', label: '인맥', icon: UsersRound, color: 'bg-teal-50 text-teal-600 dark:bg-teal-900/40 dark:text-teal-400', mode: 'schedule', cat: 'basic', tab: 'people' },
+    { id: 'goals', label: '목표', icon: Trophy, color: 'bg-orange-50 text-orange-600 dark:bg-orange-900/40 dark:text-orange-400', mode: 'schedule', cat: 'growth', tab: 'goals' },
     { id: 'reading', label: '독서', icon: BookOpen, color: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/40 dark:text-emerald-400', mode: 'schedule', cat: 'growth', tab: 'reading' },
     { id: 'language', label: '어학', icon: Languages, color: 'bg-indigo-50 text-indigo-600 dark:bg-indigo-900/40 dark:text-indigo-400', mode: 'schedule', cat: 'growth', tab: 'language' },
     { id: 'exercise', label: '운동', icon: Dumbbell, color: 'bg-cyan-50 text-cyan-600 dark:bg-cyan-900/40 dark:text-cyan-400', mode: 'schedule', cat: 'growth', tab: 'exercise' },
     { id: 'diet', label: '식단', icon: Utensils, color: 'bg-green-50 text-green-600 dark:bg-green-900/40 dark:text-green-400', mode: 'schedule', cat: 'growth', tab: 'diet' },
-    { id: 'ideas', label: '아이디어', icon: Lightbulb, color: 'bg-yellow-50 text-yellow-600 dark:bg-yellow-900/40 dark:text-yellow-400', mode: 'schedule', cat: 'record', tab: 'ideas' },
-    { id: 'work', label: '업무', icon: Briefcase, color: 'bg-slate-50 text-slate-600 dark:bg-slate-800 dark:text-slate-300', mode: 'work', cat: 'basic', tab: 'calendar' },
     { id: 'hobby', label: '취미', icon: Palette, color: 'bg-pink-50 text-pink-600 dark:bg-pink-900/40 dark:text-pink-400', mode: 'schedule', cat: 'growth', tab: 'hobby' },
-    { id: 'journal', label: '일기', icon: NotebookPen, color: 'bg-violet-50 text-violet-600 dark:bg-violet-900/40 dark:text-violet-400', mode: 'schedule', cat: 'record', tab: 'journal' },
-    { id: 'finance', label: '가계부', icon: PiggyBank, color: 'bg-amber-50 text-amber-600 dark:bg-amber-900/40 dark:text-amber-400', mode: 'schedule', cat: 'record', tab: 'finance' },
+    { id: 'learning', label: '학습', icon: Award, color: 'bg-fuchsia-50 text-fuchsia-600 dark:bg-fuchsia-900/40 dark:text-fuchsia-400', mode: 'schedule', cat: 'growth', tab: 'learning' },
     { id: 'portfolio', label: '커리어', icon: Briefcase, color: 'bg-orange-50 text-orange-600 dark:bg-orange-900/40 dark:text-orange-400', mode: 'schedule', cat: 'growth', tab: 'portfolio' },
+    { id: 'journal', label: '일기', icon: NotebookPen, color: 'bg-violet-50 text-violet-600 dark:bg-violet-900/40 dark:text-violet-400', mode: 'schedule', cat: 'record', tab: 'journal' },
+    { id: 'ideas', label: '아이디어', icon: Lightbulb, color: 'bg-yellow-50 text-yellow-600 dark:bg-yellow-900/40 dark:text-yellow-400', mode: 'schedule', cat: 'record', tab: 'ideas' },
+    { id: 'scraps', label: '스크랩', icon: Bookmark, color: 'bg-lime-50 text-lime-600 dark:bg-lime-900/40 dark:text-lime-400', mode: 'schedule', cat: 'record', tab: 'scraps' },
+    { id: 'ledger', label: '가계부', icon: PiggyBank, color: 'bg-amber-50 text-amber-600 dark:bg-amber-900/40 dark:text-amber-400', mode: 'schedule', cat: 'finance', tab: 'ledger' },
+    { id: 'work', label: '업무', icon: Briefcase, color: 'bg-slate-50 text-slate-600 dark:bg-slate-800 dark:text-slate-300', mode: 'work', cat: 'basic', tab: 'projects' },
 ] as const;
 
 export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
@@ -239,7 +248,7 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
             {/* 4. Feeds (Cards) */}
             <div className="space-y-4 animate-in fade-in slide-in-from-bottom-5 duration-700 delay-200">
                 {/* Weather & Info & Stock */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="bg-white dark:bg-[#202022] rounded-[24px] p-5 shadow-sm flex flex-col justify-between min-h-[160px]">
                         <div className="flex justify-between items-start">
                             <div>

@@ -373,7 +373,7 @@ export function WeekView({ currentDate, showProjectTasks, onDateClick }: { curre
                             {isToday(day) && (
                                 <div
                                     className="absolute left-0 right-0 border-t-2 border-red-500 z-50 pointer-events-none flex items-center"
-                                    style={{ top: `${((now.getHours() * 60 + now.getMinutes()) / 1440) * 100}%` }}
+                                    style={{ top: `${(now.getHours() * PIXELS_PER_HOUR) + (now.getMinutes() / 60) * PIXELS_PER_HOUR}px` }}
                                 >
                                     <div className="absolute -left-1.5 w-3 h-3 bg-red-500 rounded-full shadow-sm" />
                                 </div>

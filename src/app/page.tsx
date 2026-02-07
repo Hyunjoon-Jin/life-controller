@@ -118,7 +118,10 @@ export default function Home() {
               <Sparkles className="w-3 h-3 text-yellow-500" /> 일상 모드
             </button>
             <button
-              onClick={() => setAppMode('work')}
+              onClick={() => {
+                setAppMode('work');
+                setMainMode('work');
+              }}
               className={cn(
                 "px-3 py-1 rounded-full text-xs font-bold transition-all flex items-center gap-1.5",
                 appMode === 'work'
