@@ -179,7 +179,7 @@ export function HabitTracker() {
                     <Flame className="w-5 h-5 text-orange-500" /> 습관
                 </h2>
 
-                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen} modal={false}>
                     <DialogTrigger asChild>
                         <Button size="sm" variant="ghost" onClick={handleOpenCreate}><Plus className="w-4 h-4" /></Button>
                     </DialogTrigger>
@@ -256,7 +256,9 @@ export function HabitTracker() {
                                         <button
                                             key={day}
                                             type="button"
-                                            onClick={() => {
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
                                                 if (newHabitDays.includes(idx)) {
                                                     setNewHabitDays(newHabitDays.filter(d => d !== idx));
                                                 } else {
