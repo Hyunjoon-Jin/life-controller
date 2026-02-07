@@ -11,7 +11,10 @@ export function ScheduleSection() {
     const { events, tasks } = useData();
     const today = new Date();
 
-    const todayEvents = events.filter(e => isSameDay(new Date(e.start), today));
+    const todayEvents = events
+        .filter(e => isSameDay(new Date(e.start), today))
+        .filter(e => e.type === 'work' || e.isMeeting || e.isWorkLog || !!e.connectedProjectId)
+        .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
     const todayTasks = tasks.filter(t => !t.completed && (t.dueDate ? isSameDay(new Date(t.dueDate), today) : false));
 
     return (
