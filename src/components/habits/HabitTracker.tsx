@@ -249,43 +249,47 @@ export function HabitTracker() {
                             </div>
 
                             {/* Repeat Days */}
-                            <div className="space-y-2 relative z-10">
+                            <div className="space-y-2">
                                 <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">반복 요일</Label>
-                                <div className="flex justify-between gap-1 pointer-events-auto">
+                                <div className="flex justify-between gap-1">
                                     {['일', '월', '화', '수', '목', '금', '토'].map((day, idx) => {
-                                        console.log(`Rendering day ${day} (${idx}):`, {
-                                            isIncluded: newHabitDays.includes(idx),
-                                            currentDays: newHabitDays
-                                        });
+                                        const isSelected = newHabitDays.includes(idx);
                                         return (
-                                            <button
+                                            <div
                                                 key={day}
-                                                type="button"
-                                                onPointerDown={(e) => {
-                                                    console.log(`PointerDown on day ${day} (${idx})`);
-                                                    e.preventDefault();
-                                                    e.stopPropagation();
-                                                    const newDays = newHabitDays.includes(idx)
-                                                        ? newHabitDays.filter(d => d !== idx)
-                                                        : [...newHabitDays, idx];
-                                                    console.log('Setting new days:', newDays);
-                                                    setNewHabitDays(newDays);
+                                                role="button"
+                                                tabIndex={0}
+                                                onClick={() => {
+                                                    console.log(`Toggling day ${day} (${idx}), currently selected:`, isSelected);
+                                                    if (isSelected) {
+                                                        const filtered = newHabitDays.filter(d => d !== idx);
+                                                        console.log('Removing day, new array:', filtered);
+                                                        setNewHabitDays(filtered);
+                                                    } else {
+                                                        const added = [...newHabitDays, idx].sort();
+                                                        console.log('Adding day, new array:', added);
+                                                        setNewHabitDays(added);
+                                                    }
                                                 }}
-                                                onClick={(e) => {
-                                                    console.log(`Clicked day ${day} (${idx})`);
-                                                    e.preventDefault();
-                                                    e.stopPropagation();
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter' || e.key === ' ') {
+                                                        e.preventDefault();
+                                                        if (isSelected) {
+                                                            setNewHabitDays(newHabitDays.filter(d => d !== idx));
+                                                        } else {
+                                                            setNewHabitDays([...newHabitDays, idx].sort());
+                                                        }
+                                                    }
                                                 }}
                                                 className={cn(
-                                                    "w-8 h-8 rounded-full text-xs font-medium transition-colors border cursor-pointer relative z-10 pointer-events-auto touch-manipulation",
-                                                    newHabitDays.includes(idx)
-                                                        ? "bg-primary text-primary-foreground border-primary"
-                                                        : "bg-transparent text-muted-foreground border-border hover:bg-muted"
+                                                    "w-8 h-8 rounded-full text-xs font-medium transition-all border cursor-pointer select-none flex items-center justify-center",
+                                                    isSelected
+                                                        ? "bg-primary text-primary-foreground border-primary shadow-sm scale-105"
+                                                        : "bg-white dark:bg-gray-800 text-muted-foreground border-border hover:bg-muted hover:scale-105"
                                                 )}
-                                                style={{ pointerEvents: 'auto' }}
                                             >
                                                 {day}
-                                            </button>
+                                            </div>
                                         );
                                     })}
                                 </div>
