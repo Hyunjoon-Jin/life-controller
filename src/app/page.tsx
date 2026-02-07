@@ -85,7 +85,7 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen p-4 md:p-6 bg-background text-foreground flex flex-col">
+    <main className="min-h-screen p-3 sm:p-4 md:p-6 lg:p-8 bg-background text-foreground flex flex-col">
       {/* Mobile Header (Hidden on Desktop) */}
       <MobileHeader
         appMode={appMode}
@@ -98,7 +98,7 @@ export default function Home() {
       />
 
       {/* Desktop Header (Hidden on Mobile) */}
-      <header className="hidden md:flex mb-2 justify-between items-center w-full max-w-4xl mx-auto pt-2">
+      <header className="hidden md:flex mb-2 justify-between items-center w-full max-w-7xl mx-auto pt-2">
         <div className="flex items-center gap-4">
           <button onClick={() => setMainMode('home')} className="hover:opacity-80 transition-opacity cursor-pointer">
             <Logo variant="full" className="scale-100" />
@@ -148,7 +148,7 @@ export default function Home() {
       </header>
 
       {/* Global Navigation Bar (Hidden on Mobile) */}
-      <div className="hidden md:flex w-full max-w-4xl mx-auto mb-6 items-center justify-between gap-4 z-50 relative">
+      <div className="hidden md:flex w-full max-w-7xl mx-auto mb-6 items-center justify-between gap-4 z-50 relative">
         <div className="flex-1 min-w-0">
           <MegaMenuNav
             activeCategory={activeCategory}
@@ -167,9 +167,9 @@ export default function Home() {
         mainMode === 'home' ? (
           <HomeDashboard onNavigate={setMainMode} onQuickLink={handleQuickLink} />
         ) : mainMode === 'schedule' ? (
-          <div className="flex-1 grid grid-cols-1 md:grid-cols-12 gap-6 min-h-0">
+          <div className="flex-1 grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 lg:gap-8 min-h-0">
             {/* Left Column: Main Tabbed View (8 cols - widened) */}
-            <div className="md:col-span-12 lg:col-span-8 flex flex-col min-h-[800px]">
+            <div className="md:col-span-12 lg:col-span-9 xl:col-span-9 flex flex-col min-h-[600px] md:min-h-[800px]">
 
               {/* Content Area */}
               <div className="flex-1 relative">
@@ -352,7 +352,7 @@ export default function Home() {
             </div>
 
             {/* Right Column: Tools & Widgets (Desktop Only) */}
-            <div className="hidden md:flex md:col-span-12 lg:col-span-4 space-y-6 flex-col h-full overflow-y-auto custom-scrollbar pb-6">
+            <div className="hidden lg:flex lg:col-span-3 xl:col-span-3 space-y-4 md:space-y-6 flex-col h-full overflow-y-auto custom-scrollbar pb-6">
               <UpcomingTasks />
               <Pomodoro />
               <HabitTracker />

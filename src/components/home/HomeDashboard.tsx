@@ -124,7 +124,7 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
     };
 
     return (
-        <div className="flex flex-col gap-6 max-w-4xl mx-auto p-4 pb-20">
+        <div className="flex flex-col gap-4 sm:gap-6 max-w-7xl mx-auto p-3 sm:p-4 pb-20">
             {/* 1. Hero Section (Branding & Status) */}
             <div className="bg-gradient-to-br from-white to-gray-50 dark:from-[#202022] dark:to-[#1a1a1c] p-6 rounded-[32px] shadow-sm border border-gray-100 dark:border-gray-800 animate-in fade-in slide-in-from-bottom-2 duration-700 relative overflow-hidden">
                 {/* Decorative Background Element */}
@@ -212,7 +212,7 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
                     </Button>
                 </div>
 
-                <div className="grid grid-cols-4 md:grid-cols-5 gap-y-6 gap-x-2">
+                <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 xl:grid-cols-8 gap-y-6 gap-x-2">
                     {activeShortcuts.map(item => (
                         <AppIcon
                             key={item.id}
@@ -239,7 +239,7 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
             {/* 4. Feeds (Cards) */}
             <div className="space-y-4 animate-in fade-in slide-in-from-bottom-5 duration-700 delay-200">
                 {/* Weather & Info & Stock */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4">
                     <div className="bg-white dark:bg-[#202022] rounded-[24px] p-5 shadow-sm flex flex-col justify-between min-h-[160px]">
                         <div className="flex justify-between items-start">
                             <div>
