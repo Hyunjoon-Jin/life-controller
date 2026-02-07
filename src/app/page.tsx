@@ -103,27 +103,32 @@ export default function Home() {
       />
 
       {/* Desktop Header (Hidden on Mobile) */}
-      <header className="hidden md:flex mb-2 justify-between items-center w-full max-w-7xl mx-auto pt-2">
+      <header className={cn(
+        "hidden md:flex mb-2 justify-between items-center w-full max-w-7xl mx-auto pt-2 px-4 py-3 rounded-2xl transition-all duration-500",
+        appMode === 'work'
+          ? "bg-gradient-to-r from-purple-600 to-purple-700 shadow-lg shadow-purple-200 dark:shadow-purple-900/30"
+          : "bg-gradient-to-r from-blue-500 to-blue-600 shadow-lg shadow-blue-200 dark:shadow-blue-900/30"
+      )}>
         <div className="flex items-center gap-4">
           <button onClick={() => {
             setAppMode('life');
             setMainMode('home');
           }} className="hover:opacity-80 transition-opacity cursor-pointer">
-            <Logo variant="full" className="scale-100" />
+            <Logo variant="full" className="scale-100 brightness-0 invert" />
           </button>
 
           {/* Mode Toggle Switch */}
-          <div className="bg-gray-100 dark:bg-gray-800 p-1 rounded-full flex items-center">
+          <div className="bg-white/20 dark:bg-black/20 p-1 rounded-full flex items-center backdrop-blur-sm">
             <button
               onClick={() => setAppMode('life')}
               className={cn(
                 "px-3 py-1 rounded-full text-xs font-bold transition-all flex items-center gap-1.5",
                 appMode === 'life'
-                  ? "bg-white dark:bg-gray-700 text-black dark:text-white shadow-sm"
-                  : "text-gray-500 hover:text-gray-900 dark:text-gray-400"
+                  ? "bg-white text-blue-600 shadow-md"
+                  : "text-white/70 hover:text-white"
               )}
             >
-              <Sparkles className="w-3 h-3 text-yellow-500" /> 일상 모드
+              <Sparkles className="w-3 h-3" /> 일상 모드
             </button>
             <button
               onClick={() => {
@@ -133,23 +138,23 @@ export default function Home() {
               className={cn(
                 "px-3 py-1 rounded-full text-xs font-bold transition-all flex items-center gap-1.5",
                 appMode === 'work'
-                  ? "bg-white dark:bg-gray-700 text-black dark:text-white shadow-sm"
-                  : "text-gray-500 hover:text-gray-900 dark:text-gray-400"
+                  ? "bg-white text-purple-600 shadow-md"
+                  : "text-white/70 hover:text-white"
               )}
             >
-              <Briefcase className="w-3 h-3 text-blue-500" /> 전체 메뉴
+              <Briefcase className="w-3 h-3" /> 업무 모드
             </button>
           </div>
 
-          <div className="flex items-center text-sm font-medium text-muted-foreground border-l pl-4 h-4 leading-none">
+          <div className="flex items-center text-sm font-medium text-white/90 border-l border-white/30 pl-4 h-4 leading-none">
             {todayDate}
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" onClick={() => setMainMode('home')} className={cn("rounded-full", mainMode === 'home' && "bg-gray-100 text-black")}>
+          <Button variant="ghost" size="icon" onClick={() => setMainMode('home')} className={cn("rounded-full text-white/90 hover:text-white hover:bg-white/20", mainMode === 'home' && "bg-white/30 text-white")}>
             <HomeIcon className="w-5 h-5" />
           </Button>
-          <Button variant="ghost" size="icon" onClick={() => setIsGuideOpen(true)} className="text-muted-foreground rounded-full">
+          <Button variant="ghost" size="icon" onClick={() => setIsGuideOpen(true)} className="text-white/70 hover:text-white hover:bg-white/20 rounded-full">
             <HelpCircle className="w-5 h-5" />
           </Button>
           <CloudSyncStatus />
