@@ -138,7 +138,7 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
     };
 
     return (
-        <div className="flex flex-col gap-4 sm:gap-6 max-w-7xl mx-auto p-3 sm:p-4 pb-20">
+        <div className="flex flex-col gap-4 sm:gap-6 w-full max-w-7xl mx-auto pb-20">
             {/* 1. Hero Section (Branding & Status) */}
             <div className="bg-gradient-to-br from-white to-gray-50 dark:from-[#202022] dark:to-[#1a1a1c] p-6 rounded-[32px] shadow-sm border border-gray-100 dark:border-gray-800 animate-in fade-in slide-in-from-bottom-2 duration-700 relative overflow-hidden">
                 {/* Decorative Background Element */}
