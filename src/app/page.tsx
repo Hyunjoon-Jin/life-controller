@@ -202,8 +202,13 @@ export default function Home() {
           <HomeDashboard onNavigate={setMainMode} onQuickLink={handleQuickLink} />
         ) : mainMode === 'schedule' ? (
           <div className="flex-1 grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 lg:gap-8 min-h-0">
-            {/* Left Column: Main Tabbed View (8 cols - widened) */}
-            <div className="md:col-span-12 lg:col-span-9 xl:col-span-9 flex flex-col min-h-[600px] md:min-h-[800px]">
+            {/* Left Column: Main Tabbed View */}
+            <div className={cn(
+              "flex flex-col min-h-[600px] md:min-h-[800px]",
+              activeTab === 'calendar'
+                ? "md:col-span-12 lg:col-span-9 xl:col-span-9" // Dashboard: 9 cols with sidebar
+                : "md:col-span-12 lg:col-span-12 xl:col-span-12" // Others: Full width
+            )}>
 
               {/* Content Area */}
               <div className="flex-1 relative">
@@ -385,12 +390,14 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Right Column: Tools & Widgets (Desktop Only) */}
-            <div className="hidden lg:flex lg:col-span-3 xl:col-span-3 space-y-4 md:space-y-6 flex-col h-full overflow-y-auto custom-scrollbar pb-6">
-              <UpcomingTasks />
-              <Pomodoro />
-              <HabitTracker />
-            </div>
+            {/* Right Column: Tools & Widgets (Desktop Only) - Show ONLY on Dashboard */}
+            {activeTab === 'calendar' && (
+              <div className="hidden lg:flex lg:col-span-3 xl:col-span-3 space-y-4 md:space-y-6 flex-col h-full overflow-y-auto custom-scrollbar pb-6">
+                <UpcomingTasks />
+                <Pomodoro />
+                <HabitTracker />
+              </div>
+            )}
           </div>
         ) : (
           <WorkLayout viewMode="schedule" />
