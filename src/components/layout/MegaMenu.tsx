@@ -52,7 +52,7 @@ export function MegaMenuNav({ activeCategory, activeTab, onSelect, appMode = 'li
     return (
         <div className="w-full relative z-50" onMouseLeave={() => setIsOpen(false)}>
             {/* Trigger Bar */}
-            <div className="flex items-center gap-1 overflow-x-auto no-scrollbar py-2">
+            <div className="flex items-center gap-1 overflow-x-auto no-scrollbar py-2 px-4 md:px-6">
                 <Button
                     variant="ghost"
                     className={cn(
