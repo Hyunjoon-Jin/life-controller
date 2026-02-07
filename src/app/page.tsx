@@ -86,10 +86,8 @@ export default function Home() {
 
   return (
     <main className={cn(
-      "min-h-screen p-3 sm:p-4 md:p-6 lg:p-8 text-foreground flex flex-col transition-colors duration-500",
-      appMode === 'work'
-        ? "bg-gradient-to-br from-purple-50/50 via-background to-purple-50/30 dark:from-purple-950/10 dark:via-background dark:to-purple-900/5"
-        : "bg-gradient-to-br from-blue-50/40 via-background to-blue-50/20 dark:from-blue-950/10 dark:via-background dark:to-blue-900/5"
+      "min-h-screen p-3 sm:p-4 md:p-6 lg:p-8 flex flex-col transition-all duration-500",
+      appMode === 'work' ? "mode-work bg-[#F3E5F5]" : "mode-life bg-[#E0F2F1]"
     )}>
       {/* Mobile Header (Hidden on Desktop) */}
       <MobileHeader
@@ -104,31 +102,34 @@ export default function Home() {
 
       {/* Desktop Header (Hidden on Mobile) */}
       <header className={cn(
-        "hidden md:flex mb-2 justify-between items-center w-full max-w-7xl mx-auto pt-2 px-4 py-3 rounded-2xl transition-all duration-500",
+        "hidden md:flex mb-4 justify-between items-center w-full max-w-7xl mx-auto px-6 py-4 rounded-3xl transition-all duration-500 shadow-md border-2",
         appMode === 'work'
-          ? "bg-gradient-to-r from-purple-600 to-purple-700 shadow-lg shadow-purple-200 dark:shadow-purple-900/30"
-          : "bg-gradient-to-r from-blue-500 to-blue-600 shadow-lg shadow-blue-200 dark:shadow-blue-900/30"
+          ? "bg-[#E1BEE7] border-[#CE93D8]"
+          : "bg-[#B2DFDB] border-[#80CBC4]"
       )}>
         <div className="flex items-center gap-4">
           <button onClick={() => {
             setAppMode('life');
             setMainMode('home');
           }} className="hover:opacity-80 transition-opacity cursor-pointer">
-            <Logo variant="full" className="scale-100 brightness-0 invert" />
+            <Logo variant="full" className="scale-100" />
           </button>
 
           {/* Mode Toggle Switch */}
-          <div className="bg-white/20 dark:bg-black/20 p-1 rounded-full flex items-center backdrop-blur-sm">
+          <div className={cn(
+            "p-1.5 rounded-full flex items-center border-2",
+            appMode === 'work' ? "bg-[#F3E5F5] border-[#CE93D8]" : "bg-[#E0F2F1] border-[#80CBC4]"
+          )}>
             <button
               onClick={() => setAppMode('life')}
               className={cn(
-                "px-3 py-1 rounded-full text-xs font-bold transition-all flex items-center gap-1.5",
+                "px-4 py-2 rounded-full text-sm font-bold transition-all flex items-center gap-2",
                 appMode === 'life'
-                  ? "bg-white text-blue-600 shadow-md"
-                  : "text-white/70 hover:text-white"
+                  ? "bg-[#009688] text-white shadow-lg"
+                  : "text-gray-600 hover:bg-white/50"
               )}
             >
-              <Sparkles className="w-3 h-3" /> 일상 모드
+              <Sparkles className="w-4 h-4" /> 일상 모드
             </button>
             <button
               onClick={() => {
@@ -136,25 +137,37 @@ export default function Home() {
                 setMainMode('work');
               }}
               className={cn(
-                "px-3 py-1 rounded-full text-xs font-bold transition-all flex items-center gap-1.5",
+                "px-4 py-2 rounded-full text-sm font-bold transition-all flex items-center gap-2",
                 appMode === 'work'
-                  ? "bg-white text-purple-600 shadow-md"
-                  : "text-white/70 hover:text-white"
+                  ? "bg-[#9C27B0] text-white shadow-lg"
+                  : "text-gray-600 hover:bg-white/50"
               )}
             >
-              <Briefcase className="w-3 h-3" /> 업무 모드
+              <Briefcase className="w-4 h-4" /> 업무 모드
             </button>
           </div>
 
-          <div className="flex items-center text-sm font-medium text-white/90 border-l border-white/30 pl-4 h-4 leading-none">
+          <div className={cn(
+            "flex items-center text-sm font-bold border-l-2 pl-4 h-5 leading-none",
+            appMode === 'work' ? "text-[#4A148C] border-[#CE93D8]" : "text-[#004D40] border-[#80CBC4]"
+          )}>
             {todayDate}
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" onClick={() => setMainMode('home')} className={cn("rounded-full text-white/90 hover:text-white hover:bg-white/20", mainMode === 'home' && "bg-white/30 text-white")}>
+          <Button variant="ghost" size="icon" onClick={() => setMainMode('home')} className={cn(
+            "rounded-full font-bold transition-all",
+            appMode === 'work'
+              ? "text-[#4A148C] hover:bg-[#CE93D8]/30"
+              : "text-[#004D40] hover:bg-[#80CBC4]/30",
+            mainMode === 'home' && (appMode === 'work' ? "bg-[#CE93D8]/40" : "bg-[#80CBC4]/40")
+          )}>
             <HomeIcon className="w-5 h-5" />
           </Button>
-          <Button variant="ghost" size="icon" onClick={() => setIsGuideOpen(true)} className="text-white/70 hover:text-white hover:bg-white/20 rounded-full">
+          <Button variant="ghost" size="icon" onClick={() => setIsGuideOpen(true)} className={cn(
+            "rounded-full transition-all",
+            appMode === 'work' ? "text-[#4A148C]/70 hover:bg-[#CE93D8]/30" : "text-[#004D40]/70 hover:bg-[#80CBC4]/30"
+          )}>
             <HelpCircle className="w-5 h-5" />
           </Button>
           <CloudSyncStatus />
