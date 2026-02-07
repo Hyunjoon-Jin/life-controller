@@ -201,7 +201,7 @@ export default function Home() {
         mainMode === 'home' ? (
           <HomeDashboard onNavigate={setMainMode} onQuickLink={handleQuickLink} />
         ) : mainMode === 'schedule' ? (
-          <div className="flex-1 grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 lg:gap-8 min-h-0 -mx-0 md:-mx-2 lg:-mx-4">
+          <div className="flex-1 grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 lg:gap-8 min-h-0 px-4">
             {/* Left Column: Main Tabbed View */}
             <div className={cn(
               "flex flex-col min-h-[600px] md:min-h-[800px]",
