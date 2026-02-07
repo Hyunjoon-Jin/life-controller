@@ -269,7 +269,7 @@ export function IdeaBoard() {
                 )}
             </div>
 
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen} modal={false}>
                 <DialogContent className="sm:max-w-[600px]">
                     <DialogHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <DialogTitle className="text-xl font-bold">
