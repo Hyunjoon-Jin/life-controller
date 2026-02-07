@@ -62,19 +62,24 @@ export default function Home() {
   }, []);
 
   // When switching directly to 'Work Mode' via toggle, ensure we are in a compatible view
+  // Effect 1: Handle entering Work Mode
   useEffect(() => {
     if (appMode === 'work') {
-      // Switch to 'calendar' (Main Work Dashboard) when entering Work Mode
+      // Only reset to Dashboard when AppMode changes to Work
       setActiveCategory('basic');
       setActiveTab('calendar');
+    }
+  }, [appMode]); // Critical: Only run when appMode changes
 
-    } else if (appMode === 'life') {
+  // Effect 2: Handle Life Mode safety check
+  useEffect(() => {
+    if (appMode === 'life') {
       // If switching to Life Mode while in Work Management, go back to Home
       if (mainMode === 'work') {
         setMainMode('home');
       }
     }
-  }, [appMode, activeCategory, mainMode]);
+  }, [appMode, mainMode]);
 
   const handleQuickLink = (mode: 'home' | 'schedule' | 'work', category: CategoryType, tab: string) => {
     setMainMode(mode);
