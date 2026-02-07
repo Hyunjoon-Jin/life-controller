@@ -64,7 +64,7 @@ export default function Home() {
   // When switching directly to 'Work Mode' via toggle, ensure we are in a compatible view
   useEffect(() => {
     if (appMode === 'work') {
-      // ALWAYS switch to 'calendar' (Project Schedule/Dashboard) when entering Work Mode
+      // Switch to 'calendar' (Main Work Dashboard) when entering Work Mode
       setActiveCategory('basic');
       setActiveTab('calendar');
 

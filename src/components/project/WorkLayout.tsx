@@ -49,7 +49,7 @@ export function WorkLayout({ viewMode: propViewMode }: { viewMode?: ViewMode }) 
     const selectedProject = projects.find(p => p.id === selectedWorkProjectId);
 
     return (
-        <div className="h-full flex flex-col text-foreground">
+        <div className="h-full flex flex-col text-foreground w-full max-w-7xl mx-auto">
             {/* Main Content Area */}
             <div className="flex-1 h-full min-w-0 bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
                 {!selectedWorkProjectId ? (
