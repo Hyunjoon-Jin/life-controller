@@ -28,7 +28,12 @@ import {
     UsersRound,
     Trophy,
     Award,
-    Bookmark
+    Bookmark,
+    Flame,
+    Target,
+    Zap,
+    Quote,
+    Sparkles
 } from 'lucide-react';
 import { format, isValid } from 'date-fns';
 import { ko } from 'date-fns/locale';
@@ -67,7 +72,7 @@ const ALL_SHORTCUTS = [
 ] as const;
 
 export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
-    const { events, tasks, userProfile, homeShortcuts, setHomeShortcuts } = useData();
+    const { events, tasks, userProfile, homeShortcuts, setHomeShortcuts, habits, goals } = useData();
     const { data: session } = useSession();
     const [currentTime, setCurrentTime] = useState<Date | null>(null);
     const { weather, loading: weatherLoading, getWeatherIcon, getWeatherLabel } = useWeather();
@@ -247,7 +252,7 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
 
             {/* 4. Feeds (Cards) */}
             <div className="space-y-4 animate-in fade-in slide-in-from-bottom-5 duration-700 delay-200">
-                {/* Weather & Info & Stock */}
+                {/* Row 1: Weather & Schedule */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="bg-white dark:bg-[#202022] rounded-[24px] p-5 shadow-sm flex flex-col justify-between min-h-[160px]">
                         <div className="flex justify-between items-start">
@@ -277,7 +282,6 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
                                     <div key={event.id} className="flex items-center gap-3 p-2 rounded-xl bg-gray-50/50 dark:bg-black/20 text-sm">
                                         <div className="flex flex-col items-center min-w-[50px] text-xs font-medium text-muted-foreground border-r pr-3">
                                             <span>{format(new Date(event.start), 'HH:mm')}</span>
-                                            {/* ~ {format(new Date(event.end), 'HH:mm')} */}
                                         </div>
                                         <div className="flex-1 truncate">
                                             <p className="font-semibold text-gray-800 dark:text-gray-200 truncate">{event.title}</p>
@@ -302,7 +306,170 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
                             </Button>
                         )}
                     </div>
+                </div>
 
+                {/* Row 2: Habits & Goals */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {/* Today's Habits */}
+                    <div className="bg-white dark:bg-[#202022] rounded-[24px] p-5 shadow-sm flex flex-col min-h-[180px]">
+                        <div className="flex justify-between items-start mb-4">
+                            <div>
+                                <h3 className="font-bold text-lg text-[#333D4B] dark:text-gray-200">오늘의 습관</h3>
+                                <p className="text-[#8B95A1] text-sm mt-1">습관을 지키고 성장하세요</p>
+                            </div>
+                            <Flame className="w-8 h-8 text-orange-500" />
+                        </div>
+
+                        {(() => {
+                            const todayHabits = habits.filter(h => {
+                                const today = format(currentTime || new Date(), 'yyyy-MM-dd');
+                                if (!h.days || h.days.length === 0) return true;
+                                const dayOfWeek = (currentTime || new Date()).getDay();
+                                return h.days.includes(dayOfWeek);
+                            });
+                            const completedCount = todayHabits.filter(h => h.completedDates.includes(format(currentTime || new Date(), 'yyyy-MM-dd'))).length;
+                            const totalCount = todayHabits.length;
+                            const percentage = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+
+                            return (
+                                <div className="flex-1 flex flex-col justify-center">
+                                    <div className="flex items-center justify-between mb-3">
+                                        <span className="text-sm font-medium text-gray-600 dark:text-gray-400">완료율</span>
+                                        <span className="text-2xl font-bold text-primary">{percentage}%</span>
+                                    </div>
+                                    <div className="w-full bg-gray-100 dark:bg-gray-800 rounded-full h-3 overflow-hidden">
+                                        <div
+                                            className="h-full bg-gradient-to-r from-orange-400 to-orange-600 transition-all duration-500 rounded-full"
+                                            style={{ width: `${percentage}%` }}
+                                        />
+                                    </div>
+                                    <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
+                                        <span>{completedCount}/{totalCount} 습관 완료</span>
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            className="h-6 text-xs"
+                                            onClick={() => onQuickLink('schedule', 'basic', 'calendar')}
+                                        >
+                                            보기 <ArrowRight className="w-3 h-3 ml-1" />
+                                        </Button>
+                                    </div>
+                                </div>
+                            );
+                        })()}
+                    </div>
+
+                    {/* Active Goals */}
+                    <div className="bg-white dark:bg-[#202022] rounded-[24px] p-5 shadow-sm flex flex-col min-h-[180px]">
+                        <div className="flex justify-between items-start mb-4">
+                            <div>
+                                <h3 className="font-bold text-lg text-[#333D4B] dark:text-gray-200">활동 중인 목표</h3>
+                                <p className="text-[#8B95A1] text-sm mt-1">목표를 향해 나아가세요</p>
+                            </div>
+                            <Trophy className="w-8 h-8 text-yellow-500" />
+                        </div>
+
+                        <div className="flex-1 overflow-y-auto custom-scrollbar space-y-3 pr-2 -mr-2">
+                            {goals.slice(0, 3).map(goal => {
+                                const progress = goal.progress || 0;
+                                return (
+                                    <div key={goal.id} className="space-y-1">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate flex-1">{goal.title}</span>
+                                            <span className="text-xs font-bold text-primary ml-2">{progress}%</span>
+                                        </div>
+                                        <div className="w-full bg-gray-100 dark:bg-gray-800 rounded-full h-1.5 overflow-hidden">
+                                            <div
+                                                className="h-full bg-gradient-to-r from-blue-400 to-blue-600 transition-all duration-500"
+                                                style={{ width: `${progress}%` }}
+                                            />
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                            {goals.length === 0 && (
+                                <div className="h-full flex flex-col items-center justify-center text-muted-foreground text-sm opacity-60">
+                                    <p>목표를 설정해보세요</p>
+                                </div>
+                            )}
+                        </div>
+
+                        {goals.length > 3 && (
+                            <Button
+                                variant="ghost"
+                                className="w-full mt-2 h-6 text-xs text-muted-foreground hover:bg-gray-100 dark:hover:bg-gray-800"
+                                onClick={() => onQuickLink('schedule', 'growth', 'goals')}
+                            >
+                                전체 보기 <ArrowRight className="w-3 h-3 ml-1" />
+                            </Button>
+                        )}
+                    </div>
+                </div>
+
+                {/* Row 3: Quick Actions & Quote */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {/* Quick Actions */}
+                    <div className="bg-white dark:bg-[#202022] rounded-[24px] p-5 shadow-sm flex flex-col min-h-[140px]">
+                        <div className="flex justify-between items-start mb-4">
+                            <div>
+                                <h3 className="font-bold text-lg text-[#333D4B] dark:text-gray-200">빠른 액션</h3>
+                                <p className="text-[#8B95A1] text-sm mt-1">즐거운 생산성을 실현하세요</p>
+                            </div>
+                            <Zap className="w-8 h-8 text-purple-500" />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2">
+                            <Button
+                                variant="outline"
+                                className="h-12 flex flex-col items-center justify-center gap-1 border-2 hover:border-primary hover:bg-primary/5"
+                                onClick={() => onQuickLink('schedule', 'basic', 'calendar')}
+                            >
+                                <CalendarIcon className="w-4 h-4" />
+                                <span className="text-xs font-medium">일정 추가</span>
+                            </Button>
+                            <Button
+                                variant="outline"
+                                className="h-12 flex flex-col items-center justify-center gap-1 border-2 hover:border-primary hover:bg-primary/5"
+                                onClick={() => onQuickLink('schedule', 'basic', 'tasks')}
+                            >
+                                <CheckSquare className="w-4 h-4" />
+                                <span className="text-xs font-medium">할일 추가</span>
+                            </Button>
+                            <Button
+                                variant="outline"
+                                className="h-12 flex flex-col items-center justify-center gap-1 border-2 hover:border-primary hover:bg-primary/5"
+                                onClick={() => onQuickLink('schedule', 'record', 'ideas')}
+                            >
+                                <Lightbulb className="w-4 h-4" />
+                                <span className="text-xs font-medium">메모 작성</span>
+                            </Button>
+                            <Button
+                                variant="outline"
+                                className="h-12 flex flex-col items-center justify-center gap-1 border-2 hover:border-primary hover:bg-primary/5"
+                                onClick={() => onQuickLink('schedule', 'growth', 'goals')}
+                            >
+                                <Target className="w-4 h-4" />
+                                <span className="text-xs font-medium">목표 설정</span>
+                            </Button>
+                        </div>
+                    </div>
+
+                    {/* Daily Quote */}
+                    <div className="bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-[24px] p-5 shadow-sm flex flex-col justify-center min-h-[140px] border border-purple-100 dark:border-purple-800/30">
+                        <div className="flex items-start gap-3">
+                            <Quote className="w-6 h-6 text-purple-500 shrink-0 mt-1" />
+                            <div className="flex-1">
+                                <p className="text-sm font-medium text-gray-700 dark:text-gray-300 leading-relaxed mb-2">
+                                    "성공은 몇 가지 작은 행동을 매일 반복하는 것에서 비롯됩니다."
+                                </p>
+                                <p className="text-xs text-purple-600 dark:text-purple-400 font-semibold">— Jim Rohn</p>
+                            </div>
+                        </div>
+                        <div className="mt-3 flex items-center gap-2">
+                            <Sparkles className="w-4 h-4 text-yellow-500" />
+                            <span className="text-xs text-muted-foreground">오늘의 명언</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
