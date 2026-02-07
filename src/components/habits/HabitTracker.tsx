@@ -249,32 +249,45 @@ export function HabitTracker() {
                             </div>
 
                             {/* Repeat Days */}
-                            <div className="space-y-2">
+                            <div className="space-y-2 relative z-10">
                                 <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">반복 요일</Label>
-                                <div className="flex justify-between gap-1">
-                                    {['일', '월', '화', '수', '목', '금', '토'].map((day, idx) => (
-                                        <button
-                                            key={day}
-                                            type="button"
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                e.stopPropagation();
-                                                if (newHabitDays.includes(idx)) {
-                                                    setNewHabitDays(newHabitDays.filter(d => d !== idx));
-                                                } else {
-                                                    setNewHabitDays([...newHabitDays, idx]);
-                                                }
-                                            }}
-                                            className={cn(
-                                                "w-8 h-8 rounded-full text-xs font-medium transition-colors border",
-                                                newHabitDays.includes(idx)
-                                                    ? "bg-primary text-primary-foreground border-primary"
-                                                    : "bg-transparent text-muted-foreground border-border hover:bg-muted"
-                                            )}
-                                        >
-                                            {day}
-                                        </button>
-                                    ))}
+                                <div className="flex justify-between gap-1 pointer-events-auto">
+                                    {['일', '월', '화', '수', '목', '금', '토'].map((day, idx) => {
+                                        console.log(`Rendering day ${day} (${idx}):`, {
+                                            isIncluded: newHabitDays.includes(idx),
+                                            currentDays: newHabitDays
+                                        });
+                                        return (
+                                            <button
+                                                key={day}
+                                                type="button"
+                                                onPointerDown={(e) => {
+                                                    console.log(`PointerDown on day ${day} (${idx})`);
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    const newDays = newHabitDays.includes(idx)
+                                                        ? newHabitDays.filter(d => d !== idx)
+                                                        : [...newHabitDays, idx];
+                                                    console.log('Setting new days:', newDays);
+                                                    setNewHabitDays(newDays);
+                                                }}
+                                                onClick={(e) => {
+                                                    console.log(`Clicked day ${day} (${idx})`);
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                }}
+                                                className={cn(
+                                                    "w-8 h-8 rounded-full text-xs font-medium transition-colors border cursor-pointer relative z-10 pointer-events-auto touch-manipulation",
+                                                    newHabitDays.includes(idx)
+                                                        ? "bg-primary text-primary-foreground border-primary"
+                                                        : "bg-transparent text-muted-foreground border-border hover:bg-muted"
+                                                )}
+                                                style={{ pointerEvents: 'auto' }}
+                                            >
+                                                {day}
+                                            </button>
+                                        );
+                                    })}
                                 </div>
                             </div>
 
