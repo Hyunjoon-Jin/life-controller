@@ -95,85 +95,84 @@ function GoalItem({ goal, level = 0, onAddSubGoal, onEdit, onDetail, forceExpand
                 className={cn(
                     "group relative transition-all duration-200",
                     level === 0
-                        ? "p-4 rounded-xl border border-border bg-card shadow-sm hover:shadow-md hover:border-primary/20"
-                        : "p-3 rounded-lg hover:bg-muted/40 border border-transparent hover:border-border/40"
+                        ? "p-3 rounded-lg border border-border bg-card shadow-sm hover:shadow-md hover:border-primary/20"
+                        : "p-2 rounded-md hover:bg-muted/40 border border-transparent hover:border-border/40"
                 )}
             >
-                <div className="flex items-start gap-3">
+                <div className="flex items-start gap-2">
                     {/* Expand/Collapse Button */}
                     <button
                         onClick={() => setExpanded(!expanded)}
                         className={cn(
-                            "mt-1 p-0.5 rounded-md hover:bg-muted text-muted-foreground transition-colors shrink-0",
+                            "mt-0.5 p-0.5 rounded-sm hover:bg-muted text-muted-foreground transition-colors shrink-0",
                             !hasSubGoals && "invisible pointer-events-none"
                         )}
                     >
-                        {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                        {isExpanded ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
                     </button>
 
-                    <div className="flex-1 min-w-0 space-y-3">
+                    <div className="flex-1 min-w-0 space-y-1.5">
                         {/* Header: Title, Badges, Actions */}
-                        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
                             <div className="flex-1 cursor-pointer min-w-0" onClick={() => onDetail(goal)}>
-                                <div className="flex items-center gap-2 flex-wrap mb-1">
-                                    <h4 className={cn("font-bold text-foreground hover:text-primary transition-colors truncate", level === 0 ? "text-lg" : "text-base")}>
+                                <div className="flex items-center gap-2 flex-wrap">
+                                    <h4 className={cn("font-bold text-foreground hover:text-primary transition-colors truncate", level === 0 ? "text-base" : "text-sm")}>
                                         {goal.title}
                                     </h4>
                                     {goal.category && (
-                                        <span className={cn("text-[10px] px-2 py-0.5 rounded-full border font-bold uppercase tracking-wider shrink-0", getCategoryColor(goal.category))}>
+                                        <span className={cn("text-[10px] px-1.5 py-0 rounded border font-bold uppercase tracking-wider shrink-0", getCategoryColor(goal.category))}>
                                             {getCategoryLabel(goal.category)}
                                         </span>
                                     )}
                                     {goal.planType && (
-                                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground border border-secondary-foreground/10 font-medium shrink-0">
+                                        <span className="text-[10px] px-1.5 py-0 rounded bg-secondary text-secondary-foreground border border-secondary-foreground/10 font-medium shrink-0">
                                             {getPlanTypeLabel(goal.planType)}
                                         </span>
                                     )}
                                 </div>
                                 {level === 0 && goal.memo && (
-                                    <p className="text-sm text-muted-foreground line-clamp-1">{goal.memo}</p>
+                                    <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">{goal.memo}</p>
                                 )}
                             </div>
 
                             {/* Floating Actions */}
-                            <div className="flex items-center gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity bg-background/80 backdrop-blur-sm p-1 rounded-md shadow-sm border border-border/50 absolute right-2 top-2 sm:static sm:bg-transparent sm:shadow-none sm:border-none">
-                                <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-primary" onClick={() => onAddSubGoal(goal.id)} title="하위 목표 추가">
-                                    <Plus className="w-3.5 h-3.5" />
+                            <div className="flex items-center gap-0.5 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity bg-background/80 backdrop-blur-sm p-0.5 rounded shadow-sm border border-border/50 absolute right-2 top-2 sm:static sm:bg-transparent sm:shadow-none sm:border-none">
+                                <Button variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground hover:text-primary" onClick={() => onAddSubGoal(goal.id)} title="하위 목표 추가">
+                                    <Plus className="w-3 h-3" />
                                 </Button>
-                                <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground" onClick={() => onEdit(goal)} title="수정">
-                                    <Pencil className="w-3.5 h-3.5" />
+                                <Button variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground hover:text-foreground" onClick={() => onEdit(goal)} title="수정">
+                                    <Pencil className="w-3 h-3" />
                                 </Button>
-                                <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive" onClick={handleDelete} title="삭제">
-                                    <Trash2 className="w-3.5 h-3.5" />
+                                <Button variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground hover:text-destructive" onClick={handleDelete} title="삭제">
+                                    <Trash2 className="w-3 h-3" />
                                 </Button>
                             </div>
                         </div>
 
-                        {/* Progress Bar */}
-                        <div className="flex items-center gap-3">
-                            <div className="flex-1 h-2.5 bg-secondary/50 rounded-full overflow-hidden">
-                                <div
-                                    className={cn(
-                                        "h-full rounded-full transition-all duration-700 ease-out shadow-[0_0_10px_rgba(0,0,0,0.1)]",
-                                        goal.progress === 100 ? "bg-emerald-500" : "bg-primary"
-                                    )}
-                                    style={{ width: `${goal.progress}% ` }}
-                                />
+                        {/* Progress Bar & Footer Inline */}
+                        <div className="flex items-center gap-3 text-xs">
+                            <div className="flex-1 flex items-center gap-2">
+                                <span className={cn("font-bold w-8 text-right tabular-nums", goal.progress === 100 ? "text-emerald-600" : "text-primary")}>
+                                    {goal.progress}%
+                                </span>
+                                <div className="flex-1 h-1.5 bg-secondary/50 rounded-full overflow-hidden">
+                                    <div
+                                        className={cn(
+                                            "h-full rounded-full transition-all duration-700 ease-out shadow-[0_0_10px_rgba(0,0,0,0.1)]",
+                                            goal.progress === 100 ? "bg-emerald-500" : "bg-primary"
+                                        )}
+                                        style={{ width: `${goal.progress}%` }}
+                                    />
+                                </div>
                             </div>
-                            <span className={cn("text-xs font-bold w-10 text-right", goal.progress === 100 ? "text-emerald-600" : "text-primary")}>
-                                {goal.progress}%
-                            </span>
-                        </div>
 
-                        {/* Footer Info */}
-                        {goal.deadline && (
-                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                <span className={cn("flex items-center gap-1 px-1.5 py-0.5 rounded", new Date(goal.deadline) < new Date() ? "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400" : "bg-muted")}>
+                            {goal.deadline && (
+                                <span className={cn("flex items-center gap-1 px-1 py-0.5 rounded text-[10px]", new Date(goal.deadline) < new Date() ? "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400" : "bg-muted text-muted-foreground")}>
                                     <Calendar className="w-3 h-3" />
                                     {new Date(goal.deadline).toLocaleDateString()}
                                 </span>
-                            </div>
-                        )}
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -355,32 +354,6 @@ export default function GoalTree() {
         return null;
     };
 
-    const [searchTerm, setSearchTerm] = useState('');
-    const [filterCategory, setFilterCategory] = useState<GoalCategory | 'all'>('all');
-    const [filterPlanType, setFilterPlanType] = useState<PlanType | 'all'>('all');
-
-    // Recursive filtering logic
-    const filterGoals = (goals: Goal[]): Goal[] => {
-        return goals.reduce((acc: Goal[], goal) => {
-            const matchesTerm = goal.title.toLowerCase().includes(searchTerm.toLowerCase());
-            const matchesCategory = filterCategory === 'all' || goal.category === filterCategory;
-            const matchesPlanType = filterPlanType === 'all' || goal.planType === filterPlanType;
-
-            // Check subgoals recursively
-            const filteredSubGoals = goal.subGoals ? filterGoals(goal.subGoals) : [];
-            const hasMatchingSubGoals = filteredSubGoals.length > 0;
-
-            if ((matchesTerm && matchesCategory && matchesPlanType) || hasMatchingSubGoals) {
-                acc.push({
-                    ...goal,
-                    subGoals: filteredSubGoals
-                });
-            }
-            return acc;
-        }, []);
-    };
-
-    const filteredGoals = filterGoals(goals);
     const isFiltering = searchTerm !== '' || filterCategory !== 'all' || filterPlanType !== 'all';
 
     return (
