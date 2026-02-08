@@ -150,14 +150,14 @@ function GoalItem({ goal, level = 0, onAddSubGoal, onEdit, onDetail, forceExpand
                         {/* Progress Bar & Footer Inline */}
                         <div className="flex items-center gap-3 text-xs">
                             <div className="flex-1 flex items-center gap-2">
-                                <span className={cn("font-bold w-8 text-right tabular-nums", goal.progress === 100 ? "text-emerald-600" : "text-primary")}>
+                                <span className={cn("font-bold w-8 text-right tabular-nums", goal.progress === 100 ? "text-emerald-600" : "text-blue-600 dark:text-blue-400")}>
                                     {goal.progress}%
                                 </span>
-                                <div className="flex-1 h-1.5 bg-secondary/50 rounded-full overflow-hidden">
+                                <div className="flex-1 h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
                                     <div
                                         className={cn(
-                                            "h-full rounded-full transition-all duration-700 ease-out shadow-[0_0_10px_rgba(0,0,0,0.1)]",
-                                            goal.progress === 100 ? "bg-emerald-500" : "bg-primary"
+                                            "h-full rounded-full transition-all duration-700 ease-out shadow-sm",
+                                            goal.progress === 100 ? "bg-emerald-500" : "bg-blue-500"
                                         )}
                                         style={{ width: `${goal.progress}%` }}
                                     />

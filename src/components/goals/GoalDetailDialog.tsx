@@ -111,11 +111,11 @@ export function GoalDetailDialog({ isOpen, onOpenChange, goal }: GoalDetailDialo
                     </div>
 
                     {/* Progress Bar */}
-                    <div className="h-4 w-full bg-background/50 backdrop-blur-sm rounded-full overflow-hidden border border-border/20 shadow-inner relative">
+                    <div className="h-4 w-full bg-slate-200 dark:bg-slate-800 backdrop-blur-sm rounded-full overflow-hidden border border-border/20 shadow-inner relative">
                         <div
                             className={cn(
                                 "h-full rounded-full transition-all duration-1000 ease-out shadow-[0_2px_10px_rgba(0,0,0,0.1)] relative overflow-hidden",
-                                goal.progress === 100 ? "bg-gradient-to-r from-emerald-400 to-emerald-500" : "bg-gradient-to-r from-primary/80 to-primary"
+                                goal.progress === 100 ? "bg-gradient-to-r from-emerald-400 to-emerald-500" : "bg-gradient-to-r from-blue-400 to-blue-600"
                             )}
                             style={{ width: `${goal.progress}%` }}
                         >
