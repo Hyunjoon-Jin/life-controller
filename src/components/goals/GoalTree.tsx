@@ -19,14 +19,12 @@ import {
     Trash2,
     Target,
     Tag,
-    ArrowUpDown,
-    BarChart3,
-    LayoutList
+    ArrowUpDown
 } from 'lucide-react';
 import { cn, generateId } from '@/lib/utils';
 import { useData } from '@/context/DataProvider';
 import { GoalDetailDialog } from './GoalDetailDialog';
-import GoalProgressChart from './GoalProgressChart';
+
 
 function GoalItem({ goal, level = 0, onAddSubGoal, onEdit, onDetail, forceExpand = false }: {
     goal: Goal;
@@ -203,7 +201,7 @@ export default function GoalTree() {
     const [filterCategory, setFilterCategory] = useState<GoalCategory | 'all'>('all');
     const [filterPlanType, setFilterPlanType] = useState<PlanType | 'all'>('all');
     const [sortBy, setSortBy] = useState<'deadline' | 'progress' | 'name'>('deadline');
-    const [showChart, setShowChart] = useState(false);
+
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [parentId, setParentId] = useState<string | null>(null);
@@ -359,11 +357,7 @@ export default function GoalTree() {
     return (
         <div className="border border-border rounded-lg bg-card text-card-foreground p-4 space-y-4">
 
-            {showChart && (
-                <div className="mb-2">
-                    <GoalProgressChart goals={filteredGoals} />
-                </div>
-            )}
+
 
             <div className="flex flex-col gap-4">
                 <div className="flex flex-col sm:flex-row gap-3">
@@ -390,16 +384,7 @@ export default function GoalTree() {
                             </SelectContent>
                         </Select>
 
-                        {/* Chart Toggle */}
-                        <Button
-                            variant="outline"
-                            size="icon"
-                            className={cn("h-10 w-10 shadow-sm shrink-0", showChart && "bg-primary/10 text-primary border-primary/20")}
-                            onClick={() => setShowChart(!showChart)}
-                            title={showChart ? "리스트 보기" : "그래프 보기"}
-                        >
-                            {showChart ? <LayoutList className="w-4 h-4" /> : <BarChart3 className="w-4 h-4" />}
-                        </Button>
+                        {/* Chart Toggle Removed */}
 
                         <div className="w-px h-6 bg-border/50 my-auto hidden sm:block mx-1" />
 
