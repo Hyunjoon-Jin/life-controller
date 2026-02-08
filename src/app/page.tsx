@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { CalendarView } from '@/components/calendar/CalendarView';
-import { GoalTree } from '@/components/goals/GoalTree';
+import GoalTree from '@/components/goals/GoalTree';
 import { HabitTracker } from '@/components/habits/HabitTracker';
 import { TaskBoard } from '@/components/tasks/TaskBoard';
 import { UpcomingTasks } from '@/components/tasks/UpcomingTasks'; // Import
