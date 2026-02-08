@@ -79,7 +79,12 @@ const EXERCISE_TYPES = [
 const TARGET_PARTS = ['가슴', '등', '하체', '어깨', '팔', '복근', '전신'];
 
 export function ExerciseLog() {
-    const { exerciseSessions, addExerciseSession, deleteExerciseSession, exerciseRoutines, addExerciseRoutine, updateExerciseRoutine, deleteExerciseRoutine, inBodyEntries = [] } = useData();
+    const {
+        exerciseSessions, addExerciseSession, deleteExerciseSession,
+        exerciseRoutines, addExerciseRoutine, updateExerciseRoutine, deleteExerciseRoutine,
+        inBodyEntries = [],
+        customExercises, addCustomExercise, deleteCustomExercise // Added
+    } = useData();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isTypeOpen, setIsTypeOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
@@ -278,8 +283,9 @@ export function ExerciseLog() {
 
     // Filter Logic
     const categoryTypes = useMemo(() => {
-        return EXERCISE_TYPES.filter(t => t.category === category);
-    }, [category]);
+        const allTypes = [...EXERCISE_TYPES, ...customExercises];
+        return allTypes.filter(t => t.category === category);
+    }, [category, customExercises]);
 
     const filteredCategoryTypes = useMemo(() => {
         if (!searchQuery) return categoryTypes;
@@ -287,9 +293,10 @@ export function ExerciseLog() {
     }, [categoryTypes, searchQuery]);
 
     const filteredTypes = useMemo(() => {
-        if (!searchQuery) return EXERCISE_TYPES;
-        return EXERCISE_TYPES.filter(t => t.name.includes(searchQuery));
-    }, [searchQuery]);
+        const allTypes = [...EXERCISE_TYPES, ...customExercises];
+        if (!searchQuery) return allTypes;
+        return allTypes.filter(t => t.name.includes(searchQuery));
+    }, [searchQuery, customExercises]);
 
 
     const sortedSessions = exerciseSessions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
@@ -589,15 +596,79 @@ export function ExerciseLog() {
                     )}
 
                     {addStep === 'type' && (
-                        <div className="py-2 h-[300px] overflow-y-auto custom-scrollbar">
+                        <div className="py-2 h-[300px] overflow-y-auto custom-scrollbar flex flex-col">
+                            {/* Custom Exercise Input */}
+                            <div className="p-3 bg-muted/30 rounded-lg mb-4">
+                                <Label className="text-xs text-muted-foreground mb-1 block">직접 추가하기</Label>
+                                <div className="flex gap-2">
+                                    <Input
+                                        placeholder="새 운동 종목 입력"
+                                        value={searchQuery} // Reusing searchQuery as input for new exercise
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        className="h-9 text-sm"
+                                    />
+                                    <Button
+                                        size="sm"
+                                        className="shrink-0 bg-primary/90 hover:bg-primary"
+                                        onClick={() => {
+                                            if (!searchQuery.trim()) return;
+                                            const exists = [...EXERCISE_TYPES, ...customExercises].some(e => e.name === searchQuery.trim());
+                                            if (exists) {
+                                                alert('이미 존재하는 운동입니다.');
+                                                return;
+                                            }
+                                            const newEx = {
+                                                id: generateId(),
+                                                name: searchQuery.trim(),
+                                                category: category,
+                                                isCustom: true
+                                            };
+                                            addCustomExercise(newEx);
+                                            setType(newEx.name);
+                                            setAddStep('input');
+                                            setSearchQuery('');
+                                        }}
+                                    >
+                                        <Plus className="w-4 h-4" />
+                                    </Button>
+                                </div>
+                            </div>
+
                             <div className="grid grid-cols-2 gap-2">
                                 {filteredCategoryTypes.map(t => (
-                                    <Button key={t.name} variant="outline" onClick={() => handleTypeChoose(t.name)} className="justify-start h-auto py-3">
-                                        {t.name}
-                                    </Button>
+                                    <div key={t.name} className="relative group">
+                                        <Button
+                                            variant="outline"
+                                            onClick={() => handleTypeChoose(t.name)}
+                                            className={cn(
+                                                "justify-start h-auto py-3 w-full text-left",
+                                                (t as any).isCustom && "border-blue-200 bg-blue-50/50"
+                                            )}
+                                        >
+                                            <span className="truncate pr-6">{t.name}</span>
+                                        </Button>
+                                        {(t as any).isCustom && (
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    if (confirm(`'${t.name}' 항목을 삭제하시겠습니까?`)) {
+                                                        deleteCustomExercise((t as any).id);
+                                                    }
+                                                }}
+                                                className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                                            >
+                                                <Trash2 className="w-4 h-4" />
+                                            </button>
+                                        )}
+                                    </div>
                                 ))}
                             </div>
-                            <Button variant="ghost" className="w-full mt-4" onClick={() => setAddStep('category')}>
+                            {filteredCategoryTypes.length === 0 && (
+                                <div className="text-center py-8 text-muted-foreground text-sm">
+                                    검색 결과가 없습니다.<br />위 입력창에서 추가해보세요!
+                                </div>
+                            )}
+                            <Button variant="ghost" className="w-full mt-auto pt-4" onClick={() => setAddStep('category')}>
                                 <ChevronDown className="rotate-90 mr-2 w-4 h-4" /> 뒤로가기
                             </Button>
                         </div>

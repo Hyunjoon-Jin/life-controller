@@ -7,7 +7,7 @@ import {
     Transaction, Asset, Certificate, PortfolioItem, ArchiveDocument,
     UserProfile, Education, Career, BodyCompositionGoal, LanguageResource,
     Hobby, HobbyPost, Activity, RealEstateScrap, StockAnalysis, WorkLog,
-    ExerciseRoutine, FinanceGoal, CustomFood, MonthlyBudget // Added MonthlyBudget
+    ExerciseRoutine, FinanceGoal, CustomFood, MonthlyBudget, ExerciseDefinition // Added ExerciseDefinition
 } from '@/types';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useCloudSync } from '@/hooks/useCloudSync';
@@ -219,6 +219,11 @@ interface DataContextType {
     setCustomFoods: (foods: CustomFood[]) => void;
     addCustomFood: (food: CustomFood) => void;
     deleteCustomFood: (id: string) => void;
+
+    // Custom Exercises
+    customExercises: ExerciseDefinition[];
+    addCustomExercise: (exercise: ExerciseDefinition) => void;
+    deleteCustomExercise: (id: string) => void;
 }
 
 
@@ -279,6 +284,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
     ]);
     const [monthlyBudgets, setMonthlyBudgets] = useLocalStorage<MonthlyBudget[]>('monthlyBudgets', []);
     const [customFoods, setCustomFoods] = useLocalStorage<CustomFood[]>('customFoods', []);
+    const [customExercises, setCustomExercises] = useLocalStorage<ExerciseDefinition[]>('customExercises', []);
 
     // Resume States
     const [userProfile, setUserProfile] = useLocalStorage<UserProfile>('userProfile', {
@@ -350,6 +356,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
                     if (data.financeGoals) setFinanceGoals(data.financeGoals);
                     if (data.monthlyBudgets) setMonthlyBudgets(data.monthlyBudgets);
                     if (data.customFoods) setCustomFoods(data.customFoods);
+                    if (data.customExercises) setCustomExercises(data.customExercises);
                 }
                 setIsLoadedFromCloud(true);
             });
@@ -829,7 +836,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
                 transactions, assets, certificates, portfolios, archiveDocuments,
                 userProfile, educations, careers, activities, bodyCompositionGoal, homeShortcuts,
                 realEstateScraps, stockAnalyses, workLogs, exerciseRoutines, financeGoals, customFoods,
-                monthlyBudgets
+                monthlyBudgets,
+                customExercises // Added
             });
         }
     }, [
@@ -840,7 +848,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         transactions, assets, certificates, portfolios, archiveDocuments,
         userProfile, educations, careers, activities, bodyCompositionGoal, homeShortcuts,
         realEstateScraps, stockAnalyses, workLogs, exerciseRoutines, financeGoals, customFoods,
-        monthlyBudgets
+        monthlyBudgets, customExercises
     ]);
 
     const forceSync = async () => {
@@ -852,7 +860,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
                 transactions, assets, certificates, portfolios, archiveDocuments,
                 userProfile, educations, careers, activities, bodyCompositionGoal, homeShortcuts,
                 realEstateScraps, stockAnalyses, workLogs, exerciseRoutines, financeGoals, customFoods,
-                monthlyBudgets
+                monthlyBudgets,
+                customExercises // Added
             });
         }
     };
@@ -1007,7 +1016,14 @@ export function DataProvider({ children }: { children: ReactNode }) {
             bodyCompositionGoal,
             setBodyCompositionGoal,
             homeShortcuts, setHomeShortcuts,
-            customFoods, setCustomFoods, addCustomFood, deleteCustomFood
+            customFoods,
+            setCustomFoods,
+            addCustomFood,
+            deleteCustomFood,
+
+            customExercises,
+            addCustomExercise: (ex) => setCustomExercises([...customExercises, ex]),
+            deleteCustomExercise: (id) => setCustomExercises(customExercises.filter(e => e.id !== id)),
         }}>
             {children}
         </DataContext.Provider>

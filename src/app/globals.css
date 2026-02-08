@@ -5,6 +5,18 @@
 @import "tailwindcss";
 
 @layer base {
+  html {
+    font-size: 14px;
+    /* Mobile: Smaller base size for density */
+  }
+
+  @media (min-width: 768px) {
+    html {
+      font-size: 16px;
+      /* Desktop: Standard base size */
+    }
+  }
+
   :root {
     /* Life Controller Premium Theme - Sophisticated Blue-Purple Palette */
     --background: 210 20% 98%;

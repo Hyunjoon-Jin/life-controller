@@ -26,6 +26,8 @@ import { InBodyLog } from '@/components/growth/InBodyLog';
 import { HobbyLog } from '@/components/growth/HobbyLog';
 import { MegaMenuNav } from '@/components/layout/MegaMenu';
 import { MobileHeader } from '@/components/layout/MobileHeader';
+import { MobileBottomNav } from '@/components/layout/MobileBottomNav'; // Added
+import { MobileCategoryTabs } from '@/components/layout/MobileCategoryTabs'; // Added
 import { CloudSyncStatus } from '@/components/layout/CloudSyncStatus'; // Added
 import { CATEGORIES, SUB_MENUS, CategoryType, WORK_NAV_ITEMS } from '@/constants/menu';
 import { TabHeader } from '@/components/layout/TabHeader';
@@ -91,9 +93,18 @@ export default function Home() {
 
   return (
     <main className={cn(
-      "min-h-screen p-3 sm:p-4 md:p-6 lg:p-8 flex flex-col transition-all duration-500",
+      "min-h-screen p-3 sm:p-4 md:p-6 lg:p-8 flex flex-col transition-all duration-500 pb-24 md:pb-6", // Added pb-24 for mobile nav
       appMode === 'work' ? "mode-work bg-[#F3E5F5]" : "mode-life bg-[#E0F2F1]"
     )}>
+      {/* Mobile Bottom Navigation */}
+      <MobileBottomNav
+        appMode={appMode}
+        setAppMode={setAppMode}
+        mainMode={mainMode}
+        setMainMode={setMainMode}
+        activeCategory={activeCategory as any}
+        setActiveCategory={setActiveCategory as any}
+      />
       {/* Mobile Header (Hidden on Desktop) */}
       <MobileHeader
         appMode={appMode}
@@ -104,6 +115,15 @@ export default function Home() {
         setActiveCategory={setActiveCategory}
         onOpenGuide={() => setIsGuideOpen(true)}
       />
+
+      {/* Mobile Category Tabs (Sticky Top) */}
+      {mainMode === 'schedule' && (
+        <MobileCategoryTabs
+          activeCategory={activeCategory as any}
+          activeTab={activeTab}
+          onSelect={(t) => setActiveTab(t as any)}
+        />
+      )}
 
       {/* Desktop Header (Hidden on Mobile) */}
       <header className={cn(

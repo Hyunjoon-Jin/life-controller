@@ -41,9 +41,7 @@ export function MobileHeader({
             {/* Right: Hamburger Menu */}
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
                 <SheetTrigger asChild>
-                    <Button variant="ghost" size="icon" className="-mr-2">
-                        <Menu className="w-6 h-6" />
-                    </Button>
+                    <div />
                 </SheetTrigger>
                 <SheetContent side="right" className="w-[300px] flex flex-col p-6">
                     <SheetHeader className="mb-6 text-left">

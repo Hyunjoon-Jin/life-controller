@@ -278,6 +278,13 @@ export interface Book {
 
 export type ExerciseCategory = 'weight' | 'cardio' | 'sport' | 'fitness';
 
+export type ExerciseDefinition = {
+    id: string; // for custom ones
+    name: string;
+    category: ExerciseCategory;
+    isCustom?: boolean;
+};
+
 export type ExerciseSession = {
     id: string;
     date: Date;
