@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useLocalStorage } from '@/hooks/useLocalStorage'; // Ensure this hook is imported
 import { useData } from '@/context/DataProvider';
 import { generateId, cn } from '@/lib/utils';
@@ -131,12 +131,12 @@ export function ExerciseLog() {
     const [routineAddDuration, setRoutineAddDuration] = useState('');
 
     // Timer Logic
-    useMemo(() => {
+    useEffect(() => {
         let interval: NodeJS.Timeout;
         if (isWorkoutActive && startTime) {
             interval = setInterval(() => {
                 const now = new Date();
-                setElapsedTime(Math.floor((now.getTime() - startTime.getTime()) / 1000));
+                setElapsedTime(Math.floor((now.getTime() - new Date(startTime).getTime()) / 1000));
             }, 1000);
         }
         return () => clearInterval(interval);
@@ -162,12 +162,6 @@ export function ExerciseLog() {
         }
 
         pendingSessions.forEach(session => addExerciseSession(session));
-
-        if (typeof window !== 'undefined') {
-            window.localStorage.removeItem('exercise_startTime');
-            window.localStorage.removeItem('exercise_pendingSessions');
-            window.localStorage.removeItem('exercise_isWorkoutActive');
-        }
 
         setIsWorkoutActive(false);
         setStartTime(null);
@@ -247,7 +241,7 @@ export function ExerciseLog() {
     };
 
     const handleAddSet = () => {
-        // if (!tempWeight || !tempReps) return;
+        // Allow 0 or empty values
         setSets([
             ...sets,
             {
@@ -258,7 +252,8 @@ export function ExerciseLog() {
                 completed: true
             }
         ]);
-        setTempReps('');
+        setTempWeight(''); // Clear weight input
+        setTempReps('');   // Clear reps input
     };
 
     const handleDeleteSet = (id: string) => {
