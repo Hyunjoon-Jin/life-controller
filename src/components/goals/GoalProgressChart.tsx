@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
-import { Goal } from '@/lib/types';
+import { Goal } from '@/types';
 
 interface GoalProgressChartProps {
     goals: Goal[];
