@@ -198,7 +198,7 @@ function GoalItem({ goal, level = 0, onAddSubGoal, onEdit, onDetail, forceExpand
 }
 
 export default function GoalTree() {
-    const { goals, addGoal, addSubGoal, updateGoal, deleteGoal } = useData();
+    const { goals, addGoal, updateGoal, deleteGoal } = useData();
     const [searchTerm, setSearchTerm] = useState('');
     const [filterCategory, setFilterCategory] = useState<GoalCategory | 'all'>('all');
     const [filterPlanType, setFilterPlanType] = useState<PlanType | 'all'>('all');
