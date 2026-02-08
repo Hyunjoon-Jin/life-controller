@@ -230,7 +230,12 @@ export function ExerciseLog() {
             if (score) session.score = parseFloat(score);
         }
 
-        setPendingSessions([...pendingSessions, session]);
+        if (isWorkoutActive) {
+            setPendingSessions(prev => [...prev, session]);
+        } else {
+            addExerciseSession(session);
+            alert('운동이 추가되었습니다.');
+        }
         resetForm();
     };
 
