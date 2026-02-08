@@ -1,4 +1,5 @@
-import { useState } from 'react';
+
+import { useState, useMemo } from 'react';
 import { isValid } from 'date-fns';
 import { Goal, PlanType, GoalCategory } from '@/types';
 import { Button } from '@/components/ui/button';
@@ -6,10 +7,26 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ChevronRight, ChevronDown, Plus, Trophy, Trash2, Pencil, Calendar, Tag, Filter, Search } from 'lucide-react';
+import {
+    Search,
+    Plus,
+    ChevronRight,
+    ChevronDown,
+    ListTodo,
+    Calendar,
+    Trophy,
+    Pencil,
+    Trash2,
+    Target,
+    Tag,
+    ArrowUpDown,
+    BarChart3,
+    LayoutList
+} from 'lucide-react';
 import { cn, generateId } from '@/lib/utils';
 import { useData } from '@/context/DataProvider';
 import { GoalDetailDialog } from './GoalDetailDialog';
+import GoalProgressChart from './GoalProgressChart';
 
 function GoalItem({ goal, level = 0, onAddSubGoal, onEdit, onDetail, forceExpand = false }: {
     goal: Goal;
@@ -140,7 +157,7 @@ function GoalItem({ goal, level = 0, onAddSubGoal, onEdit, onDetail, forceExpand
                                         "h-full rounded-full transition-all duration-700 ease-out shadow-[0_0_10px_rgba(0,0,0,0.1)]",
                                         goal.progress === 100 ? "bg-emerald-500" : "bg-primary"
                                     )}
-                                    style={{ width: `${goal.progress}%` }}
+                                    style={{ width: `${goal.progress}% ` }}
                                 />
                             </div>
                             <span className={cn("text-xs font-bold w-10 text-right", goal.progress === 100 ? "text-emerald-600" : "text-primary")}>
@@ -181,13 +198,53 @@ function GoalItem({ goal, level = 0, onAddSubGoal, onEdit, onDetail, forceExpand
     );
 }
 
-export function GoalTree() {
-    const { goals, addGoal, updateGoal } = useData();
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
+export default function GoalTree() {
+    const { goals, addGoal, addSubGoal, updateGoal, deleteGoal } = useData();
+    const [searchTerm, setSearchTerm] = useState('');
+    const [filterCategory, setFilterCategory] = useState<GoalCategory | 'all'>('all');
+    const [filterPlanType, setFilterPlanType] = useState<PlanType | 'all'>('all');
+    const [sortBy, setSortBy] = useState<'deadline' | 'progress' | 'name'>('deadline');
+    const [showChart, setShowChart] = useState(false);
 
-    // Detail Dialog State
-    const [isDetailOpen, setIsDetailOpen] = useState(false);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [parentId, setParentId] = useState<string | null>(null);
+    const [editingGoalId, setEditingGoalId] = useState<string | null>(null);
+
+    // Form states
+    const [newGoalTitle, setNewGoalTitle] = useState('');
+    const [newGoalCategory, setNewGoalCategory] = useState<GoalCategory>('other');
+    const [newPlanType, setNewPlanType] = useState<PlanType>('short-term');
+    const [newGoalDeadline, setNewGoalDeadline] = useState('');
+    const [newGoalMemo, setNewGoalMemo] = useState('');
+    const [newGoalProgress, setNewGoalProgress] = useState(0);
+
     const [selectedGoal, setSelectedGoal] = useState<Goal | null>(null);
+    const [isDetailOpen, setIsDetailOpen] = useState(false);
+
+    const filteredGoals = useMemo(() => {
+        let result = goals.filter(g => {
+            const matchesSearch = g.title.toLowerCase().includes(searchTerm.toLowerCase());
+            const matchesCategory = filterCategory === 'all' || g.category === filterCategory;
+            const matchesType = filterPlanType === 'all' || g.planType === filterPlanType;
+            return matchesSearch && matchesCategory && matchesType;
+        });
+
+        // Sorting Logic
+        return result.sort((a, b) => {
+            switch (sortBy) {
+                case 'progress':
+                    return b.progress - a.progress; // High to Low
+                case 'deadline':
+                    if (!a.deadline) return 1;
+                    if (!b.deadline) return -1;
+                    return new Date(a.deadline).getTime() - new Date(b.deadline).getTime(); // Ascending
+                case 'name':
+                    return a.title.localeCompare(b.title);
+                default:
+                    return 0;
+            }
+        });
+    }, [goals, searchTerm, filterCategory, filterPlanType, sortBy]);
 
     const handleOpenDetail = (goal: Goal) => {
         setSelectedGoal(goal);
@@ -195,16 +252,16 @@ export function GoalTree() {
     };
 
     // Dialog State
-    const [parentId, setParentId] = useState<string | null>(null);
-    const [editingGoalId, setEditingGoalId] = useState<string | null>(null);
+    // const [parentId, setParentId] = useState<string | null>(null); // Already declared above
+    // const [editingGoalId, setEditingGoalId] = useState<string | null>(null); // Already declared above
 
     // Form State
-    const [newGoalTitle, setNewGoalTitle] = useState('');
-    const [newGoalProgress, setNewGoalProgress] = useState(0);
-    const [newPlanType, setNewPlanType] = useState<PlanType>('short-term');
-    const [newGoalCategory, setNewGoalCategory] = useState<GoalCategory>('other');
-    const [newGoalDeadline, setNewGoalDeadline] = useState('');
-    const [newGoalMemo, setNewGoalMemo] = useState('');
+    // const [newGoalTitle, setNewGoalTitle] = useState(''); // Already declared above
+    // const [newGoalProgress, setNewGoalProgress] = useState(0); // Already declared above
+    // const [newPlanType, setNewPlanType] = useState<PlanType>('short-term'); // Already declared above
+    // const [newGoalCategory, setNewGoalCategory] = useState<GoalCategory>('other'); // Already declared above
+    // const [newGoalDeadline, setNewGoalDeadline] = useState(''); // Already declared above
+    // const [newGoalMemo, setNewGoalMemo] = useState(''); // Already declared above
 
     const handleOpenCreateDialog = (pid: string | null = null) => {
         setParentId(pid);
@@ -328,6 +385,13 @@ export function GoalTree() {
 
     return (
         <div className="border border-border rounded-lg bg-card text-card-foreground p-4 space-y-4">
+
+            {showChart && (
+                <div className="mb-2">
+                    <GoalProgressChart goals={filteredGoals} />
+                </div>
+            )}
+
             <div className="flex flex-col gap-4">
                 <div className="flex flex-col sm:flex-row gap-3">
                     <div className="relative flex-1">
@@ -340,6 +404,32 @@ export function GoalTree() {
                         <Search className="absolute left-3 top-3 w-4 h-4 text-muted-foreground opacity-50" />
                     </div>
                     <div className="flex flex-wrap sm:flex-nowrap gap-2">
+                        {/* Sort Dropdown */}
+                        <Select value={sortBy} onValueChange={(v) => setSortBy(v as any)}>
+                            <SelectTrigger className="w-[100px] h-10 text-xs bg-background shadow-sm border-border/60">
+                                <ArrowUpDown className="w-3 h-3 mr-1.5 opacity-50" />
+                                <SelectValue placeholder="정렬" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="deadline">마감순</SelectItem>
+                                <SelectItem value="progress">진행률순</SelectItem>
+                                <SelectItem value="name">이름순</SelectItem>
+                            </SelectContent>
+                        </Select>
+
+                        {/* Chart Toggle */}
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            className={cn("h-10 w-10 shadow-sm shrink-0", showChart && "bg-primary/10 text-primary border-primary/20")}
+                            onClick={() => setShowChart(!showChart)}
+                            title={showChart ? "리스트 보기" : "그래프 보기"}
+                        >
+                            {showChart ? <LayoutList className="w-4 h-4" /> : <BarChart3 className="w-4 h-4" />}
+                        </Button>
+
+                        <div className="w-px h-6 bg-border/50 my-auto hidden sm:block mx-1" />
+
                         <Select value={filterCategory} onValueChange={(v) => setFilterCategory(v as any)}>
                             <SelectTrigger className="w-[110px] h-10 text-xs bg-background shadow-sm border-border/60">
                                 <SelectValue placeholder="카테고리" />
