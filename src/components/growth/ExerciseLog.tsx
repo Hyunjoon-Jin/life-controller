@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { useLocalStorage } from '@/hooks/useLocalStorage'; // Ensure this hook is imported
 import { useData } from '@/context/DataProvider';
 import { generateId, cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -89,9 +90,10 @@ export function ExerciseLog() {
     const [isTypeOpen, setIsTypeOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
 
-    // Active Workout State
-    const [isWorkoutActive, setIsWorkoutActive] = useState(false);
-    const [startTime, setStartTime] = useState<Date | null>(null);
+    // Active Workout State - Persisted
+    const [isWorkoutActive, setIsWorkoutActive] = useLocalStorage<boolean>('exercise_isWorkoutActive', false);
+    const [startTime, setStartTime] = useLocalStorage<Date | null>('exercise_startTime', null);
+    const [pendingSessions, setPendingSessions] = useLocalStorage<ExerciseSession[]>('exercise_pendingSessions', []);
     const [elapsedTime, setElapsedTime] = useState(0);
 
     // Form State
@@ -115,8 +117,7 @@ export function ExerciseLog() {
     const [tempWeight, setTempWeight] = useState('');
     const [tempReps, setTempReps] = useState('');
 
-    // Batch Entry State for Active Mode
-    const [pendingSessions, setPendingSessions] = useState<ExerciseSession[]>([]);
+
 
     // Routine Creation State
     const [isRoutineDialogOpen, setIsRoutineDialogOpen] = useState(false);
@@ -240,7 +241,7 @@ export function ExerciseLog() {
     };
 
     const handleAddSet = () => {
-        if (!tempWeight || !tempReps) return;
+        // if (!tempWeight || !tempReps) return;
         setSets([
             ...sets,
             {
@@ -685,8 +686,51 @@ export function ExerciseLog() {
                                             </button>
                                         ))}
                                     </div>
-                                    <div className="text-sm text-muted-foreground p-3 bg-muted/40 rounded-lg">
-                                        세부 세트 기록은 목록에서 <b>카드</b>를 통해 추가할 수 있습니다.
+
+                                    {/* Set Input Area */}
+                                    <div className="space-y-3">
+                                        <div className="flex items-end gap-2">
+                                            <div className="flex-1 space-y-1">
+                                                <Label className="text-xs text-muted-foreground">무게 (kg)</Label>
+                                                <Input
+                                                    type="number"
+                                                    value={tempWeight}
+                                                    onChange={e => setTempWeight(e.target.value)}
+                                                    placeholder="0"
+                                                    className="h-9"
+                                                />
+                                            </div>
+                                            <div className="flex-1 space-y-1">
+                                                <Label className="text-xs text-muted-foreground">횟수 (reps)</Label>
+                                                <Input
+                                                    type="number"
+                                                    value={tempReps}
+                                                    onChange={e => setTempReps(e.target.value)}
+                                                    placeholder="0"
+                                                    className="h-9"
+                                                />
+                                            </div>
+                                            <Button onClick={handleAddSet} size="sm" className="h-9 bg-primary">
+                                                <Plus className="w-4 h-4" />
+                                            </Button>
+                                        </div>
+
+                                        {/* Added Sets List */}
+                                        {sets.length > 0 && (
+                                            <div className="bg-muted/30 rounded-lg p-2 space-y-1 max-h-[150px] overflow-y-auto custom-scrollbar">
+                                                {sets.map((s, idx) => (
+                                                    <div key={s.id} className="flex items-center justify-between text-sm p-2 bg-white rounded shadow-sm border">
+                                                        <span className="font-bold text-muted-foreground w-6">{idx + 1}</span>
+                                                        <div className="flex-1 text-center font-medium">
+                                                            {s.weight}kg <span className="text-muted-foreground mx-1">x</span> {s.reps}회
+                                                        </div>
+                                                        <button onClick={() => handleDeleteSet(s.id)} className="text-muted-foreground hover:text-red-500 p-1">
+                                                            <Trash2 className="w-3.5 h-3.5" />
+                                                        </button>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             )}
