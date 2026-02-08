@@ -51,74 +51,119 @@ function GoalItem({ goal, level = 0, onAddSubGoal, onEdit, onDetail, forceExpand
             case 'language': return '어학';
             case 'hobby': return '취미';
             case 'other': return '기타';
-            default: return '';
+            default: return '기타';
         }
     }
 
+    const getCategoryColor = (cat?: GoalCategory) => {
+        switch (cat) {
+            case 'financial': return 'bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-800';
+            case 'health': return 'bg-rose-100 text-rose-700 border-rose-200 dark:bg-rose-950 dark:text-rose-300 dark:border-rose-800';
+            case 'career': return 'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-800';
+            case 'growth': return 'bg-violet-100 text-violet-700 border-violet-200 dark:bg-violet-950 dark:text-violet-300 dark:border-violet-800';
+            case 'language': return 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-300 dark:border-amber-800';
+            case 'hobby': return 'bg-pink-100 text-pink-700 border-pink-200 dark:bg-pink-950 dark:text-pink-300 dark:border-pink-800';
+            default: return 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700';
+        }
+    };
+
     return (
-        <div className="space-y-1">
+        <div className={cn("space-y-2", level > 0 && "ml-6 pl-4 border-l-2 border-border/40 relative")}>
+            {/* Connection Dot for nested items */}
+            {level > 0 && (
+                <div className="absolute -left-[21px] top-6 w-3 h-3 rounded-full border-2 border-background bg-border/40" />
+            )}
+
             <div
                 className={cn(
-                    "flex items-center gap-2 p-2 rounded-md hover:bg-muted/50 transition-colors group",
-                    level > 0 && "ml-4 border-l-2 pl-2 border-muted"
+                    "group relative transition-all duration-200",
+                    level === 0
+                        ? "p-4 rounded-xl border border-border bg-card shadow-sm hover:shadow-md hover:border-primary/20"
+                        : "p-3 rounded-lg hover:bg-muted/40 border border-transparent hover:border-border/40"
                 )}
             >
-                <button
-                    onClick={() => setExpanded(!expanded)}
-                    className={cn("p-0.5 rounded-sm hover:bg-muted text-muted-foreground", !hasSubGoals && "opacity-0")}
-                    disabled={!hasSubGoals}
-                >
-                    {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-                </button>
+                <div className="flex items-start gap-3">
+                    {/* Expand/Collapse Button */}
+                    <button
+                        onClick={() => setExpanded(!expanded)}
+                        className={cn(
+                            "mt-1 p-0.5 rounded-md hover:bg-muted text-muted-foreground transition-colors shrink-0",
+                            !hasSubGoals && "invisible pointer-events-none"
+                        )}
+                    >
+                        {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                    </button>
 
-                <div className="flex-1 space-y-1">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2 flex-1">
-                            {/* Title with Click Handler for Detail View */}
-                            <span
-                                className="text-sm font-medium cursor-pointer hover:underline decoration-primary/50 underline-offset-4"
-                                onClick={() => onDetail(goal)}
-                            >
-                                {goal.title}
-                            </span>
-                            <div className="flex gap-1">
-                                {goal.category && (
-                                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-primary/10 text-primary font-bold border border-primary/20">
-                                        {getCategoryLabel(goal.category)}
-                                    </span>
+                    <div className="flex-1 min-w-0 space-y-3">
+                        {/* Header: Title, Badges, Actions */}
+                        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
+                            <div className="flex-1 cursor-pointer min-w-0" onClick={() => onDetail(goal)}>
+                                <div className="flex items-center gap-2 flex-wrap mb-1">
+                                    <h4 className={cn("font-bold text-foreground hover:text-primary transition-colors truncate", level === 0 ? "text-lg" : "text-base")}>
+                                        {goal.title}
+                                    </h4>
+                                    {goal.category && (
+                                        <span className={cn("text-[10px] px-2 py-0.5 rounded-full border font-bold uppercase tracking-wider shrink-0", getCategoryColor(goal.category))}>
+                                            {getCategoryLabel(goal.category)}
+                                        </span>
+                                    )}
+                                    {goal.planType && (
+                                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground border border-secondary-foreground/10 font-medium shrink-0">
+                                            {getPlanTypeLabel(goal.planType)}
+                                        </span>
+                                    )}
+                                </div>
+                                {level === 0 && goal.memo && (
+                                    <p className="text-sm text-muted-foreground line-clamp-1">{goal.memo}</p>
                                 )}
-                                {goal.planType && (
-                                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-secondary text-secondary-foreground font-medium border border-secondary">
-                                        {getPlanTypeLabel(goal.planType)}
-                                    </span>
-                                )}
+                            </div>
+
+                            {/* Floating Actions */}
+                            <div className="flex items-center gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity bg-background/80 backdrop-blur-sm p-1 rounded-md shadow-sm border border-border/50 absolute right-2 top-2 sm:static sm:bg-transparent sm:shadow-none sm:border-none">
+                                <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-primary" onClick={() => onAddSubGoal(goal.id)} title="하위 목표 추가">
+                                    <Plus className="w-3.5 h-3.5" />
+                                </Button>
+                                <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground" onClick={() => onEdit(goal)} title="수정">
+                                    <Pencil className="w-3.5 h-3.5" />
+                                </Button>
+                                <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive" onClick={handleDelete} title="삭제">
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                </Button>
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <span className="text-xs text-muted-foreground mr-1">{goal.progress}%</span>
-                            <button onClick={() => onAddSubGoal(goal.id)} className="text-muted-foreground hover:text-primary transition-colors">
-                                <Plus className="w-3.5 h-3.5" />
-                            </button>
-                            <button onClick={() => onEdit(goal)} className="text-muted-foreground hover:text-foreground transition-colors">
-                                <Pencil className="w-3.5 h-3.5" />
-                            </button>
-                            <button onClick={handleDelete} className="text-muted-foreground hover:text-destructive transition-colors">
-                                <Trash2 className="w-3.5 h-3.5" />
-                            </button>
+                        {/* Progress Bar */}
+                        <div className="flex items-center gap-3">
+                            <div className="flex-1 h-2.5 bg-secondary/50 rounded-full overflow-hidden">
+                                <div
+                                    className={cn(
+                                        "h-full rounded-full transition-all duration-700 ease-out shadow-[0_0_10px_rgba(0,0,0,0.1)]",
+                                        goal.progress === 100 ? "bg-emerald-500" : "bg-primary"
+                                    )}
+                                    style={{ width: `${goal.progress}%` }}
+                                />
+                            </div>
+                            <span className={cn("text-xs font-bold w-10 text-right", goal.progress === 100 ? "text-emerald-600" : "text-primary")}>
+                                {goal.progress}%
+                            </span>
                         </div>
-                    </div>
-                    <div className="h-1.5 w-full bg-secondary rounded-full overflow-hidden">
-                        <div
-                            className="h-full bg-primary transition-all duration-500 ease-out"
-                            style={{ width: `${goal.progress}%` }}
-                        />
+
+                        {/* Footer Info */}
+                        {goal.deadline && (
+                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                <span className={cn("flex items-center gap-1 px-1.5 py-0.5 rounded", new Date(goal.deadline) < new Date() ? "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400" : "bg-muted")}>
+                                    <Calendar className="w-3 h-3" />
+                                    {new Date(goal.deadline).toLocaleDateString()}
+                                </span>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
 
+            {/* Subgoals Render */}
             {hasSubGoals && isExpanded && (
-                <div className="space-y-1 animate-in slide-in-from-top-1 fade-in duration-200">
+                <div className="space-y-2 pt-1 animate-in slide-in-from-top-2 fade-in duration-300">
                     {goal.subGoals!.map(subGoal => (
                         <GoalItem
                             key={subGoal.id}
@@ -284,19 +329,19 @@ export function GoalTree() {
     return (
         <div className="border border-border rounded-lg bg-card text-card-foreground p-4 space-y-4">
             <div className="flex flex-col gap-4">
-                <div className="flex flex-col sm:flex-row gap-2">
+                <div className="flex flex-col sm:flex-row gap-3">
                     <div className="relative flex-1">
                         <Input
                             placeholder="목표 검색..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="h-9 text-sm pl-8"
+                            className="h-10 text-sm pl-9 bg-background shadow-sm transition-shadow focus-visible:ring-primary/20"
                         />
-                        <Search className="absolute left-2.5 top-2.5 w-4 h-4 text-muted-foreground opacity-50" />
+                        <Search className="absolute left-3 top-3 w-4 h-4 text-muted-foreground opacity-50" />
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap sm:flex-nowrap gap-2">
                         <Select value={filterCategory} onValueChange={(v) => setFilterCategory(v as any)}>
-                            <SelectTrigger className="w-[120px] h-9 text-xs bg-background">
+                            <SelectTrigger className="w-[110px] h-10 text-xs bg-background shadow-sm border-border/60">
                                 <SelectValue placeholder="카테고리" />
                             </SelectTrigger>
                             <SelectContent>
@@ -312,7 +357,7 @@ export function GoalTree() {
                         </Select>
 
                         <Select value={filterPlanType} onValueChange={(v) => setFilterPlanType(v as any)}>
-                            <SelectTrigger className="w-[120px] h-9 text-xs bg-background">
+                            <SelectTrigger className="w-[110px] h-10 text-xs bg-background shadow-sm border-border/60">
                                 <SelectValue placeholder="유형" />
                             </SelectTrigger>
                             <SelectContent>
@@ -324,8 +369,10 @@ export function GoalTree() {
                             </SelectContent>
                         </Select>
 
-                        <Button size="sm" variant="outline" className="h-9 w-9 p-0 hover:bg-secondary/50" onClick={() => handleOpenCreateDialog()}>
-                            <Plus className="w-4 h-4" />
+                        <Button onClick={() => handleOpenCreateDialog()} className="h-10 px-4 shadow-sm font-semibold btn-glass-primary">
+                            <Plus className="w-4 h-4 mr-1.5" />
+                            <span className="hidden sm:inline">새 목표</span>
+                            <span className="sm:hidden">추가</span>
                         </Button>
                     </div>
                 </div>
