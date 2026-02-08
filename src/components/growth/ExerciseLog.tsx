@@ -163,6 +163,12 @@ export function ExerciseLog() {
 
         pendingSessions.forEach(session => addExerciseSession(session));
 
+        if (typeof window !== 'undefined') {
+            window.localStorage.removeItem('exercise_startTime');
+            window.localStorage.removeItem('exercise_pendingSessions');
+            window.localStorage.removeItem('exercise_isWorkoutActive');
+        }
+
         setIsWorkoutActive(false);
         setStartTime(null);
         setPendingSessions([]);
