@@ -69,6 +69,10 @@ export function ExerciseAnalysis({ sessions, inBodyEntries = [] }: ExerciseAnaly
         return { totalDuration, totalCount, totalVolume, uniqueDays };
     }, [filteredSessions]);
 
+    const [dailyChartMetric, setDailyChartMetric] = useState<'duration' | 'volume' | 'sets'>('duration');
+
+    // ... (existing date/filter logic)
+
     // Chart Data
     const chartData = useMemo(() => {
         const days = eachDayOfInterval(dateRange);
@@ -78,7 +82,14 @@ export function ExerciseAnalysis({ sessions, inBodyEntries = [] }: ExerciseAnaly
                 name: format(day, viewMode === 'week' ? 'EEE' : 'dd', { locale: ko }),
                 date: format(day, 'yyyy-MM-dd'),
                 duration: dailySessions.reduce((acc, s) => acc + (s.duration || 0), 0),
-                count: dailySessions.length
+                count: dailySessions.length,
+                volume: dailySessions.reduce((acc, s) => {
+                    if (s.category === 'weight' && s.sets) {
+                        return acc + s.sets.reduce((sum, set) => sum + (set.weight * set.reps), 0);
+                    }
+                    return acc;
+                }, 0),
+                sets: dailySessions.reduce((acc, s) => acc + (s.sets?.length || 0), 0)
             };
         });
     }, [dateRange, filteredSessions, viewMode]);
@@ -95,95 +106,64 @@ export function ExerciseAnalysis({ sessions, inBodyEntries = [] }: ExerciseAnaly
         return Object.entries(counts).map(([name, value]) => ({ name, value }));
     }, [filteredSessions]);
 
+    // Body Part Data
+    const partData = useMemo(() => {
+        const counts: Record<string, number> = {};
+        filteredSessions.forEach(s => {
+            if (s.category === 'weight' && s.targetPart) {
+                counts[s.targetPart] = (counts[s.targetPart] || 0) + (s.sets?.length || 1);
+            }
+        });
+        return Object.entries(counts)
+            .map(([name, value]) => ({ name, value }))
+            .sort((a, b) => b.value - a.value);
+    }, [filteredSessions]);
+
     return (
         <div className="space-y-6 animate-in fade-in">
             {/* Header Controls */}
-            <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-                <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as any)} className="w-[200px]">
-                    <TabsList className="grid w-full grid-cols-2">
-                        <TabsTrigger value="week">주간</TabsTrigger>
-                        <TabsTrigger value="month">월간</TabsTrigger>
-                    </TabsList>
-                </Tabs>
+            {/* ... controls ... */}
 
-                <div className="flex items-center gap-4 bg-muted/30 p-1 rounded-lg">
-                    <Button variant="ghost" size="icon" onClick={() => navigate('prev')}>
-                        <ChevronLeft className="w-5 h-5" />
-                    </Button>
-                    <span className="font-bold min-w-[120px] text-center">
-                        {viewMode === 'week'
-                            ? `${format(dateRange.start, 'MM.dd')} - ${format(dateRange.end, 'MM.dd')}`
-                            : format(currentDate, 'yyyy년 MM월')
-                        }
-                    </span>
-                    <Button variant="ghost" size="icon" onClick={() => navigate('next')}>
-                        <ChevronRight className="w-5 h-5" />
-                    </Button>
-                </div>
-            </div>
-
-            {/* Stats Cards */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">총 운동 시간</CardTitle>
-                        <Timer className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{Math.round(stats.totalDuration)}분</div>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">운동 횟수</CardTitle>
-                        <Activity className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{stats.totalCount}회</div>
-                        <p className="text-xs text-muted-foreground">{stats.uniqueDays}일 출석</p>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">총 볼륨(웨이트)</CardTitle>
-                        <Dumbbell className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{stats.totalVolume.toLocaleString()}</div>
-                        <p className="text-xs text-muted-foreground">kg</p>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">일 평균</CardTitle>
-                        <Flame className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">
-                            {stats.uniqueDays > 0 ? Math.round(stats.totalDuration / stats.uniqueDays) : 0}분
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
+            {/* ... Stats Cards ... */}
 
             {/* Charts Row */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {/* Duration Bar Chart */}
-                <Card className="col-span-2">
-                    <CardHeader>
-                        <CardTitle>일별 운동 시간</CardTitle>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Duration/Volume/Sets Bar Chart */}
+                <Card className="col-span-1 md:col-span-2">
+                    <CardHeader className="flex flex-row items-center justify-between pb-2">
+                        <CardTitle>일별 운동 통계</CardTitle>
+                        <Tabs value={dailyChartMetric} onValueChange={(v) => setDailyChartMetric(v as any)} className="w-[300px]">
+                            <TabsList className="grid w-full grid-cols-3">
+                                <TabsTrigger value="duration">시간(분)</TabsTrigger>
+                                <TabsTrigger value="volume">볼륨(kg)</TabsTrigger>
+                                <TabsTrigger value="sets">세트(수)</TabsTrigger>
+                            </TabsList>
+                        </Tabs>
                     </CardHeader>
                     <CardContent className="h-[300px]">
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={chartData}>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
                                 <XAxis dataKey="name" fontSize={12} tickLine={false} axisLine={false} />
-                                <YAxis fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `${value}분`} />
+                                <YAxis
+                                    fontSize={12}
+                                    tickLine={false}
+                                    axisLine={false}
+                                    tickFormatter={(value) => dailyChartMetric === 'duration' ? `${value}분` : dailyChartMetric === 'volume' ? `${value / 1000}t` : `${value}회`}
+                                />
                                 <Tooltip
                                     contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                                     cursor={{ fill: 'transparent' }}
+                                    formatter={(value: any) => [
+                                        dailyChartMetric === 'duration' ? `${value}분` : dailyChartMetric === 'volume' ? `${value.toLocaleString()}kg` : `${value}회`,
+                                        dailyChartMetric === 'duration' ? '운동 시간' : dailyChartMetric === 'volume' ? '총 볼륨' : '세트 수'
+                                    ]}
                                 />
-                                <Bar dataKey="duration" fill="#3b82f6" radius={[4, 4, 0, 0]} name="운동 시간" />
+                                <Bar
+                                    dataKey={dailyChartMetric}
+                                    fill={dailyChartMetric === 'duration' ? '#3b82f6' : dailyChartMetric === 'volume' ? '#8b5cf6' : '#f59e0b'}
+                                    radius={[4, 4, 0, 0]}
+                                />
                             </BarChart>
                         </ResponsiveContainer>
                     </CardContent>
@@ -208,6 +188,40 @@ export function ExerciseAnalysis({ sessions, inBodyEntries = [] }: ExerciseAnaly
                                         dataKey="value"
                                     >
                                         {categoryData.map((entry, index) => (
+                                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                        ))}
+                                    </Pie>
+                                    <Tooltip />
+                                    <Legend verticalAlign="bottom" height={36} />
+                                </PieChart>
+                            </ResponsiveContainer>
+                        ) : (
+                            <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
+                                데이터가 없습니다.
+                            </div>
+                        )}
+                    </CardContent>
+                </Card>
+
+                {/* Body Part Pie Chart (NEW) */}
+                <Card className="col-span-1">
+                    <CardHeader>
+                        <CardTitle>부위별 운동 비중 (세트 기준)</CardTitle>
+                    </CardHeader>
+                    <CardContent className="h-[300px]">
+                        {partData.length > 0 ? (
+                            <ResponsiveContainer width="100%" height="100%">
+                                <PieChart>
+                                    <Pie
+                                        data={partData}
+                                        cx="50%"
+                                        cy="50%"
+                                        innerRadius={60}
+                                        outerRadius={80}
+                                        paddingAngle={5}
+                                        dataKey="value"
+                                    >
+                                        {partData.map((entry, index) => (
                                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                         ))}
                                     </Pie>
