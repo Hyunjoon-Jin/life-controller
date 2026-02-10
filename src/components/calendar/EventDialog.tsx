@@ -334,8 +334,8 @@ export function EventDialog({ isOpen, onOpenChange, event, initialDate, initialE
                                                 className={cn(
                                                     "w-8 h-8 rounded-full text-xs font-bold transition-all flex items-center justify-center border",
                                                     repeatDays.includes(idx)
-                                                        ? "bg-primary text-white border-primary shadow-md scale-105"
-                                                        : "bg-white text-gray-400 border-gray-200 hover:border-primary/50 hover:text-primary"
+                                                        ? "bg-blue-600 text-white border-blue-600 shadow-md scale-105"
+                                                        : "bg-white text-gray-400 border-gray-200 hover:border-blue-600/50 hover:text-blue-600"
                                                 )}
                                             >
                                                 {day}
@@ -356,7 +356,7 @@ export function EventDialog({ isOpen, onOpenChange, event, initialDate, initialE
                             <Label className="text-xs font-bold text-gray-400 uppercase tracking-wider">유형</Label>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="outline" className="w-full justify-between font-medium border-gray-200 bg-white hover:border-primary/50 text-xs h-9">
+                                    <Button variant="outline" className="w-full justify-between font-medium border-gray-200 bg-white hover:border-blue-600/50 text-xs h-9">
                                         {type === 'work' ? '업무' :
                                             type === 'personal' ? '개인' :
                                                 type === 'study' ? '공부' :
@@ -365,12 +365,12 @@ export function EventDialog({ isOpen, onOpenChange, event, initialDate, initialE
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent className="w-[180px]">
-                                    <DropdownMenuItem onSelect={() => setType('work')}>업무</DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={() => setType('personal')}>개인</DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={() => setType('study')}>공부</DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={() => setType('hobby')}>취미</DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={() => setType('health')}>건강</DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={() => setType('other')}>기타</DropdownMenuItem>
+                                    <DropdownMenuItem className="text-xs" onSelect={() => setType('work')}>업무</DropdownMenuItem>
+                                    <DropdownMenuItem className="text-xs" onSelect={() => setType('personal')}>개인</DropdownMenuItem>
+                                    <DropdownMenuItem className="text-xs" onSelect={() => setType('study')}>공부</DropdownMenuItem>
+                                    <DropdownMenuItem className="text-xs" onSelect={() => setType('hobby')}>취미</DropdownMenuItem>
+                                    <DropdownMenuItem className="text-xs" onSelect={() => setType('health')}>건강</DropdownMenuItem>
+                                    <DropdownMenuItem className="text-xs" onSelect={() => setType('other')}>기타</DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         </div>
@@ -378,15 +378,15 @@ export function EventDialog({ isOpen, onOpenChange, event, initialDate, initialE
                             <Label className="text-xs font-bold text-gray-400 uppercase tracking-wider">우선순위</Label>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="outline" className="w-full justify-between font-medium border-gray-200 bg-white hover:border-primary/50 text-xs h-9">
+                                    <Button variant="outline" className="w-full justify-between font-medium border-gray-200 bg-white hover:border-blue-600/50 text-xs h-9">
                                         {priority === 'low' ? '낮음' : priority === 'medium' ? '보통' : '높음'}
                                         <ChevronDown className="ml-2 h-3 w-3 opacity-50" />
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent className="w-[180px]">
-                                    <DropdownMenuItem onSelect={() => setPriority('low')}>낮음</DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={() => setPriority('medium')}>보통</DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={() => setPriority('high')}>높음</DropdownMenuItem>
+                                    <DropdownMenuItem className="text-xs" onSelect={() => setPriority('low')}>낮음</DropdownMenuItem>
+                                    <DropdownMenuItem className="text-xs" onSelect={() => setPriority('medium')}>보통</DropdownMenuItem>
+                                    <DropdownMenuItem className="text-xs" onSelect={() => setPriority('high')}>높음</DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         </div>
@@ -413,20 +413,22 @@ export function EventDialog({ isOpen, onOpenChange, event, initialDate, initialE
                         <div className="grid grid-cols-2 gap-4">
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="outline" className="w-full justify-between font-medium border-gray-200 bg-white hover:border-primary/50 text-xs h-9">
+                                    <Button variant="outline" className="w-full justify-between font-medium border-gray-200 bg-white hover:border-blue-600/50 text-xs h-9">
                                         <span className="truncate flex items-center gap-2">
                                             <FolderTree className="w-3.5 h-3.5 text-gray-400" />
-                                            {projects.find(p => p.id === connectedProjectId)?.title || '프로젝트 없음'}
+                                            <span className="truncate max-w-[100px] text-xs">
+                                                {projects.find(p => p.id === connectedProjectId)?.title || '프로젝트 없음'}
+                                            </span>
                                         </span>
                                         <ChevronDown className="ml-2 h-3 w-3 opacity-50" />
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent className="w-[200px] max-h-[200px] overflow-y-auto">
-                                    <DropdownMenuItem onSelect={() => setConnectedProjectId(undefined)}>선택 안 함</DropdownMenuItem>
+                                    <DropdownMenuItem className="text-xs" onSelect={() => setConnectedProjectId(undefined)}>선택 안 함</DropdownMenuItem>
                                     {projects.map(p => (
-                                        <DropdownMenuItem key={p.id} onSelect={() => setConnectedProjectId(p.id)}>
-                                            <div className="flex items-center gap-2">
-                                                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: p.color }} />
+                                        <DropdownMenuItem key={p.id} className="text-xs" onSelect={() => setConnectedProjectId(p.id)}>
+                                            <div className="flex items-center gap-2 w-full">
+                                                <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: p.color }} />
                                                 <span className="truncate">{p.title}</span>
                                             </div>
                                         </DropdownMenuItem>
@@ -436,18 +438,20 @@ export function EventDialog({ isOpen, onOpenChange, event, initialDate, initialE
 
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="outline" className="w-full justify-between font-medium border-gray-200 bg-white hover:border-primary/50 text-xs h-9">
+                                    <Button variant="outline" className="w-full justify-between font-medium border-gray-200 bg-white hover:border-blue-600/50 text-xs h-9">
                                         <span className="truncate flex items-center gap-2">
                                             <Trophy className="w-3.5 h-3.5 text-gray-400" />
-                                            {goals.find(g => g.id === connectedGoalId)?.title || '목표 없음'}
+                                            <span className="truncate max-w-[100px] text-xs">
+                                                {goals.find(g => g.id === connectedGoalId)?.title || '목표 없음'}
+                                            </span>
                                         </span>
                                         <ChevronDown className="ml-2 h-3 w-3 opacity-50" />
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent className="w-[200px] max-h-[200px] overflow-y-auto">
-                                    <DropdownMenuItem onSelect={() => setConnectedGoalId(undefined)}>선택 안 함</DropdownMenuItem>
+                                    <DropdownMenuItem className="text-xs" onSelect={() => setConnectedGoalId(undefined)}>선택 안 함</DropdownMenuItem>
                                     {goals.map(g => (
-                                        <DropdownMenuItem key={g.id} onSelect={() => setConnectedGoalId(g.id)}>
+                                        <DropdownMenuItem key={g.id} className="text-xs" onSelect={() => setConnectedGoalId(g.id)}>
                                             <span className="truncate">{g.title}</span>
                                         </DropdownMenuItem>
                                     ))}
@@ -471,8 +475,8 @@ export function EventDialog({ isOpen, onOpenChange, event, initialDate, initialE
                     ) : <div></div>}
 
                     <div className="flex gap-2">
-                        <Button variant="ghost" size="sm" onClick={() => onOpenChange(false)} className="text-gray-500">취소</Button>
-                        <Button size="sm" onClick={handleSave} className="bg-primary hover:bg-primary/90 text-white min-w-[80px] shadow-sm">
+                        <Button variant="ghost" size="sm" onClick={() => onOpenChange(false)} className="text-gray-500 hover:text-gray-700">취소</Button>
+                        <Button size="sm" onClick={handleSave} className="bg-blue-600 hover:bg-blue-700 text-white border-transparent shadow-sm">
                             {isHabit ? '습관 등록' : '저장'}
                         </Button>
                     </div>
