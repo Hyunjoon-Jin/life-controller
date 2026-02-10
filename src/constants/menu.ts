@@ -36,7 +36,6 @@ export const SUB_MENUS: Record<CategoryType, MenuItem[]> = {
     basic: [
         { id: 'calendar', label: '일정', icon: Calendar, desc: '나의 하루를 계획하세요' },
         { id: 'tasks', label: '할일', icon: ListTodo, desc: '중요한 작업을 체크하세요' },
-        { id: 'projects', label: '프로젝트 관리', icon: Briefcase, desc: '업무와 프로젝트를 체계적으로' },
         { id: 'people', label: '인맥', icon: UsersRound, desc: '소중한 관계를 관리하세요' },
     ],
     health: [
