@@ -202,7 +202,7 @@ export default function Home() {
       </header>
 
       {/* Global Navigation Bar (Hidden on Mobile) */}
-      <div className="hidden md:flex w-full max-w-7xl mx-auto mb-6 items-center justify-between gap-4 z-50 relative">
+      <div className="hidden md:flex w-full max-w-7xl mx-auto mb-6 items-center justify-between gap-4 z-50 relative px-6">
         <div className="flex-1 min-w-0">
           <MegaMenuNav
             activeCategory={activeCategory}
@@ -221,7 +221,7 @@ export default function Home() {
         mainMode === 'home' ? (
           <HomeDashboard onNavigate={setMainMode} onQuickLink={handleQuickLink} />
         ) : mainMode === 'schedule' ? (
-          <div className="flex-1 grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 lg:gap-8 min-h-0 px-4">
+          <div className="flex-1 w-full max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 lg:gap-8 min-h-0">
             {/* Left Column: Main Tabbed View */}
             <div className={cn(
               "flex flex-col min-h-[600px] md:min-h-[800px]",
