@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { CalendarEvent, EventPriority, EventType } from '@/types';
 import { format } from 'date-fns';
-import { Trash2, Clock, Calendar as CalendarIcon, Tag, AlertCircle, Users, ChevronDown, Handshake, FolderTree, Trophy } from 'lucide-react';
+import { Trash2, Clock, Calendar as CalendarIcon, Tag, AlertCircle, Users, ChevronDown, Handshake, FolderTree, Trophy, Repeat, CheckCircle2 } from 'lucide-react';
 import { cn, generateId } from '@/lib/utils';
 import { useData } from '@/context/DataProvider';
 
@@ -28,8 +28,10 @@ interface EventDialogProps {
     onDelete?: (eventId: string) => void;
 }
 
+const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
+
 export function EventDialog({ isOpen, onOpenChange, event, initialDate, initialEndDate, onSave, onDelete }: EventDialogProps) {
-    const { projects, goals } = useData();
+    const { projects, goals, addHabit, habits } = useData();
     const [title, setTitle] = useState('');
     const [type, setType] = useState<EventType>('work');
     const [priority, setPriority] = useState<EventPriority>('medium');
@@ -44,6 +46,10 @@ export function EventDialog({ isOpen, onOpenChange, event, initialDate, initialE
 
     const [prepTime, setPrepTime] = useState<number>(0);
     const [travelTime, setTravelTime] = useState<number>(0);
+
+    // Habit States
+    const [isHabit, setIsHabit] = useState(false);
+    const [repeatDays, setRepeatDays] = useState<number[]>([]);
 
     // Generate 15-minute intervals
     const generateTimeOptions = () => {
@@ -75,12 +81,18 @@ export function EventDialog({ isOpen, onOpenChange, event, initialDate, initialE
             setPriority(event.priority || 'medium');
             setIsMeeting(event.isMeeting || false);
             setIsAppointment(event.isAppointment || false);
-            setStartTime(format(roundToNearest15(event.start), 'H:mm'));
-            setEndTime(format(roundToNearest15(event.end), 'H:mm'));
+            setStartTime(format(roundToNearest15(event.start), 'HH:mm')); // Changed to HH:mm for consistency
+            setEndTime(format(roundToNearest15(event.end), 'HH:mm'));
             setConnectedProjectId(event.connectedProjectId);
             setConnectedGoalId(event.connectedGoalId);
             setPrepTime(event.prepTime || 0);
             setTravelTime(event.travelTime || 0);
+
+            // If editing an existing event, we don't typically convert it to habit here,
+            // unless it WAS a habit event, but habit events usually edit the master habit.
+            // For simplicity in this dialog, we assume standard event editing.
+            setIsHabit(false);
+            setRepeatDays([]);
         } else if (isOpen && initialDate) {
             // Reset for new event
             setTitle('');
@@ -92,8 +104,11 @@ export function EventDialog({ isOpen, onOpenChange, event, initialDate, initialE
             setConnectedGoalId(undefined);
             setPrepTime(0);
             setTravelTime(0);
+            setIsHabit(false);
 
             const start = roundToNearest15(initialDate);
+            setRepeatDays([start.getDay()]); // Default to current day
+
             setStartTime(format(start, 'HH:mm'));
 
             if (initialEndDate) {
@@ -109,39 +124,64 @@ export function EventDialog({ isOpen, onOpenChange, event, initialDate, initialE
     const handleSave = () => {
         if (!title.trim()) return;
 
-        const baseDate = event ? event.start : (initialDate || new Date());
+        if (isHabit) {
+            // Create as Habit
+            addHabit({
+                id: generateId(),
+                title,
+                streak: 0,
+                completedDates: [],
+                time: startTime,
+                endTime: endTime,
+                days: repeatDays,
+                startDate: new Date(), // Start from today
+                type,
+                priority,
+                isMeeting,
+                isAppointment,
+                connectedProjectId,
+                connectedGoalId,
+                prepTime: prepTime > 0 ? prepTime : undefined,
+                travelTime: travelTime > 0 ? travelTime : undefined,
+                color: event?.color // Or auto-assign based on type
+            });
+            onOpenChange(false);
+        } else {
+            // Create/Update as Standard Event
+            const baseDate = event ? event.start : (initialDate || new Date());
+            const [startHour, startMin] = startTime.split(':').map(Number);
+            const [endHour, endMin] = endTime.split(':').map(Number);
 
-        const [startHour, startMin] = startTime.split(':').map(Number);
-        const [endHour, endMin] = endTime.split(':').map(Number);
+            const newStart = new Date(baseDate);
+            newStart.setHours(startHour, startMin, 0, 0);
 
-        const newStart = new Date(baseDate);
-        newStart.setHours(startHour, startMin, 0, 0);
+            const newEnd = new Date(baseDate);
+            newEnd.setHours(endHour, endMin, 0, 0);
 
-        const newEnd = new Date(baseDate);
-        newEnd.setHours(endHour, endMin, 0, 0);
+            // Handle overnight events or end < start
+            if (newEnd < newStart) {
+                newEnd.setDate(newEnd.getDate() + 1);
+            }
 
-        if (newEnd < newStart) {
-            newEnd.setDate(newEnd.getDate() + 1);
+            const updatedEvent: CalendarEvent = {
+                id: event?.id || generateId(),
+                title,
+                start: newStart,
+                end: newEnd,
+                type,
+                priority,
+                isMeeting,
+                isAppointment,
+                color: event?.color,
+                connectedProjectId,
+                connectedGoalId,
+                prepTime: prepTime > 0 ? prepTime : undefined,
+                travelTime: travelTime > 0 ? travelTime : undefined
+            };
+
+            onSave(updatedEvent);
+            onOpenChange(false);
         }
-
-        const updatedEvent: CalendarEvent = {
-            id: event?.id || generateId(),
-            title,
-            start: newStart,
-            end: newEnd,
-            type,
-            priority,
-            isMeeting,
-            isAppointment,
-            color: event?.color,
-            connectedProjectId,
-            connectedGoalId,
-            prepTime: prepTime > 0 ? prepTime : undefined,
-            travelTime: travelTime > 0 ? travelTime : undefined
-        };
-
-        onSave(updatedEvent);
-        onOpenChange(false);
     };
 
     const handleDelete = () => {
@@ -151,44 +191,63 @@ export function EventDialog({ isOpen, onOpenChange, event, initialDate, initialE
         }
     };
 
+    const toggleDay = (dayIndex: number) => {
+        setRepeatDays(prev =>
+            prev.includes(dayIndex)
+                ? prev.filter(d => d !== dayIndex)
+                : [...prev, dayIndex].sort()
+        );
+    };
+
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[450px] p-0 overflow-hidden">
-                <DialogHeader className="px-6 pt-6 pb-2">
-                    <DialogTitle className="text-xl font-extrabold flex items-center gap-2 tracking-tight">
-                        {event ? '일정 수정' : '새 일정'}
-                    </DialogTitle>
+            <DialogContent className="sm:max-w-[480px] p-0 gap-0 overflow-hidden bg-white border-0 shadow-2xl rounded-2xl">
+                {/* Header */}
+                <DialogHeader className="px-6 py-5 border-b border-gray-100 flex flex-row items-center justify-between">
+                    <div>
+                        <DialogTitle className="text-xl font-bold flex items-center gap-2 text-gray-800">
+                            {event ? '일정 수정' : '새 일정 등록'}
+                        </DialogTitle>
+                    </div>
+                    {/* Event Type Badge (Visual Only) */}
+                    <div className={cn(
+                        "px-2.5 py-1 rounded-full text-xs font-bold capitalize",
+                        priority === 'high' ? "bg-red-50 text-red-600" :
+                            priority === 'medium' ? "bg-blue-50 text-blue-600" : "bg-gray-100 text-gray-500"
+                    )}>
+                        {priority === 'high' ? '중요' : priority === 'medium' ? '보통' : '낮음'}
+                    </div>
                 </DialogHeader>
 
-                <div className="px-6 py-4 space-y-6" onKeyDown={(e) => {
+                <div className="px-6 py-5 space-y-6 max-h-[70vh] overflow-y-auto custom-scrollbar" onKeyDown={(e) => {
                     if (e.key === 'Enter') handleSave();
                 }}>
                     {/* Title Input */}
                     <div className="space-y-2">
-                        <Label htmlFor="title" className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-                            <Tag className="w-3 h-3 text-primary" /> 제목
+                        <Label htmlFor="title" className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+                            <Tag className="w-3.5 h-3.5" /> 제목
                         </Label>
                         <Input
                             id="title"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
                             placeholder="일정 제목을 입력하세요"
-                            className="text-lg font-bold border-0 border-b-2 border-muted bg-transparent rounded-none px-0 py-2 focus-visible:ring-0 focus-visible:border-primary placeholder:font-medium placeholder:text-muted-foreground/30 transition-colors"
+                            className="text-lg font-bold border-0 border-b-2 border-gray-100 bg-transparent rounded-none px-0 py-2 focus-visible:ring-0 focus-visible:border-primary placeholder:font-medium placeholder:text-gray-300 transition-colors"
                             autoFocus
                         />
                     </div>
 
                     {/* Time Selection */}
-                    <div className="grid grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                            <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-                                <Clock className="w-3 h-3 text-primary" /> 시작 시간
+                    <div className="flex items-center gap-4">
+                        <div className="flex-1 space-y-2">
+                            <Label className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+                                <Clock className="w-3.5 h-3.5" /> 시작
                             </Label>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="outline" className="w-full justify-between font-medium border-muted/40 bg-muted/20 hover:bg-muted/40 hover:text-primary transition-all">
+                                    <Button variant="outline" className="w-full justify-start font-medium border-gray-200 bg-gray-50 hover:bg-white hover:border-primary/50 text-left px-3 text-base">
                                         {startTime}
-                                        <ChevronDown className="ml-2 h-3 w-3 opacity-50" />
+                                        <ChevronDown className="ml-auto h-4 w-4 opacity-30" />
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent className="max-h-[200px] overflow-y-auto w-[180px]">
@@ -200,15 +259,16 @@ export function EventDialog({ isOpen, onOpenChange, event, initialDate, initialE
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         </div>
-                        <div className="space-y-2">
-                            <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-                                <Clock className="w-3 h-3 text-primary" /> 종료 시간
+                        <div className="flex items-center justify-center pt-6 text-gray-300">-</div>
+                        <div className="flex-1 space-y-2">
+                            <Label className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+                                <Clock className="w-3.5 h-3.5" /> 종료
                             </Label>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="outline" className="w-full justify-between font-medium border-muted/40 bg-muted/20 hover:bg-muted/40 hover:text-primary transition-all">
+                                    <Button variant="outline" className="w-full justify-start font-medium border-gray-200 bg-gray-50 hover:bg-white hover:border-primary/50 text-left px-3 text-base">
                                         {endTime}
-                                        <ChevronDown className="ml-2 h-3 w-3 opacity-50" />
+                                        <ChevronDown className="ml-auto h-4 w-4 opacity-30" />
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent className="max-h-[200px] overflow-y-auto w-[180px]">
@@ -222,52 +282,85 @@ export function EventDialog({ isOpen, onOpenChange, event, initialDate, initialE
                         </div>
                     </div>
 
-                    {/* Prep & Travel Time */}
-                    <div className="grid grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                            <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-                                <Clock className="w-3 h-3 text-primary" /> 준비 시간 (분)
-                            </Label>
+                    {/* Prep & Travel Time (Horizontal Compact) */}
+                    <div className="flex gap-4">
+                        <div className="flex-1 space-y-2">
+                            <Label className="text-xs font-bold text-gray-400 uppercase tracking-wider">준비 (분)</Label>
                             <Input
                                 type="number"
                                 value={prepTime === 0 ? '' : prepTime}
                                 onChange={e => setPrepTime(Number(e.target.value))}
                                 placeholder="0"
-                                className="border-0 border-b-2 border-muted bg-transparent rounded-none px-0 py-2 focus-visible:ring-0 focus-visible:border-primary"
+                                className="bg-gray-50 border-gray-200 focus-visible:ring-primary/20 h-9"
                             />
                         </div>
-                        <div className="space-y-2">
-                            <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-                                <Clock className="w-3 h-3 text-primary" /> 이동 시간 (분)
-                            </Label>
+                        <div className="flex-1 space-y-2">
+                            <Label className="text-xs font-bold text-gray-400 uppercase tracking-wider">이동 (분)</Label>
                             <Input
                                 type="number"
                                 value={travelTime === 0 ? '' : travelTime}
                                 onChange={e => setTravelTime(Number(e.target.value))}
                                 placeholder="0"
-                                className="border-0 border-b-2 border-muted bg-transparent rounded-none px-0 py-2 focus-visible:ring-0 focus-visible:border-primary"
+                                className="bg-gray-50 border-gray-200 focus-visible:ring-primary/20 h-9"
                             />
                         </div>
                     </div>
 
-                    {/* Type & Priority */}
-                    <div className="grid grid-cols-2 gap-6">
+                    {/* Habit Toggle & Repeat Days */}
+                    {!event && (
+                        <div className="p-4 bg-primary/5 rounded-xl border border-primary/10 space-y-4">
+                            <div className="flex items-center space-x-2">
+                                <Checkbox
+                                    id="isHabit"
+                                    checked={isHabit}
+                                    onCheckedChange={(c) => setIsHabit(c as boolean)}
+                                    className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                                />
+                                <Label htmlFor="isHabit" className="text-sm font-bold text-gray-700 flex items-center gap-2 cursor-pointer">
+                                    <Repeat className="w-4 h-4 text-primary" />
+                                    습관으로 설정하기 (반복)
+                                </Label>
+                            </div>
+
+                            {isHabit && (
+                                <div className="animate-in fade-in slide-in-from-top-2 duration-200 pl-6 border-l-2 border-primary/20">
+                                    <Label className="text-xs font-bold text-gray-500 mb-2 block">반복 요일 선택</Label>
+                                    <div className="flex gap-1.5 flex-wrap">
+                                        {WEEKDAYS.map((day, idx) => (
+                                            <button
+                                                key={idx}
+                                                type="button"
+                                                onClick={() => toggleDay(idx)}
+                                                className={cn(
+                                                    "w-8 h-8 rounded-full text-xs font-bold transition-all flex items-center justify-center border",
+                                                    repeatDays.includes(idx)
+                                                        ? "bg-primary text-white border-primary shadow-md scale-105"
+                                                        : "bg-white text-gray-400 border-gray-200 hover:border-primary/50 hover:text-primary"
+                                                )}
+                                            >
+                                                {day}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <p className="text-[10px] text-muted-foreground mt-2">
+                                        * 체크된 요일에 자동으로 일정이 생성됩니다.
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {/* Type & Priority & Flags */}
+                    <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-                                <FolderTree className="w-3 h-3 text-primary" /> 유형
-                            </Label>
+                            <Label className="text-xs font-bold text-gray-400 uppercase tracking-wider">유형</Label>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="outline" className="w-full justify-between font-medium border-muted/40 bg-muted/20 hover:bg-muted/40 hover:text-primary transition-all capitalize">
+                                    <Button variant="outline" className="w-full justify-between font-medium border-gray-200 bg-white hover:border-primary/50 text-xs h-9">
                                         {type === 'work' ? '업무' :
                                             type === 'personal' ? '개인' :
                                                 type === 'study' ? '공부' :
-                                                    type === 'hobby' ? '취미' :
-                                                        type === 'health' ? '건강' :
-                                                            type === 'finance' ? '재테크' :
-                                                                type === 'social' ? '사교' :
-                                                                    type === 'travel' ? '여행' :
-                                                                        type === 'meal' ? '식사' : '기타'}
+                                                    type === 'hobby' ? '취미' : '기타'}
                                         <ChevronDown className="ml-2 h-3 w-3 opacity-50" />
                                     </Button>
                                 </DropdownMenuTrigger>
@@ -277,21 +370,15 @@ export function EventDialog({ isOpen, onOpenChange, event, initialDate, initialE
                                     <DropdownMenuItem onSelect={() => setType('study')}>공부</DropdownMenuItem>
                                     <DropdownMenuItem onSelect={() => setType('hobby')}>취미</DropdownMenuItem>
                                     <DropdownMenuItem onSelect={() => setType('health')}>건강</DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={() => setType('finance')}>재테크</DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={() => setType('social')}>사교</DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={() => setType('travel')}>여행</DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={() => setType('meal')}>식사</DropdownMenuItem>
                                     <DropdownMenuItem onSelect={() => setType('other')}>기타</DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         </div>
                         <div className="space-y-2">
-                            <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-                                <AlertCircle className="w-3 h-3 text-primary" /> 우선순위
-                            </Label>
+                            <Label className="text-xs font-bold text-gray-400 uppercase tracking-wider">우선순위</Label>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="outline" className="w-full justify-between font-medium border-muted/40 bg-muted/20 hover:bg-muted/40 hover:text-primary transition-all capitalize">
+                                    <Button variant="outline" className="w-full justify-between font-medium border-gray-200 bg-white hover:border-primary/50 text-xs h-9">
                                         {priority === 'low' ? '낮음' : priority === 'medium' ? '보통' : '높음'}
                                         <ChevronDown className="ml-2 h-3 w-3 opacity-50" />
                                     </Button>
@@ -305,21 +392,36 @@ export function EventDialog({ isOpen, onOpenChange, event, initialDate, initialE
                         </div>
                     </div>
 
-                    {/* Link Section */}
-                    {/* ... (Kept similar but cleaned up) ... */}
-                    <div className="grid grid-cols-2 gap-6 pt-4 border-t border-border/10">
-                        <div className="space-y-2">
-                            <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-                                <FolderTree className="w-3 h-3 text-primary" /> 프로젝트
+                    <div className="flex gap-4 pt-2">
+                        <div className="flex items-center space-x-2 bg-gray-50 px-3 py-1.5 rounded-lg border border-transparent hover:border-blue-200 transition-colors cursor-pointer" onClick={() => setIsMeeting(!isMeeting)}>
+                            <Checkbox id="isMeeting" checked={isMeeting} onCheckedChange={(c) => setIsMeeting(c as boolean)} />
+                            <Label className="text-sm font-medium flex items-center gap-1.5 cursor-pointer">
+                                <Users className="w-3.5 h-3.5 text-blue-500" /> 회의
                             </Label>
+                        </div>
+                        <div className="flex items-center space-x-2 bg-gray-50 px-3 py-1.5 rounded-lg border border-transparent hover:border-green-200 transition-colors cursor-pointer" onClick={() => setIsAppointment(!isAppointment)}>
+                            <Checkbox id="isAppointment" checked={isAppointment} onCheckedChange={(c) => setIsAppointment(c as boolean)} />
+                            <Label className="text-sm font-medium flex items-center gap-1.5 cursor-pointer">
+                                <Handshake className="w-3.5 h-3.5 text-green-500" /> 약속
+                            </Label>
+                        </div>
+                    </div>
+
+                    {/* Project & Goal Link */}
+                    <div className="space-y-3 pt-4 border-t border-gray-100">
+                        <Label className="text-xs font-bold text-gray-400 uppercase tracking-wider">연결 (선택 사항)</Label>
+                        <div className="grid grid-cols-2 gap-4">
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="outline" className="w-full justify-between font-medium border-muted/40 bg-muted/20 hover:bg-muted/40 hover:text-primary transition-all text-xs h-9">
-                                        {projects.find(p => p.id === connectedProjectId)?.title || '선택 안 함'}
+                                    <Button variant="outline" className="w-full justify-between font-medium border-gray-200 bg-white hover:border-primary/50 text-xs h-9">
+                                        <span className="truncate flex items-center gap-2">
+                                            <FolderTree className="w-3.5 h-3.5 text-gray-400" />
+                                            {projects.find(p => p.id === connectedProjectId)?.title || '프로젝트 없음'}
+                                        </span>
                                         <ChevronDown className="ml-2 h-3 w-3 opacity-50" />
                                     </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent className="w-[180px] max-h-[200px] overflow-y-auto">
+                                <DropdownMenuContent className="w-[200px] max-h-[200px] overflow-y-auto">
                                     <DropdownMenuItem onSelect={() => setConnectedProjectId(undefined)}>선택 안 함</DropdownMenuItem>
                                     {projects.map(p => (
                                         <DropdownMenuItem key={p.id} onSelect={() => setConnectedProjectId(p.id)}>
@@ -331,19 +433,18 @@ export function EventDialog({ isOpen, onOpenChange, event, initialDate, initialE
                                     ))}
                                 </DropdownMenuContent>
                             </DropdownMenu>
-                        </div>
-                        <div className="space-y-2">
-                            <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-                                <Trophy className="w-3 h-3 text-primary" /> 목표
-                            </Label>
+
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="outline" className="w-full justify-between font-medium border-muted/40 bg-muted/20 hover:bg-muted/40 hover:text-primary transition-all text-xs h-9">
-                                        {goals.find(g => g.id === connectedGoalId)?.title || '선택 안 함'}
+                                    <Button variant="outline" className="w-full justify-between font-medium border-gray-200 bg-white hover:border-primary/50 text-xs h-9">
+                                        <span className="truncate flex items-center gap-2">
+                                            <Trophy className="w-3.5 h-3.5 text-gray-400" />
+                                            {goals.find(g => g.id === connectedGoalId)?.title || '목표 없음'}
+                                        </span>
                                         <ChevronDown className="ml-2 h-3 w-3 opacity-50" />
                                     </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent className="w-[180px] max-h-[200px] overflow-y-auto">
+                                <DropdownMenuContent className="w-[200px] max-h-[200px] overflow-y-auto">
                                     <DropdownMenuItem onSelect={() => setConnectedGoalId(undefined)}>선택 안 함</DropdownMenuItem>
                                     {goals.map(g => (
                                         <DropdownMenuItem key={g.id} onSelect={() => setConnectedGoalId(g.id)}>
@@ -354,41 +455,15 @@ export function EventDialog({ isOpen, onOpenChange, event, initialDate, initialE
                             </DropdownMenu>
                         </div>
                     </div>
-
-                    {/* Flags: Meeting & Appointment */}
-                    <div className="flex items-center gap-6 pt-2">
-                        <div className="flex items-center space-x-2">
-                            <Checkbox
-                                id="isMeeting"
-                                checked={isMeeting}
-                                onCheckedChange={(c) => setIsMeeting(c as boolean)}
-                            />
-                            <Label htmlFor="isMeeting" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center gap-1">
-                                <Users className="w-3.5 h-3.5 text-blue-500" />
-                                회의
-                            </Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                            <Checkbox
-                                id="isAppointment"
-                                checked={isAppointment}
-                                onCheckedChange={(c) => setIsAppointment(c as boolean)}
-                            />
-                            <Label htmlFor="isAppointment" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center gap-1">
-                                <Handshake className="w-3.5 h-3.5 text-green-500" />
-                                약속
-                            </Label>
-                        </div>
-                    </div>
                 </div>
 
-                <DialogFooter className="px-6 py-4 bg-muted/20 flex items-center justify-between sm:justify-between w-full">
+                <DialogFooter className="px-6 py-4 bg-gray-50 flex items-center justify-between sm:justify-between w-full border-t border-gray-100">
                     {event ? (
                         <Button
                             variant="ghost"
                             size="sm"
                             onClick={handleDelete}
-                            className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                            className="text-red-500 hover:text-red-600 hover:bg-red-50"
                         >
                             <Trash2 className="w-4 h-4 mr-2" />
                             삭제
@@ -396,8 +471,10 @@ export function EventDialog({ isOpen, onOpenChange, event, initialDate, initialE
                     ) : <div></div>}
 
                     <div className="flex gap-2">
-                        <Button variant="ghost" size="sm" onClick={() => onOpenChange(false)}>취소</Button>
-                        <Button size="sm" onClick={handleSave}>저장</Button>
+                        <Button variant="ghost" size="sm" onClick={() => onOpenChange(false)} className="text-gray-500">취소</Button>
+                        <Button size="sm" onClick={handleSave} className="bg-primary hover:bg-primary/90 text-white min-w-[80px] shadow-sm">
+                            {isHabit ? '습관 등록' : '저장'}
+                        </Button>
                     </div>
                 </DialogFooter>
             </DialogContent>
