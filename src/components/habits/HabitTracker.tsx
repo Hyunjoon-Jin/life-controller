@@ -49,6 +49,7 @@ export function HabitTracker() {
     const [prepTime, setPrepTime] = useState<number>(0);
     const [travelTime, setTravelTime] = useState<number>(0);
     const [targetCount, setTargetCount] = useState<number>(1);
+    const [isTracked, setIsTracked] = useState<boolean>(true);
     const [description, setDescription] = useState('');
 
     // Edit State
@@ -133,6 +134,7 @@ export function HabitTracker() {
                 prepTime: prepTime > 0 ? prepTime : undefined,
                 travelTime: travelTime > 0 ? travelTime : undefined,
                 targetCount: targetCount > 1 ? targetCount : 1,
+                isTracked,
                 description: description || undefined
             });
         } else {
@@ -156,6 +158,7 @@ export function HabitTracker() {
                 travelTime: travelTime > 0 ? travelTime : undefined,
                 targetCount: targetCount > 1 ? targetCount : 1,
                 dailyProgress: {},
+                isTracked,
                 description: description || undefined
             };
             addHabit(newHabit);
@@ -175,6 +178,7 @@ export function HabitTracker() {
         setPrepTime(0);
         setTravelTime(0);
         setTargetCount(1);
+        setIsTracked(true);
         setDescription('');
         setEditingHabit(null);
         setIsDialogOpen(false);
@@ -195,6 +199,7 @@ export function HabitTracker() {
         setPrepTime(habit.prepTime || 0);
         setTravelTime(habit.travelTime || 0);
         setTargetCount(habit.targetCount || 1);
+        setIsTracked(habit.isTracked !== false); // Default true
         setDescription(habit.description || '');
         setIsDialogOpen(true);
     };
@@ -213,6 +218,8 @@ export function HabitTracker() {
         setConnectedGoalId(undefined);
         setPrepTime(0);
         setTravelTime(0);
+        setTargetCount(1);
+        setIsTracked(true);
         setDescription('');
         setIsDialogOpen(true);
     };
@@ -331,25 +338,12 @@ export function HabitTracker() {
                                                 role="button"
                                                 tabIndex={0}
                                                 onClick={() => {
-                                                    console.log(`Toggling day ${day} (${idx}), currently selected:`, isSelected);
                                                     if (isSelected) {
                                                         const filtered = newHabitDays.filter(d => d !== idx);
-                                                        console.log('Removing day, new array:', filtered);
                                                         setNewHabitDays(filtered);
                                                     } else {
                                                         const added = [...newHabitDays, idx].sort();
-                                                        console.log('Adding day, new array:', added);
                                                         setNewHabitDays(added);
-                                                    }
-                                                }}
-                                                onKeyDown={(e) => {
-                                                    if (e.key === 'Enter' || e.key === ' ') {
-                                                        e.preventDefault();
-                                                        if (isSelected) {
-                                                            setNewHabitDays(newHabitDays.filter(d => d !== idx));
-                                                        } else {
-                                                            setNewHabitDays([...newHabitDays, idx].sort());
-                                                        }
                                                     }
                                                 }}
                                                 className={cn(
@@ -496,28 +490,42 @@ export function HabitTracker() {
                                 </div>
                             </div>
 
-                            {/* Meeting & Appointment Flags */}
-                            <div className="flex items-center gap-6 pt-2">
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox
-                                        id="isMeeting"
-                                        checked={isMeeting}
-                                        onCheckedChange={(c) => setIsMeeting(c as boolean)}
-                                    />
-                                    <Label htmlFor="isMeeting" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center gap-1">
-                                        <Users className="w-3.5 h-3.5 text-blue-500" />
-                                        회의
-                                    </Label>
+                            {/* Meeting & Appointment Flags & Tracking */}
+                            <div className="flex items-center justify-between gap-6 pt-2">
+                                <div className="flex items-center gap-4">
+                                    <div className="flex items-center space-x-2">
+                                        <Checkbox
+                                            id="isMeeting"
+                                            checked={isMeeting}
+                                            onCheckedChange={(c) => setIsMeeting(c as boolean)}
+                                        />
+                                        <Label htmlFor="isMeeting" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center gap-1">
+                                            <Users className="w-3.5 h-3.5 text-blue-500" />
+                                            회의
+                                        </Label>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                        <Checkbox
+                                            id="isAppointment"
+                                            checked={isAppointment}
+                                            onCheckedChange={(c) => setIsAppointment(c as boolean)}
+                                        />
+                                        <Label htmlFor="isAppointment" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center gap-1">
+                                            <Handshake className="w-3.5 h-3.5 text-green-500" />
+                                            약속
+                                        </Label>
+                                    </div>
                                 </div>
-                                <div className="flex items-center space-x-2">
+
+                                <div className="flex items-center space-x-2 bg-secondary/50 px-3 py-2 rounded-lg border border-border/50">
                                     <Checkbox
-                                        id="isAppointment"
-                                        checked={isAppointment}
-                                        onCheckedChange={(c) => setIsAppointment(c as boolean)}
+                                        id="isTracked"
+                                        checked={isTracked}
+                                        onCheckedChange={(c) => setIsTracked(c as boolean)}
                                     />
-                                    <Label htmlFor="isAppointment" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center gap-1">
-                                        <Handshake className="w-3.5 h-3.5 text-green-500" />
-                                        약속
+                                    <Label htmlFor="isTracked" className="text-xs font-bold text-primary flex items-center gap-1 cursor-pointer">
+                                        <Trophy className="w-3 h-3" />
+                                        달성 여부 추적
                                     </Label>
                                 </div>
                             </div>
@@ -549,17 +557,19 @@ export function HabitTracker() {
                     return (
                         <div key={habit.id} className="group flex items-center justify-between p-3 rounded-lg border border-border/40 bg-background hover:bg-muted/30 transition-colors">
                             <div className="flex items-center gap-3 flex-1">
-                                <button
-                                    onClick={() => toggleHabit(habit.id)}
-                                    className={cn(
-                                        "flex items-center justify-center w-6 h-6 rounded border transition-colors",
-                                        isCompleted
-                                            ? "bg-primary border-primary text-primary-foreground"
-                                            : "border-muted-foreground hover:border-foreground"
-                                    )}
-                                >
-                                    {isCompleted && <Check className="w-4 h-4" />}
-                                </button>
+                                {habit.isTracked !== false && (
+                                    <button
+                                        onClick={() => toggleHabit(habit.id)}
+                                        className={cn(
+                                            "flex items-center justify-center w-6 h-6 rounded border transition-colors",
+                                            isCompleted
+                                                ? "bg-primary border-primary text-primary-foreground"
+                                                : "border-muted-foreground hover:border-foreground"
+                                        )}
+                                    >
+                                        {isCompleted && <Check className="w-4 h-4" />}
+                                    </button>
+                                )}
 
                                 <div className="flex-1">
                                     <div className="font-bold text-sm flex items-center justify-between leading-none">
@@ -567,16 +577,18 @@ export function HabitTracker() {
                                             <span onClick={() => handleOpenEdit(habit)} className="cursor-pointer hover:underline">
                                                 {habit.title}
                                             </span>
-                                            {target > 1 && (
+                                            {habit.isTracked !== false && target > 1 && (
                                                 <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-secondary text-secondary-foreground">
                                                     {currentProgress} / {target}
                                                 </span>
                                             )}
                                         </div>
                                     </div>
-                                    <div className="text-xs font-medium text-muted-foreground flex items-center gap-1 mt-1">
-                                        <Flame className="w-3 h-3 text-orange-500" /> {habit.streak}일 연속
-                                    </div>
+                                    {habit.isTracked !== false && (
+                                        <div className="text-xs font-medium text-muted-foreground flex items-center gap-1 mt-1">
+                                            <Flame className="w-3 h-3 text-orange-500" /> {habit.streak}일 연속
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 

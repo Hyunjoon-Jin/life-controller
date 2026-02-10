@@ -146,6 +146,7 @@ export type Habit = {
     // Multi-count support
     targetCount?: number; // Daily target (default 1)
     dailyProgress?: Record<string, number>; // { "2024-02-10": 2 }
+    isTracked?: boolean; // If false, hide checkbox/streak
 };
 
 export type EventType = 'work' | 'personal' | 'study' | 'hobby' | 'health' | 'finance' | 'social' | 'travel' | 'meal' | 'vacation' | 'other';
