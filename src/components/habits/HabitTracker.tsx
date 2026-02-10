@@ -17,6 +17,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { HabitStats } from './HabitStats';
 
 const generateTimeOptions = () => {
     const options = [];
@@ -54,6 +55,7 @@ export function HabitTracker() {
 
     // Edit State
     const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
+    const [viewingStatsHabit, setViewingStatsHabit] = useState<Habit | null>(null);
 
     const [today, setToday] = useState('');
 
@@ -235,13 +237,13 @@ export function HabitTracker() {
                     <DialogTrigger asChild>
                         <Button size="sm" variant="ghost" onClick={handleOpenCreate}><Plus className="w-4 h-4" /></Button>
                     </DialogTrigger>
-                    <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
-                        <DialogHeader>
+                    <DialogContent className="sm:max-w-[400px] max-h-[90vh] overflow-y-auto p-4 gap-3">
+                        <DialogHeader className="pb-2 mb-0">
                             <DialogTitle>{editingHabit ? '습관 수정' : '새 습관 추가'}</DialogTitle>
                         </DialogHeader>
-                        <div className="space-y-4 py-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="habit-title" className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                        <div className="space-y-3">
+                            <div className="space-y-1">
+                                <Label htmlFor="habit-title" className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
                                     <Tag className="w-3 h-3 text-primary" /> 습관 이름
                                 </Label>
                                 <Input
@@ -250,19 +252,19 @@ export function HabitTracker() {
                                     onChange={(e) => setNewHabitTitle(e.target.value)}
                                     placeholder="물 마시기, 독서하기..."
                                     onKeyDown={(e) => e.key === 'Enter' && handleSaveHabit()}
-                                    className="text-lg font-bold"
+                                    className="text-base font-bold h-8"
                                 />
                             </div>
 
-                            <div className="space-y-2">
-                                <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                            <div className="space-y-1">
+                                <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
                                     <AlertCircle className="w-3 h-3 text-primary" /> 하루 목표 횟수
                                 </Label>
-                                <div className="flex items-center gap-3">
+                                <div className="flex items-center gap-2">
                                     <Button
                                         variant="outline"
                                         size="icon"
-                                        className="h-8 w-8 rounded-full"
+                                        className="h-6 w-6 rounded-full"
                                         onClick={() => setTargetCount(Math.max(1, targetCount - 1))}
                                     >
                                         -
@@ -271,53 +273,53 @@ export function HabitTracker() {
                                     <Button
                                         variant="outline"
                                         size="icon"
-                                        className="h-8 w-8 rounded-full"
+                                        className="h-6 w-6 rounded-full"
                                         onClick={() => setTargetCount(targetCount + 1)}
                                     >
                                         +
                                     </Button>
-                                    <span className="text-xs text-muted-foreground ml-2">회</span>
+                                    <span className="text-[10px] text-muted-foreground ml-1">회</span>
                                 </div>
                             </div>
 
                             {/* Time Selection */}
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className="space-y-1">
+                                    <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
                                         <Clock className="w-3 h-3 text-primary" /> 시작 시간
                                     </Label>
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
-                                            <Button variant="outline" className="w-full justify-between font-medium border-muted/40 bg-muted/20 hover:bg-muted/40">
+                                            <Button variant="outline" className="w-full justify-between font-medium border-muted/40 bg-muted/20 hover:bg-muted/40 h-7 text-xs">
                                                 {newHabitTime || "선택 안 함"}
-                                                <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
+                                                <ChevronDown className="ml-2 h-3 w-3 opacity-50" />
                                             </Button>
                                         </DropdownMenuTrigger>
-                                        <DropdownMenuContent className="max-h-[200px] overflow-y-auto w-[180px]">
-                                            <DropdownMenuItem onSelect={() => setNewHabitTime('')}>선택 안 함</DropdownMenuItem>
+                                        <DropdownMenuContent className="max-h-[200px] overflow-y-auto w-[150px]">
+                                            <DropdownMenuItem className="text-xs" onSelect={() => setNewHabitTime('')}>선택 안 함</DropdownMenuItem>
                                             {timeOptions.map((t) => (
-                                                <DropdownMenuItem key={`start-${t}`} onSelect={() => setNewHabitTime(t)}>
+                                                <DropdownMenuItem className="text-xs" key={`start-${t}`} onSelect={() => setNewHabitTime(t)}>
                                                     {t}
                                                 </DropdownMenuItem>
                                             ))}
                                         </DropdownMenuContent>
                                     </DropdownMenu>
                                 </div>
-                                <div className="space-y-2">
-                                    <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                                <div className="space-y-1">
+                                    <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
                                         <Clock className="w-3 h-3 text-primary" /> 종료 시간
                                     </Label>
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
-                                            <Button variant="outline" className="w-full justify-between font-medium border-muted/40 bg-muted/20 hover:bg-muted/40">
+                                            <Button variant="outline" className="w-full justify-between font-medium border-muted/40 bg-muted/20 hover:bg-muted/40 h-7 text-xs">
                                                 {newHabitEndTime || "선택 안 함"}
-                                                <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
+                                                <ChevronDown className="ml-2 h-3 w-3 opacity-50" />
                                             </Button>
                                         </DropdownMenuTrigger>
-                                        <DropdownMenuContent className="max-h-[200px] overflow-y-auto w-[180px]">
-                                            <DropdownMenuItem onSelect={() => setNewHabitEndTime('')}>선택 안 함</DropdownMenuItem>
+                                        <DropdownMenuContent className="max-h-[200px] overflow-y-auto w-[150px]">
+                                            <DropdownMenuItem className="text-xs" onSelect={() => setNewHabitEndTime('')}>선택 안 함</DropdownMenuItem>
                                             {timeOptions.map((t) => (
-                                                <DropdownMenuItem key={`end-${t}`} onSelect={() => setNewHabitEndTime(t)}>
+                                                <DropdownMenuItem className="text-xs" key={`end-${t}`} onSelect={() => setNewHabitEndTime(t)}>
                                                     {t}
                                                 </DropdownMenuItem>
                                             ))}
@@ -327,8 +329,8 @@ export function HabitTracker() {
                             </div>
 
                             {/* Repeat Days */}
-                            <div className="space-y-2">
-                                <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">반복 요일</Label>
+                            <div className="space-y-1">
+                                <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">반복 요일</Label>
                                 <div className="flex justify-between gap-1">
                                     {['일', '월', '화', '수', '목', '금', '토'].map((day, idx) => {
                                         const isSelected = newHabitDays.includes(idx);
@@ -347,10 +349,10 @@ export function HabitTracker() {
                                                     }
                                                 }}
                                                 className={cn(
-                                                    "w-9 h-9 rounded-full text-xs font-bold transition-all border-2 cursor-pointer select-none flex items-center justify-center",
+                                                    "w-7 h-7 rounded-full text-[10px] font-bold transition-all border cursor-pointer select-none flex items-center justify-center",
                                                     isSelected
-                                                        ? "bg-gradient-to-br from-blue-500 to-blue-600 text-white border-blue-600 shadow-lg shadow-blue-200 dark:shadow-blue-900/50 scale-110"
-                                                        : "bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-blue-950 hover:border-blue-300 hover:text-blue-600 hover:scale-105"
+                                                        ? "bg-gradient-to-br from-blue-500 to-blue-600 text-white border-blue-600 shadow-sm scale-105"
+                                                        : "bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-blue-950 hover:border-blue-300 hover:text-blue-600"
                                                 )}
                                             >
                                                 {day}
@@ -361,24 +363,26 @@ export function HabitTracker() {
                             </div>
 
                             {/* Prep & Travel Time */}
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-                                        <Clock className="w-3 h-3 text-primary" /> 준비 시간 (분)
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className="space-y-1">
+                                    <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+                                        <Clock className="w-3 h-3 text-primary" /> 준비 (분)
                                     </Label>
                                     <Input
                                         type="number"
+                                        className="h-7 text-xs"
                                         value={prepTime === 0 ? '' : prepTime}
                                         onChange={e => setPrepTime(Number(e.target.value))}
                                         placeholder="0"
                                     />
                                 </div>
-                                <div className="space-y-2">
-                                    <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-                                        <Clock className="w-3 h-3 text-primary" /> 이동 시간 (분)
+                                <div className="space-y-1">
+                                    <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+                                        <Clock className="w-3 h-3 text-primary" /> 이동 (분)
                                     </Label>
                                     <Input
                                         type="number"
+                                        className="h-7 text-xs"
                                         value={travelTime === 0 ? '' : travelTime}
                                         onChange={e => setTravelTime(Number(e.target.value))}
                                         placeholder="0"
@@ -387,14 +391,14 @@ export function HabitTracker() {
                             </div>
 
                             {/* Type & Priority */}
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className="space-y-1">
+                                    <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
                                         <FolderTree className="w-3 h-3 text-primary" /> 유형
                                     </Label>
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
-                                            <Button variant="outline" className="w-full justify-between font-medium border-muted/40 bg-muted/20 hover:bg-muted/40 capitalize">
+                                            <Button variant="outline" className="w-full justify-between font-medium border-muted/40 bg-muted/20 hover:bg-muted/40 capitalize h-7 text-xs">
                                                 {type === 'work' ? '업무' :
                                                     type === 'personal' ? '개인' :
                                                         type === 'study' ? '공부' :
@@ -407,59 +411,61 @@ export function HabitTracker() {
                                                 <ChevronDown className="ml-2 h-3 w-3 opacity-50" />
                                             </Button>
                                         </DropdownMenuTrigger>
-                                        <DropdownMenuContent className="w-[180px]">
-                                            <DropdownMenuItem onSelect={() => setType('work')}>업무</DropdownMenuItem>
-                                            <DropdownMenuItem onSelect={() => setType('personal')}>개인</DropdownMenuItem>
-                                            <DropdownMenuItem onSelect={() => setType('study')}>공부</DropdownMenuItem>
-                                            <DropdownMenuItem onSelect={() => setType('hobby')}>취미</DropdownMenuItem>
-                                            <DropdownMenuItem onSelect={() => setType('health')}>건강</DropdownMenuItem>
-                                            <DropdownMenuItem onSelect={() => setType('finance')}>재테크</DropdownMenuItem>
-                                            <DropdownMenuItem onSelect={() => setType('social')}>사교</DropdownMenuItem>
-                                            <DropdownMenuItem onSelect={() => setType('travel')}>여행</DropdownMenuItem>
-                                            <DropdownMenuItem onSelect={() => setType('meal')}>식사</DropdownMenuItem>
-                                            <DropdownMenuItem onSelect={() => setType('other')}>기타</DropdownMenuItem>
+                                        <DropdownMenuContent className="w-[150px]">
+                                            <DropdownMenuItem className="text-xs" onSelect={() => setType('work')}>업무</DropdownMenuItem>
+                                            <DropdownMenuItem className="text-xs" onSelect={() => setType('personal')}>개인</DropdownMenuItem>
+                                            <DropdownMenuItem className="text-xs" onSelect={() => setType('study')}>공부</DropdownMenuItem>
+                                            <DropdownMenuItem className="text-xs" onSelect={() => setType('hobby')}>취미</DropdownMenuItem>
+                                            <DropdownMenuItem className="text-xs" onSelect={() => setType('health')}>건강</DropdownMenuItem>
+                                            <DropdownMenuItem className="text-xs" onSelect={() => setType('finance')}>재테크</DropdownMenuItem>
+                                            <DropdownMenuItem className="text-xs" onSelect={() => setType('social')}>사교</DropdownMenuItem>
+                                            <DropdownMenuItem className="text-xs" onSelect={() => setType('travel')}>여행</DropdownMenuItem>
+                                            <DropdownMenuItem className="text-xs" onSelect={() => setType('meal')}>식사</DropdownMenuItem>
+                                            <DropdownMenuItem className="text-xs" onSelect={() => setType('other')}>기타</DropdownMenuItem>
                                         </DropdownMenuContent>
                                     </DropdownMenu>
                                 </div>
-                                <div className="space-y-2">
-                                    <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                                <div className="space-y-1">
+                                    <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
                                         <AlertCircle className="w-3 h-3 text-primary" /> 우선순위
                                     </Label>
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
-                                            <Button variant="outline" className="w-full justify-between font-medium border-muted/40 bg-muted/20 hover:bg-muted/40 capitalize">
+                                            <Button variant="outline" className="w-full justify-between font-medium border-muted/40 bg-muted/20 hover:bg-muted/40 capitalize h-7 text-xs">
                                                 {priority === 'low' ? '낮음' : priority === 'medium' ? '보통' : '높음'}
                                                 <ChevronDown className="ml-2 h-3 w-3 opacity-50" />
                                             </Button>
                                         </DropdownMenuTrigger>
-                                        <DropdownMenuContent className="w-[180px]">
-                                            <DropdownMenuItem onSelect={() => setPriority('low')}>낮음</DropdownMenuItem>
-                                            <DropdownMenuItem onSelect={() => setPriority('medium')}>보통</DropdownMenuItem>
-                                            <DropdownMenuItem onSelect={() => setPriority('high')}>높음</DropdownMenuItem>
+                                        <DropdownMenuContent className="w-[150px]">
+                                            <DropdownMenuItem className="text-xs" onSelect={() => setPriority('low')}>낮음</DropdownMenuItem>
+                                            <DropdownMenuItem className="text-xs" onSelect={() => setPriority('medium')}>보통</DropdownMenuItem>
+                                            <DropdownMenuItem className="text-xs" onSelect={() => setPriority('high')}>높음</DropdownMenuItem>
                                         </DropdownMenuContent>
                                     </DropdownMenu>
                                 </div>
                             </div>
 
                             {/* Project & Goal Links */}
-                            <div className="grid grid-cols-2 gap-4 pt-2 border-t border-border/10">
-                                <div className="space-y-2">
-                                    <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                            <div className="grid grid-cols-2 gap-3 pt-1 border-t border-border/10">
+                                <div className="space-y-1">
+                                    <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
                                         <FolderTree className="w-3 h-3 text-primary" /> 프로젝트
                                     </Label>
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
-                                            <Button variant="outline" className="w-full justify-between font-medium border-muted/40 bg-muted/20 hover:bg-muted/40 text-xs h-9">
-                                                {projects.find(p => p.id === connectedProjectId)?.title || '선택 안 함'}
-                                                <ChevronDown className="ml-2 h-3 w-3 opacity-50" />
+                                            <Button variant="outline" className="w-full justify-between font-medium border-muted/40 bg-muted/20 hover:bg-muted/40 text-[10px] h-7 px-2">
+                                                <span className="truncate max-w-[100px] text-left">
+                                                    {projects.find(p => p.id === connectedProjectId)?.title || '선택 안 함'}
+                                                </span>
+                                                <ChevronDown className="ml-1 h-3 w-3 opacity-50 flex-shrink-0" />
                                             </Button>
                                         </DropdownMenuTrigger>
-                                        <DropdownMenuContent className="w-[180px] max-h-[200px] overflow-y-auto">
-                                            <DropdownMenuItem onSelect={() => setConnectedProjectId(undefined)}>선택 안 함</DropdownMenuItem>
+                                        <DropdownMenuContent className="w-[160px] max-h-[200px] overflow-y-auto">
+                                            <DropdownMenuItem className="text-[10px]" onSelect={() => setConnectedProjectId(undefined)}>선택 안 함</DropdownMenuItem>
                                             {projects.map(p => (
-                                                <DropdownMenuItem key={p.id} onSelect={() => setConnectedProjectId(p.id)}>
-                                                    <div className="flex items-center gap-2">
-                                                        <div className="w-2 h-2 rounded-full" style={{ backgroundColor: p.color }} />
+                                                <DropdownMenuItem className="text-[10px]" key={p.id} onSelect={() => setConnectedProjectId(p.id)}>
+                                                    <div className="flex items-center gap-2 max-w-full">
+                                                        <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: p.color }} />
                                                         <span className="truncate">{p.title}</span>
                                                     </div>
                                                 </DropdownMenuItem>
@@ -467,21 +473,23 @@ export function HabitTracker() {
                                         </DropdownMenuContent>
                                     </DropdownMenu>
                                 </div>
-                                <div className="space-y-2">
-                                    <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                                <div className="space-y-1">
+                                    <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
                                         <Trophy className="w-3 h-3 text-primary" /> 목표
                                     </Label>
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
-                                            <Button variant="outline" className="w-full justify-between font-medium border-muted/40 bg-muted/20 hover:bg-muted/40 text-xs h-9">
-                                                {goals.find(g => g.id === connectedGoalId)?.title || '선택 안 함'}
-                                                <ChevronDown className="ml-2 h-3 w-3 opacity-50" />
+                                            <Button variant="outline" className="w-full justify-between font-medium border-muted/40 bg-muted/20 hover:bg-muted/40 text-[10px] h-7 px-2">
+                                                <span className="truncate max-w-[100px] text-left">
+                                                    {goals.find(g => g.id === connectedGoalId)?.title || '선택 안 함'}
+                                                </span>
+                                                <ChevronDown className="ml-1 h-3 w-3 opacity-50 flex-shrink-0" />
                                             </Button>
                                         </DropdownMenuTrigger>
-                                        <DropdownMenuContent className="w-[180px] max-h-[200px] overflow-y-auto">
-                                            <DropdownMenuItem onSelect={() => setConnectedGoalId(undefined)}>선택 안 함</DropdownMenuItem>
+                                        <DropdownMenuContent className="w-[160px] max-h-[200px] overflow-y-auto">
+                                            <DropdownMenuItem className="text-[10px]" onSelect={() => setConnectedGoalId(undefined)}>선택 안 함</DropdownMenuItem>
                                             {goals.map(g => (
-                                                <DropdownMenuItem key={g.id} onSelect={() => setConnectedGoalId(g.id)}>
+                                                <DropdownMenuItem className="text-[10px]" key={g.id} onSelect={() => setConnectedGoalId(g.id)}>
                                                     <span className="truncate">{g.title}</span>
                                                 </DropdownMenuItem>
                                             ))}
@@ -491,65 +499,75 @@ export function HabitTracker() {
                             </div>
 
                             {/* Meeting & Appointment Flags & Tracking */}
-                            <div className="flex items-center justify-between gap-6 pt-2">
-                                <div className="flex items-center gap-4">
-                                    <div className="flex items-center space-x-2">
+                            <div className="flex items-center justify-between gap-4 pt-1">
+                                <div className="flex items-center gap-3">
+                                    <div className="flex items-center space-x-1.5">
                                         <Checkbox
                                             id="isMeeting"
                                             checked={isMeeting}
                                             onCheckedChange={(c) => setIsMeeting(c as boolean)}
+                                            className="h-3.5 w-3.5"
                                         />
-                                        <Label htmlFor="isMeeting" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center gap-1">
-                                            <Users className="w-3.5 h-3.5 text-blue-500" />
+                                        <Label htmlFor="isMeeting" className="text-xs font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center gap-1">
+                                            <Users className="w-3 h-3 text-blue-500" />
                                             회의
                                         </Label>
                                     </div>
-                                    <div className="flex items-center space-x-2">
+                                    <div className="flex items-center space-x-1.5">
                                         <Checkbox
                                             id="isAppointment"
                                             checked={isAppointment}
                                             onCheckedChange={(c) => setIsAppointment(c as boolean)}
+                                            className="h-3.5 w-3.5"
                                         />
-                                        <Label htmlFor="isAppointment" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center gap-1">
-                                            <Handshake className="w-3.5 h-3.5 text-green-500" />
+                                        <Label htmlFor="isAppointment" className="text-xs font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center gap-1">
+                                            <Handshake className="w-3 h-3 text-green-500" />
                                             약속
                                         </Label>
                                     </div>
                                 </div>
 
-                                <div className="flex items-center space-x-2 bg-secondary/50 px-3 py-2 rounded-lg border border-border/50">
+                                <div className="flex items-center space-x-1.5 bg-secondary/50 px-2 py-1.5 rounded-md border border-border/50">
                                     <Checkbox
                                         id="isTracked"
                                         checked={isTracked}
                                         onCheckedChange={(c) => setIsTracked(c as boolean)}
+                                        className="h-3.5 w-3.5"
                                     />
-                                    <Label htmlFor="isTracked" className="text-xs font-bold text-primary flex items-center gap-1 cursor-pointer">
+                                    <Label htmlFor="isTracked" className="text-[10px] font-bold text-primary flex items-center gap-1 cursor-pointer">
                                         <Trophy className="w-3 h-3" />
-                                        달성 여부 추적
+                                        달성여부
                                     </Label>
                                 </div>
                             </div>
 
                             {/* Description */}
-                            <div className="space-y-2">
-                                <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">메모</Label>
+                            <div className="space-y-1">
+                                <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">메모</Label>
                                 <textarea
-                                    className="w-full h-20 bg-muted/30 border border-border rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none"
+                                    className="w-full h-14 bg-muted/30 border border-border rounded-lg p-2 text-xs focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none"
                                     placeholder="추가 설명..."
                                     value={description}
                                     onChange={e => setDescription(e.target.value)}
                                 />
                             </div>
                         </div>
-                        <DialogFooter>
-                            <Button onClick={handleSaveHabit}>{editingHabit ? '저장하기' : '추가하기'}</Button>
+                        <DialogFooter className="pt-0">
+                            <Button size="sm" onClick={handleSaveHabit} className="h-8 text-xs">{editingHabit ? '저장하기' : '추가하기'}</Button>
                         </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+
+                {/* Habit Stats Dialog */}
+                <Dialog open={!!viewingStatsHabit} onOpenChange={(open) => !open && setViewingStatsHabit(null)}>
+                    <DialogContent className="sm:max-w-[450px] p-0 overflow-hidden bg-transparent border-none shadow-none">
+                        {viewingStatsHabit && <HabitStats habit={viewingStatsHabit} onClose={() => setViewingStatsHabit(null)} />}
                     </DialogContent>
                 </Dialog>
             </div>
 
             <div className="grid gap-3">
-                {habits.map(habit => {
+                {habits.filter(habit => habit.isTracked !== false).map(habit => {
                     const isCompleted = habit.completedDates.includes(today);
                     const target = habit.targetCount || 1;
                     const currentProgress = habit.dailyProgress?.[today] || 0;
@@ -557,38 +575,37 @@ export function HabitTracker() {
                     return (
                         <div key={habit.id} className="group flex items-center justify-between p-3 rounded-lg border border-border/40 bg-background hover:bg-muted/30 transition-colors">
                             <div className="flex items-center gap-3 flex-1">
-                                {habit.isTracked !== false && (
-                                    <button
-                                        onClick={() => toggleHabit(habit.id)}
-                                        className={cn(
-                                            "flex items-center justify-center w-6 h-6 rounded border transition-colors",
-                                            isCompleted
-                                                ? "bg-primary border-primary text-primary-foreground"
-                                                : "border-muted-foreground hover:border-foreground"
-                                        )}
-                                    >
-                                        {isCompleted && <Check className="w-4 h-4" />}
-                                    </button>
-                                )}
+                                <button
+                                    onClick={() => toggleHabit(habit.id)}
+                                    className={cn(
+                                        "flex items-center justify-center w-6 h-6 rounded border transition-colors",
+                                        isCompleted
+                                            ? "bg-primary border-primary text-primary-foreground"
+                                            : "border-muted-foreground hover:border-foreground"
+                                    )}
+                                >
+                                    {isCompleted && <Check className="w-4 h-4" />}
+                                </button>
 
                                 <div className="flex-1">
                                     <div className="font-bold text-sm flex items-center justify-between leading-none">
                                         <div className="flex items-center gap-2">
-                                            <span onClick={() => handleOpenEdit(habit)} className="cursor-pointer hover:underline">
+                                            <span
+                                                onClick={() => setViewingStatsHabit(habit)}
+                                                className="cursor-pointer hover:underline hover:text-primary transition-colors"
+                                            >
                                                 {habit.title}
                                             </span>
-                                            {habit.isTracked !== false && target > 1 && (
+                                            {target > 1 && (
                                                 <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-secondary text-secondary-foreground">
                                                     {currentProgress} / {target}
                                                 </span>
                                             )}
                                         </div>
                                     </div>
-                                    {habit.isTracked !== false && (
-                                        <div className="text-xs font-medium text-muted-foreground flex items-center gap-1 mt-1">
-                                            <Flame className="w-3 h-3 text-orange-500" /> {habit.streak}일 연속
-                                        </div>
-                                    )}
+                                    <div className="text-xs font-medium text-muted-foreground flex items-center gap-1 mt-1">
+                                        <Flame className="w-3 h-3 text-orange-500" /> {habit.streak}일 연속
+                                    </div>
                                 </div>
                             </div>
 
