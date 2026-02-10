@@ -96,58 +96,6 @@ export function DayView({ currentDate, showProjectTasks, onNext, onPrev }: { cur
         }
     };
 
-    // Generate Habit Instances for this day
-    const habitEvents: CalendarEvent[] = habits
-        .filter(habit => {
-            if (!habit.time || !habit.days) return false;
-            // Check start date (simple comparison)
-            if (habit.startDate) {
-                const s = new Date(habit.startDate);
-                s.setHours(0, 0, 0, 0);
-                if (s > currentDate) return false;
-            }
-            // Check end date
-            if (habit.endDate) {
-                const e = new Date(habit.endDate);
-                e.setHours(23, 59, 59, 999);
-                if (e < currentDate) return false;
-            }
-            // Check day of week
-            if (!habit.days.includes(currentDate.getDay())) return false;
-            // Check skipped dates
-            const dateStr = format(currentDate, 'yyyy-MM-dd');
-            if (habit.skippedDates?.includes(dateStr)) return false;
-
-            return true;
-        })
-        .map(habit => {
-            const [hours, minutes] = (habit.time || '09:00').split(':').map(Number);
-            const start = new Date(currentDate);
-            start.setHours(hours, minutes, 0, 0);
-
-            let end = new Date(start);
-            if (habit.endTime) {
-                const [endH, endM] = habit.endTime.split(':').map(Number);
-                end.setHours(endH, endM, 0, 0);
-                if (end < start) {
-                    end.setDate(end.getDate() + 1); // Next day wrap
-                }
-            } else {
-                end.setMinutes(end.getMinutes() + 30); // Default 30 min
-            }
-
-            return {
-                id: `habit-${habit.id}-${format(currentDate, 'yyyy-MM-dd')}`,
-                title: habit.title,
-                start,
-                end,
-                type: 'personal' as EventType, // Fallback type compatible with types
-                color: 'hsla(var(--primary-hsl), 0.1)', // Optimized for premium UI
-                isHabit: true,
-                habitId: habit.id
-            } as CalendarEvent & { isHabit?: boolean, habitId?: string };
-        });
-
     const standardEvents = events
         .filter(event => {
             const d = new Date(event.start);
@@ -158,7 +106,8 @@ export function DayView({ currentDate, showProjectTasks, onNext, onPrev }: { cur
             start: new Date(event.start),
             end: new Date(event.end)
         }));
-    const dayEvents = [...standardEvents, ...habitEvents];
+    // Fix: Use only standardEvents (which includes provider-generated habit events) to avoid duplicates
+    const dayEvents = standardEvents;
 
     const dayProjectTasks = showProjectTasks ? tasks.filter(t => {
         if (!t.projectId) return false;
