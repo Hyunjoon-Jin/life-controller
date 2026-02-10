@@ -143,6 +143,9 @@ export type Habit = {
     travelTime?: number; // Minutes
     color?: string;
     description?: string;
+    // Multi-count support
+    targetCount?: number; // Daily target (default 1)
+    dailyProgress?: Record<string, number>; // { "2024-02-10": 2 }
 };
 
 export type EventType = 'work' | 'personal' | 'study' | 'hobby' | 'health' | 'finance' | 'social' | 'travel' | 'meal' | 'vacation' | 'other';

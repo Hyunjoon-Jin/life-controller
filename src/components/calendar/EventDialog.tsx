@@ -50,6 +50,7 @@ export function EventDialog({ isOpen, onOpenChange, event, initialDate, initialE
     // Habit States
     const [isHabit, setIsHabit] = useState(false);
     const [repeatDays, setRepeatDays] = useState<number[]>([]);
+    const [targetCount, setTargetCount] = useState<number>(1);
 
     // Generate 15-minute intervals
     const generateTimeOptions = () => {
@@ -345,6 +346,30 @@ export function EventDialog({ isOpen, onOpenChange, event, initialDate, initialE
                                     <p className="text-[10px] text-muted-foreground mt-2">
                                         * 체크된 요일에 자동으로 일정이 생성됩니다.
                                     </p>
+
+                                    <div className="mt-4 pt-4 border-t border-primary/20">
+                                        <Label className="text-xs font-bold text-gray-500 mb-2 block">하루 목표 횟수</Label>
+                                        <div className="flex items-center gap-3">
+                                            <Button
+                                                variant="outline"
+                                                size="icon"
+                                                className="h-8 w-8 rounded-full"
+                                                onClick={() => setTargetCount(Math.max(1, targetCount - 1))}
+                                            >
+                                                -
+                                            </Button>
+                                            <span className="text-sm font-bold w-4 text-center">{targetCount}</span>
+                                            <Button
+                                                variant="outline"
+                                                size="icon"
+                                                className="h-8 w-8 rounded-full"
+                                                onClick={() => setTargetCount(targetCount + 1)}
+                                            >
+                                                +
+                                            </Button>
+                                            <span className="text-xs text-muted-foreground ml-2">회</span>
+                                        </div>
+                                    </div>
                                 </div>
                             )}
                         </div>

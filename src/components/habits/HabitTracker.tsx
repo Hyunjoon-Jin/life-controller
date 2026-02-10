@@ -48,6 +48,7 @@ export function HabitTracker() {
     const [connectedGoalId, setConnectedGoalId] = useState<string | undefined>(undefined);
     const [prepTime, setPrepTime] = useState<number>(0);
     const [travelTime, setTravelTime] = useState<number>(0);
+    const [targetCount, setTargetCount] = useState<number>(1);
     const [description, setDescription] = useState('');
 
     // Edit State
@@ -64,13 +65,52 @@ export function HabitTracker() {
         const habit = habits.find(h => h.id === id);
         if (!habit) return;
 
-        const isCompleted = habit.completedDates.includes(today);
+        const target = habit.targetCount || 1;
+        const currentProgress = habit.dailyProgress?.[today] || 0;
+
+        // Cycle behavior: 0 -> 1 -> ... -> target -> 0 (reset)
+        // Or should it be: 0 -> 1 -> ... -> target (stay) -> click to reset?
+        // Let's go with: Increment until target, then reset to 0.
+        // But if it's a simple toggle (target=1), it goes 0 -> 1 -> 0.
+
+        let newProgress = currentProgress + 1;
+
+        // If we are already at or above target, reset to 0 (toggle off behavior for completed habits)
+        if (currentProgress >= target) {
+            newProgress = 0;
+        }
+
+        const isCompletedNow = newProgress >= target;
+        const wasCompleted = habit.completedDates.includes(today);
+
+        const newCompletedDates = isCompletedNow
+            ? (wasCompleted ? habit.completedDates : [...habit.completedDates, today])
+            : habit.completedDates.filter(d => d !== today);
+
+        // Streak logic: 
+        // If it WAS completed and now is NOT -> decrease streak
+        // If it WAS NOT completed and now IS -> increase streak
+        // If it explicitly un-completes (reset), streak breaks? 
+        // Simple heuristic: Recalculate streak based on newCompletedDates is complex. 
+        // Let's stick to the previous simple logic:
+        // isCompletedNow && !wasCompleted -> streak + 1
+        // !isCompletedNow && wasCompleted -> streak - 1
+
+        let newStreak = habit.streak;
+        if (isCompletedNow && !wasCompleted) {
+            newStreak += 1;
+        } else if (!isCompletedNow && wasCompleted) {
+            newStreak = Math.max(0, habit.streak - 1);
+        }
+
         updateHabit({
             ...habit,
-            completedDates: isCompleted
-                ? habit.completedDates.filter(d => d !== today)
-                : [...habit.completedDates, today],
-            streak: isCompleted ? Math.max(0, habit.streak - 1) : habit.streak + 1
+            dailyProgress: {
+                ...habit.dailyProgress,
+                [today]: newProgress
+            },
+            completedDates: newCompletedDates,
+            streak: newStreak
         });
     };
 
@@ -92,6 +132,7 @@ export function HabitTracker() {
                 connectedGoalId,
                 prepTime: prepTime > 0 ? prepTime : undefined,
                 travelTime: travelTime > 0 ? travelTime : undefined,
+                targetCount: targetCount > 1 ? targetCount : 1,
                 description: description || undefined
             });
         } else {
@@ -113,6 +154,8 @@ export function HabitTracker() {
                 connectedGoalId,
                 prepTime: prepTime > 0 ? prepTime : undefined,
                 travelTime: travelTime > 0 ? travelTime : undefined,
+                targetCount: targetCount > 1 ? targetCount : 1,
+                dailyProgress: {},
                 description: description || undefined
             };
             addHabit(newHabit);
@@ -131,6 +174,7 @@ export function HabitTracker() {
         setConnectedGoalId(undefined);
         setPrepTime(0);
         setTravelTime(0);
+        setTargetCount(1);
         setDescription('');
         setEditingHabit(null);
         setIsDialogOpen(false);
@@ -150,6 +194,7 @@ export function HabitTracker() {
         setConnectedGoalId(habit.connectedGoalId);
         setPrepTime(habit.prepTime || 0);
         setTravelTime(habit.travelTime || 0);
+        setTargetCount(habit.targetCount || 1);
         setDescription(habit.description || '');
         setIsDialogOpen(true);
     };
@@ -200,6 +245,32 @@ export function HabitTracker() {
                                     onKeyDown={(e) => e.key === 'Enter' && handleSaveHabit()}
                                     className="text-lg font-bold"
                                 />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                                    <AlertCircle className="w-3 h-3 text-primary" /> 하루 목표 횟수
+                                </Label>
+                                <div className="flex items-center gap-3">
+                                    <Button
+                                        variant="outline"
+                                        size="icon"
+                                        className="h-8 w-8 rounded-full"
+                                        onClick={() => setTargetCount(Math.max(1, targetCount - 1))}
+                                    >
+                                        -
+                                    </Button>
+                                    <span className="text-sm font-bold w-4 text-center">{targetCount}</span>
+                                    <Button
+                                        variant="outline"
+                                        size="icon"
+                                        className="h-8 w-8 rounded-full"
+                                        onClick={() => setTargetCount(targetCount + 1)}
+                                    >
+                                        +
+                                    </Button>
+                                    <span className="text-xs text-muted-foreground ml-2">회</span>
+                                </div>
                             </div>
 
                             {/* Time Selection */}
@@ -472,6 +543,9 @@ export function HabitTracker() {
             <div className="grid gap-3">
                 {habits.map(habit => {
                     const isCompleted = habit.completedDates.includes(today);
+                    const target = habit.targetCount || 1;
+                    const currentProgress = habit.dailyProgress?.[today] || 0;
+
                     return (
                         <div key={habit.id} className="group flex items-center justify-between p-3 rounded-lg border border-border/40 bg-background hover:bg-muted/30 transition-colors">
                             <div className="flex items-center gap-3 flex-1">
@@ -489,9 +563,16 @@ export function HabitTracker() {
 
                                 <div className="flex-1">
                                     <div className="font-bold text-sm flex items-center justify-between leading-none">
-                                        <span onClick={() => handleOpenEdit(habit)} className="cursor-pointer hover:underline">
-                                            {habit.title}
-                                        </span>
+                                        <div className="flex items-center gap-2">
+                                            <span onClick={() => handleOpenEdit(habit)} className="cursor-pointer hover:underline">
+                                                {habit.title}
+                                            </span>
+                                            {target > 1 && (
+                                                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-secondary text-secondary-foreground">
+                                                    {currentProgress} / {target}
+                                                </span>
+                                            )}
+                                        </div>
                                     </div>
                                     <div className="text-xs font-medium text-muted-foreground flex items-center gap-1 mt-1">
                                         <Flame className="w-3 h-3 text-orange-500" /> {habit.streak}일 연속
