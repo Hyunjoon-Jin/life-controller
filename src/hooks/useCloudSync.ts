@@ -49,6 +49,7 @@ type AppState = {
     customFoods: CustomFood[];
     monthlyBudgets: MonthlyBudget[];
     customExercises: ExerciseDefinition[]; // Added
+    globalMemo?: string;
 };
 
 export function useCloudSync() {

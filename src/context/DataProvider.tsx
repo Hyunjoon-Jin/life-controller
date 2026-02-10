@@ -224,6 +224,10 @@ interface DataContextType {
     customExercises: ExerciseDefinition[];
     addCustomExercise: (exercise: ExerciseDefinition) => void;
     deleteCustomExercise: (id: string) => void;
+
+    // Global Memo
+    globalMemo: string;
+    setGlobalMemo: (memo: string) => void;
 }
 
 
@@ -285,6 +289,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
     const [monthlyBudgets, setMonthlyBudgets] = useLocalStorage<MonthlyBudget[]>('monthlyBudgets', []);
     const [customFoods, setCustomFoods] = useLocalStorage<CustomFood[]>('customFoods', []);
     const [customExercises, setCustomExercises] = useLocalStorage<ExerciseDefinition[]>('customExercises', []);
+    const [globalMemo, setGlobalMemo] = useLocalStorage<string>('global-scratchpad', ''); // Keep key for migration
 
     // Resume States
     const [userProfile, setUserProfile] = useLocalStorage<UserProfile>('userProfile', {
@@ -357,6 +362,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
                     if (data.monthlyBudgets) setMonthlyBudgets(data.monthlyBudgets);
                     if (data.customFoods) setCustomFoods(data.customFoods);
                     if (data.customExercises) setCustomExercises(data.customExercises);
+                    if (data.globalMemo) setGlobalMemo(data.globalMemo);
                 }
                 setIsLoadedFromCloud(true);
             });
@@ -840,7 +846,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
                 userProfile, educations, careers, activities, bodyCompositionGoal, homeShortcuts,
                 realEstateScraps, stockAnalyses, workLogs, exerciseRoutines, financeGoals, customFoods,
                 monthlyBudgets,
-                customExercises // Added
+                customExercises, // Added
+                globalMemo
             });
         }
     }, [
@@ -851,7 +858,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         transactions, assets, certificates, portfolios, archiveDocuments,
         userProfile, educations, careers, activities, bodyCompositionGoal, homeShortcuts,
         realEstateScraps, stockAnalyses, workLogs, exerciseRoutines, financeGoals, customFoods,
-        monthlyBudgets, customExercises
+        monthlyBudgets, customExercises, globalMemo
     ]);
 
     const forceSync = async () => {
@@ -864,7 +871,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
                 userProfile, educations, careers, activities, bodyCompositionGoal, homeShortcuts,
                 realEstateScraps, stockAnalyses, workLogs, exerciseRoutines, financeGoals, customFoods,
                 monthlyBudgets,
-                customExercises // Added
+                customExercises, // Added
+                globalMemo
             });
         }
     };
@@ -1027,6 +1035,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
             customExercises,
             addCustomExercise: (ex) => setCustomExercises([...customExercises, ex]),
             deleteCustomExercise: (id) => setCustomExercises(customExercises.filter(e => e.id !== id)),
+
+            globalMemo, setGlobalMemo
         }}>
             {children}
         </DataContext.Provider>

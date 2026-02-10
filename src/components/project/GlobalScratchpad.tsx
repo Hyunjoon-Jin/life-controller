@@ -5,11 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { StickyNote, X, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { useData } from '@/context/DataProvider';
 
 export function GlobalScratchpad() {
     const [isOpen, setIsOpen] = useState(false);
-    const [note, setNote] = useLocalStorage('global-scratchpad', '');
+    const { globalMemo: note, setGlobalMemo: setNote } = useData();
     const [isMinimized, setIsMinimized] = useState(false);
 
     if (!isOpen) {
