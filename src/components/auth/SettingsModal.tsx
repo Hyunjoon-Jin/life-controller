@@ -27,7 +27,12 @@ export function SettingsModal({ children }: { children: React.ReactNode }) {
     };
 
     const handleDeleteAccount = async () => {
-        if (!userProfile?.id) return;
+        console.log('handleDeleteAccount called', userProfile);
+        if (!userProfile?.id) {
+            console.error('No userProfile.id found');
+            toast.error('사용자 정보를 불러오지 못했습니다.');
+            return;
+        }
 
         const confirm1 = confirm('정말로 탈퇴하시겠습니까? 탈퇴 후 30일간은 데이터를 복구할 수 있으며, 그 이후에는 영구 삭제됩니다.');
         if (!confirm1) return;
@@ -39,12 +44,14 @@ export function SettingsModal({ children }: { children: React.ReactNode }) {
         }
 
         try {
+            console.log('Attempting to update status to withdrawn...');
             // Soft Delete: Update status to 'withdrawn'
             await updateUserProfile({
                 ...userProfile,
                 status: 'withdrawn',
                 deletedAt: new Date(),
             });
+            console.log('updateUserProfile called.');
             toast.success('계정 탈퇴 요청이 처리되었습니다.');
             setIsOpen(false);
             signOut();
