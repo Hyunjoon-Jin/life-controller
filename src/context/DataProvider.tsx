@@ -1,22 +1,22 @@
 'use client';
 
-import React, { createContext, useContext, ReactNode, useState, useEffect } from 'react';
+import React, { createContext, useContext, ReactNode, useState, useEffect, useCallback, useRef } from 'react';
 import {
     Task, Project, Goal, Habit, CalendarEvent, JournalEntry, Memo, Person, Scrap,
     LanguageEntry, Book, ExerciseSession, DietEntry, InBodyEntry, HobbyEntry,
-    Transaction, Asset, Certificate, PortfolioItem, ArchiveDocument,
-    UserProfile, Education, Career, BodyCompositionGoal, LanguageResource,
-    Hobby, HobbyPost, Activity, RealEstateScrap, StockAnalysis, WorkLog,
-    ExerciseRoutine, FinanceGoal, CustomFood, MonthlyBudget, ExerciseDefinition // Added ExerciseDefinition
+    Transaction, Asset, Certificate, PortfolioItem, RealEstateScrap, StockAnalysis,
+    WorkLog, ExerciseRoutine, FinanceGoal, MonthlyBudget, CustomFood, ExerciseDefinition,
+    ArchiveDocument, UserProfile, Education, Career, Activity, Hobby, HobbyPost,
+    LanguageResource, BodyCompositionGoal
 } from '@/types';
-import { useLocalStorage } from '@/hooks/useLocalStorage';
-import { useCloudSync } from '@/hooks/useCloudSync';
-import { useSession } from 'next-auth/react';
+import { fetchAll, insertRow, updateRow, deleteRow, upsertSingleton, fetchSingleton, toSnakeCase } from '@/lib/supabase-data';
+const dbUpdate = updateRow;
+const dbDelete = deleteRow;
+import { useAuth } from '@/components/auth/SessionProvider';
 import { toast } from 'sonner';
 import { differenceInMinutes, isSameDay, startOfWeek, endOfWeek, eachDayOfInterval, format } from 'date-fns';
 
 interface DataContextType {
-    // ... existing types
     tasks: Task[];
     setTasks: (tasks: Task[]) => void;
     projects: Project[];
@@ -35,53 +35,40 @@ interface DataContextType {
     setHabits: (habits: Habit[]) => void;
     events: CalendarEvent[];
     setEvents: (events: CalendarEvent[]) => void;
-
-    // Helpers
+    journals: JournalEntry[];
+    setJournals: (journals: JournalEntry[]) => void;
+    memos: Memo[];
+    setMemos: (memos: Memo[]) => void;
+    people: Person[];
+    setPeople: (people: Person[]) => void;
+    scraps: Scrap[];
+    setScraps: (scraps: Scrap[]) => void;
     addTask: (task: Task) => void;
     updateTask: (task: Task) => void;
     deleteTask: (id: string) => void;
-
     addGoal: (goal: Goal) => void;
     updateGoal: (goal: Goal) => void;
     deleteGoal: (id: string) => void;
-
     addHabit: (habit: Habit) => void;
     updateHabit: (habit: Habit) => void;
     deleteHabit: (id: string) => void;
-
     addEvent: (event: CalendarEvent) => void;
     updateEvent: (event: CalendarEvent) => void;
     deleteEvent: (id: string) => void;
-
-    journals: JournalEntry[];
-    setJournals: (journals: JournalEntry[]) => void;
     addJournal: (journal: JournalEntry) => void;
     updateJournal: (journal: JournalEntry) => void;
     deleteJournal: (id: string) => void;
-
-    memos: Memo[];
-    setMemos: (memos: Memo[]) => void;
     addMemo: (memo: Memo) => void;
     updateMemo: (memo: Memo) => void;
     deleteMemo: (id: string) => void;
-
-    people: Person[];
-    setPeople: (people: Person[]) => void;
     addPerson: (person: Person) => void;
     updatePerson: (person: Person) => void;
     deletePerson: (id: string) => void;
-
-    scraps: Scrap[];
-    setScraps: (scraps: Scrap[]) => void;
     addScrap: (scrap: Scrap) => void;
     updateScrap: (scrap: Scrap) => void;
     deleteScrap: (id: string) => void;
-
-    // Work Mode
     selectedWorkProjectId: string | null;
     setSelectedWorkProjectId: (id: string | null) => void;
-
-    // New Logs
     languageEntries: LanguageEntry[];
     setLanguageEntries: (entries: LanguageEntry[]) => void;
     addLanguageEntry: (entry: LanguageEntry) => void;
@@ -92,57 +79,46 @@ interface DataContextType {
     addLanguageResource: (resource: LanguageResource) => void;
     updateLanguageResource: (resource: LanguageResource) => void;
     deleteLanguageResource: (id: string) => void;
-
     books: Book[];
     setBooks: (books: Book[]) => void;
     addBook: (book: Book) => void;
     updateBook: (book: Book) => void;
     deleteBook: (id: string) => void;
-
     exerciseSessions: ExerciseSession[];
     setExerciseSessions: (sessions: ExerciseSession[]) => void;
     addExerciseSession: (session: ExerciseSession) => void;
     updateExerciseSession: (session: ExerciseSession) => void;
     deleteExerciseSession: (id: string) => void;
-
     dietEntries: DietEntry[];
     setDietEntries: (entries: DietEntry[]) => void;
     addDietEntry: (entry: DietEntry) => void;
     updateDietEntry: (entry: DietEntry) => void;
     deleteDietEntry: (id: string) => void;
-
     inBodyEntries: InBodyEntry[];
     setInBodyEntries: (entries: InBodyEntry[]) => void;
     addInBodyEntry: (entry: InBodyEntry) => void;
     updateInBodyEntry: (entry: InBodyEntry) => void;
     deleteInBodyEntry: (id: string) => void;
-
-    hobbyEntries: HobbyEntry[];
-    setHobbyEntries: (entries: HobbyEntry[]) => void;
-    addHobbyEntry: (entry: HobbyEntry) => void;
-    updateHobbyEntry: (entry: HobbyEntry) => void;
-    deleteHobbyEntry: (id: string) => void;
-
-    // New Hobby Revamp
     hobbies: Hobby[];
     setHobbies: (hobbies: Hobby[]) => void;
     addHobby: (hobby: Hobby) => void;
     updateHobby: (hobby: Hobby) => void;
     deleteHobby: (id: string) => void;
-
     hobbyPosts: HobbyPost[];
     setHobbyPosts: (posts: HobbyPost[]) => void;
     addHobbyPost: (post: HobbyPost) => void;
     updateHobbyPost: (post: HobbyPost) => void;
     deleteHobbyPost: (id: string) => void;
-
-    // Finance
+    hobbyEntries: HobbyEntry[];
+    setHobbyEntries: (entries: HobbyEntry[]) => void;
+    addHobbyEntry: (entry: HobbyEntry) => void;
+    updateHobbyEntry: (entry: HobbyEntry) => void;
+    deleteHobbyEntry: (id: string) => void;
     transactions: Transaction[];
     setTransactions: (transactions: Transaction[]) => void;
     addTransaction: (transaction: Transaction) => void;
     updateTransaction: (transaction: Transaction) => void;
     deleteTransaction: (id: string) => void;
-
     assets: Asset[];
     setAssets: (assets: Asset[]) => void;
     addAsset: (asset: Asset) => void;
@@ -156,6 +132,34 @@ interface DataContextType {
     addPortfolio: (item: PortfolioItem) => void;
     updatePortfolio: (item: PortfolioItem) => void;
     deletePortfolio: (id: string) => void;
+    realEstateScraps: RealEstateScrap[];
+    setRealEstateScraps: (scraps: RealEstateScrap[]) => void;
+    addRealEstateScrap: (scrap: RealEstateScrap) => void;
+    updateRealEstateScrap: (scrap: RealEstateScrap) => void;
+    deleteRealEstateScrap: (id: string) => void;
+    stockAnalyses: StockAnalysis[];
+    setStockAnalyses: (analyses: StockAnalysis[]) => void;
+    addStockAnalysis: (analysis: StockAnalysis) => void;
+    updateStockAnalysis: (analysis: StockAnalysis) => void;
+    deleteStockAnalysis: (id: string) => void;
+    workLogs: WorkLog[];
+    setWorkLogs: (logs: WorkLog[]) => void;
+    addWorkLog: (log: WorkLog) => void;
+    updateWorkLog: (log: WorkLog) => void;
+    deleteWorkLog: (id: string) => void;
+    exerciseRoutines: ExerciseRoutine[];
+    setExerciseRoutines: (routines: ExerciseRoutine[]) => void;
+    addExerciseRoutine: (routine: ExerciseRoutine) => void;
+    updateExerciseRoutine: (routine: ExerciseRoutine) => void;
+    deleteExerciseRoutine: (id: string) => void;
+    financeGoals: FinanceGoal[];
+    setFinanceGoals: (goals: FinanceGoal[]) => void;
+    addFinanceGoal: (goal: FinanceGoal) => void;
+    updateFinanceGoal: (goal: FinanceGoal) => void;
+    deleteFinanceGoal: (id: string) => void;
+    monthlyBudgets: MonthlyBudget[];
+    setMonthlyBudgets: (budgets: MonthlyBudget[]) => void;
+    updateMonthlyBudget: (budget: MonthlyBudget) => void;
     userProfile: UserProfile;
     updateUserProfile: (profile: UserProfile) => void;
     educations: Education[];
@@ -167,65 +171,24 @@ interface DataContextType {
     addCareer: (career: Career) => void;
     updateCareer: (career: Career) => void;
     deleteCareer: (id: string) => void;
-
-    // Activities (New)
     activities: Activity[];
-    setActivities: (val: Activity[]) => void;
+    setActivities: (activities: Activity[]) => void;
     addActivity: (act: Activity) => void;
     updateActivity: (act: Activity) => void;
     deleteActivity: (id: string) => void;
-
-    realEstateScraps: RealEstateScrap[];
-    setRealEstateScraps: (scraps: RealEstateScrap[]) => void;
-    addRealEstateScrap: (scrap: RealEstateScrap) => void;
-    updateRealEstateScrap: (scrap: RealEstateScrap) => void;
-    deleteRealEstateScrap: (id: string) => void;
-
-    stockAnalyses: StockAnalysis[];
-    setStockAnalyses: (analyses: StockAnalysis[]) => void;
-    addStockAnalysis: (analysis: StockAnalysis) => void;
-    updateStockAnalysis: (analysis: StockAnalysis) => void;
-    deleteStockAnalysis: (id: string) => void;
-
-    workLogs: WorkLog[];
-    setWorkLogs: (logs: WorkLog[]) => void;
-    addWorkLog: (log: WorkLog) => void;
-    updateWorkLog: (log: WorkLog) => void;
-    deleteWorkLog: (id: string) => void;
-
-    exerciseRoutines: ExerciseRoutine[];
-    setExerciseRoutines: (routines: ExerciseRoutine[]) => void;
-    addExerciseRoutine: (routine: ExerciseRoutine) => void;
-    updateExerciseRoutine: (routine: ExerciseRoutine) => void;
-    deleteExerciseRoutine: (id: string) => void;
-
     isSyncing: boolean;
     forceSync: () => Promise<void>;
-    bodyCompositionGoal: BodyCompositionGoal | null;
+    bodyCompositionGoal: BodyCompositionGoal;
     setBodyCompositionGoal: (goal: BodyCompositionGoal) => void;
-    financeGoals: FinanceGoal[];
-    setFinanceGoals: (goals: FinanceGoal[]) => void;
-    addFinanceGoal: (goal: FinanceGoal) => void;
-    updateFinanceGoal: (goal: FinanceGoal) => void;
-    deleteFinanceGoal: (id: string) => void;
-    monthlyBudgets: MonthlyBudget[];
-    setMonthlyBudgets: (budgets: MonthlyBudget[]) => void;
-    updateMonthlyBudget: (budget: MonthlyBudget) => void;
-
     homeShortcuts: string[];
     setHomeShortcuts: (shortcuts: string[]) => void;
-
     customFoods: CustomFood[];
     setCustomFoods: (foods: CustomFood[]) => void;
     addCustomFood: (food: CustomFood) => void;
     deleteCustomFood: (id: string) => void;
-
-    // Custom Exercises
     customExercises: ExerciseDefinition[];
-    addCustomExercise: (exercise: ExerciseDefinition) => void;
+    addCustomExercise: (ex: ExerciseDefinition) => void;
     deleteCustomExercise: (id: string) => void;
-
-    // Global Memo
     globalMemo: string;
     setGlobalMemo: (memo: string) => void;
 }
@@ -234,433 +197,480 @@ interface DataContextType {
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
 export function DataProvider({ children }: { children: ReactNode }) {
-    const [tasks, setTasks] = useLocalStorage<Task[]>('tasks', [
-        { id: '1', title: 'Design Database Schema', completed: false, priority: 'high', projectId: '2' },
-        { id: '2', title: 'Buy Groceries', completed: true, priority: 'low', projectId: '1' },
-    ]);
-    const [projects, setProjects] = useLocalStorage<Project[]>('projects', [
-        { id: '2', title: 'Work Project', color: '#10b981', status: 'active', manager: 'Manager', budget: { total: 1000000, spent: 250000 }, startDate: new Date(), progress: 25 }
-    ]);
+    // All state — starts empty, loaded from Supabase on auth
+    const [tasks, setTasks] = useState<Task[]>([]);
+    const [projects, setProjects] = useState<Project[]>([]);
     const [selectedWorkProjectId, setSelectedWorkProjectId] = useState<string | null>(null);
-    const [archiveDocuments, setArchiveDocuments] = useLocalStorage<ArchiveDocument[]>('archiveDocuments', []);
-    const [goals, setGoals] = useLocalStorage<Goal[]>('goals', [
-        {
-            id: '1',
-            title: 'Become a Senior Developer',
-            progress: 45,
-            subGoals: [
-                { id: '1-1', title: 'Master Next.js 14', progress: 80 },
-            ]
-        }
-    ]);
-    const [habits, setHabits] = useLocalStorage<Habit[]>('habits', [
-        { id: '1', title: 'Drink 2L Water', streak: 12, completedDates: [] }
-    ]);
-    const [events, setEvents] = useLocalStorage<CalendarEvent[]>('events', []);
-    const [journals, setJournals] = useLocalStorage<JournalEntry[]>('journals', []);
-    const [memos, setMemos] = useLocalStorage<Memo[]>('memos', []);
-    const [people, setPeople] = useLocalStorage<Person[]>('people', []);
-    const [scraps, setScraps] = useLocalStorage<Scrap[]>('scraps', []);
+    const [archiveDocuments, setArchiveDocuments] = useState<ArchiveDocument[]>([]);
+    const [goals, setGoals] = useState<Goal[]>([]);
+    const [habits, setHabits] = useState<Habit[]>([]);
+    const [events, setEvents] = useState<CalendarEvent[]>([]);
+    const [journals, setJournals] = useState<JournalEntry[]>([]);
+    const [memos, setMemos] = useState<Memo[]>([]);
+    const [people, setPeople] = useState<Person[]>([]);
+    const [scraps, setScraps] = useState<Scrap[]>([]);
 
-    // New Log States
-    const [languageEntries, setLanguageEntries] = useLocalStorage<LanguageEntry[]>('languageEntries', []);
-    const [languageResources, setLanguageResources] = useLocalStorage<LanguageResource[]>('languageResources', []); // New
-    const [books, setBooks] = useLocalStorage<Book[]>('books', []);
-    const [exerciseSessions, setExerciseSessions] = useLocalStorage<ExerciseSession[]>('exerciseSessions', []);
-    const [dietEntries, setDietEntries] = useLocalStorage<DietEntry[]>('dietEntries', []);
-    const [inBodyEntries, setInBodyEntries] = useLocalStorage<InBodyEntry[]>('inbodyEntries', []);
-    const [hobbyEntries, setHobbyEntries] = useLocalStorage<HobbyEntry[]>('hobbyEntries', []);
-    const [hobbies, setHobbies] = useLocalStorage<Hobby[]>('hobbies', []);
-    const [hobbyPosts, setHobbyPosts] = useLocalStorage<HobbyPost[]>('hobbyPosts', []);
+    const [languageEntries, setLanguageEntries] = useState<LanguageEntry[]>([]);
+    const [languageResources, setLanguageResources] = useState<LanguageResource[]>([]);
+    const [books, setBooks] = useState<Book[]>([]);
+    const [exerciseSessions, setExerciseSessions] = useState<ExerciseSession[]>([]);
+    const [dietEntries, setDietEntries] = useState<DietEntry[]>([]);
+    const [inBodyEntries, setInBodyEntries] = useState<InBodyEntry[]>([]);
+    const [hobbyEntries, setHobbyEntries] = useState<HobbyEntry[]>([]);
+    const [hobbies, setHobbies] = useState<Hobby[]>([]);
+    const [hobbyPosts, setHobbyPosts] = useState<HobbyPost[]>([]);
 
-    // Finance States
-    const [transactions, setTransactions] = useLocalStorage<Transaction[]>('transactions', []);
-    const [assets, setAssets] = useLocalStorage<Asset[]>('assets', []);
-    const [certificates, setCertificates] = useLocalStorage<Certificate[]>('certificates', []);
-    const [portfolios, setPortfolios] = useLocalStorage<PortfolioItem[]>('portfolios', []);
-    const [realEstateScraps, setRealEstateScraps] = useLocalStorage<RealEstateScrap[]>('realEstateScraps', []);
-    const [stockAnalyses, setStockAnalyses] = useLocalStorage<StockAnalysis[]>('stockAnalyses', []);
-    const [workLogs, setWorkLogs] = useLocalStorage<WorkLog[]>('workLogs', []);
-    const [exerciseRoutines, setExerciseRoutines] = useLocalStorage<ExerciseRoutine[]>('exerciseRoutines', []);
-    const [financeGoals, setFinanceGoals] = useLocalStorage<FinanceGoal[]>('financeGoals', [
-        { id: '1', title: '주택 마련 기금', targetAmount: 500000000, currentAmount: 125000000, createdAt: new Date() },
-        { id: '2', title: '노후 자금', targetAmount: 1000000000, currentAmount: 100000000, createdAt: new Date() }
-    ]);
-    const [monthlyBudgets, setMonthlyBudgets] = useLocalStorage<MonthlyBudget[]>('monthlyBudgets', []);
-    const [customFoods, setCustomFoods] = useLocalStorage<CustomFood[]>('customFoods', []);
-    const [customExercises, setCustomExercises] = useLocalStorage<ExerciseDefinition[]>('customExercises', []);
-    const [globalMemo, setGlobalMemo] = useLocalStorage<string>('global-scratchpad', ''); // Keep key for migration
+    const [transactions, setTransactions] = useState<Transaction[]>([]);
+    const [assets, setAssets] = useState<Asset[]>([]);
+    const [certificates, setCertificates] = useState<Certificate[]>([]);
+    const [portfolios, setPortfolios] = useState<PortfolioItem[]>([]);
+    const [realEstateScraps, setRealEstateScraps] = useState<RealEstateScrap[]>([]);
+    const [stockAnalyses, setStockAnalyses] = useState<StockAnalysis[]>([]);
+    const [workLogs, setWorkLogs] = useState<WorkLog[]>([]);
+    const [exerciseRoutines, setExerciseRoutines] = useState<ExerciseRoutine[]>([]);
+    const [financeGoals, setFinanceGoals] = useState<FinanceGoal[]>([]);
+    const [monthlyBudgets, setMonthlyBudgets] = useState<MonthlyBudget[]>([]);
+    const [customFoods, setCustomFoods] = useState<CustomFood[]>([]);
+    const [customExercises, setCustomExercises] = useState<ExerciseDefinition[]>([]);
+    const [globalMemo, setGlobalMemo] = useState<string>('');
 
-    // Resume States
-    const [userProfile, setUserProfile] = useLocalStorage<UserProfile>('userProfile', {
-        id: '',
-        name: '',
-        jobTitle: '',
-        email: '',
-        phone: '',
-        bio: '',
-        socialLinks: []
+    const [userProfile, setUserProfile] = useState<UserProfile>({
+        id: '', name: '', jobTitle: '', email: '', phone: '', bio: '', socialLinks: []
     });
-    const [educations, setEducations] = useLocalStorage<Education[]>('educations', []);
-    const [careers, setCareers] = useLocalStorage<Career[]>('careers', []);
-    const [activities, setActivities] = useLocalStorage<Activity[]>('activities', []); // New
+    const [educations, setEducations] = useState<Education[]>([]);
+    const [careers, setCareers] = useState<Career[]>([]);
+    const [activities, setActivities] = useState<Activity[]>([]);
+    const [bodyCompositionGoal, setBodyCompositionGoal] = useState<BodyCompositionGoal>({ targetDate: new Date() });
+    const [homeShortcuts, setHomeShortcuts] = useState<string[]>(['calendar', 'tasks', 'goals', 'reading', 'language', 'people', 'diet', 'ideas', 'work', 'hobby']);
 
-    // Body Composition Goal State
-    const [bodyCompositionGoal, setBodyCompositionGoal] = useLocalStorage<BodyCompositionGoal>('bodyCompositionGoal', {
-        targetDate: new Date()
-    });
+    const [isSyncing, setIsSyncing] = useState(false);
+    const [isAccountWithdrawn, setIsAccountWithdrawn] = useState(false); // New: Account Status State
+    const { user, signOut } = useAuth(); // Use signOut from useAuth
+    const dataLoadedRef = useRef(false);
 
-    // Home Shortcuts State
-    const [homeShortcuts, setHomeShortcuts] = useLocalStorage<string[]>('homeShortcuts', ['calendar', 'tasks', 'goals', 'reading', 'language', 'people', 'diet', 'ideas', 'work', 'hobby']);
+    // ============================================
+    // Helper: background DB operation (fire and forget with error logging)
+    // ============================================
+    const bg = useCallback((fn: () => Promise<any>) => {
+        fn().catch(err => console.error('[DataProvider] Background DB error:', err));
+    }, []);
 
-    // Cloud Sync Integration
-    const { saveData, loadData, isSyncing } = useCloudSync();
-    const { data: session } = useSession();
-    const [isLoadedFromCloud, setIsLoadedFromCloud] = useState(false);
-
-    // 1. Load data from cloud on login
-    useEffect(() => {
-        if (session?.user) {
-            setIsLoadedFromCloud(false); // Reset on login
-            loadData().then(data => {
-                if (data) {
-                    // Update all states from cloud data
-                    // Note: This matches the JSON structure from useCloudSync
-                    if (data.tasks) setTasks(data.tasks);
-                    if (data.projects) setProjects(data.projects);
-                    if (data.goals) setGoals(data.goals);
-                    if (data.habits) setHabits(data.habits);
-                    if (data.events) setEvents(data.events);
-                    if (data.userProfile) setUserProfile(data.userProfile);
-                    if (data.homeShortcuts) setHomeShortcuts(data.homeShortcuts);
-                    // Load other states
-                    if (data.journals) setJournals(data.journals);
-                    if (data.memos) setMemos(data.memos);
-                    if (data.people) setPeople(data.people);
-                    if (data.scraps) setScraps(data.scraps);
-                    if (data.languageEntries) setLanguageEntries(data.languageEntries);
-                    if (data.languageResources) setLanguageResources(data.languageResources);
-                    if (data.books) setBooks(data.books);
-                    if (data.exerciseSessions) setExerciseSessions(data.exerciseSessions);
-                    if (data.dietEntries) setDietEntries(data.dietEntries);
-                    if (data.inBodyEntries) setInBodyEntries(data.inBodyEntries);
-                    if (data.hobbyEntries) setHobbyEntries(data.hobbyEntries);
-                    if (data.hobbies) setHobbies(data.hobbies);
-                    if (data.hobbyPosts) setHobbyPosts(data.hobbyPosts);
-                    if (data.transactions) setTransactions(data.transactions);
-                    if (data.assets) setAssets(data.assets);
-                    if (data.certificates) setCertificates(data.certificates);
-                    if (data.portfolios) setPortfolios(data.portfolios);
-                    if (data.archiveDocuments) setArchiveDocuments(data.archiveDocuments);
-                    if (data.educations) setEducations(data.educations);
-                    if (data.careers) setCareers(data.careers);
-                    if (data.activities) setActivities(data.activities);
-                    if (data.bodyCompositionGoal) setBodyCompositionGoal(data.bodyCompositionGoal);
-                    if (data.workLogs) setWorkLogs(data.workLogs);
-                    if (data.exerciseRoutines) setExerciseRoutines(data.exerciseRoutines);
-                    if (data.financeGoals) setFinanceGoals(data.financeGoals);
-                    if (data.monthlyBudgets) setMonthlyBudgets(data.monthlyBudgets);
-                    if (data.customFoods) setCustomFoods(data.customFoods);
-                    if (data.customExercises) setCustomExercises(data.customExercises);
-                    if (data.globalMemo) setGlobalMemo(data.globalMemo);
-                }
-                setIsLoadedFromCloud(true);
+    // New: Restore Account Logic
+    const restoreAccount = async () => {
+        if (!user || !userProfile.id) return;
+        setIsSyncing(true);
+        try {
+            await updateRow('user_profiles', userProfile.id, {
+                status: 'active',
+                deletedAt: null,
             });
+            setIsAccountWithdrawn(false);
+            window.location.reload(); // Reload to fetch all data
+        } catch (e) {
+            console.error('Failed to restore account', e);
+            alert('계정 복구에 실패했습니다. 관리자에게 문의하세요.');
+        } finally {
+            setIsSyncing(false);
         }
-    }, [session?.user?.email, loadData]);
+    };
+
+
+    // ============================================
+    // Load all data from Supabase on login
+    // ============================================
+    useEffect(() => {
+        if (!user) {
+            dataLoadedRef.current = false;
+            // Clear all data on logout to prevent data leakage
+            setTasks([]);
+            setProjects([]);
+            setSelectedWorkProjectId(null);
+            setArchiveDocuments([]);
+            setGoals([]);
+            setHabits([]);
+            setEvents([]);
+            setJournals([]);
+            setMemos([]);
+            setPeople([]);
+            setScraps([]);
+            setLanguageEntries([]);
+            setLanguageResources([]);
+            setBooks([]);
+            setExerciseSessions([]);
+            setDietEntries([]);
+            setInBodyEntries([]);
+            setHobbyEntries([]);
+            setHobbies([]);
+            setHobbyPosts([]);
+            setTransactions([]);
+            setAssets([]);
+            setCertificates([]);
+            setPortfolios([]);
+            setRealEstateScraps([]);
+            setStockAnalyses([]);
+            setWorkLogs([]);
+            setExerciseRoutines([]);
+            setFinanceGoals([]);
+            setMonthlyBudgets([]);
+            setCustomFoods([]);
+            setCustomExercises([]);
+            setGlobalMemo('');
+            setUserProfile({ id: '', name: '', jobTitle: '', email: '', phone: '', bio: '', socialLinks: [] });
+            setEducations([]);
+            setCareers([]);
+            setActivities([]);
+            setBodyCompositionGoal({ targetDate: new Date() });
+            setIsAccountWithdrawn(false);
+            return;
+        }
+        if (dataLoadedRef.current) return;
+        dataLoadedRef.current = true;
+
+        const loadAllData = async () => {
+            setIsSyncing(true);
+            try {
+                const [
+                    tasksData, projectsData, goalsData, habitsData, eventsData,
+                    journalsData, memosData, peopleData, scrapsData,
+                    langEntriesData, langResourcesData, booksData,
+                    exerciseData, dietData, inbodyData, hobbyEntriesData,
+                    hobbiesData, hobbyPostsData,
+                    txData, assetsData, certsData, portfoliosData,
+                    reData, stockData, wlData, erData, fgData, mbData,
+                    cfData, ceData, archiveData,
+                    eduData, careerData, actData,
+                ] = await Promise.all([
+                    fetchAll<Task>('tasks'),
+                    fetchAll<Project>('projects'),
+                    fetchAll<Goal>('goals'),
+                    fetchAll<Habit>('habits'),
+                    fetchAll<CalendarEvent>('calendar_events'),
+                    fetchAll<JournalEntry>('journals'),
+                    fetchAll<Memo>('memos'),
+                    fetchAll<Person>('people'),
+                    fetchAll<Scrap>('scraps'),
+                    fetchAll<LanguageEntry>('language_entries'),
+                    fetchAll<LanguageResource>('language_resources'),
+                    fetchAll<Book>('books'),
+                    fetchAll<ExerciseSession>('exercise_sessions'),
+                    fetchAll<DietEntry>('diet_entries'),
+                    fetchAll<InBodyEntry>('inbody_entries'),
+                    fetchAll<HobbyEntry>('hobby_entries'),
+                    fetchAll<Hobby>('hobbies'),
+                    fetchAll<HobbyPost>('hobby_posts'),
+                    fetchAll<Transaction>('transactions'),
+                    fetchAll<Asset>('assets'),
+                    fetchAll<Certificate>('certificates'),
+                    fetchAll<PortfolioItem>('portfolios'),
+                    fetchAll<RealEstateScrap>('real_estate_scraps'),
+                    fetchAll<StockAnalysis>('stock_analyses'),
+                    fetchAll<WorkLog>('work_logs'),
+                    fetchAll<ExerciseRoutine>('exercise_routines'),
+                    fetchAll<FinanceGoal>('finance_goals'),
+                    fetchAll<MonthlyBudget>('monthly_budgets'),
+                    fetchAll<CustomFood>('custom_foods'),
+                    fetchAll<ExerciseDefinition>('custom_exercises'),
+                    fetchAll<ArchiveDocument>('archive_documents'),
+                    fetchAll<Education>('educations'),
+                    fetchAll<Career>('careers'),
+                    fetchAll<Activity>('activities'),
+                ]);
+
+                setTasks(tasksData);
+                setProjects(projectsData);
+                setGoals(goalsData);
+                setHabits(habitsData);
+                setEvents(eventsData);
+                setJournals(journalsData);
+                setMemos(memosData);
+                setPeople(peopleData);
+                setScraps(scrapsData);
+                setLanguageEntries(langEntriesData);
+                setLanguageResources(langResourcesData);
+                setBooks(booksData);
+                setExerciseSessions(exerciseData);
+                setDietEntries(dietData);
+                setInBodyEntries(inbodyData);
+                setHobbyEntries(hobbyEntriesData);
+                setHobbies(hobbiesData);
+                setHobbyPosts(hobbyPostsData);
+                setTransactions(txData);
+                setAssets(assetsData);
+                setCertificates(certsData);
+                setPortfolios(portfoliosData);
+                setRealEstateScraps(reData);
+                setStockAnalyses(stockData);
+                setWorkLogs(wlData);
+                setExerciseRoutines(erData);
+                setFinanceGoals(fgData);
+                setMonthlyBudgets(mbData);
+                setCustomFoods(cfData);
+                setCustomExercises(ceData);
+                setArchiveDocuments(archiveData);
+                setEducations(eduData);
+                setCareers(careerData);
+                setActivities(actData);
+
+                // Load singletons
+                // Load singletons
+                const profileData = await fetchSingleton<UserProfile>('user_profiles');
+                if (profileData) {
+                    if (profileData.status === 'withdrawn') {
+                        setIsAccountWithdrawn(true);
+                        setUserProfile(profileData);
+                        setIsSyncing(false);
+                        return; // Stop loading other data for withdrawn users
+                    }
+
+                    // Update Last Active (Fire & Forget)
+                    if (profileData.id) {
+                        bg(() => updateRow('user_profiles', profileData.id, { lastActiveAt: new Date() }));
+                    }
+                    setUserProfile(profileData);
+                }
+
+                const settingsData = await fetchSingleton<any>('user_settings');
+                if (settingsData) {
+                    if (settingsData.homeShortcuts) setHomeShortcuts(settingsData.homeShortcuts);
+                    if (settingsData.bodyCompositionGoal) setBodyCompositionGoal(settingsData.bodyCompositionGoal);
+                    if (settingsData.globalMemo !== undefined) setGlobalMemo(settingsData.globalMemo);
+                }
+            } catch (err) {
+                console.error('[DataProvider] Failed to load data from Supabase:', err);
+            } finally {
+                setIsSyncing(false);
+            }
+        };
+
+        loadAllData();
+    }, [user]);
 
 
 
-    // Helper Functions
-    const addTask = (task: Task) => setTasks([...tasks, task]);
-    const updateTask = (updatedTask: Task) => setTasks(tasks.map(t => t.id === updatedTask.id ? updatedTask : t));
-    const deleteTask = (id: string) => setTasks(tasks.filter(t => t.id !== id));
+    // ============================================
+    // CRUD Helpers — optimistic local update + background Supabase call
+    // ============================================
 
-    const addProject = (project: Project) => setProjects([...projects, project]);
-    const updateProject = (updatedProject: Project) => setProjects(projects.map(p => p.id === updatedProject.id ? updatedProject : p));
-    const deleteProject = (id: string) => setProjects(projects.filter(p => p.id !== id));
+    // Tasks
+    const addTask = (task: Task) => { setTasks(prev => [...prev, task]); bg(() => insertRow('tasks', task)); };
+    const updateTask = (t: Task) => { setTasks(prev => prev.map(x => x.id === t.id ? t : x)); bg(() => dbUpdate('tasks', t.id, t)); };
+    const deleteTask = (id: string) => { setTasks(prev => prev.filter(x => x.id !== id)); bg(() => dbDelete('tasks', id)); };
 
-    const addDocument = (doc: ArchiveDocument) => setArchiveDocuments([...archiveDocuments, doc]);
-    const updateDocument = (updatedDoc: ArchiveDocument) => setArchiveDocuments(archiveDocuments.map(d => d.id === updatedDoc.id ? updatedDoc : d));
-    const deleteDocument = (id: string) => setArchiveDocuments(archiveDocuments.filter(d => d.id !== id));
+    // Projects
+    const addProject = (p: Project) => { setProjects(prev => [...prev, p]); bg(() => insertRow('projects', p)); };
+    const updateProject = (p: Project) => { setProjects(prev => prev.map(x => x.id === p.id ? p : x)); bg(() => dbUpdate('projects', p.id, p)); };
+    const deleteProject = (id: string) => { setProjects(prev => prev.filter(x => x.id !== id)); bg(() => dbDelete('projects', id)); };
 
-    const addGoal = (goal: Goal) => setGoals([...goals, goal]);
+    // Archive Documents
+    const addDocument = (doc: ArchiveDocument) => { setArchiveDocuments(prev => [...prev, doc]); bg(() => insertRow('archive_documents', doc)); };
+    const updateDocument = (doc: ArchiveDocument) => { setArchiveDocuments(prev => prev.map(x => x.id === doc.id ? doc : x)); bg(() => dbUpdate('archive_documents', doc.id, doc)); };
+    const deleteDocument = (id: string) => { setArchiveDocuments(prev => prev.filter(x => x.id !== id)); bg(() => dbDelete('archive_documents', id)); };
+
+    // Goals (recursive sub-goals)
+    const addGoal = (goal: Goal) => { setGoals(prev => [...prev, goal]); bg(() => insertRow('goals', goal)); };
     const updateGoal = (updatedGoal: Goal) => {
         const updateRecursive = (list: Goal[]): Goal[] => {
             return list.map(g => {
                 if (g.id === updatedGoal.id) return updatedGoal;
-                if (g.subGoals) {
-                    return { ...g, subGoals: updateRecursive(g.subGoals) };
-                }
+                if (g.subGoals) return { ...g, subGoals: updateRecursive(g.subGoals) };
                 return g;
             });
         };
         setGoals(updateRecursive(goals));
+        bg(() => dbUpdate('goals', updatedGoal.id, updatedGoal));
     };
     const deleteGoal = (id: string) => {
         const deleteRecursive = (list: Goal[]): Goal[] => {
-            return list
-                .filter(g => g.id !== id)
-                .map(g => {
-                    if (g.subGoals) {
-                        return { ...g, subGoals: deleteRecursive(g.subGoals) };
-                    }
-                    return g;
-                });
+            return list.filter(g => g.id !== id).map(g => {
+                if (g.subGoals) return { ...g, subGoals: deleteRecursive(g.subGoals) };
+                return g;
+            });
         };
         setGoals(deleteRecursive(goals));
+        bg(() => dbDelete('goals', id));
     };
 
-    // Helper Function: Generate Calendar Events from Habit
+    // Habit → Calendar Event generation
     const generateEventsFromHabit = (habit: Habit): CalendarEvent[] => {
-        // Only generate events if habit has both time and endTime
         if (!habit.time || !habit.endTime) return [];
-
         const generatedEvents: CalendarEvent[] = [];
         const today = new Date();
-        const weekStart = startOfWeek(today, { weekStartsOn: 0 }); // Sunday
+        const weekStart = startOfWeek(today, { weekStartsOn: 0 });
         const weekEnd = endOfWeek(today, { weekStartsOn: 0 });
         const daysToGenerate = eachDayOfInterval({ start: weekStart, end: weekEnd });
 
         daysToGenerate.forEach(day => {
             const dayOfWeek = day.getDay();
-
-            // Check if this habit should occur on this day
             if (habit.days && !habit.days.includes(dayOfWeek)) return;
-
-            // Parse time strings
             const [startHour, startMin] = habit.time!.split(':').map(Number);
             const [endHour, endMin] = habit.endTime!.split(':').map(Number);
-
-            // Create start and end dates
-            const startDate = new Date(day);
-            startDate.setHours(startHour, startMin, 0, 0);
-
-            const endDate = new Date(day);
-            endDate.setHours(endHour, endMin, 0, 0);
-
-            // If end time is before start time, it means it ends the next day
-            if (endDate < startDate) {
-                endDate.setDate(endDate.getDate() + 1);
-            }
-
-            // Generate unique ID for this event instance
+            const startDate = new Date(day); startDate.setHours(startHour, startMin, 0, 0);
+            const endDate = new Date(day); endDate.setHours(endHour, endMin, 0, 0);
+            if (endDate < startDate) endDate.setDate(endDate.getDate() + 1);
             const eventId = `habit-${habit.id}-${format(day, 'yyyy-MM-dd')}`;
-
-            // Create calendar event with habit metadata
-            const event: CalendarEvent = {
-                id: eventId,
-                title: habit.title,
-                start: startDate,
-                end: endDate,
-                habitId: habit.id,
-                isHabitEvent: true,
-                type: habit.type,
-                priority: habit.priority,
-                isMeeting: habit.isMeeting,
-                isAppointment: habit.isAppointment,
-                connectedProjectId: habit.connectedProjectId,
-                connectedGoalId: habit.connectedGoalId,
-                prepTime: habit.prepTime,
-                travelTime: habit.travelTime,
-                color: habit.color,
-                description: habit.description
-            };
-
-            generatedEvents.push(event);
+            generatedEvents.push({
+                id: eventId, title: habit.title, start: startDate, end: endDate,
+                habitId: habit.id, isHabitEvent: true, type: habit.type, priority: habit.priority,
+                isMeeting: habit.isMeeting, isAppointment: habit.isAppointment,
+                connectedProjectId: habit.connectedProjectId, connectedGoalId: habit.connectedGoalId,
+                prepTime: habit.prepTime, travelTime: habit.travelTime, color: habit.color, description: habit.description
+            });
         });
-
         return generatedEvents;
     };
 
     const addHabit = (habit: Habit) => {
-        setHabits([...habits, habit]);
-
-        // Generate and add calendar events if habit has time slots
+        setHabits(prev => [...prev, habit]);
+        bg(() => insertRow('habits', habit));
         const newEvents = generateEventsFromHabit(habit);
-        if (newEvents.length > 0) {
-            setEvents([...events, ...newEvents]);
-        }
+        if (newEvents.length > 0) setEvents(prev => [...prev, ...newEvents]);
     };
 
     const updateHabit = (updatedHabit: Habit) => {
-        setHabits(habits.map(h => h.id === updatedHabit.id ? updatedHabit : h));
-
-        // Generate new events that should exist based on updated habit
+        setHabits(prev => prev.map(h => h.id === updatedHabit.id ? updatedHabit : h));
+        bg(() => dbUpdate('habits', updatedHabit.id, updatedHabit));
         const shouldExistEvents = generateEventsFromHabit(updatedHabit);
-
-        // Keep all existing events from this habit (user may have edited them)
         const existingHabitEvents = events.filter(e => e.habitId === updatedHabit.id);
         const existingEventIds = new Set(existingHabitEvents.map(e => e.id));
-
-        // Only add NEW events that don't already exist (preserves user edits to existing events)
         const newEventsToAdd = shouldExistEvents.filter(e => !existingEventIds.has(e.id));
-
-        // Remove events that should no longer exist (e.g., if habit days changed from Mon-Fri to only Mon-Wed)
         const shouldExistIds = new Set(shouldExistEvents.map(e => e.id));
         const eventsToKeep = events.filter(e => {
-            // Keep non-habit events
             if (e.habitId !== updatedHabit.id) return true;
-            // Keep habit events that should still exist
             return shouldExistIds.has(e.id);
         });
-
-        // Update events
         setEvents([...eventsToKeep, ...newEventsToAdd]);
     };
 
     const deleteHabit = (id: string) => {
-        setHabits(habits.filter(h => h.id !== id));
-
-        // Remove all events generated from this habit
-        setEvents(events.filter(e => e.habitId !== id));
+        setHabits(prev => prev.filter(h => h.id !== id));
+        bg(() => dbDelete('habits', id));
+        setEvents(prev => prev.filter(e => e.habitId !== id));
     };
 
-    const addEvent = (event: CalendarEvent) => setEvents([...events, event]);
-    const updateEvent = (updatedEvent: CalendarEvent) => setEvents(events.map(e => e.id === updatedEvent.id ? updatedEvent : e));
-    const deleteEvent = (id: string) => setEvents(events.filter(e => e.id !== id));
+    // Events
+    const addEvent = (event: CalendarEvent) => { setEvents(prev => [...prev, event]); bg(() => insertRow('calendar_events', event)); };
+    const updateEvent = (e: CalendarEvent) => { setEvents(prev => prev.map(x => x.id === e.id ? e : x)); bg(() => dbUpdate('calendar_events', e.id, e)); };
+    const deleteEvent = (id: string) => { setEvents(prev => prev.filter(x => x.id !== id)); bg(() => dbDelete('calendar_events', id)); };
 
-    const addJournal = (journal: JournalEntry) => setJournals([...journals, journal]);
-    const updateJournal = (updatedJournal: JournalEntry) => setJournals(journals.map(j => j.id === updatedJournal.id ? updatedJournal : j));
-    const deleteJournal = (id: string) => setJournals(journals.filter(j => j.id !== id));
+    // Journals
+    const addJournal = (j: JournalEntry) => { setJournals(prev => [...prev, j]); bg(() => insertRow('journals', j)); };
+    const updateJournal = (j: JournalEntry) => { setJournals(prev => prev.map(x => x.id === j.id ? j : x)); bg(() => dbUpdate('journals', j.id, j)); };
+    const deleteJournal = (id: string) => { setJournals(prev => prev.filter(x => x.id !== id)); bg(() => dbDelete('journals', id)); };
 
-    const addMemo = (memo: Memo) => setMemos([...memos, memo]);
-    const updateMemo = (updatedMemo: Memo) => setMemos(memos.map(m => m.id === updatedMemo.id ? updatedMemo : m));
-    const deleteMemo = (id: string) => setMemos(memos.filter(m => m.id !== id));
+    // Memos
+    const addMemo = (m: Memo) => { setMemos(prev => [...prev, m]); bg(() => insertRow('memos', m)); };
+    const updateMemo = (m: Memo) => { setMemos(prev => prev.map(x => x.id === m.id ? m : x)); bg(() => dbUpdate('memos', m.id, m)); };
+    const deleteMemo = (id: string) => { setMemos(prev => prev.filter(x => x.id !== id)); bg(() => dbDelete('memos', id)); };
 
-    const addPerson = (person: Person) => setPeople([...people, person]);
-    const updatePerson = (updatedPerson: Person) => setPeople(people.map(p => p.id === updatedPerson.id ? updatedPerson : p));
-    const deletePerson = (id: string) => setPeople(people.filter(p => p.id !== id));
+    // People
+    const addPerson = (p: Person) => { setPeople(prev => [...prev, p]); bg(() => insertRow('people', p)); };
+    const updatePerson = (p: Person) => { setPeople(prev => prev.map(x => x.id === p.id ? p : x)); bg(() => dbUpdate('people', p.id, p)); };
+    const deletePerson = (id: string) => { setPeople(prev => prev.filter(x => x.id !== id)); bg(() => dbDelete('people', id)); };
 
-    const addScrap = (scrap: Scrap) => setScraps([...scraps, scrap]);
-    const updateScrap = (updatedScrap: Scrap) => setScraps(scraps.map(s => s.id === updatedScrap.id ? updatedScrap : s));
-    const deleteScrap = (id: string) => setScraps(scraps.filter(s => s.id !== id));
+    // Scraps
+    const addScrap = (s: Scrap) => { setScraps(prev => [...prev, s]); bg(() => insertRow('scraps', s)); };
+    const updateScrap = (s: Scrap) => { setScraps(prev => prev.map(x => x.id === s.id ? s : x)); bg(() => dbUpdate('scraps', s.id, s)); };
+    const deleteScrap = (id: string) => { setScraps(prev => prev.filter(x => x.id !== id)); bg(() => dbDelete('scraps', id)); };
 
-    const addLanguageEntry = (entry: LanguageEntry) => setLanguageEntries([...languageEntries, entry]);
-    const updateLanguageEntry = (updatedEntry: LanguageEntry) => setLanguageEntries(languageEntries.map(e => e.id === updatedEntry.id ? updatedEntry : e));
-    const deleteLanguageEntry = (id: string) => setLanguageEntries(languageEntries.filter(e => e.id !== id));
+    // Language Entries
+    const addLanguageEntry = (e: LanguageEntry) => { setLanguageEntries(prev => [...prev, e]); bg(() => insertRow('language_entries', e)); };
+    const updateLanguageEntry = (e: LanguageEntry) => { setLanguageEntries(prev => prev.map(x => x.id === e.id ? e : x)); bg(() => dbUpdate('language_entries', e.id, e)); };
+    const deleteLanguageEntry = (id: string) => { setLanguageEntries(prev => prev.filter(x => x.id !== id)); bg(() => dbDelete('language_entries', id)); };
 
-    // Language Resources (New)
-    const addLanguageResource = (resource: LanguageResource) => setLanguageResources([...languageResources, resource]);
-    const updateLanguageResource = (resource: LanguageResource) => setLanguageResources(languageResources.map(r => r.id === resource.id ? resource : r));
-    const deleteLanguageResource = (id: string) => setLanguageResources(languageResources.filter(r => r.id !== id));
+    // Language Resources
+    const addLanguageResource = (r: LanguageResource) => { setLanguageResources(prev => [...prev, r]); bg(() => insertRow('language_resources', r)); };
+    const updateLanguageResource = (r: LanguageResource) => { setLanguageResources(prev => prev.map(x => x.id === r.id ? r : x)); bg(() => dbUpdate('language_resources', r.id, r)); };
+    const deleteLanguageResource = (id: string) => { setLanguageResources(prev => prev.filter(x => x.id !== id)); bg(() => dbDelete('language_resources', id)); };
 
-    const addBook = (book: Book) => setBooks([...books, book]);
-    const updateBook = (updatedBook: Book) => setBooks(books.map(b => b.id === updatedBook.id ? updatedBook : b));
-    const deleteBook = (id: string) => setBooks(books.filter(b => b.id !== id));
+    // Books
+    const addBook = (b: Book) => { setBooks(prev => [...prev, b]); bg(() => insertRow('books', b)); };
+    const updateBook = (b: Book) => { setBooks(prev => prev.map(x => x.id === b.id ? b : x)); bg(() => dbUpdate('books', b.id, b)); };
+    const deleteBook = (id: string) => { setBooks(prev => prev.filter(x => x.id !== id)); bg(() => dbDelete('books', id)); };
 
-    const addExerciseSession = (session: ExerciseSession) => setExerciseSessions(prev => [...prev, session]);
-    const updateExerciseSession = (updatedSession: ExerciseSession) => setExerciseSessions(prev => prev.map(s => s.id === updatedSession.id ? updatedSession : s));
-    const deleteExerciseSession = (id: string) => setExerciseSessions(prev => prev.filter(s => s.id !== id));
+    // Exercise Sessions
+    const addExerciseSession = (s: ExerciseSession) => { setExerciseSessions(prev => [...prev, s]); bg(() => insertRow('exercise_sessions', s)); };
+    const updateExerciseSession = (s: ExerciseSession) => { setExerciseSessions(prev => prev.map(x => x.id === s.id ? s : x)); bg(() => dbUpdate('exercise_sessions', s.id, s)); };
+    const deleteExerciseSession = (id: string) => { setExerciseSessions(prev => prev.filter(x => x.id !== id)); bg(() => dbDelete('exercise_sessions', id)); };
 
-    const addDietEntry = (entry: DietEntry) => setDietEntries(prev => [...prev, entry]);
-    const updateDietEntry = (updatedEntry: DietEntry) => setDietEntries(prev => prev.map(e => e.id === updatedEntry.id ? updatedEntry : e));
-    const deleteDietEntry = (id: string) => setDietEntries(prev => prev.filter(e => e.id !== id));
+    // Diet Entries
+    const addDietEntry = (e: DietEntry) => { setDietEntries(prev => [...prev, e]); bg(() => insertRow('diet_entries', e)); };
+    const updateDietEntry = (e: DietEntry) => { setDietEntries(prev => prev.map(x => x.id === e.id ? e : x)); bg(() => dbUpdate('diet_entries', e.id, e)); };
+    const deleteDietEntry = (id: string) => { setDietEntries(prev => prev.filter(x => x.id !== id)); bg(() => dbDelete('diet_entries', id)); };
 
-    const addInBodyEntry = (entry: InBodyEntry) => setInBodyEntries(prev => [...prev, entry]);
-    const updateInBodyEntry = (updatedEntry: InBodyEntry) => setInBodyEntries(prev => prev.map(e => e.id === updatedEntry.id ? updatedEntry : e));
-    const deleteInBodyEntry = (id: string) => setInBodyEntries(prev => prev.filter(e => e.id !== id));
+    // InBody Entries
+    const addInBodyEntry = (e: InBodyEntry) => { setInBodyEntries(prev => [...prev, e]); bg(() => insertRow('inbody_entries', e)); };
+    const updateInBodyEntry = (e: InBodyEntry) => { setInBodyEntries(prev => prev.map(x => x.id === e.id ? e : x)); bg(() => dbUpdate('inbody_entries', e.id, e)); };
+    const deleteInBodyEntry = (id: string) => { setInBodyEntries(prev => prev.filter(x => x.id !== id)); bg(() => dbDelete('inbody_entries', id)); };
 
-    const addHobbyEntry = (entry: HobbyEntry) => setHobbyEntries(prev => [...prev, entry]);
-    const updateHobbyEntry = (updatedEntry: HobbyEntry) => setHobbyEntries(prev => prev.map(e => e.id === updatedEntry.id ? updatedEntry : e));
-    const deleteHobbyEntry = (id: string) => setHobbyEntries(prev => prev.filter(e => e.id !== id));
+    // Hobby Entries
+    const addHobbyEntry = (e: HobbyEntry) => { setHobbyEntries(prev => [...prev, e]); bg(() => insertRow('hobby_entries', e)); };
+    const updateHobbyEntry = (e: HobbyEntry) => { setHobbyEntries(prev => prev.map(x => x.id === e.id ? e : x)); bg(() => dbUpdate('hobby_entries', e.id, e)); };
+    const deleteHobbyEntry = (id: string) => { setHobbyEntries(prev => prev.filter(x => x.id !== id)); bg(() => dbDelete('hobby_entries', id)); };
 
-    // New Hobby Functions
-    const addHobby = (hobby: Hobby) => setHobbies(prev => [...prev, hobby]);
-    const updateHobby = (updatedHobby: Hobby) => setHobbies(prev => prev.map(h => h.id === updatedHobby.id ? updatedHobby : h));
-    const deleteHobby = (id: string) => {
-        setHobbies(prev => prev.filter(h => h.id !== id));
-    };
+    // Hobbies
+    const addHobby = (h: Hobby) => { setHobbies(prev => [...prev, h]); bg(() => insertRow('hobbies', h)); };
+    const updateHobby = (h: Hobby) => { setHobbies(prev => prev.map(x => x.id === h.id ? h : x)); bg(() => dbUpdate('hobbies', h.id, h)); };
+    const deleteHobby = (id: string) => { setHobbies(prev => prev.filter(x => x.id !== id)); bg(() => dbDelete('hobbies', id)); };
 
-    const addHobbyPost = (post: HobbyPost) => setHobbyPosts(prev => [...prev, post]);
-    const updateHobbyPost = (updatedPost: HobbyPost) => setHobbyPosts(prev => prev.map(p => p.id === updatedPost.id ? updatedPost : p));
-    const deleteHobbyPost = (id: string) => setHobbyPosts(prev => prev.filter(p => p.id !== id));
+    // Hobby Posts
+    const addHobbyPost = (p: HobbyPost) => { setHobbyPosts(prev => [...prev, p]); bg(() => insertRow('hobby_posts', p)); };
+    const updateHobbyPost = (p: HobbyPost) => { setHobbyPosts(prev => prev.map(x => x.id === p.id ? p : x)); bg(() => dbUpdate('hobby_posts', p.id, p)); };
+    const deleteHobbyPost = (id: string) => { setHobbyPosts(prev => prev.filter(x => x.id !== id)); bg(() => dbDelete('hobby_posts', id)); };
 
-    // Finance Logic (Updated for Asset Sync)
+    // Finance: Transactions (with asset balance sync)
     const addTransaction = (transaction: Transaction) => {
         setTransactions(prev => [...prev, transaction]);
+        bg(() => insertRow('transactions', transaction));
 
-        // Sync Asset Balance
         const { type, assetId, targetAssetId, amount, cardId } = transaction;
-        // Optimization: Use functional update here if assets depend on prev state, but complex logic might be better as is or carefully refactored.
-        // For simplicity and safety on transactions list, we fixed that. Asset updates usually are one-off.
-        let newAssets = [...assets]; // This reads current state 'assets', might be stale if inside batch.
-        // Ideally should be setAssets(prev => ...). But let's stick to the requested scope (ExerciseSession) and widespread obvious fixes.
-
-        // 1. Basic Income/Expense
+        let newAssets = [...assets];
         if (assetId) {
             newAssets = newAssets.map(asset => {
                 if (asset.id === assetId) {
-                    if (type === 'expense') {
-                        return { ...asset, balance: asset.balance - amount };
-                    } else if (type === 'income') {
-                        return { ...asset, balance: asset.balance + amount };
-                    } else if (type === 'transfer' || type === 'investment' || type === 'saving') {
-                        return { ...asset, balance: asset.balance - amount };
-                    } else if (type === 'repayment') {
-                        return { ...asset, balance: asset.balance - amount };
-                    } else if (type === 'card_bill') {
-                        return { ...asset, balance: asset.balance - amount };
-                    }
+                    if (type === 'expense') return { ...asset, balance: asset.balance - amount };
+                    if (type === 'income') return { ...asset, balance: asset.balance + amount };
+                    if (['transfer', 'investment', 'saving', 'repayment', 'card_bill'].includes(type)) return { ...asset, balance: asset.balance - amount };
                 }
                 return asset;
             });
         }
-
-        // 2. Transfer/Investment/Saving Target
-        if (targetAssetId && (type === 'transfer' || type === 'investment' || type === 'saving' || type === 'repayment')) {
+        if (targetAssetId && ['transfer', 'investment', 'saving', 'repayment'].includes(type)) {
             newAssets = newAssets.map(asset => {
                 if (asset.id === targetAssetId) {
-                    if (type === 'repayment') {
-                        // Repaying a loan reduces the loan balance (which is usually a positive number representing debt, or negative balance)
-                        // If loan balance is positive debt, we subtract. If it's negative balance, we add.
-                        // Assuming Asset balance for loan is debt amount (positive).
-                        return { ...asset, balance: asset.balance - amount };
-                    }
+                    if (type === 'repayment') return { ...asset, balance: asset.balance - amount };
                     return { ...asset, balance: asset.balance + amount };
                 }
                 return asset;
             });
         }
-
-        // 3. Credit Card Usage
         if (cardId && type === 'expense') {
             newAssets = newAssets.map(asset => {
-                if (asset.id === cardId) {
-                    // Credit card balance usually represents "used amount" (positive)
-                    return { ...asset, balance: asset.balance + amount };
-                }
+                if (asset.id === cardId) return { ...asset, balance: asset.balance + amount };
                 return asset;
             });
         }
-
         setAssets(newAssets);
     };
 
     const updateTransaction = (updatedTransaction: Transaction) => {
-        setTransactions(transactions.map(t => t.id === updatedTransaction.id ? updatedTransaction : t));
+        setTransactions(prev => prev.map(t => t.id === updatedTransaction.id ? updatedTransaction : t));
+        bg(() => dbUpdate('transactions', updatedTransaction.id, updatedTransaction));
 
-        // Sync Asset Balance: Revert Old -> Apply New
         const oldTransaction = transactions.find(t => t.id === updatedTransaction.id);
         if (oldTransaction) {
             let newAssets = [...assets];
-
-            // 1. Revert Old Transaction
+            // Revert old
             const { type: oldType, assetId: oldAssetId, targetAssetId: oldTargetAssetId, amount: oldAmount, cardId: oldCardId } = oldTransaction;
-
             if (oldAssetId) {
                 newAssets = newAssets.map(asset => {
                     if (asset.id === oldAssetId) {
                         if (oldType === 'expense') return { ...asset, balance: asset.balance + oldAmount };
                         if (oldType === 'income') return { ...asset, balance: asset.balance - oldAmount };
-                        if (['transfer', 'investment', 'saving', 'repayment', 'card_bill'].includes(oldType)) {
-                            return { ...asset, balance: asset.balance + oldAmount };
-                        }
+                        if (['transfer', 'investment', 'saving', 'repayment', 'card_bill'].includes(oldType)) return { ...asset, balance: asset.balance + oldAmount };
                     }
                     return asset;
                 });
             }
-
             if (oldTargetAssetId && ['transfer', 'investment', 'saving', 'repayment'].includes(oldType)) {
                 newAssets = newAssets.map(asset => {
                     if (asset.id === oldTargetAssetId) {
@@ -670,30 +680,24 @@ export function DataProvider({ children }: { children: ReactNode }) {
                     return asset;
                 });
             }
-
             if (oldCardId && oldType === 'expense') {
                 newAssets = newAssets.map(asset => {
                     if (asset.id === oldCardId) return { ...asset, balance: asset.balance - oldAmount };
                     return asset;
                 });
             }
-
-            // 2. Apply New Transaction
+            // Apply new
             const { type, assetId, targetAssetId, amount, cardId } = updatedTransaction;
-
             if (assetId) {
                 newAssets = newAssets.map(asset => {
                     if (asset.id === assetId) {
                         if (type === 'expense') return { ...asset, balance: asset.balance - amount };
                         if (type === 'income') return { ...asset, balance: asset.balance + amount };
-                        if (['transfer', 'investment', 'saving', 'repayment', 'card_bill'].includes(type)) {
-                            return { ...asset, balance: asset.balance - amount };
-                        }
+                        if (['transfer', 'investment', 'saving', 'repayment', 'card_bill'].includes(type)) return { ...asset, balance: asset.balance - amount };
                     }
                     return asset;
                 });
             }
-
             if (targetAssetId && ['transfer', 'investment', 'saving', 'repayment'].includes(type)) {
                 newAssets = newAssets.map(asset => {
                     if (asset.id === targetAssetId) {
@@ -703,40 +707,35 @@ export function DataProvider({ children }: { children: ReactNode }) {
                     return asset;
                 });
             }
-
             if (cardId && type === 'expense') {
                 newAssets = newAssets.map(asset => {
                     if (asset.id === cardId) return { ...asset, balance: asset.balance + amount };
                     return asset;
                 });
             }
-
             setAssets(newAssets);
         }
     };
+
     const deleteTransaction = (id: string) => {
         const tx = transactions.find(t => t.id === id);
-        setTransactions(transactions.filter(t => t.id !== id));
+        setTransactions(prev => prev.filter(t => t.id !== id));
+        bg(() => dbDelete('transactions', id));
 
-        // Revert Asset Balance (Optional but good UX)
         if (tx) {
             const { type, assetId, targetAssetId, amount, cardId } = tx;
             let newAssets = [...assets];
-
             if (assetId) {
                 newAssets = newAssets.map(asset => {
                     if (asset.id === assetId) {
                         if (type === 'expense') return { ...asset, balance: asset.balance + amount };
                         if (type === 'income') return { ...asset, balance: asset.balance - amount };
-                        if (type === 'transfer' || type === 'investment' || type === 'saving' || type === 'repayment' || type === 'card_bill') {
-                            return { ...asset, balance: asset.balance + amount };
-                        }
+                        if (['transfer', 'investment', 'saving', 'repayment', 'card_bill'].includes(type)) return { ...asset, balance: asset.balance + amount };
                     }
                     return asset;
                 });
             }
-
-            if (targetAssetId && (type === 'transfer' || type === 'investment' || type === 'saving' || type === 'repayment')) {
+            if (targetAssetId && ['transfer', 'investment', 'saving', 'repayment'].includes(type)) {
                 newAssets = newAssets.map(asset => {
                     if (asset.id === targetAssetId) {
                         if (type === 'repayment') return { ...asset, balance: asset.balance + amount };
@@ -745,46 +744,119 @@ export function DataProvider({ children }: { children: ReactNode }) {
                     return asset;
                 });
             }
-
             if (cardId && type === 'expense') {
                 newAssets = newAssets.map(asset => {
                     if (asset.id === cardId) return { ...asset, balance: asset.balance - amount };
                     return asset;
                 });
             }
-
             setAssets(newAssets);
         }
     };
 
-    const addAsset = (asset: Asset) => setAssets([...assets, asset]);
-    const updateAsset = (updatedAsset: Asset) => setAssets(assets.map(a => a.id === updatedAsset.id ? updatedAsset : a));
-    const deleteAsset = (id: string) => setAssets(assets.filter(a => a.id !== id));
+    // Assets
+    const addAsset = (a: Asset) => { setAssets(prev => [...prev, a]); bg(() => insertRow('assets', a)); };
+    const updateAsset = (a: Asset) => { setAssets(prev => prev.map(x => x.id === a.id ? a : x)); bg(() => dbUpdate('assets', a.id, a)); };
+    const deleteAsset = (id: string) => { setAssets(prev => prev.filter(x => x.id !== id)); bg(() => dbDelete('assets', id)); };
 
-    const addCertificate = (cert: Certificate) => setCertificates([...certificates, cert]);
-    const updateCertificate = (cert: Certificate) => setCertificates(certificates.map(c => c.id === cert.id ? cert : c));
-    const deleteCertificate = (id: string) => setCertificates(certificates.filter(c => c.id !== id));
+    // Certificates
+    const addCertificate = (c: Certificate) => { setCertificates(prev => [...prev, c]); bg(() => insertRow('certificates', c)); };
+    const updateCertificate = (c: Certificate) => { setCertificates(prev => prev.map(x => x.id === c.id ? c : x)); bg(() => dbUpdate('certificates', c.id, c)); };
+    const deleteCertificate = (id: string) => { setCertificates(prev => prev.filter(x => x.id !== id)); bg(() => dbDelete('certificates', id)); };
 
-    const addPortfolio = (item: PortfolioItem) => setPortfolios([...portfolios, item]);
-    const updatePortfolio = (item: PortfolioItem) => setPortfolios(portfolios.map(p => p.id === item.id ? item : p));
-    const deletePortfolio = (id: string) => setPortfolios(portfolios.filter(p => p.id !== id));
+    // Portfolios
+    const addPortfolio = (p: PortfolioItem) => { setPortfolios(prev => [...prev, p]); bg(() => insertRow('portfolios', p)); };
+    const updatePortfolio = (p: PortfolioItem) => { setPortfolios(prev => prev.map(x => x.id === p.id ? p : x)); bg(() => dbUpdate('portfolios', p.id, p)); };
+    const deletePortfolio = (id: string) => { setPortfolios(prev => prev.filter(x => x.id !== id)); bg(() => dbDelete('portfolios', id)); };
 
-    const updateUserProfile = (profile: UserProfile) => setUserProfile(profile);
+    // User Profile (singleton)
+    const updateUserProfile = (profile: UserProfile) => {
+        setUserProfile(profile);
+        bg(() => upsertSingleton('user_profiles', profile));
+    };
 
-    const addEducation = (edu: Education) => setEducations([...educations, edu]);
-    const updateEducation = (edu: Education) => setEducations(educations.map(e => e.id === edu.id ? edu : e));
-    const deleteEducation = (id: string) => setEducations(educations.filter(e => e.id !== id));
+    // Education
+    const addEducation = (edu: Education) => { setEducations(prev => [...prev, edu]); bg(() => insertRow('educations', edu)); };
+    const updateEducation = (edu: Education) => { setEducations(prev => prev.map(x => x.id === edu.id ? edu : x)); bg(() => dbUpdate('educations', edu.id, edu)); };
+    const deleteEducation = (id: string) => { setEducations(prev => prev.filter(x => x.id !== id)); bg(() => dbDelete('educations', id)); };
 
-    const addCareer = (career: Career) => setCareers([...careers, career]);
-    const updateCareer = (career: Career) => setCareers(careers.map(c => c.id === career.id ? career : c));
-    const deleteCareer = (id: string) => setCareers(careers.filter(c => c.id !== id));
+    // Careers
+    const addCareer = (c: Career) => { setCareers(prev => [...prev, c]); bg(() => insertRow('careers', c)); };
+    const updateCareer = (c: Career) => { setCareers(prev => prev.map(x => x.id === c.id ? c : x)); bg(() => dbUpdate('careers', c.id, c)); };
+    const deleteCareer = (id: string) => { setCareers(prev => prev.filter(x => x.id !== id)); bg(() => dbDelete('careers', id)); };
 
-    const addActivity = (act: Activity) => setActivities([...activities, act]);
-    const updateActivity = (act: Activity) => setActivities(activities.map(a => a.id === act.id ? act : a));
-    const deleteActivity = (id: string) => setActivities(activities.filter(a => a.id !== id));
+    // Activities
+    const addActivity = (a: Activity) => { setActivities(prev => [...prev, a]); bg(() => insertRow('activities', a)); };
+    const updateActivity = (a: Activity) => { setActivities(prev => prev.map(x => x.id === a.id ? a : x)); bg(() => dbUpdate('activities', a.id, a)); };
+    const deleteActivity = (id: string) => { setActivities(prev => prev.filter(x => x.id !== id)); bg(() => dbDelete('activities', id)); };
 
-    // Alarm State
-    const alertedEventIdsRef = React.useRef<Set<string>>(new Set());
+    // Real Estate Scraps
+    const addRealEstateScrap = (s: RealEstateScrap) => { setRealEstateScraps(prev => [...prev, s]); bg(() => insertRow('real_estate_scraps', s)); };
+    const updateRealEstateScrap = (s: RealEstateScrap) => { setRealEstateScraps(prev => prev.map(x => x.id === s.id ? s : x)); bg(() => dbUpdate('real_estate_scraps', s.id, s)); };
+    const deleteRealEstateScrap = (id: string) => { setRealEstateScraps(prev => prev.filter(x => x.id !== id)); bg(() => dbDelete('real_estate_scraps', id)); };
+
+    // Stock Analyses
+    const addStockAnalysis = (s: StockAnalysis) => { setStockAnalyses(prev => [...prev, s]); bg(() => insertRow('stock_analyses', s)); };
+    const updateStockAnalysis = (s: StockAnalysis) => { setStockAnalyses(prev => prev.map(x => x.id === s.id ? s : x)); bg(() => dbUpdate('stock_analyses', s.id, s)); };
+    const deleteStockAnalysis = (id: string) => { setStockAnalyses(prev => prev.filter(x => x.id !== id)); bg(() => dbDelete('stock_analyses', id)); };
+
+    // Work Logs
+    const addWorkLog = (l: WorkLog) => { setWorkLogs(prev => [...prev, l]); bg(() => insertRow('work_logs', l)); };
+    const updateWorkLog = (l: WorkLog) => { setWorkLogs(prev => prev.map(x => x.id === l.id ? l : x)); bg(() => dbUpdate('work_logs', l.id, l)); };
+    const deleteWorkLog = (id: string) => { setWorkLogs(prev => prev.filter(x => x.id !== id)); bg(() => dbDelete('work_logs', id)); };
+
+    // Exercise Routines
+    const addExerciseRoutine = (r: ExerciseRoutine) => { setExerciseRoutines(prev => [...prev, r]); bg(() => insertRow('exercise_routines', r)); };
+    const updateExerciseRoutine = (r: ExerciseRoutine) => { setExerciseRoutines(prev => prev.map(x => x.id === r.id ? r : x)); bg(() => dbUpdate('exercise_routines', r.id, r)); };
+    const deleteExerciseRoutine = (id: string) => { setExerciseRoutines(prev => prev.filter(x => x.id !== id)); bg(() => dbDelete('exercise_routines', id)); };
+
+    // Finance Goals
+    const addFinanceGoal = (g: FinanceGoal) => { setFinanceGoals(prev => [...prev, g]); bg(() => insertRow('finance_goals', g)); };
+    const updateFinanceGoal = (g: FinanceGoal) => { setFinanceGoals(prev => prev.map(x => x.id === g.id ? g : x)); bg(() => dbUpdate('finance_goals', g.id, g)); };
+    const deleteFinanceGoal = (id: string) => { setFinanceGoals(prev => prev.filter(x => x.id !== id)); bg(() => dbDelete('finance_goals', id)); };
+
+    // Custom Foods
+    const addCustomFood = (f: CustomFood) => { setCustomFoods(prev => [...prev, f]); bg(() => insertRow('custom_foods', f)); };
+    const deleteCustomFood = (id: string) => { setCustomFoods(prev => prev.filter(x => x.id !== id)); bg(() => dbDelete('custom_foods', id)); };
+
+    // Monthly Budgets
+    const updateMonthlyBudget = (budget: MonthlyBudget) => {
+        const exists = monthlyBudgets.find(b => b.id === budget.id);
+        if (exists) {
+            setMonthlyBudgets(prev => prev.map(b => b.id === budget.id ? budget : b));
+            bg(() => dbUpdate('monthly_budgets', budget.id, budget));
+        } else {
+            setMonthlyBudgets(prev => [...prev, budget]);
+            bg(() => insertRow('monthly_budgets', budget));
+        }
+    };
+
+    // Settings singletons — persist to user_settings table
+    const setHomeShortcutsAndSync = useCallback((shortcuts: string[]) => {
+        setHomeShortcuts(shortcuts);
+        bg(() => upsertSingleton('user_settings', { homeShortcuts: shortcuts, globalMemo, bodyCompositionGoal }));
+    }, [globalMemo, bodyCompositionGoal, bg]);
+
+    const setBodyCompositionGoalAndSync = useCallback((goal: BodyCompositionGoal) => {
+        setBodyCompositionGoal(goal);
+        bg(() => upsertSingleton('user_settings', { homeShortcuts, globalMemo, bodyCompositionGoal: goal }));
+    }, [homeShortcuts, globalMemo, bg]);
+
+    const setGlobalMemoAndSync = useCallback((memo: string) => {
+        setGlobalMemo(memo);
+        bg(() => upsertSingleton('user_settings', { homeShortcuts, bodyCompositionGoal, globalMemo: memo }));
+    }, [homeShortcuts, bodyCompositionGoal, bg]);
+
+    // Force sync (no-op now — data is always persisted directly)
+    const forceSync = async () => {
+        // Data is already persisted per-operation. This is kept for interface compatibility.
+        toast.success('데이터가 동기화되었습니다.');
+    };
+
+    // ============================================
+    // Alarm Effects (unchanged)
+    // ============================================
+    const alertedEventIdsRef = useRef<Set<string>>(new Set());
 
     useEffect(() => {
         if ('Notification' in window && Notification.permission !== 'granted' && Notification.permission !== 'denied') {
@@ -800,82 +872,23 @@ export function DataProvider({ children }: { children: ReactNode }) {
                 const start = new Date(event.start);
                 const prep = event.prepTime || 0;
                 const travel = event.travelTime || 0;
-
-                // Alarm triggers at: Start - (Prep + Travel)
                 const alarmTime = new Date(start.getTime() - (prep + travel) * 60 * 1000);
-
-                // Trigger if alarm time is passed within last 60 seconds (to avoid spamming old alarms on refresh)
-                // OR just simply if passed and not alerted, assuming we only care about future alarms from session start?
-                // But alertedEventIdsRef is reset on refresh. So old events would trigger immediately.
-                // Constraint: Only trigger if alarmTime is within recent past (e.g. 1 min) or future?
-                // Actually, for a daily scheduler, maybe we only care about alarms happening NOW.
-                // Let's say: if alarmTime <= now && alarmTime > now - 1 minute.
-
                 const timeDiff = now.getTime() - alarmTime.getTime();
-
-                // If it's time (within last 60 seconds) and not alerted
                 if (timeDiff >= 0 && timeDiff < 60000 && !alertedEventIdsRef.current.has(event.id)) {
                     const message = `${format(start, 'HH:mm')} 시작` +
                         (prep > 0 ? `, 준비 ${prep}분` : '') +
                         (travel > 0 ? `, 이동 ${travel}분` : '') + ' 전입니다.';
-
                     if (Notification.permission === 'granted') {
-                        new Notification(`[일정 알림] ${event.title}`, {
-                            body: message,
-                        });
+                        new Notification(`[일정 알림] ${event.title}`, { body: message });
                     }
                     toast.info(`[일정] ${event.title}`, { description: message });
-
                     alertedEventIdsRef.current.add(event.id);
                 }
             });
         };
-
-        const interval = setInterval(checkAlarms, 10000); // Check every 10s
+        const interval = setInterval(checkAlarms, 10000);
         return () => clearInterval(interval);
     }, [events]);
-
-    // 2. Save data to cloud on change
-    useEffect(() => {
-        if (session?.user && isLoadedFromCloud) {
-            saveData({
-                tasks, projects, goals, habits, events, journals, memos, people, scraps,
-                languageEntries, languageResources, books, exerciseSessions, dietEntries, inBodyEntries, hobbyEntries,
-                hobbies, hobbyPosts,
-                transactions, assets, certificates, portfolios, archiveDocuments,
-                userProfile, educations, careers, activities, bodyCompositionGoal, homeShortcuts,
-                realEstateScraps, stockAnalyses, workLogs, exerciseRoutines, financeGoals, customFoods,
-                monthlyBudgets,
-                customExercises, // Added
-                globalMemo
-            });
-        }
-    }, [
-        session?.user, isLoadedFromCloud, saveData,
-        tasks, projects, goals, habits, events, journals, memos, people, scraps,
-        languageEntries, languageResources, books, exerciseSessions, dietEntries, inBodyEntries, hobbyEntries,
-        hobbies, hobbyPosts,
-        transactions, assets, certificates, portfolios, archiveDocuments,
-        userProfile, educations, careers, activities, bodyCompositionGoal, homeShortcuts,
-        realEstateScraps, stockAnalyses, workLogs, exerciseRoutines, financeGoals, customFoods,
-        monthlyBudgets, customExercises, globalMemo
-    ]);
-
-    const forceSync = async () => {
-        if (session?.user) {
-            await saveData({
-                tasks, projects, goals, habits, events, journals, memos, people, scraps,
-                languageEntries, languageResources, books, exerciseSessions, dietEntries, inBodyEntries, hobbyEntries,
-                hobbies, hobbyPosts,
-                transactions, assets, certificates, portfolios, archiveDocuments,
-                userProfile, educations, careers, activities, bodyCompositionGoal, homeShortcuts,
-                realEstateScraps, stockAnalyses, workLogs, exerciseRoutines, financeGoals, customFoods,
-                monthlyBudgets,
-                customExercises, // Added
-                globalMemo
-            });
-        }
-    };
 
     useEffect(() => {
         const checkAlarms = () => {
@@ -883,65 +896,24 @@ export function DataProvider({ children }: { children: ReactNode }) {
             const upcomingEvents = events.filter(event => {
                 if (event.priority !== 'high') return false;
                 if (alertedEventIdsRef.current.has(event.id)) return false;
-
                 const start = new Date(event.start);
                 if (!isSameDay(start, now)) return false;
-
                 const diff = differenceInMinutes(start, now);
                 return diff >= 0 && diff <= 10;
             });
-
             upcomingEvents.forEach(event => {
                 toast.error(`중요 일정 알림 ⏰`, {
                     description: `'${event.title}' 일정이 10분 내에 시작됩니다!`,
                     duration: 5000,
-                    style: {
-                        background: '#fee2e2',
-                        color: '#991b1b',
-                        border: '1px solid #f87171'
-                    }
+                    style: { background: '#fee2e2', color: '#991b1b', border: '1px solid #f87171' }
                 });
                 alertedEventIdsRef.current.add(event.id);
             });
         };
-
-        const interval = setInterval(checkAlarms, 60000); // Check every minute
-        checkAlarms(); // Initial check
-
+        const interval = setInterval(checkAlarms, 60000);
+        checkAlarms();
         return () => clearInterval(interval);
     }, [events]);
-
-    const addRealEstateScrap = (scrap: RealEstateScrap) => setRealEstateScraps([...realEstateScraps, scrap]);
-    const updateRealEstateScrap = (updatedScrap: RealEstateScrap) => setRealEstateScraps(realEstateScraps.map(s => s.id === updatedScrap.id ? updatedScrap : s));
-    const deleteRealEstateScrap = (id: string) => setRealEstateScraps(realEstateScraps.filter(s => s.id !== id));
-
-    const addStockAnalysis = (analysis: StockAnalysis) => setStockAnalyses([...stockAnalyses, analysis]);
-    const updateStockAnalysis = (updatedAnalysis: StockAnalysis) => setStockAnalyses(stockAnalyses.map(s => s.id === updatedAnalysis.id ? updatedAnalysis : s));
-    const deleteStockAnalysis = (id: string) => setStockAnalyses(stockAnalyses.filter(s => s.id !== id));
-
-    const addWorkLog = (log: WorkLog) => setWorkLogs([...workLogs, log]);
-    const updateWorkLog = (updatedLog: WorkLog) => setWorkLogs(workLogs.map(l => l.id === updatedLog.id ? updatedLog : l));
-    const deleteWorkLog = (id: string) => setWorkLogs(workLogs.filter(l => l.id !== id));
-
-    const addExerciseRoutine = (routine: ExerciseRoutine) => setExerciseRoutines([...exerciseRoutines, routine]);
-    const updateExerciseRoutine = (updatedRoutine: ExerciseRoutine) => setExerciseRoutines(exerciseRoutines.map(r => r.id === updatedRoutine.id ? updatedRoutine : r));
-    const deleteExerciseRoutine = (id: string) => setExerciseRoutines(exerciseRoutines.filter(r => r.id !== id));
-
-    const addFinanceGoal = (goal: FinanceGoal) => setFinanceGoals([...financeGoals, goal]);
-    const updateFinanceGoal = (updatedGoal: FinanceGoal) => setFinanceGoals(financeGoals.map(g => g.id === updatedGoal.id ? updatedGoal : g));
-    const deleteFinanceGoal = (id: string) => setFinanceGoals(financeGoals.filter(g => g.id !== id));
-
-    const addCustomFood = (food: CustomFood) => setCustomFoods([...customFoods, food]);
-    const deleteCustomFood = (id: string) => setCustomFoods(customFoods.filter(f => f.id !== id));
-
-    const updateMonthlyBudget = (budget: MonthlyBudget) => {
-        const exists = monthlyBudgets.find(b => b.id === budget.id);
-        if (exists) {
-            setMonthlyBudgets(monthlyBudgets.map(b => b.id === budget.id ? budget : b));
-        } else {
-            setMonthlyBudgets([...monthlyBudgets, budget]);
-        }
-    };
 
     return (
         <DataContext.Provider value={{
@@ -963,82 +935,73 @@ export function DataProvider({ children }: { children: ReactNode }) {
             addMemo, updateMemo, deleteMemo,
             addPerson, updatePerson, deletePerson,
             addScrap, updateScrap, deleteScrap,
-
-            // Work Mode State
             selectedWorkProjectId, setSelectedWorkProjectId,
-
-            // New Logs
             languageEntries, setLanguageEntries,
             addLanguageEntry, updateLanguageEntry, deleteLanguageEntry,
             languageResources, setLanguageResources,
             addLanguageResource, updateLanguageResource, deleteLanguageResource,
-
-            books, setBooks,
-            addBook, updateBook, deleteBook,
-
+            books, setBooks, addBook, updateBook, deleteBook,
             exerciseSessions, setExerciseSessions,
             addExerciseSession, updateExerciseSession, deleteExerciseSession,
-
             dietEntries, setDietEntries, addDietEntry, updateDietEntry, deleteDietEntry,
             inBodyEntries, setInBodyEntries, addInBodyEntry, updateInBodyEntry, deleteInBodyEntry,
-
-            // Hobby Revamp
             hobbies, setHobbies, addHobby, updateHobby, deleteHobby,
             hobbyPosts, setHobbyPosts, addHobbyPost, updateHobbyPost, deleteHobbyPost,
-            // Deprecated but kept for compatibility during migration
             hobbyEntries, setHobbyEntries, addHobbyEntry, updateHobbyEntry, deleteHobbyEntry,
-
-            // Finance
-            transactions, setTransactions,
-            addTransaction, updateTransaction, deleteTransaction,
-
-            assets, setAssets,
-            addAsset,
-            updateAsset,
-            deleteAsset,
-            certificates,
-            addCertificate,
-            updateCertificate,
-            deleteCertificate,
-            portfolios,
-            addPortfolio,
-            updatePortfolio,
-            deletePortfolio,
+            transactions, setTransactions, addTransaction, updateTransaction, deleteTransaction,
+            assets, setAssets, addAsset, updateAsset, deleteAsset,
+            certificates, addCertificate, updateCertificate, deleteCertificate,
+            portfolios, addPortfolio, updatePortfolio, deletePortfolio,
             realEstateScraps, setRealEstateScraps, addRealEstateScrap, updateRealEstateScrap, deleteRealEstateScrap,
             stockAnalyses, setStockAnalyses, addStockAnalysis, updateStockAnalysis, deleteStockAnalysis,
             workLogs, setWorkLogs, addWorkLog, updateWorkLog, deleteWorkLog,
             exerciseRoutines, setExerciseRoutines, addExerciseRoutine, updateExerciseRoutine, deleteExerciseRoutine,
             financeGoals, setFinanceGoals, addFinanceGoal, updateFinanceGoal, deleteFinanceGoal,
             monthlyBudgets, setMonthlyBudgets, updateMonthlyBudget,
-            userProfile,
-            updateUserProfile,
-            educations,
-            addEducation,
-            updateEducation,
-            deleteEducation,
-            careers, setCareers, // Added setCareers back
-            addCareer,
-            updateCareer,
-            deleteCareer,
-            activities, setActivities, addActivity, updateActivity, deleteActivity, // New
-
-            isSyncing,
-            forceSync,
+            userProfile, updateUserProfile,
+            educations, addEducation, updateEducation, deleteEducation,
+            careers, setCareers, addCareer, updateCareer, deleteCareer,
+            activities, setActivities, addActivity, updateActivity, deleteActivity,
+            isSyncing, forceSync,
             bodyCompositionGoal,
-            setBodyCompositionGoal,
-            homeShortcuts, setHomeShortcuts,
-            customFoods,
-            setCustomFoods,
-            addCustomFood,
-            deleteCustomFood,
-
+            setBodyCompositionGoal: setBodyCompositionGoalAndSync,
+            homeShortcuts,
+            setHomeShortcuts: setHomeShortcutsAndSync,
+            customFoods, setCustomFoods, addCustomFood, deleteCustomFood,
             customExercises,
-            addCustomExercise: (ex) => setCustomExercises([...customExercises, ex]),
-            deleteCustomExercise: (id) => setCustomExercises(customExercises.filter(e => e.id !== id)),
-
-            globalMemo, setGlobalMemo
+            addCustomExercise: (ex: ExerciseDefinition) => { setCustomExercises(prev => [...prev, ex]); bg(() => insertRow('custom_exercises', ex)); },
+            deleteCustomExercise: (id: string) => { setCustomExercises(prev => prev.filter(e => e.id !== id)); bg(() => dbDelete('custom_exercises', id)); },
+            globalMemo,
+            setGlobalMemo: setGlobalMemoAndSync,
         }}>
-            {children}
+            {isAccountWithdrawn ? (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+                    <div className="w-full max-w-md p-6 bg-card border rounded-lg shadow-lg text-center space-y-4">
+                        <div className="flex justify-center text-destructive">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="12" x2="12" y1="8" y2="12" /><line x1="12" x2="12.01" y1="16" y2="16" /></svg>
+                        </div>
+                        <h2 className="text-xl font-bold">계정이 비활성화되었습니다</h2>
+                        <p className="text-muted-foreground">
+                            회원님의 계정은 현재 <b>탈퇴 대기(철회 가능)</b> 상태입니다.<br />
+                            데이터는 30일 후 완전히 삭제됩니다.
+                        </p>
+                        <div className="flex gap-2 justify-center pt-2">
+                            <button
+                                onClick={() => { signOut(); }}
+                                className="px-4 py-2 text-sm font-medium rounded-md border hover:bg-accent"
+                            >
+                                로그아웃
+                            </button>
+                            <button
+                                onClick={restoreAccount}
+                                className="px-4 py-2 text-sm font-medium rounded-md bg-primary text-primary-foreground hover:bg-primary/90"
+                            >
+                                계정 복구하기
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            ) : children}
         </DataContext.Provider>
     );
 }

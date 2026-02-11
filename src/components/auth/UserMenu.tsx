@@ -1,6 +1,6 @@
 'use client';
 
-import { useSession, signIn, signOut } from "next-auth/react";
+import { useAuth } from "@/components/auth/SessionProvider";
 import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
@@ -11,42 +11,35 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { User, LogOut, Settings, CreditCard, Chrome } from 'lucide-react';
+import { User, LogOut, Settings, CreditCard } from 'lucide-react';
 import { useData } from "@/context/DataProvider";
 import { useEffect } from "react";
 import { ProfileModal } from "./ProfileModal";
 import { SettingsModal } from "./SettingsModal";
 
 export function UserMenu() {
-    const { data: session } = useSession();
+    const { user, signOut } = useAuth();
     const { userProfile, updateUserProfile } = useData();
 
-    // Sync session data with local UserProfile if logged in
-    // Sync session data with local UserProfile if logged in
+    // Sync auth user data with local UserProfile
     useEffect(() => {
-        if (session?.user) {
-            const newName = session.user.name || userProfile.name;
-            const newEmail = session.user.email || userProfile.email;
-            const newPhoto = session.user.image || userProfile.photo;
+        if (user) {
+            const metadata = user.user_metadata;
+            const newName = metadata?.name || userProfile.name;
+            const newEmail = user.email || userProfile.email;
 
-            if (newName !== userProfile.name || newEmail !== userProfile.email || newPhoto !== userProfile.photo) {
+            if (newName !== userProfile.name || newEmail !== userProfile.email) {
                 updateUserProfile({
                     ...userProfile,
                     name: newName,
                     email: newEmail,
-                    photo: newPhoto,
                 });
             }
         }
-    }, [session, userProfile, updateUserProfile]);
+    }, [user, userProfile, updateUserProfile]);
 
-    if (!session) {
-        return (
-            <Button variant="outline" size="sm" onClick={() => signIn('google')} className="gap-2">
-                <Chrome className="w-4 h-4" />
-                Google 로그인
-            </Button>
-        );
+    if (!user) {
+        return null;
     }
 
     return (
@@ -54,9 +47,9 @@ export function UserMenu() {
             <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-9 w-9 rounded-full">
                     <Avatar className="h-9 w-9 ring-1 ring-slate-100">
-                        <AvatarImage src={session.user?.image || ''} alt={session.user?.name || ''} />
+                        <AvatarImage src={userProfile.photo || ''} alt={userProfile.name || ''} />
                         <AvatarFallback>
-                            {session.user?.name?.[0] || <User className="w-4 h-4" />}
+                            {userProfile.name?.[0] || user.email?.[0] || <User className="w-4 h-4" />}
                         </AvatarFallback>
                     </Avatar>
                 </Button>
@@ -64,9 +57,9 @@ export function UserMenu() {
             <DropdownMenuContent className="w-56" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
-                        <p className="text-sm font-medium leading-none">{session.user?.name}</p>
+                        <p className="text-sm font-medium leading-none">{userProfile.name || user.user_metadata?.name}</p>
                         <p className="text-xs leading-none text-muted-foreground">
-                            {session.user?.email}
+                            {user.email}
                         </p>
                     </div>
                 </DropdownMenuLabel>
@@ -88,12 +81,7 @@ export function UserMenu() {
                     </DropdownMenuItem>
                 </SettingsModal>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => {
-                    // Force clear local storage and sign out
-                    localStorage.removeItem('userProfile');
-                    // Optionally clear other keys if needed, but userProfile is main culprit for display
-                    signOut({ callbackUrl: '/login', redirect: true });
-                }}>
+                <DropdownMenuItem onClick={signOut}>
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>로그아웃</span>
                 </DropdownMenuItem>

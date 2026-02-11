@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { createClient } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,6 +12,7 @@ import { X, Eye, EyeOff } from 'lucide-react';
 
 export default function RegisterPage() {
     const router = useRouter();
+    const supabase = createClient();
     const [isLoading, setIsLoading] = useState(false);
     const [formData, setFormData] = useState({
         email: '',
@@ -25,20 +27,23 @@ export default function RegisterPage() {
         setIsLoading(true);
 
         try {
-            const res = await fetch('/api/register', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData),
+            const { data, error } = await supabase.auth.signUp({
+                email: formData.email,
+                password: formData.password,
+                options: {
+                    data: {
+                        name: formData.name,
+                        phone: formData.phone,
+                    },
+                },
             });
 
-            const data = await res.json();
-
-            if (!res.ok) {
-                throw new Error(data.message || 'Something went wrong');
+            if (error) {
+                throw new Error(error.message);
             }
 
             toast.success('회원가입 성공! 로그인해주세요.');
-            router.push('/login'); // Redirect to login
+            router.push('/login');
         } catch (error: any) {
             toast.error(error.message);
         } finally {

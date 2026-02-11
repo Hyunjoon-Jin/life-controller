@@ -581,6 +581,11 @@ export type UserProfile = {
     bio: string;
     photo?: string;
     socialLinks?: { platform: string; url: string }[];
+    // Account Management
+    status?: 'active' | 'dormant' | 'suspended' | 'withdrawn';
+    role?: 'user' | 'admin';
+    lastActiveAt?: Date;
+    deletedAt?: Date;
 };
 
 export type Education = {

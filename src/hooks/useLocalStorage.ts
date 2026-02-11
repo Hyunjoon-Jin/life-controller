@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 export function useLocalStorage<T>(key: string, initialValue: T) {
     // Always initialize with the default value to avoid hydration mismatch
@@ -23,20 +23,45 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
         }
     }, [key]);
 
+    // Use a ref to store the timeout ID
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
     const setValue = useCallback((value: T | ((val: T) => T)) => {
         try {
             setStoredValue((prev) => {
                 const valueToStore = value instanceof Function ? value(prev) : value;
 
-                if (typeof window !== "undefined") {
-                    window.localStorage.setItem(key, JSON.stringify(valueToStore));
+                // Clear any existing timeout
+                if (timeoutRef.current) {
+                    clearTimeout(timeoutRef.current);
                 }
+
+                // Set a new timeout to save to localStorage after 1000ms
+                timeoutRef.current = setTimeout(() => {
+                    if (typeof window !== "undefined") {
+                        try {
+                            window.localStorage.setItem(key, JSON.stringify(valueToStore));
+                        } catch (error) {
+                            console.warn(`Error setting localStorage key “${key}”:`, error);
+                        }
+                    }
+                }, 1000);
+
                 return valueToStore;
             });
         } catch (error) {
-            console.warn(`Error setting localStorage key “${key}”:`, error);
+            console.warn(`Error setting state for key “${key}”:`, error);
         }
     }, [key]);
+
+    // Clear timeout on unmount
+    useEffect(() => {
+        return () => {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+            }
+        };
+    }, []);
 
     return [storedValue, setValue] as const;
 }

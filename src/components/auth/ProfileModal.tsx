@@ -14,14 +14,14 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { useSession } from 'next-auth/react';
+import { useAuth } from '@/components/auth/SessionProvider';
 import { toast } from 'sonner';
 import { useData } from '@/context/DataProvider';
 import { UserProfile } from '@/types';
-import { Plus, Trash2, Github, Linkedin, Globe, Instagram, Mail } from 'lucide-react';
+import { Plus, Trash2 } from 'lucide-react';
 
 export function ProfileModal({ children }: { children: React.ReactNode }) {
-    const { data: session } = useSession();
+    const { user } = useAuth();
     const { userProfile, updateUserProfile } = useData();
     const [open, setOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -67,9 +67,8 @@ export function ProfileModal({ children }: { children: React.ReactNode }) {
         try {
             await updateUserProfile({
                 ...formData,
-                // Ensure critical fields are preserved if accidentally cleared (though UI handles this)
-                id: formData.id || session?.user?.email || 'user',
-                email: session?.user?.email || formData.email, // Email should stick to session
+                id: formData.id || user?.email || 'user',
+                email: user?.email || formData.email,
             });
             toast.success('프로필이 저장되었습니다.');
             setOpen(false);
@@ -80,7 +79,7 @@ export function ProfileModal({ children }: { children: React.ReactNode }) {
         }
     };
 
-    if (!session?.user) return null;
+    if (!user) return null;
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>

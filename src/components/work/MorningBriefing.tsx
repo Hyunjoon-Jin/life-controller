@@ -5,14 +5,14 @@ import { format, isSameDay, isPast, isFuture, addDays } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { CheckCircle2, Circle, Clock, AlertCircle, Calendar as CalendarIcon, Sun } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useSession } from 'next-auth/react';
+import { useAuth } from '@/components/auth/SessionProvider';
 
 export function MorningBriefing() {
     const { tasks, events, userProfile } = useData();
-    const { data: session } = useSession(); // To get real name if possible
+    const { user } = useAuth(); // To get real name if possible
 
     const today = new Date();
-    const userName = userProfile.name || session?.user?.name || "사용자";
+    const userName = userProfile.name || user?.user_metadata?.name || "사용자";
 
     // 1. Overdue Tasks
     const overdueTasks = tasks.filter(t =>

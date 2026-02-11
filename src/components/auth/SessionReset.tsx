@@ -1,26 +1,20 @@
 "use client";
 
-import { useSession, signOut } from "next-auth/react";
+import { useAuth } from "@/components/auth/SessionProvider";
 import { useEffect } from "react";
 
 export function SessionReset() {
-    const { data: session } = useSession();
+    const { user, signOut } = useAuth();
 
     useEffect(() => {
         // If the user is "Admin User", force logout immediately
-        if (session?.user?.name === "Admin User") {
+        if (user?.user_metadata?.name === "Admin User") {
             console.log("Stuck session detected. Forcing logout...");
-
-            // 1. Clear Local Storage
             localStorage.clear();
-
-            // 2. Clear Session Storage
             sessionStorage.clear();
-
-            // 3. Force SignOut with redirect
-            signOut({ callbackUrl: "/login", redirect: true });
+            signOut();
         }
-    }, [session]);
+    }, [user, signOut]);
 
     return null; // Invisible component
 }

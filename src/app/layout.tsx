@@ -4,9 +4,10 @@ import './globals.css';
 import { cn } from '@/lib/utils';
 import { DataProvider } from '@/context/DataProvider';
 import { ThemeProvider } from '@/components/ui/theme-provider';
-import { SessionProvider } from '@/components/auth/SessionProvider';
+import { AuthProvider } from '@/components/auth/SessionProvider';
 import { Toaster } from 'sonner';
 import { ServiceWorkerUnregister } from '@/components/ServiceWorkerUnregister';
+import { GlobalErrorBoundary } from '@/components/ui/global-error-boundary';
 
 const nanum = localFont({
   src: [
@@ -50,21 +51,24 @@ export default function RootLayout({
     <html lang="ko" suppressHydrationWarning>
       <body className={`${nanum.variable} font-sans antialiased bg-background text-foreground tracking-tight`} suppressHydrationWarning>
         <ServiceWorkerUnregister />
-        <SessionProvider>
-          <DataProvider>
-            <SessionReset />
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="system"
-              enableSystem
-              themes={['light', 'dark', 'gray']}
-              disableTransitionOnChange
-            >
-              {children}
-              <Toaster position="top-center" richColors />
-            </ThemeProvider>
-          </DataProvider>
-        </SessionProvider>
+
+        <AuthProvider>
+          <GlobalErrorBoundary>
+            <DataProvider>
+              <SessionReset />
+              <ThemeProvider
+                attribute="class"
+                defaultTheme="system"
+                enableSystem
+                themes={['light', 'dark', 'gray']}
+                disableTransitionOnChange
+              >
+                {children}
+                <Toaster position="top-center" richColors />
+              </ThemeProvider>
+            </DataProvider>
+          </GlobalErrorBoundary>
+        </AuthProvider>
       </body>
     </html>
   );

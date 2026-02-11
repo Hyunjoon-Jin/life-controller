@@ -3,7 +3,7 @@
 import { useData } from "@/context/DataProvider";
 import { Cloud, CloudOff, RefreshCw, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/components/auth/SessionProvider";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
@@ -16,7 +16,7 @@ import {
 
 export function CloudSyncStatus() {
     const { isSyncing, forceSync } = useData();
-    const { data: session } = useSession();
+    const { user } = useAuth();
     const [status, setStatus] = useState<'idle' | 'syncing' | 'saved' | 'error'>('idle');
 
     useEffect(() => {
@@ -31,7 +31,7 @@ export function CloudSyncStatus() {
         }
     }, [isSyncing]);
 
-    if (!session?.user) return null;
+    if (!user) return null;
 
     const handleForceSync = async () => {
         toast.promise(forceSync(), {

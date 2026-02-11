@@ -90,20 +90,54 @@ export function HabitTracker() {
             ? (wasCompleted ? habit.completedDates : [...habit.completedDates, today])
             : habit.completedDates.filter(d => d !== today);
 
-        // Streak logic: 
-        // If it WAS completed and now is NOT -> decrease streak
-        // If it WAS NOT completed and now IS -> increase streak
-        // If it explicitly un-completes (reset), streak breaks? 
-        // Simple heuristic: Recalculate streak based on newCompletedDates is complex. 
-        // Let's stick to the previous simple logic:
-        // isCompletedNow && !wasCompleted -> streak + 1
-        // !isCompletedNow && wasCompleted -> streak - 1
 
-        let newStreak = habit.streak;
-        if (isCompletedNow && !wasCompleted) {
-            newStreak += 1;
-        } else if (!isCompletedNow && wasCompleted) {
-            newStreak = Math.max(0, habit.streak - 1);
+        // Calculate Streak Logic (Robust)
+        // 1. Sort dates descending
+        // 2. Iterate backwards from "Yesterday" (or Today if completed)
+        // 3. Count consecutive days
+
+        const sortedDates = [...newCompletedDates].sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
+
+        let calculatedStreak = 0;
+        let checkDate = new Date(); // Start checking from Today
+
+        // If today is NOT completed, we start checking from Yesterday to see if the streak is still alive
+        // But if today IS completed, we start from Today.
+        // Actually, let's normalize: verify if "checkDate" string exists in sortedDates.
+        // If not, subtract 1 day and check. Stop when break.
+
+        // However, standard streak:
+        // If I did it today, streak includes today.
+        // If I haven't done it today, streak includes up to yesterday.
+        // If I missed yesterday, streak is 0 (unless I do it today to restart it).
+
+        // Algorithm:
+        // 1. Check if Today is completed.
+        //    If YES: Streak = 1 + check yesterday...
+        //    If NO: Check yesterday. 
+        //       If Yesterday YES: Streak = 1 (yesterday) + check day before...
+        //       If Yesterday NO: Streak = 0.
+
+        const todayStr = format(new Date(), 'yyyy-MM-dd');
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yesterdayStr = format(yesterday, 'yyyy-MM-dd');
+
+        if (newCompletedDates.includes(todayStr)) {
+            calculatedStreak++;
+            checkDate = yesterday;
+        } else {
+            checkDate = yesterday;
+        }
+
+        while (true) {
+            const dateStr = format(checkDate, 'yyyy-MM-dd');
+            if (newCompletedDates.includes(dateStr)) {
+                calculatedStreak++;
+                checkDate.setDate(checkDate.getDate() - 1);
+            } else {
+                break;
+            }
         }
 
         updateHabit({
@@ -113,7 +147,7 @@ export function HabitTracker() {
                 [today]: newProgress
             },
             completedDates: newCompletedDates,
-            streak: newStreak
+            streak: calculatedStreak
         });
     };
 

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { signIn } from 'next-auth/react';
+import { createClient } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -24,6 +24,7 @@ import {
 
 export default function LoginPage() {
     const router = useRouter();
+    const supabase = createClient();
     const [isLoading, setIsLoading] = useState(false);
     const [formData, setFormData] = useState({
         email: '',
@@ -34,8 +35,8 @@ export default function LoginPage() {
     const [ipSecurity, setIpSecurity] = useState(true);
 
     // Recovery States
-    const [isFindIdOpen, setIsFindIdOpen] = useState(false);
     const [isFindPwOpen, setIsFindPwOpen] = useState(false);
+    const [isFindIdOpen, setIsFindIdOpen] = useState(false);
     const [recoveryEmail, setRecoveryEmail] = useState('');
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -43,13 +44,12 @@ export default function LoginPage() {
         setIsLoading(true);
 
         try {
-            const res = await signIn('credentials', {
+            const { data, error } = await supabase.auth.signInWithPassword({
                 email: formData.email,
                 password: formData.password,
-                redirect: false,
             });
 
-            if (res?.error) {
+            if (error) {
                 throw new Error('아이디 또는 비밀번호가 올바르지 않습니다.');
             }
 
@@ -67,6 +67,23 @@ export default function LoginPage() {
         setFormData(prev => ({ ...prev, [field]: '' }));
     };
 
+    const handleFindPw = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            const { error } = await supabase.auth.resetPasswordForEmail(recoveryEmail, {
+                redirectTo: `${window.location.origin}/login`,
+            });
+            if (error) throw error;
+            toast.success('비밀번호 재설정 링크를 보냈습니다.', {
+                description: `전송된 이메일: ${recoveryEmail}`
+            });
+        } catch (error: any) {
+            toast.error(error.message || '이메일 전송에 실패했습니다.');
+        }
+        setIsFindPwOpen(false);
+        setRecoveryEmail('');
+    };
+
     const handleFindId = (e: React.FormEvent) => {
         e.preventDefault();
         toast.info('등록된 이메일로 아이디가 전송되었습니다.', {
@@ -76,27 +93,17 @@ export default function LoginPage() {
         setRecoveryEmail('');
     };
 
-    const handleFindPw = (e: React.FormEvent) => {
-        e.preventDefault();
-        toast.success('비밀번호 재설정 링크를 보냈습니다.', {
-            description: `전송된 이메일: ${recoveryEmail}`
-        });
-        setIsFindPwOpen(false);
-        setRecoveryEmail('');
-    };
-
     return (
         <div className="flex min-h-screen items-center justify-center bg-[#f5f6f7] p-4 text-[#333]">
-            {/* Logo Area (Optional, skipping for now based on request focusing on form) */}
-
             <div className="w-full max-w-[460px]">
-                {/* Naver Style Container */}
                 <div className="bg-white border border-[#dadada] rounded-lg shadow-sm overflow-hidden p-6 pt-8">
                     <form onSubmit={handleSubmit} className="space-y-3">
                         <div className="border border-[#dadada] rounded-lg bg-white overflow-hidden focus-within:border-[#03c75a] focus-within:shadow-[0_0_0_1px_#03c75a] transition-all">
                             <div className="relative flex items-center border-b border-[#dadada]">
                                 <Input
                                     id="email"
+                                    name="email"
+                                    autoComplete="username"
                                     type="text"
                                     required
                                     placeholder="아이디 또는 이메일"
@@ -117,6 +124,8 @@ export default function LoginPage() {
                             <div className="relative flex items-center">
                                 <Input
                                     id="password"
+                                    name="password"
+                                    autoComplete="current-password"
                                     type={showPassword ? "text" : "password"}
                                     required
                                     placeholder="비밀번호"
@@ -205,6 +214,8 @@ export default function LoginPage() {
                                     <Label htmlFor="recovery-email">이메일</Label>
                                     <Input
                                         id="recovery-email"
+                                        name="recovery-email"
+                                        autoComplete="email"
                                         type="email"
                                         placeholder="name@example.com"
                                         value={recoveryEmail}
@@ -237,6 +248,8 @@ export default function LoginPage() {
                                     <Label htmlFor="find-id-email">이메일</Label>
                                     <Input
                                         id="find-id-email"
+                                        name="find-id-email"
+                                        autoComplete="email"
                                         type="email"
                                         placeholder="name@example.com"
                                         value={recoveryEmail}

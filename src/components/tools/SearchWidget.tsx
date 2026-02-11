@@ -53,6 +53,9 @@ export function SearchWidget() {
 
                     <Input
                         type="text"
+                        name="q"
+                        id="search-query"
+                        autoComplete="off"
                         placeholder={`${searchEngine === 'google' ? 'Google' : searchEngine === 'naver' ? '네이버' : 'YouTube'} 검색`}
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}

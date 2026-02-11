@@ -40,7 +40,7 @@ import { ko } from 'date-fns/locale';
 import { WeatherCard } from '@/components/widgets/WeatherCard';
 import { SearchWidget } from '@/components/tools/SearchWidget';
 import { cn } from '@/lib/utils';
-import { useSession } from 'next-auth/react';
+import { useAuth } from '@/components/auth/SessionProvider';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { AppIcon } from './AppIcon';
 import { useWeather } from '@/hooks/useWeather';
@@ -73,7 +73,7 @@ const ALL_SHORTCUTS = [
 
 export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
     const { events, tasks, userProfile, homeShortcuts, setHomeShortcuts, habits, goals } = useData();
-    const { data: session } = useSession();
+    const { user } = useAuth();
     const [currentTime, setCurrentTime] = useState<Date | null>(null);
     const { weather, loading: weatherLoading, getWeatherIcon, getWeatherLabel } = useWeather();
 
@@ -114,7 +114,7 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
             due.getFullYear() === today.getFullYear();
     });
 
-    const displayName = userProfile?.name || session?.user?.name || '사용자';
+    const displayName = userProfile?.name || user?.user_metadata?.name || '사용자';
 
     // Filter active shortcuts
     const activeShortcuts = ALL_SHORTCUTS.filter(s => homeShortcuts.includes(s.id));
