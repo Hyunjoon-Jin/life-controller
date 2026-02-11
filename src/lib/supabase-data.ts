@@ -270,6 +270,8 @@ export async function upsertSingleton<T>(table: string, data: Partial<T>): Promi
 
     let dbData = toSnakeCase(cleanForDB(data));
     dbData = applyFieldMappingToDB(table, dbData);
+    // Remove id if present (especially if empty string) to avoid UUID errors
+    delete dbData.id;
     dbData.user_id = user.id;
 
     const { data: result, error } = await supabase
