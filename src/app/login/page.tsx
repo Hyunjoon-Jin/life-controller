@@ -50,6 +50,7 @@ export default function LoginPage() {
             });
 
             if (error) {
+                console.error('[Login Error Detail]', error);
                 throw new Error('아이디 또는 비밀번호가 올바르지 않습니다.');
             }
 
