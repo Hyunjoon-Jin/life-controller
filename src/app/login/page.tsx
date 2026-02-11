@@ -40,14 +40,16 @@ export default function LoginPage() {
     const [recoveryEmail, setRecoveryEmail] = useState('');
 
     // Check for verification success
-    if (typeof window !== 'undefined') {
-        const searchParams = new URLSearchParams(window.location.search);
-        if (searchParams.get('verified') === 'true') {
-            // Remove the param to prevent toast on refresh
-            window.history.replaceState({}, '', '/login');
-            setTimeout(() => toast.success('이메일 인증이 완료되었습니다! 로그인해주세요.'), 500);
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const searchParams = new URLSearchParams(window.location.search);
+            if (searchParams.get('verified') === 'true') {
+                // Remove the param to prevent toast on refresh
+                window.history.replaceState({}, '', '/login');
+                setTimeout(() => toast.success('이메일 인증이 완료되었습니다! 로그인해주세요.'), 500);
+            }
         }
-    }
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
