@@ -8,12 +8,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import Link from 'next/link';
-import { X, Eye, EyeOff } from 'lucide-react';
+import { X, Eye, EyeOff, Mail } from 'lucide-react';
 
 export default function RegisterPage() {
     const router = useRouter();
     const supabase = createClient();
     const [isLoading, setIsLoading] = useState(false);
+    const [isSubmitted, setIsSubmitted] = useState(false);
     const [formData, setFormData] = useState({
         email: '',
         password: '',
@@ -35,6 +36,7 @@ export default function RegisterPage() {
                         name: formData.name,
                         phone: formData.phone,
                     },
+                    emailRedirectTo: `${window.location.origin}/auth/callback`,
                 },
             });
 
@@ -42,8 +44,17 @@ export default function RegisterPage() {
                 throw new Error(error.message);
             }
 
-            toast.success('회원가입 성공! 로그인해주세요.');
-            router.push('/login');
+            // Check if session exists (means email confirmation is disabled or auto-confirmed)
+            if (data.session) {
+                toast.success('회원가입이 완료되었습니다.');
+                router.push('/');
+                return;
+            }
+
+            // If no session, it means email confirmation is required
+            toast.success('인증 메일이 발송되었습니다.');
+            setIsSubmitted(true);
+
         } catch (error: any) {
             toast.error(error.message);
         } finally {
@@ -54,6 +65,37 @@ export default function RegisterPage() {
     const clearField = (field: keyof typeof formData) => {
         setFormData(prev => ({ ...prev, [field]: '' }));
     };
+
+    if (isSubmitted) {
+        return (
+            <div className="flex min-h-screen items-center justify-center bg-[#f5f6f7] p-4 text-[#333]">
+                <div className="w-full max-w-[460px] bg-white border border-[#dadada] rounded-lg shadow-sm p-8 text-center">
+                    <div className="flex justify-center mb-6">
+                        <div className="w-16 h-16 bg-[#03c75a]/10 rounded-full flex items-center justify-center">
+                            <Mail className="w-8 h-8 text-[#03c75a]" />
+                        </div>
+                    </div>
+                    <h2 className="text-2xl font-bold mb-4 text-slate-800">이메일을 확인해주세요!</h2>
+                    <p className="text-[#666] mb-8 leading-relaxed text-lg">
+                        <span className="font-bold text-[#333]">{formData.email}</span>으로<br />
+                        인증 메일을 발송했습니다.<br />
+                        메일 내 링크를 클릭하면 가입이 완료됩니다.
+                    </p>
+                    <div className="space-y-3">
+                        <Link href="/login" className="block w-full">
+                            <Button className="w-full h-[50px] bg-[#03c75a] hover:bg-[#02b351] text-white text-lg font-bold">
+                                로그인 하러 가기
+                            </Button>
+                        </Link>
+                        <p className="text-sm text-[#999] mt-6">
+                            메일이 오지 않았나요? 스팸함을 확인해보시거나,<br />
+                            잠시 후 다시 시도해주시기 바랍니다.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="flex min-h-screen items-center justify-center bg-[#f5f6f7] p-4 text-[#333]">
