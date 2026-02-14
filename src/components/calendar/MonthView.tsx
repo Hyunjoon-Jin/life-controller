@@ -182,51 +182,68 @@ export function MonthView({ currentDate, onDateClick, showProjectTasks }: { curr
                             </div>
 
                             <div className="space-y-1 w-full overflow-hidden">
-                                {daysEvents.map(event => (
-                                    <div
-                                        key={event.id}
-                                        className={cn(
-                                            "flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-md truncate font-medium border",
-                                            event.type === 'vacation' ? "bg-rose-100 text-rose-700 border-rose-200" :
-                                                event.isWorkLog ? "bg-slate-100 text-slate-700 border-slate-200" :
-                                                    event.type === 'work' ? "bg-blue-100 text-blue-700 border-blue-200" :
-                                                        event.type === 'personal' ? "bg-green-100 text-green-700 border-green-200" :
-                                                            "bg-gray-100 text-gray-700 border-gray-200"
-                                        )}
-                                    >
-                                        {event.isMeeting && <Users className="w-3 h-3 shrink-0" />}
-                                        {event.isAppointment && <Handshake className="w-3 h-3 shrink-0" />}
-                                        {event.type === 'vacation' && <Plane className="w-3 h-3 shrink-0" />}
-                                        {event.isWorkLog && <Briefcase className="w-3 h-3 shrink-0" />}
+                                {/* Mobile View: Dots */}
+                                <div className="flex md:hidden flex-wrap gap-0.5 content-start">
+                                    {daysEvents.map(event => (
+                                        <div key={event.id} className={cn("w-1.5 h-1.5 rounded-full", event.color?.split(' ')[1] || "bg-gray-400")} />
+                                    ))}
+                                    {daysGoals.map(goal => (
+                                        <div key={goal.id} className="w-1.5 h-1.5 rounded-full bg-red-400" />
+                                    ))}
+                                    {daysProjectTasks.map(task => {
+                                        const project = projects.find(p => p.id === task.projectId);
+                                        return <div key={task.id} className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: project?.color || '#3b82f6' }} />
+                                    })}
+                                </div>
 
-                                        <span className="truncate">
-                                            {event.isWorkLog && event.workDetails
-                                                ? `${event.workDetails.status} (${event.workDetails.hours})`
-                                                : event.title}
-                                        </span>
-                                    </div>
-                                ))}
-
-                                {daysGoals.map(goal => (
-                                    <div key={goal.id} className="flex items-center gap-1 text-[10px] bg-red-100 text-red-700 px-1.5 py-0.5 rounded-full truncate border border-red-200/50 opacity-80">
-                                        <Target className="w-3 h-3 shrink-0" />
-                                        <span className="truncate">{goal.title}</span>
-                                    </div>
-                                ))}
-
-                                {daysProjectTasks.map(task => {
-                                    const project = projects.find(p => p.id === task.projectId);
-                                    return (
+                                {/* Desktop View: Details */}
+                                <div className="hidden md:block space-y-1">
+                                    {daysEvents.map(event => (
                                         <div
-                                            key={task.id}
-                                            className="flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full truncate border border-transparent opacity-90 text-white shadow-sm"
-                                            style={{ backgroundColor: project?.color || '#3b82f6' }}
+                                            key={event.id}
+                                            className={cn(
+                                                "flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-md truncate font-medium border",
+                                                event.type === 'vacation' ? "bg-rose-100 text-rose-700 border-rose-200" :
+                                                    event.isWorkLog ? "bg-slate-100 text-slate-700 border-slate-200" :
+                                                        event.type === 'work' ? "bg-blue-100 text-blue-700 border-blue-200" :
+                                                            event.type === 'personal' ? "bg-green-100 text-green-700 border-green-200" :
+                                                                "bg-gray-100 text-gray-700 border-gray-200"
+                                            )}
                                         >
-                                            <Briefcase className="w-3 h-3 shrink-0 text-white/80" />
-                                            <span className="truncate">{task.title}</span>
+                                            {event.isMeeting && <Users className="w-3 h-3 shrink-0" />}
+                                            {event.isAppointment && <Handshake className="w-3 h-3 shrink-0" />}
+                                            {event.type === 'vacation' && <Plane className="w-3 h-3 shrink-0" />}
+                                            {event.isWorkLog && <Briefcase className="w-3 h-3 shrink-0" />}
+
+                                            <span className="truncate">
+                                                {event.isWorkLog && event.workDetails
+                                                    ? `${event.workDetails.status} (${event.workDetails.hours})`
+                                                    : event.title}
+                                            </span>
                                         </div>
-                                    );
-                                })}
+                                    ))}
+
+                                    {daysGoals.map(goal => (
+                                        <div key={goal.id} className="flex items-center gap-1 text-[10px] bg-red-100 text-red-700 px-1.5 py-0.5 rounded-full truncate border border-red-200/50 opacity-80">
+                                            <Target className="w-3 h-3 shrink-0" />
+                                            <span className="truncate">{goal.title}</span>
+                                        </div>
+                                    ))}
+
+                                    {daysProjectTasks.map(task => {
+                                        const project = projects.find(p => p.id === task.projectId);
+                                        return (
+                                            <div
+                                                key={task.id}
+                                                className="flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full truncate border border-transparent opacity-90 text-white shadow-sm"
+                                                style={{ backgroundColor: project?.color || '#3b82f6' }}
+                                            >
+                                                <Briefcase className="w-3 h-3 shrink-0 text-white/80" />
+                                                <span className="truncate">{task.title}</span>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
 
                             </div>
                         </div>
@@ -261,7 +278,7 @@ export function MonthView({ currentDate, onDateClick, showProjectTasks }: { curr
 
             {/* Work Log Dialog */}
             <Dialog open={workDialogOpen} onOpenChange={setWorkDialogOpen}>
-                <DialogContent className="sm:max-w-[425px]">
+                <DialogContent className="sm:max-w-[425px] max-h-[85vh] overflow-y-auto">
                     <DialogHeader>
                         <DialogTitle>근무 기록 입력</DialogTitle>
                     </DialogHeader>
@@ -309,7 +326,7 @@ export function MonthView({ currentDate, onDateClick, showProjectTasks }: { curr
 
             {/* Vacation Dialog */}
             <Dialog open={vacationDialogOpen} onOpenChange={setVacationDialogOpen}>
-                <DialogContent className="sm:max-w-[425px]">
+                <DialogContent className="sm:max-w-[425px] max-h-[85vh] overflow-y-auto">
                     <DialogHeader>
                         <DialogTitle>휴가 등록</DialogTitle>
                     </DialogHeader>

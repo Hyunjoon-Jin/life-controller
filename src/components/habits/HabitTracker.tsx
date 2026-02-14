@@ -383,7 +383,7 @@ export function HabitTracker() {
                                                     }
                                                 }}
                                                 className={cn(
-                                                    "w-7 h-7 rounded-full text-[10px] font-bold transition-all border cursor-pointer select-none flex items-center justify-center",
+                                                    "w-9 h-9 rounded-full text-xs font-bold transition-all border cursor-pointer select-none flex items-center justify-center",
                                                     isSelected
                                                         ? "bg-gradient-to-br from-blue-500 to-blue-600 text-white border-blue-600 shadow-sm scale-105"
                                                         : "bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-blue-950 hover:border-blue-300 hover:text-blue-600"
@@ -487,7 +487,7 @@ export function HabitTracker() {
                                     </Label>
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
-                                            <Button variant="outline" className="w-full justify-between font-medium border-muted/40 bg-muted/20 hover:bg-muted/40 text-[10px] h-7 px-2">
+                                            <Button variant="outline" className="w-full justify-between font-medium border-muted/40 bg-muted/20 hover:bg-muted/40 text-xs h-7 px-2">
                                                 <span className="truncate max-w-[100px] text-left">
                                                     {projects.find(p => p.id === connectedProjectId)?.title || '선택 안 함'}
                                                 </span>
@@ -513,7 +513,7 @@ export function HabitTracker() {
                                     </Label>
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
-                                            <Button variant="outline" className="w-full justify-between font-medium border-muted/40 bg-muted/20 hover:bg-muted/40 text-[10px] h-7 px-2">
+                                            <Button variant="outline" className="w-full justify-between font-medium border-muted/40 bg-muted/20 hover:bg-muted/40 text-xs h-7 px-2">
                                                 <span className="truncate max-w-[100px] text-left">
                                                     {goals.find(g => g.id === connectedGoalId)?.title || '선택 안 함'}
                                                 </span>
@@ -643,14 +643,24 @@ export function HabitTracker() {
                                 </div>
                             </div>
 
-                            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity ml-2">
-                                <button onClick={() => handleOpenEdit(habit)} className="text-muted-foreground hover:text-foreground">
-                                    <Pencil className="w-3 h-3" />
-                                </button>
-                                <button onClick={() => deleteHabit(habit.id)} className="text-muted-foreground hover:text-destructive">
-                                    <Trash2 className="w-3 h-3" />
-                                </button>
-                            </div>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                        <ChevronDown className="h-4 w-4" />
+                                        <span className="sr-only">Open menu</span>
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                    <DropdownMenuItem onClick={() => handleOpenEdit(habit)}>
+                                        <Pencil className="mr-2 h-4 w-4" />
+                                        <span>수정</span>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => deleteHabit(habit.id)} className="text-destructive">
+                                        <Trash2 className="mr-2 h-4 w-4" />
+                                        <span>삭제</span>
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
                         </div>
                     );
                 })}

@@ -92,7 +92,23 @@ export function WorkLayout({ viewMode: propViewMode }: { viewMode?: ViewMode }) 
                         {/* Project Content */}
                         <div className="flex-1 overflow-y-auto custom-scrollbar p-6">
                             {activeViewMode === 'project' && <ProjectDashboard project={selectedProject} />}
-                            {activeViewMode === 'schedule' && <GanttChart project={selectedProject} />}
+                            {activeViewMode === 'schedule' && (
+                                <>
+                                    <div className="hidden md:block h-full">
+                                        <GanttChart project={selectedProject} />
+                                    </div>
+                                    <div className="md:hidden flex flex-col items-center justify-center h-[50vh] text-center p-6 space-y-4 text-muted-foreground">
+                                        <LayoutDashboard className="w-12 h-12 opacity-20" />
+                                        <div>
+                                            <p className="font-semibold">모바일에서는 간트 차트를 지원하지 않습니다.</p>
+                                            <p className="text-xs mt-1">PC 환경에서 접속하거나 프로젝트 대시보드를 이용해 주세요.</p>
+                                        </div>
+                                        <Button variant="outline" size="sm" onClick={() => setLocalViewMode('project')}>
+                                            프로젝트 대시보드로 이동
+                                        </Button>
+                                    </div>
+                                </>
+                            )}
                             {activeViewMode === 'personnel' && <WorkPeopleSection project={selectedProject} />}
                             {activeViewMode === 'workhours' && <TimeAnalytics project={selectedProject} />}
                             {activeViewMode === 'templates' && <WorkTemplateSection />}

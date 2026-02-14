@@ -24,7 +24,7 @@ export function MobileBottomNav({
     if (appMode === 'work') {
         // Simple Work Mode Bottom Nav
         return (
-            <div className="md:hidden fixed bottom-0 left-0 right-0 bg-background border-t border-border z-50 h-16 px-4 flex items-center justify-around pb-safe">
+            <div className="md:hidden fixed bottom-0 left-0 right-0 bg-background border-t border-border z-50 h-auto min-h-[64px] px-4 flex items-center justify-around pb-safe pt-1">
                 <Button variant="ghost" className="flex flex-col gap-1 h-auto" onClick={() => setMainMode('home')}>
                     <Home className={cn("w-6 h-6", mainMode === 'home' ? "text-purple-600" : "text-muted-foreground")} />
                     <span className="text-[10px] font-medium">홈</span>
@@ -49,7 +49,7 @@ export function MobileBottomNav({
     ];
 
     return (
-        <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-[#1a1b1e] border-t border-gray-100 dark:border-gray-800 z-50 h-[70px] px-2 flex items-center justify-around pb-2 shadow-[0_-5px_20px_rgba(0,0,0,0.03)]">
+        <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-[#1a1b1e] border-t border-gray-100 dark:border-gray-800 z-50 h-auto min-h-[70px] px-2 flex items-center justify-around pb-safe pt-2 shadow-[0_-5px_20px_rgba(0,0,0,0.03)]">
             {navItems.map(item => (
                 <button
                     key={item.id}

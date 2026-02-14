@@ -83,10 +83,10 @@ function GoalItem({ goal, level = 0, onAddSubGoal, onEdit, onDetail, forceExpand
     };
 
     return (
-        <div className={cn("space-y-2", level > 0 && "ml-6 pl-4 border-l-2 border-border/40 relative")}>
+        <div className={cn("space-y-2", level > 0 && "ml-3 pl-2 md:ml-6 md:pl-4 border-l-2 border-border/40 relative")}>
             {/* Connection Dot for nested items */}
             {level > 0 && (
-                <div className="absolute -left-[21px] top-6 w-3 h-3 rounded-full border-2 border-background bg-border/40" />
+                <div className="absolute -left-[13px] md:-left-[21px] top-6 w-3 h-3 rounded-full border-2 border-background bg-border/40" />
             )}
 
             <div
@@ -102,11 +102,11 @@ function GoalItem({ goal, level = 0, onAddSubGoal, onEdit, onDetail, forceExpand
                     <button
                         onClick={() => setExpanded(!expanded)}
                         className={cn(
-                            "mt-0.5 p-0.5 rounded-sm hover:bg-muted text-muted-foreground transition-colors shrink-0",
+                            "mt-0.5 p-0.5 rounded-sm hover:bg-muted text-muted-foreground transition-colors shrink-0 h-8 w-8 flex items-center justify-center", // Larger target
                             !hasSubGoals && "invisible pointer-events-none"
                         )}
                     >
-                        {isExpanded ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
+                        {isExpanded ? <ChevronDown className="w-4 h-4 ml-0.5" /> : <ChevronRight className="w-4 h-4 ml-0.5" />}
                     </button>
 
                     <div className="flex-1 min-w-0 space-y-1.5">
@@ -118,12 +118,12 @@ function GoalItem({ goal, level = 0, onAddSubGoal, onEdit, onDetail, forceExpand
                                         {goal.title}
                                     </h4>
                                     {goal.category && (
-                                        <span className={cn("text-[10px] px-1.5 py-0 rounded border font-bold uppercase tracking-wider shrink-0", getCategoryColor(goal.category))}>
+                                        <span className={cn("text-[11px] px-1.5 py-0 rounded border font-bold uppercase tracking-wider shrink-0", getCategoryColor(goal.category))}>
                                             {getCategoryLabel(goal.category)}
                                         </span>
                                     )}
                                     {goal.planType && (
-                                        <span className="text-[10px] px-1.5 py-0 rounded bg-secondary text-secondary-foreground border border-secondary-foreground/10 font-medium shrink-0">
+                                        <span className="text-[11px] px-1.5 py-0 rounded bg-secondary text-secondary-foreground border border-secondary-foreground/10 font-medium shrink-0">
                                             {getPlanTypeLabel(goal.planType)}
                                         </span>
                                     )}
@@ -134,15 +134,15 @@ function GoalItem({ goal, level = 0, onAddSubGoal, onEdit, onDetail, forceExpand
                             </div>
 
                             {/* Floating Actions */}
-                            <div className="flex items-center gap-0.5 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity bg-background/80 backdrop-blur-sm p-0.5 rounded shadow-sm border border-border/50 absolute right-2 top-2 sm:static sm:bg-transparent sm:shadow-none sm:border-none">
-                                <Button variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground hover:text-primary" onClick={() => onAddSubGoal(goal.id)} title="하위 목표 추가">
-                                    <Plus className="w-3 h-3" />
+                            <div className="flex items-center gap-0.5 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity bg-background/95 backdrop-blur-sm p-1 rounded shadow-sm border border-border/50 absolute right-1 top-1 sm:static sm:bg-transparent sm:shadow-none sm:border-none z-10">
+                                <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary" onClick={() => onAddSubGoal(goal.id)} title="하위 목표 추가">
+                                    <Plus className="w-4 h-4" />
                                 </Button>
-                                <Button variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground hover:text-foreground" onClick={() => onEdit(goal)} title="수정">
-                                    <Pencil className="w-3 h-3" />
+                                <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground" onClick={() => onEdit(goal)} title="수정">
+                                    <Pencil className="w-4 h-4" />
                                 </Button>
-                                <Button variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground hover:text-destructive" onClick={handleDelete} title="삭제">
-                                    <Trash2 className="w-3 h-3" />
+                                <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive" onClick={handleDelete} title="삭제">
+                                    <Trash2 className="w-4 h-4" />
                                 </Button>
                             </div>
                         </div>
@@ -165,7 +165,7 @@ function GoalItem({ goal, level = 0, onAddSubGoal, onEdit, onDetail, forceExpand
                             </div>
 
                             {goal.deadline && (
-                                <span className={cn("flex items-center gap-1 px-1 py-0.5 rounded text-[10px]", new Date(goal.deadline) < new Date() ? "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400" : "bg-muted text-muted-foreground")}>
+                                <span className={cn("flex items-center gap-1 px-1 py-0.5 rounded text-[11px]", new Date(goal.deadline) < new Date() ? "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400" : "bg-muted text-muted-foreground")}>
                                     <Calendar className="w-3 h-3" />
                                     {new Date(goal.deadline).toLocaleDateString()}
                                 </span>
@@ -449,7 +449,7 @@ export default function GoalTree() {
             </div>
 
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogContent className="sm:max-w-[450px]">
+                <DialogContent className="sm:max-w-[450px] max-h-[85vh] overflow-y-auto">
                     <DialogHeader>
                         <DialogTitle className="flex items-center gap-2">
                             {editingGoalId ? <Pencil className="w-5 h-5" /> : (parentId ? <Plus className="w-5 h-5" /> : <Trophy className="w-5 h-5" />)}

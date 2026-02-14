@@ -39,9 +39,29 @@ export interface ButtonProps
     asChild?: boolean
 }
 
+import { MovingBorderButton } from "./moving-border"
+
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     ({ className, variant, size, asChild = false, ...props }, ref) => {
         const Comp = asChild ? Slot : "button"
+
+        // Apply Moving Border ONLY for 'default' variant (Primary)
+        // and when NOT being used as a Slot (asChild) since MovingBorderButton is a complex wrapper
+        if (variant === "default" && !asChild) {
+            return (
+                <MovingBorderButton
+                    // MovingBorderButton expects containerClassName for wrapper, className for inner content
+                    containerClassName={cn("p-[1px]", className)} // external Margin/Positioning might go here, but usually buttonVariants handles it?
+                    // actually standard button usage puts margin/display on the button itself.
+                    // MovingBorderButton wrapper needs to act like the button.
+                    className={cn(buttonVariants({ variant, size, className }), "bg-primary text-primary-foreground border-0")} // Inner content styling
+                    borderRadius="0.75rem" // Match rounded-xl/2x typically. defaults to 1.75rem. let's use 0.75rem (12px) or 1rem.
+                    duration={3000}
+                    {...props}
+                />
+            )
+        }
+
         return (
             <Comp
                 className={cn(buttonVariants({ variant, size, className }))}

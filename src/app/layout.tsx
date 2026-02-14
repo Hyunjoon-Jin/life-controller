@@ -49,6 +49,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko" suppressHydrationWarning>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Chiron+Geon+GoRound+TC:wght@400;500;600;700&family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&display=swap" rel="stylesheet" />
+      </head>
       <body className={`${nanum.variable} font-sans antialiased bg-background text-foreground tracking-tight`} suppressHydrationWarning>
         <ServiceWorkerUnregister />
 
@@ -70,7 +75,7 @@ export default function RootLayout({
           </GlobalErrorBoundary>
         </AuthProvider>
       </body>
-    </html>
+    </html >
   );
 }
 
