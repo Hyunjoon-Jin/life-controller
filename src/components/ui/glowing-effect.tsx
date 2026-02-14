@@ -56,7 +56,7 @@ export const GlowingEffectItem = ({
                 } as React.CSSProperties
             }
         >
-            <div className="rounded-3xl h-full w-full overflow-hidden bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 relative z-20 transition duration-500 group-hover:border-slate-500/50">
+            <div className="rounded-3xl h-full w-full overflow-hidden bg-white border border-gray-200 relative z-20 transition duration-500 group-hover:border-blue-300 shadow-sm">
                 <div className="relative z-50">
                     <div className="p-4 h-full">{children}</div>
                 </div>
@@ -74,7 +74,7 @@ const GlowingPattern = () => {
                 background: `
                     radial-gradient(
                         600px circle at var(--mouse-x) var(--mouse-y),
-                        rgba(255,255,255,0.1),
+                        rgba(59, 130, 246, 0.1),
                         transparent 40%
                     )
                 `

@@ -95,7 +95,7 @@ export default function Home() {
   return (
     <main className={cn(
       "min-h-screen p-3 sm:p-4 md:p-6 lg:p-8 flex flex-col transition-all duration-500 pb-24 md:pb-6", // Added pb-24 for mobile nav
-      "bg-zinc-950 text-white"
+      "bg-gray-50 text-slate-900"
     )}>
       {/* Mobile Bottom Navigation */}
       <MobileBottomNav

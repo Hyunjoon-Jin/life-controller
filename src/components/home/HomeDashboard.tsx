@@ -149,7 +149,7 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
                             onClick={() => onNavigate('home')}
                             className="flex items-center gap-3 group text-left transition-opacity hover:opacity-80 cursor-pointer"
                         >
-                            <div className="w-10 h-10 bg-white text-black rounded-2xl flex items-center justify-center shadow-lg transform rotate-[-5deg] group-hover:rotate-0 transition-transform duration-300">
+                            <div className="w-10 h-10 bg-black text-white rounded-2xl flex items-center justify-center shadow-lg transform rotate-[-5deg] group-hover:rotate-0 transition-transform duration-300">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="translate-y-[1px]">
                                     <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
                                     <path d="M2 17L12 22L22 17" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -157,18 +157,18 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
                                 </svg>
                             </div>
                             <div>
-                                <h1 className="text-2xl font-extrabold tracking-tight text-white leading-none">
-                                    LIFE <span className="text-blue-500">Controller</span>
+                                <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 leading-none">
+                                    LIFE <span className="text-blue-600">Controller</span>
                                 </h1>
-                                <p className="text-xs text-gray-400 font-medium mt-0.5 ml-0.5">Daily Productivity OS</p>
+                                <p className="text-xs text-slate-500 font-medium mt-0.5 ml-0.5">Daily Productivity OS</p>
                             </div>
                         </button>
 
                         <div className="space-y-1">
-                            <h2 className="text-lg font-bold text-gray-200">
+                            <h2 className="text-lg font-bold text-slate-800">
                                 반가워요, {displayName}님!
                             </h2>
-                            <p className="text-sm text-gray-400 font-medium">
+                            <p className="text-sm text-slate-500 font-medium">
                                 "작은 습관이 모여 위대한 변화를 만듭니다."
                             </p>
                         </div>
@@ -177,9 +177,9 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
                     {/* Right: Quick Stats (Chips) */}
                     <div className="flex flex-wrap gap-2">
                         {/* Date Chip */}
-                        <div className="bg-white/5 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-white/10 flex items-center gap-2">
-                            <CalendarIcon className="w-4 h-4 text-gray-400" />
-                            <span className="text-sm font-bold text-gray-200">
+                        <div className="bg-white px-4 py-2.5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-2">
+                            <CalendarIcon className="w-4 h-4 text-slate-400" />
+                            <span className="text-sm font-bold text-slate-700">
                                 {currentTime ? format(currentTime, 'M월 d일 EEEE', { locale: ko }) : '...'}
                             </span>
                         </div>
@@ -187,22 +187,22 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
                         {/* Task Chip */}
                         <button
                             onClick={() => onQuickLink('schedule', 'basic', 'tasks')}
-                            className="bg-white/5 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-white/10 flex items-center gap-2 hover:bg-white/10 transition-colors group cursor-pointer"
+                            className="bg-white px-4 py-2.5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-2 hover:bg-gray-50 transition-colors group cursor-pointer"
                         >
                             <div className="w-2 h-2 rounded-full bg-red-500 group-hover:animate-pulse" />
-                            <span className="text-sm font-bold text-gray-200">
-                                할일 <span className="text-blue-400">{todaysTasks.length}</span>개
+                            <span className="text-sm font-bold text-slate-700">
+                                할일 <span className="text-blue-600">{todaysTasks.length}</span>개
                             </span>
                         </button>
 
                         {/* Weather Chip (Real Data) */}
-                        <div className="bg-white/5 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-white/10 flex items-center gap-2">
+                        <div className="bg-white px-4 py-2.5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-2">
                             {weatherLoading || !weather ? (
-                                <Sun className="w-4 h-4 text-gray-400 animate-pulse" />
+                                <Sun className="w-4 h-4 text-slate-400 animate-pulse" />
                             ) : (
                                 getWeatherIcon(weather.current_weather.weathercode, "w-4 h-4")
                             )}
-                            <span className="text-sm font-bold text-gray-200">
+                            <span className="text-sm font-bold text-slate-700">
                                 {weatherLoading || !weather ? '로딩중...' : `${getWeatherLabel(weather.current_weather.weathercode)} ${Math.round(weather.current_weather.temperature)}°`}
                             </span>
                         </div>
@@ -222,8 +222,8 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
             {/* 3. Icons (Customizable) */}
             <GlowingEffectItem>
                 <div className="flex items-center justify-between mb-5">
-                    <h3 className="text-lg font-bold text-gray-200">내 서비스</h3>
-                    <Button variant="ghost" size="sm" onClick={handleOpenManage} className="h-8 text-xs text-gray-400 hover:text-white hover:bg-white/5 gap-1">
+                    <h3 className="text-lg font-bold text-slate-800">내 서비스</h3>
+                    <Button variant="ghost" size="sm" onClick={handleOpenManage} className="h-8 text-xs text-slate-500 hover:text-slate-900 hover:bg-gray-100 gap-1">
                         <Settings2 className="w-3.5 h-3.5" /> 편집
                     </Button>
                 </div>
@@ -235,7 +235,7 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
                             icon={item.icon}
                             label={item.label}
                             colorClass={item.color}
-                            labelClassName="text-gray-400 group-hover:text-white"
+                            labelClassName="text-slate-600 group-hover:text-slate-900"
                             onClick={() => {
                                 if (item.mode === 'work') {
                                     onNavigate('work');
@@ -249,10 +249,10 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
                         onClick={handleOpenManage}
                         className="flex flex-col items-center justify-center gap-3 group"
                     >
-                        <div className="w-[52px] h-[52px] rounded-2xl bg-white/5 text-gray-500 flex items-center justify-center text-xl shadow-sm group-hover:scale-105 transition-transform duration-300 border border-white/10 border-dashed group-hover:border-white/20 group-hover:bg-white/10">
+                        <div className="w-[52px] h-[52px] rounded-2xl bg-gray-50 text-slate-400 flex items-center justify-center text-xl shadow-sm group-hover:scale-105 transition-transform duration-300 border border-gray-200 border-dashed group-hover:border-gray-300 group-hover:bg-gray-100">
                             <Plus className="w-6 h-6" />
                         </div>
-                        <span className="text-xs font-medium text-gray-500 group-hover:text-gray-300 transition-colors">
+                        <span className="text-xs font-medium text-slate-400 group-hover:text-slate-600 transition-colors">
                             추가
                         </span>
                     </button>
@@ -266,8 +266,8 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
                     <div className="flex flex-col justify-between min-h-[180px] h-full">
                         <div className="flex justify-between items-start">
                             <div>
-                                <h3 className="font-bold text-lg text-gray-100">오늘의 날씨</h3>
-                                <p className="text-gray-400 text-sm">준비는 하셨나요?</p>
+                                <h3 className="font-bold text-lg text-slate-800">오늘의 날씨</h3>
+                                <p className="text-slate-500 text-sm">준비는 하셨나요?</p>
                             </div>
                             <Sun className="w-8 h-8 text-orange-400" />
                         </div>
@@ -282,8 +282,8 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
                     <div className="flex flex-col min-h-[180px] h-full">
                         <div className="flex justify-between items-start mb-4">
                             <div>
-                                <h3 className="font-bold text-lg text-gray-100">다음 일정</h3>
-                                <p className="text-gray-400 text-sm mt-1">오늘 남은 일정을 확인하세요</p>
+                                <h3 className="font-bold text-lg text-slate-800">다음 일정</h3>
+                                <p className="text-slate-500 text-sm mt-1">오늘 남은 일정을 확인하세요</p>
                             </div>
                             <Clock className="w-8 h-8 text-blue-400" />
                         </div>
@@ -291,18 +291,18 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
                         <div className="flex-1 overflow-y-auto custom-scrollbar max-h-[160px] pr-2 -mr-2 space-y-2">
                             {todaysEvents.length > 0 ? (
                                 todaysEvents.map((event, idx) => (
-                                    <div key={event.id} className="flex items-center gap-3 p-2 rounded-xl bg-black/20 text-sm border border-white/5">
-                                        <div className="flex flex-col items-center min-w-[50px] text-xs font-medium text-gray-400 border-r border-white/10 pr-3">
+                                    <div key={event.id} className="flex items-center gap-3 p-2 rounded-xl bg-gray-50 text-sm border border-gray-100">
+                                        <div className="flex flex-col items-center min-w-[50px] text-xs font-medium text-slate-500 border-r border-gray-200 pr-3">
                                             <span>{format(new Date(event.start), 'HH:mm')}</span>
                                         </div>
                                         <div className="flex-1 truncate">
-                                            <p className="font-semibold text-gray-200 truncate">{event.title}</p>
+                                            <p className="font-semibold text-slate-700 truncate">{event.title}</p>
                                         </div>
                                         <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: (event as any).isHabit ? '#fb923c' : '#3b82f6' }} />
                                     </div>
                                 ))
                             ) : (
-                                <div className="h-full flex flex-col items-center justify-center text-gray-500 text-sm opacity-60">
+                                <div className="h-full flex flex-col items-center justify-center text-slate-400 text-sm opacity-60">
                                     <p>예정된 일정이 없습니다.</p>
                                 </div>
                             )}
@@ -311,7 +311,7 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
                         {todaysEvents.length > 3 && (
                             <Button
                                 variant="ghost"
-                                className="w-full mt-2 h-8 text-xs text-gray-400 hover:bg-white/5 hover:text-white"
+                                className="w-full mt-2 h-8 text-xs text-slate-500 hover:bg-gray-100 hover:text-slate-900"
                                 onClick={() => onQuickLink('schedule', 'basic', 'calendar')}
                             >
                                 전체 일정 보기 <ArrowRight className="w-3 h-3 ml-1" />
@@ -325,8 +325,8 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
                     <div className="flex flex-col min-h-[180px] h-full">
                         <div className="flex justify-between items-start mb-4">
                             <div>
-                                <h3 className="font-bold text-lg text-gray-100">오늘의 습관</h3>
-                                <p className="text-gray-400 text-sm mt-1">습관을 지키고 성장하세요</p>
+                                <h3 className="font-bold text-lg text-slate-800">오늘의 습관</h3>
+                                <p className="text-slate-500 text-sm mt-1">습관을 지키고 성장하세요</p>
                             </div>
                             <Flame className="w-8 h-8 text-orange-500" />
                         </div>
@@ -345,21 +345,21 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
                             return (
                                 <div className="flex-1 flex flex-col justify-center">
                                     <div className="flex items-center justify-between mb-3">
-                                        <span className="text-sm font-medium text-gray-400">완료율</span>
+                                        <span className="text-sm font-medium text-slate-500">완료율</span>
                                         <span className="text-2xl font-bold text-primary">{percentage}%</span>
                                     </div>
-                                    <div className="w-full bg-black/30 rounded-full h-3 overflow-hidden">
+                                    <div className="w-full bg-gray-100 rounded-full h-3 overflow-hidden">
                                         <div
                                             className="h-full bg-gradient-to-r from-orange-400 to-orange-600 transition-all duration-500 rounded-full"
                                             style={{ width: `${percentage}%` }}
                                         />
                                     </div>
-                                    <div className="mt-3 flex items-center justify-between text-xs text-gray-500">
+                                    <div className="mt-3 flex items-center justify-between text-xs text-slate-500">
                                         <span>{completedCount}/{totalCount} 습관 완료</span>
                                         <Button
                                             variant="ghost"
                                             size="sm"
-                                            className="h-6 text-xs text-gray-400 hover:text-white hover:bg-white/5"
+                                            className="h-6 text-xs text-slate-500 hover:text-slate-900 hover:bg-gray-100"
                                             onClick={() => onQuickLink('schedule', 'basic', 'calendar')}
                                         >
                                             보기 <ArrowRight className="w-3 h-3 ml-1" />
@@ -376,8 +376,8 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
                     <div className="flex flex-col min-h-[180px] h-full">
                         <div className="flex justify-between items-start mb-4">
                             <div>
-                                <h3 className="font-bold text-lg text-gray-100">활동 중인 목표</h3>
-                                <p className="text-gray-400 text-sm mt-1">목표를 향해 나아가세요</p>
+                                <h3 className="font-bold text-lg text-slate-800">활동 중인 목표</h3>
+                                <p className="text-slate-500 text-sm mt-1">목표를 향해 나아가세요</p>
                             </div>
                             <Trophy className="w-8 h-8 text-yellow-500" />
                         </div>
@@ -388,10 +388,10 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
                                 return (
                                     <div key={goal.id} className="space-y-1">
                                         <div className="flex items-center justify-between">
-                                            <span className="text-sm font-medium text-gray-300 truncate flex-1">{goal.title}</span>
+                                            <span className="text-sm font-medium text-slate-700 truncate flex-1">{goal.title}</span>
                                             <span className="text-xs font-bold text-primary ml-2">{progress}%</span>
                                         </div>
-                                        <div className="w-full bg-black/30 rounded-full h-1.5 overflow-hidden">
+                                        <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
                                             <div
                                                 className="h-full bg-gradient-to-r from-blue-400 to-blue-600 transition-all duration-500"
                                                 style={{ width: `${progress}%` }}
@@ -401,7 +401,7 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
                                 );
                             })}
                             {goals.length === 0 && (
-                                <div className="h-full flex flex-col items-center justify-center text-gray-500 text-sm opacity-60">
+                                <div className="h-full flex flex-col items-center justify-center text-slate-400 text-sm opacity-60">
                                     <p>목표를 설정해보세요</p>
                                 </div>
                             )}
@@ -410,7 +410,7 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
                         {goals.length > 3 && (
                             <Button
                                 variant="ghost"
-                                className="w-full mt-2 h-6 text-xs text-gray-400 hover:bg-white/5 hover:text-white"
+                                className="w-full mt-2 h-6 text-xs text-slate-500 hover:bg-gray-100 hover:text-slate-900"
                                 onClick={() => onQuickLink('schedule', 'growth', 'goals')}
                             >
                                 전체 보기 <ArrowRight className="w-3 h-3 ml-1" />
