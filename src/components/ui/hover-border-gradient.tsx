@@ -44,7 +44,7 @@ export function HoverBorderGradient({
     };
 
     const highlight =
-        "radial-gradient(75% 181.15942028985506% at 50% 50%, #3275F8 0%, rgba(255, 255, 255, 0) 100%)";
+        "radial-gradient(75% 181.15942028985506% at 50% 50%, #FFFFFF 0%, rgba(255, 255, 255, 0) 100%)";
 
     useEffect(() => {
         if (!hovered) {
@@ -62,7 +62,7 @@ export function HoverBorderGradient({
             }}
             onMouseLeave={() => setHovered(false)}
             className={cn(
-                "relative flex rounded-full border border-black/10 content-center bg-transparent transition-all duration-500 items-center flex-col flex-nowrap gap-10 h-min justify-center overflow-visible p-px decoration-clone w-fit bg-slate-950 dark:bg-black/20 text-white", // Default text white for contrast with potential dark bg
+                "relative flex rounded-full border border-black/10 content-center bg-transparent transition-all duration-500 items-center flex-col flex-nowrap gap-10 h-min justify-center overflow-visible p-px decoration-clone w-fit text-white",
                 containerClassName
             )}
             {...props}
