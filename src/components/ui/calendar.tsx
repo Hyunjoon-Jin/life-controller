@@ -42,6 +42,9 @@ function Calendar({
         outside: "text-muted-foreground data-selected:bg-accent/50 data-selected:text-muted-foreground",
         hidden: "invisible",
         week_number: "size-9 p-0 text-xs font-medium text-muted-foreground/80",
+        caption_dropdowns: "flex justify-center gap-1",
+        dropdown: "p-1 bg-transparent rounded-md text-sm hover:bg-muted cursor-pointer font-medium",
+        dropdown_icon: "hidden",
     };
 
     const mergedClassNames: typeof defaultClassNames = Object.keys(defaultClassNames).reduce(
@@ -77,6 +80,9 @@ function Calendar({
             className={cn("w-fit", className)}
             classNames={mergedClassNames}
             components={mergedComponents}
+            captionLayout="dropdown"
+            fromYear={1900}
+            toYear={2100}
             {...props}
         />
     );

@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { BentoGrid } from '@/components/ui/bento-grid'; // Added
 import { useData } from '@/context/DataProvider';
 import {
     Calendar as CalendarIcon,
@@ -257,10 +256,10 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
                 </div>
             </div>
 
-            {/* 4. Feeds (Cards) - Unified 2x2 Grid using BentoGrid */}
-            <BentoGrid className="grid-cols-1 md:grid-cols-2 lg:grid-cols-2 auto-rows-auto gap-4">
+            {/* 4. Feeds (Cards) - Unified 2x2 Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 animate-in fade-in slide-in-from-bottom-5 duration-700 delay-200">
                 {/* Weather */}
-                <Card className="rounded-[24px] p-5 shadow-sm flex flex-col justify-between min-h-[180px] border-none">
+                <div className="bg-white dark:bg-[#202022] rounded-[24px] p-5 shadow-sm flex flex-col justify-between min-h-[180px]">
                     <div className="flex justify-between items-start">
                         <div>
                             <h3 className="font-bold text-lg text-[#333D4B] dark:text-gray-200">오늘의 날씨</h3>
@@ -271,10 +270,10 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
                     <div className="mt-2">
                         <WeatherCard />
                     </div>
-                </Card>
+                </div>
 
                 {/* Schedule */}
-                <Card className="rounded-[24px] p-5 shadow-sm flex flex-col min-h-[180px] border-none">
+                <div className="bg-white dark:bg-[#202022] rounded-[24px] p-5 shadow-sm flex flex-col min-h-[180px]">
                     <div className="flex justify-between items-start mb-4">
                         <div>
                             <h3 className="font-bold text-lg text-[#333D4B] dark:text-gray-200">다음 일정</h3>
@@ -305,17 +304,17 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
 
                     {todaysEvents.length > 3 && (
                         <Button
-                            variant="default" // Changed to default to show Moving Border
-                            className="w-full mt-2 h-8 text-xs hover:opacity-90 transition-opacity"
+                            variant="ghost"
+                            className="w-full mt-2 h-8 text-xs text-muted-foreground hover:bg-gray-100 dark:hover:bg-gray-800"
                             onClick={() => onQuickLink('schedule', 'basic', 'calendar')}
                         >
                             전체 일정 보기 <ArrowRight className="w-3 h-3 ml-1" />
                         </Button>
                     )}
-                </Card>
+                </div>
 
                 {/* Habits */}
-                <Card className="rounded-[24px] p-5 shadow-sm flex flex-col min-h-[180px] border-none">
+                <div className="bg-white dark:bg-[#202022] rounded-[24px] p-5 shadow-sm flex flex-col min-h-[180px]">
                     <div className="flex justify-between items-start mb-4">
                         <div>
                             <h3 className="font-bold text-lg text-[#333D4B] dark:text-gray-200">오늘의 습관</h3>
@@ -361,10 +360,10 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
                             </div>
                         );
                     })()}
-                </Card>
+                </div>
 
                 {/* Goals */}
-                <Card className="rounded-[24px] p-5 shadow-sm flex flex-col min-h-[180px] border-none">
+                <div className="bg-white dark:bg-[#202022] rounded-[24px] p-5 shadow-sm flex flex-col min-h-[180px]">
                     <div className="flex justify-between items-start mb-4">
                         <div>
                             <h3 className="font-bold text-lg text-[#333D4B] dark:text-gray-200">활동 중인 목표</h3>
@@ -407,8 +406,8 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
                             전체 보기 <ArrowRight className="w-3 h-3 ml-1" />
                         </Button>
                     )}
-                </Card>
-            </BentoGrid>
+                </div>
+            </div>
 
             {/* Manage Shortcuts Dialog */}
             <Dialog open={isManageDialogOpen} onOpenChange={setIsManageDialogOpen}>
