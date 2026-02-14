@@ -146,7 +146,7 @@
     /* Fixed: Added hsl wrapper */
     color: hsl(var(--foreground));
     /* Fixed: Added hsl wrapper */
-    /* Font family handled by next/font in layout.tsx */
+    font-family: 'Asta Sans', 'Gowun Batang', sans-serif;
   }
 }
 

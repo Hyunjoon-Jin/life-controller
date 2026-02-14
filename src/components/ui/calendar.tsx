@@ -81,7 +81,7 @@ function Calendar({
                                 handleChange(value);
                             }}
                         >
-                            <SelectTrigger className="pr-1.5 focus:ring-0 h-[28px]">
+                            <SelectTrigger className="pr-1.5 focus:ring-0 h-[28px] w-auto min-w-[100px]">
                                 <SelectValue>{selected?.label}</SelectValue>
                             </SelectTrigger>
                             <SelectContent position="popper">
