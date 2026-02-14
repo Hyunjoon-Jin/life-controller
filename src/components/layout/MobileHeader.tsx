@@ -128,6 +128,11 @@ export function MobileHeader({
 
                     {/* Footer: User & Help */}
                     <div className="border-t border-border pt-6 mt-auto">
+                        <div className="mb-4">
+                            <Button asChild className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white border-0">
+                                <a href="/pricing">Upgrade to Pro 💎</a>
+                            </Button>
+                        </div>
                         <div className="flex items-center justify-between mb-4">
                             <UserMenu />
                             <Button variant="ghost" size="sm" onClick={onOpenGuide} className="text-muted-foreground">
