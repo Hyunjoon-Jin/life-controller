@@ -1,59 +1,42 @@
 'use client';
-import { useState } from 'react';
 
-import { useCalendar } from '@/hooks/useCalendar';
-import { CalendarHeader } from './CalendarHeader';
-import { MonthView } from './MonthView';
-import { WeekView } from './WeekView';
-import { DayView } from './DayView';
+import { useData } from '@/context/DataProvider';
+import { FullScreenCalendar } from '@/components/ui/fullscreen-calendar';
+import { format } from 'date-fns';
 
 export function CalendarView() {
-    const { currentDate, setCurrentDate, view, setView, next, prev, today } = useCalendar();
-    const [showProjectTasks, setShowProjectTasks] = useState(true);
+    const { events } = useData();
+
+    // Transform events to FullScreenCalendar format
+    // Map<DateString, Event[]>
+    const eventsByDay = new Map<string, any[]>();
+
+    events.forEach(event => {
+        if (!event.start) return;
+        const date = new Date(event.start);
+        const dateKey = format(date, 'yyyy-MM-dd');
+
+        const mappedEvent = {
+            id: typeof event.id === 'string' ? parseInt(event.id) || Math.random() : event.id, // Ensure ID is number if needed, though interface says number. provided code says number.
+            name: event.title,
+            time: format(date, 'h:mm a'),
+            datetime: event.start.toString(),
+        };
+
+        if (!eventsByDay.has(dateKey)) {
+            eventsByDay.set(dateKey, []);
+        }
+        eventsByDay.get(dateKey)?.push(mappedEvent);
+    });
+
+    const calendarData = Array.from(eventsByDay.entries()).map(([dateString, dayEvents]) => ({
+        day: new Date(dateString),
+        events: dayEvents
+    }));
 
     return (
-        <div className="flex flex-col h-full space-y-4">
-            <CalendarHeader
-                currentDate={currentDate}
-                view={view}
-                setView={setView}
-                onNext={next}
-                onPrev={prev}
-                onToday={today}
-                showProjectTasks={showProjectTasks}
-                setShowProjectTasks={setShowProjectTasks}
-            />
-
-            <div className="flex-1 min-h-[500px]">
-                {view === 'month' && (
-                    <MonthView
-                        currentDate={currentDate}
-                        onDateClick={(date) => {
-                            setCurrentDate(date);
-                            setView('day');
-                        }}
-                        showProjectTasks={showProjectTasks}
-                    />
-                )}
-                {view === 'week' && (
-                    <WeekView
-                        currentDate={currentDate}
-                        showProjectTasks={showProjectTasks}
-                        onDateClick={(date) => {
-                            setCurrentDate(date);
-                            setView('day');
-                        }}
-                    />
-                )}
-                {view === 'day' && (
-                    <DayView
-                        currentDate={currentDate}
-                        showProjectTasks={showProjectTasks}
-                        onNext={next}
-                        onPrev={prev}
-                    />
-                )}
-            </div>
+        <div className="h-full w-full bg-background rounded-xl border shadow-sm overflow-hidden">
+            <FullScreenCalendar data={calendarData} />
         </div>
     );
 }
