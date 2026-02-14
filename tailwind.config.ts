@@ -9,7 +9,7 @@ const config: Config = {
     theme: {
         extend: {
             fontFamily: {
-                sans: ["Chiron Geon GoRound TC", "Gowun Dodum", "var(--font-nanum)", "NanumSquareRound", "Pretendard Variable", "Pretendard", "-apple-system", "BlinkMacSystemFont", "system-ui", "Roboto", "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "sans-serif"],
+                sans: ["Asta Sans", "Chiron Geon GoRound TC", "Gowun Dodum", "var(--font-nanum)", "NanumSquareRound", "Pretendard Variable", "Pretendard", "-apple-system", "BlinkMacSystemFont", "system-ui", "Roboto", "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "sans-serif"],
                 serif: ["Gowun Batang", "Batang", "serif"],
             },
             colors: {
