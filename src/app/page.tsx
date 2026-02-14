@@ -46,6 +46,7 @@ import { HelpCircle, Calendar, Lightbulb, Users as UsersIcon, Link as LinkIcon, 
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { Logo } from '@/components/ui/Logo';
+import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 import { cn } from '@/lib/utils';
 
 import { useBirthdayNotifications } from '@/hooks/useBirthdayNotifications';
@@ -140,9 +141,6 @@ export default function Home() {
             <Logo variant="full" className="scale-100" />
           </button>
 
-          import {HoverBorderGradient} from "@/components/ui/hover-border-gradient";
-
-          // ... (in the component)
 
           {/* Mode Toggle Switch */}
           <div className="flex items-center gap-2">

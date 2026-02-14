@@ -1,6 +1,7 @@
 import { useRef, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { SUB_MENUS, CategoryType } from '@/constants/menu';
+import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 
 interface MobileCategoryTabsProps {
     activeCategory: CategoryType;
@@ -30,10 +31,6 @@ export function MobileCategoryTabs({ activeCategory, activeTab, onSelect }: Mobi
                 ref={scrollRef}
                 className="flex items-center gap-2 overflow-x-auto no-scrollbar px-4 py-3"
             >
-                import {HoverBorderGradient} from "@/components/ui/hover-border-gradient";
-
-                // ...
-
                 {tabs.map((tab: any) => (
                     activeTab === tab.id ? (
                         <HoverBorderGradient
