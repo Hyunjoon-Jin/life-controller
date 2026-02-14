@@ -30,21 +30,36 @@ export function MobileCategoryTabs({ activeCategory, activeTab, onSelect }: Mobi
                 ref={scrollRef}
                 className="flex items-center gap-2 overflow-x-auto no-scrollbar px-4 py-3"
             >
+                import {HoverBorderGradient} from "@/components/ui/hover-border-gradient";
+
+                // ...
+
                 {tabs.map((tab: any) => (
-                    <button
-                        key={tab.id}
-                        onClick={() => onSelect(tab.id)}
-                        data-active={activeTab === tab.id}
-                        className={cn(
-                            "flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all border shrink-0",
-                            activeTab === tab.id
-                                ? "bg-primary text-primary-foreground border-primary shadow-sm"
-                                : "bg-white dark:bg-gray-800 text-muted-foreground border-gray-200 dark:border-gray-700 hover:bg-gray-50"
-                        )}
-                    >
-                        {tab.icon && <tab.icon className="w-3.5 h-3.5" />}
-                        {tab.label}
-                    </button>
+                    activeTab === tab.id ? (
+                        <HoverBorderGradient
+                            key={tab.id}
+                            as="button"
+                            onClick={() => onSelect(tab.id)}
+                            containerClassName="shrink-0"
+                            className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold whitespace-nowrap bg-primary text-primary-foreground"
+                            duration={1}
+                        >
+                            {tab.icon && <tab.icon className="w-3.5 h-3.5" />}
+                            {tab.label}
+                        </HoverBorderGradient>
+                    ) : (
+                        <button
+                            key={tab.id}
+                            onClick={() => onSelect(tab.id)}
+                            className={cn(
+                                "flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all border shrink-0",
+                                "bg-white dark:bg-gray-800 text-muted-foreground border-gray-200 dark:border-gray-700 hover:bg-gray-50"
+                            )}
+                        >
+                            {tab.icon && <tab.icon className="w-3.5 h-3.5" />}
+                            {tab.label}
+                        </button>
+                    )
                 ))}
             </div>
         </div>

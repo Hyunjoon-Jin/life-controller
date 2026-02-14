@@ -140,36 +140,40 @@ export default function Home() {
             <Logo variant="full" className="scale-100" />
           </button>
 
+          import {HoverBorderGradient} from "@/components/ui/hover-border-gradient";
+
+          // ... (in the component)
+
           {/* Mode Toggle Switch */}
-          <div className={cn(
-            "p-1.5 rounded-full flex items-center border-2",
-            appMode === 'work' ? "bg-[#F3E5F5] border-[#CE93D8]" : "bg-[#E0F2F1] border-[#80CBC4]"
-          )}>
-            <button
-              onClick={() => setAppMode('life')}
+          <div className="flex items-center gap-2">
+            <HoverBorderGradient
+              as="button"
+              containerClassName="rounded-full"
               className={cn(
-                "px-4 py-2 rounded-full text-sm font-bold transition-all flex items-center gap-2",
-                appMode === 'life'
-                  ? "bg-[#009688] text-white shadow-lg"
-                  : "text-gray-600 hover:bg-white/50"
+                "px-4 py-2 text-sm font-bold flex items-center gap-2",
+                appMode === 'life' ? "bg-[#009688] text-white" : "bg-transparent text-gray-500 hover:text-gray-700"
               )}
+              onClick={() => setAppMode('life')}
+              duration={1.5}
             >
               <Sparkles className="w-4 h-4" /> 일상 모드
-            </button>
-            <button
+            </HoverBorderGradient>
+
+            <HoverBorderGradient
+              as="button"
+              containerClassName="rounded-full"
+              className={cn(
+                "px-4 py-2 text-sm font-bold flex items-center gap-2",
+                appMode === 'work' ? "bg-[#9C27B0] text-white" : "bg-transparent text-gray-500 hover:text-gray-700"
+              )}
               onClick={() => {
                 setAppMode('work');
                 setMainMode('work');
               }}
-              className={cn(
-                "px-4 py-2 rounded-full text-sm font-bold transition-all flex items-center gap-2",
-                appMode === 'work'
-                  ? "bg-[#9C27B0] text-white shadow-lg"
-                  : "text-gray-600 hover:bg-white/50"
-              )}
+              duration={1.5}
             >
               <Briefcase className="w-4 h-4" /> 업무 모드
-            </button>
+            </HoverBorderGradient>
           </div>
 
           <div className={cn(
