@@ -38,8 +38,13 @@ export async function middleware(request: NextRequest) {
         data: { user },
     } = await supabase.auth.getUser();
 
-    // If no user and not on public page, redirect to login
-    if (!user && !request.nextUrl.pathname.startsWith("/login") && !request.nextUrl.pathname.startsWith("/register")) {
+    // If no user and not on public page (login, register, root/landing), redirect to login
+    if (!user &&
+        !request.nextUrl.pathname.startsWith("/login") &&
+        !request.nextUrl.pathname.startsWith("/register") &&
+        request.nextUrl.pathname !== "/" &&
+        !request.nextUrl.pathname.startsWith("/pricing") // Pricing page should be visible too? Maybe later. For now just root.
+    ) {
         const url = request.nextUrl.clone();
         url.pathname = "/login";
         return NextResponse.redirect(url);
