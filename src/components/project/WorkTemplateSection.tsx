@@ -267,7 +267,13 @@ export function WorkTemplateSection() {
                                                     </div>
                                                 </CardContent>
                                                 <CardFooter className="p-3 flex justify-end gap-2">
-                                                    <Button variant="outline" size="sm" className="w-full gap-2">
+                                                    <Button variant="outline" size="sm" className="w-full gap-2" onClick={() => {
+                                                        navigator.clipboard.writeText(template.content).then(() => {
+                                                            toast.success(`"${template.title}" 템플릿이 클립보드에 복사되었습니다.`);
+                                                        }).catch(() => {
+                                                            toast.info('내용을 복사할 수 없습니다. 수동으로 복사해주세요.');
+                                                        });
+                                                    }}>
                                                         <Copy className="w-3.5 h-3.5" /> 사용하기
                                                     </Button>
                                                 </CardFooter>

@@ -127,6 +127,8 @@ export default function Home() {
         setMainMode={setMainMode}
         activeCategory={activeCategory}
         setActiveCategory={setActiveCategory}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab as any}
       />
       {/* Mobile Header (Hidden on Desktop) */}
       <MobileHeader

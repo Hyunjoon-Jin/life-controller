@@ -1,11 +1,13 @@
 'use client';
 
+import { useState } from 'react';
 import { useData } from '@/context/DataProvider';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Briefcase, Plus, MoreHorizontal, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { WorkloadHeatmap } from '../WorkloadHeatmap';
 import { RecentWorkspace } from '../RecentWorkspace';
+import { ProjectDialog } from '@/components/project/ProjectDialog';
 
 interface ProjectSectionProps {
     onOpenProject: (id: string) => void;
@@ -13,9 +15,18 @@ interface ProjectSectionProps {
 
 export function ProjectSection({ onOpenProject }: ProjectSectionProps) {
     const { projects } = useData();
+    const [isNewProjectOpen, setIsNewProjectOpen] = useState(false);
 
     return (
         <div className="space-y-6">
+            {/* Header with New Project Button */}
+            <div className="flex items-center justify-between">
+                <h3 className="text-lg font-bold">프로젝트 관리</h3>
+                <Button size="sm" onClick={() => setIsNewProjectOpen(true)}>
+                    <Plus className="w-4 h-4 mr-2" /> 새 프로젝트
+                </Button>
+            </div>
+
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <Card className="lg:col-span-2 border-none shadow-sm bg-slate-50">
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -56,6 +67,12 @@ export function ProjectSection({ onOpenProject }: ProjectSectionProps) {
             </div>
 
             <WorkloadHeatmap />
+
+            {/* Project Creation Dialog */}
+            <ProjectDialog
+                isOpen={isNewProjectOpen}
+                onOpenChange={setIsNewProjectOpen}
+            />
         </div>
     );
 }

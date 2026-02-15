@@ -56,7 +56,7 @@ export function WorkLayout({ viewMode: propViewMode }: { viewMode?: ViewMode }) 
     return (
         <div className={cn(
             "h-full flex flex-col text-foreground w-full transition-all duration-500",
-            isFocusMode ? "fixed inset-0 z-40 bg-[#0f1012]" : "max-w-7xl mx-auto"
+            isFocusMode ? "fixed inset-0 z-[100] bg-[#0f1012] overflow-y-auto p-4" : "max-w-7xl mx-auto"
         )}>
             <WorkHeader
                 isFocusMode={isFocusMode}
@@ -67,7 +67,7 @@ export function WorkLayout({ viewMode: propViewMode }: { viewMode?: ViewMode }) 
             <div className={cn(
                 "flex-1 min-w-0 transition-all duration-500 overflow-hidden",
                 isFocusMode
-                    ? "rounded-none border-none bg-transparent container mx-auto"
+                    ? "rounded-2xl border border-white/10 bg-[#1a1b1e]/80 text-gray-100"
                     : "bg-white rounded-3xl shadow-sm border border-gray-100 h-full"
             )}>
                 <AnimatePresence mode="wait">
