@@ -141,14 +141,14 @@ export default function Home() {
         onOpenGuide={() => setIsGuideOpen(true)}
       />
 
-      {/* Mobile Category Tabs (Sticky Top) */}
-      {mainMode === 'schedule' && (
+      {/* Mobile Category Tabs - Hidden: sub-tabs now handled by bottom nav popup */}
+      {/* {mainMode === 'schedule' && (
         <MobileCategoryTabs
           activeCategory={activeCategory}
           activeTab={activeTab}
           onSelect={(t) => setActiveTab(t as TabType)}
         />
-      )}
+      )} */}
 
       {/* Desktop Header (Hidden on Mobile) */}
       <header className={cn(
