@@ -298,8 +298,10 @@ export function EventDialog({ isOpen, onOpenChange, event, initialDate, initialE
                     {/* Prep & Travel Time (Horizontal Compact) */}
                     <div className="flex gap-4">
                         <div className="flex-1 space-y-2">
-                            <Label className="text-xs font-bold text-gray-400 uppercase tracking-wider">준비 (분)</Label>
+                            <Label htmlFor="prepTime" className="text-xs font-bold text-gray-400 uppercase tracking-wider">준비 (분)</Label>
                             <Input
+                                id="prepTime"
+                                name="prepTime"
                                 type="number"
                                 value={prepTime === 0 ? '' : prepTime}
                                 onChange={e => setPrepTime(Number(e.target.value))}
@@ -308,8 +310,10 @@ export function EventDialog({ isOpen, onOpenChange, event, initialDate, initialE
                             />
                         </div>
                         <div className="flex-1 space-y-2">
-                            <Label className="text-xs font-bold text-gray-400 uppercase tracking-wider">이동 (분)</Label>
+                            <Label htmlFor="travelTime" className="text-xs font-bold text-gray-400 uppercase tracking-wider">이동 (분)</Label>
                             <Input
+                                id="travelTime"
+                                name="travelTime"
                                 type="number"
                                 value={travelTime === 0 ? '' : travelTime}
                                 onChange={e => setTravelTime(Number(e.target.value))}
@@ -432,13 +436,13 @@ export function EventDialog({ isOpen, onOpenChange, event, initialDate, initialE
                     <div className="flex gap-4 pt-2">
                         <div className="flex items-center space-x-2 bg-gray-50 px-3 py-1.5 rounded-lg border border-transparent hover:border-blue-200 transition-colors cursor-pointer" onClick={() => setIsMeeting(!isMeeting)}>
                             <Checkbox id="isMeeting" checked={isMeeting} onCheckedChange={(c) => setIsMeeting(c as boolean)} />
-                            <Label className="text-sm font-medium flex items-center gap-1.5 cursor-pointer">
+                            <Label htmlFor="isMeeting" className="text-sm font-medium flex items-center gap-1.5 cursor-pointer">
                                 <Users className="w-3.5 h-3.5 text-blue-500" /> 회의
                             </Label>
                         </div>
                         <div className="flex items-center space-x-2 bg-gray-50 px-3 py-1.5 rounded-lg border border-transparent hover:border-green-200 transition-colors cursor-pointer" onClick={() => setIsAppointment(!isAppointment)}>
                             <Checkbox id="isAppointment" checked={isAppointment} onCheckedChange={(c) => setIsAppointment(c as boolean)} />
-                            <Label className="text-sm font-medium flex items-center gap-1.5 cursor-pointer">
+                            <Label htmlFor="isAppointment" className="text-sm font-medium flex items-center gap-1.5 cursor-pointer">
                                 <Handshake className="w-3.5 h-3.5 text-green-500" /> 약속
                             </Label>
                         </div>

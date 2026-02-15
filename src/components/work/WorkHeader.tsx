@@ -126,10 +126,13 @@ export function WorkHeader({ isFocusMode, onToggleFocusMode }: WorkHeaderProps) 
                     )}>
                         <Target className={cn("w-4 h-4", isFocusMode ? "text-blue-400" : "text-slate-400")} />
                         <input
+                            id="work-objective"
+                            name="work-objective"
                             type="text"
                             value={objective}
                             onChange={(e) => setObjective(e.target.value)}
                             placeholder="지금 집중할 목표는 무엇인가요?"
+                            aria-label="집중 목표"
                             className={cn(
                                 "bg-transparent border-none outline-none text-sm w-full placeholder:text-opacity-50",
                                 isFocusMode ? "text-white placeholder:text-gray-400" : "text-slate-700 placeholder:text-slate-400"
