@@ -122,7 +122,7 @@ export function MegaMenuNav({ activeCategory, activeTab, onSelect, appMode = 'li
                         </h3>
                         <div className="flex flex-col gap-1">
                             {SUB_MENUS[hoveredCategory] ? SUB_MENUS[hoveredCategory]
-                                .map((item: any) => (
+                                .map((item) => (
 
                                     <button
                                         key={item.id}

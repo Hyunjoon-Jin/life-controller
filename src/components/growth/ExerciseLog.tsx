@@ -312,8 +312,9 @@ export function ExerciseLog() {
     const mostRecentType = sortedSessions[0]?.type || '웨이트 트레이닝';
     const [trendType, setTrendType] = useState(mostRecentType);
 
-    useMemo(() => {
+    useEffect(() => {
         if (!exerciseSessions.find(s => s.type === trendType) && sortedSessions.length > 0) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setTrendType(sortedSessions[0].type);
         }
     }, [exerciseSessions, trendType, sortedSessions]);

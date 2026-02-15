@@ -252,10 +252,10 @@ export function DayView({ currentDate, showProjectTasks, onNext, onPrev }: { cur
     const handleDeleteEvent = (id: string) => {
         if (id.startsWith('habit-')) {
             const evt = dayEvents.find(e => e.id === id);
-            if (evt && (evt as any).habitId) {
+            if (evt && evt.habitId) {
                 setHabitToDelete({
                     id: id,
-                    habitId: (evt as any).habitId,
+                    habitId: evt.habitId,
                     date: currentDate
                 });
                 setShowDeleteHabitDialog(true);
@@ -505,7 +505,7 @@ export function DayView({ currentDate, showProjectTasks, onNext, onPrev }: { cur
                         )}
 
                         {dayEvents.map(event => {
-                            const isHabit = (event as any).isHabit;
+                            const isHabit = event.isHabitEvent;
                             const displayEvent = (dragState?.id === event.id && tempEvent) ? tempEvent : event;
                             const isDragging = dragState?.id === event.id;
                             const colors = getEventColors(event);
@@ -636,7 +636,7 @@ export function DayView({ currentDate, showProjectTasks, onNext, onPrev }: { cur
                             variant="default"
                             onClick={() => {
                                 if (!pendingHabitUpdate) return;
-                                const habitId = (pendingHabitUpdate as any).habitId;
+                                const habitId = pendingHabitUpdate.habitId;
                                 const habit = habits.find(h => h.id === habitId);
                                 if (habit) {
                                     updateHabit({
@@ -655,7 +655,7 @@ export function DayView({ currentDate, showProjectTasks, onNext, onPrev }: { cur
                             variant="secondary"
                             onClick={() => {
                                 if (!pendingHabitUpdate) return;
-                                const habitId = (pendingHabitUpdate as any).habitId;
+                                const habitId = pendingHabitUpdate.habitId;
                                 const habit = habits.find(h => h.id === habitId);
                                 if (habit) {
                                     const dateStr = format(currentDate, 'yyyy-MM-dd');

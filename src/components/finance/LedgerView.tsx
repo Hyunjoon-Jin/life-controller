@@ -167,11 +167,11 @@ export function LedgerView() {
                 </Button>
             </div>
 
-            {/* Summary Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            {/* Summary Cards - Mobile Horizontal Scroll */}
+            <div className="flex overflow-x-auto pb-4 gap-4 md:grid md:grid-cols-4 md:gap-4 md:overflow-visible -mx-6 px-6 md:mx-0 md:px-0 snap-x snap-mandatory">
                 {/* Monthly Goal & Budget Card */}
-                <Card className="md:col-span-4 bg-gradient-to-r from-slate-50 to-white border-l-4 border-l-primary">
-                    <CardContent className="p-4 md:p-6 flex flex-col md:flex-row gap-6 items-center justify-between">
+                <Card className="min-w-[300px] md:min-w-0 md:col-span-4 bg-gradient-to-r from-slate-50 to-white border-l-4 border-l-primary snap-center">
+                    <CardContent className="p-4 md:p-6 flex flex-col md:flex-row gap-6 items-center justify-between h-full">
                         <div className="flex-1 space-y-2 w-full">
                             <div className="flex items-center justify-between">
                                 <h3 className="text-lg font-bold flex items-center gap-2 text-slate-800">
@@ -185,7 +185,7 @@ export function LedgerView() {
 
                             {currentBudget ? (
                                 <div className="space-y-4">
-                                    {currentBudget.goal && <p className="text-lg text-slate-700 font-medium">"{currentBudget.goal}"</p>}
+                                    {currentBudget.goal && <p className="text-lg text-slate-700 font-medium">&quot;{currentBudget.goal}&quot;</p>}
                                     <div className="space-y-1">
                                         <div className="flex justify-between text-sm">
                                             <span className="text-muted-foreground">예산 소진율 ({Math.round(budgetProgress)}%)</span>
@@ -211,38 +211,38 @@ export function LedgerView() {
                     </CardContent>
                 </Card>
 
-                <Card>
-                    <CardContent className="p-6 flex items-center justify-between">
+                <Card className="min-w-[160px] md:min-w-0 snap-center">
+                    <CardContent className="p-4 md:p-6 flex flex-col md:flex-row md:items-center justify-between h-full gap-2 md:gap-0">
                         <div>
-                            <p className="text-sm font-medium text-muted-foreground">이번 달 수입</p>
-                            <h3 className="text-2xl font-bold text-blue-600">+{totalIncome.toLocaleString()}원</h3>
+                            <p className="text-xs md:text-sm font-medium text-muted-foreground">이번 달 수입</p>
+                            <h3 className="text-xl md:text-2xl font-bold text-blue-600">+{totalIncome.toLocaleString()}원</h3>
                         </div>
-                        <div className="p-3 bg-blue-50 rounded-full">
-                            <TrendingUp className="w-6 h-6 text-blue-600" />
+                        <div className="p-2 md:p-3 bg-blue-50 rounded-full w-fit">
+                            <TrendingUp className="w-5 h-5 md:w-6 md:h-6 text-blue-600" />
                         </div>
                     </CardContent>
                 </Card>
-                <Card>
-                    <CardContent className="p-6 flex items-center justify-between">
+                <Card className="min-w-[160px] md:min-w-0 snap-center">
+                    <CardContent className="p-4 md:p-6 flex flex-col md:flex-row md:items-center justify-between h-full gap-2 md:gap-0">
                         <div>
-                            <p className="text-sm font-medium text-muted-foreground">이번 달 지출</p>
-                            <h3 className="text-2xl font-bold text-red-600">-{totalExpense.toLocaleString()}원</h3>
+                            <p className="text-xs md:text-sm font-medium text-muted-foreground">이번 달 지출</p>
+                            <h3 className="text-xl md:text-2xl font-bold text-red-600">-{totalExpense.toLocaleString()}원</h3>
                         </div>
-                        <div className="p-3 bg-red-50 rounded-full">
-                            <TrendingDown className="w-6 h-6 text-red-600" />
+                        <div className="p-2 md:p-3 bg-red-50 rounded-full w-fit">
+                            <TrendingDown className="w-5 h-5 md:w-6 md:h-6 text-red-600" />
                         </div>
                     </CardContent>
                 </Card>
-                <Card>
-                    <CardContent className="p-6 flex items-center justify-between">
+                <Card className="min-w-[160px] md:min-w-0 snap-center">
+                    <CardContent className="p-4 md:p-6 flex flex-col md:flex-row md:items-center justify-between h-full gap-2 md:gap-0">
                         <div>
-                            <p className="text-sm font-medium text-muted-foreground">남은 금액</p>
-                            <h3 className={cn("text-2xl font-bold", balance >= 0 ? "text-green-600" : "text-red-600")}>
+                            <p className="text-xs md:text-sm font-medium text-muted-foreground">남은 금액</p>
+                            <h3 className={cn("text-xl md:text-2xl font-bold", balance >= 0 ? "text-green-600" : "text-red-600")}>
                                 {balance.toLocaleString()}원
                             </h3>
                         </div>
-                        <div className="p-3 bg-green-50 rounded-full">
-                            <DollarSign className="w-6 h-6 text-green-600" />
+                        <div className="p-2 md:p-3 bg-green-50 rounded-full w-fit">
+                            <DollarSign className="w-5 h-5 md:w-6 md:h-6 text-green-600" />
                         </div>
                     </CardContent>
                 </Card>

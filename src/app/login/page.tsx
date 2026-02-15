@@ -56,7 +56,7 @@ export default function LoginPage() {
         setIsLoading(true);
 
         try {
-            const { data, error } = await supabase.auth.signInWithPassword({
+            const { error } = await supabase.auth.signInWithPassword({
                 email: formData.email,
                 password: formData.password,
             });
@@ -69,8 +69,12 @@ export default function LoginPage() {
             toast.success('로그인 성공!');
             router.push('/');
             router.refresh();
-        } catch (error: any) {
-            toast.error(error.message);
+        } catch (error) {
+            if (error instanceof Error) {
+                toast.error(error.message);
+            } else {
+                toast.error('로그인 중 오류가 발생했습니다.');
+            }
         } finally {
             setIsLoading(false);
         }
@@ -90,8 +94,12 @@ export default function LoginPage() {
             toast.success('비밀번호 재설정 링크를 보냈습니다.', {
                 description: `전송된 이메일: ${recoveryEmail}`
             });
-        } catch (error: any) {
-            toast.error(error.message || '이메일 전송에 실패했습니다.');
+        } catch (error) {
+            if (error instanceof Error) {
+                toast.error(error.message);
+            } else {
+                toast.error('이메일 전송에 실패했습니다.');
+            }
         }
         setIsFindPwOpen(false);
         setRecoveryEmail('');

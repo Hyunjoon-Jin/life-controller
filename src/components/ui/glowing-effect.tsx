@@ -56,7 +56,7 @@ export const GlowingEffectItem = ({
                 } as React.CSSProperties
             }
         >
-            <div className="rounded-3xl h-full w-full overflow-hidden bg-white border border-gray-200 relative z-20 transition duration-500 group-hover:border-blue-300 shadow-sm">
+            <div className="rounded-3xl h-full w-full overflow-hidden bg-white/70 backdrop-blur-md border border-white/40 relative z-20 transition duration-500 group-hover:border-blue-300 shadow-sm">
                 <div className="relative z-50">
                     <div className="p-4 h-full">{children}</div>
                 </div>

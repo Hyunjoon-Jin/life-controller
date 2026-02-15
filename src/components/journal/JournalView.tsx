@@ -16,6 +16,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import Image from 'next/image';
 
 export function JournalView() {
     const { journals, deleteJournal } = useData();
@@ -159,8 +160,8 @@ export function JournalView() {
                             {entry.images && entry.images.length > 0 && (
                                 <div className="flex gap-2 overflow-x-auto mt-2 pt-2 border-t border-border/50">
                                     {entry.images.map((img, i) => (
-                                        <div key={i} className="w-16 h-16 rounded overflow-hidden flex-shrink-0 border border-border cursor-pointer hover:opacity-90">
-                                            <img src={img} alt="Journal attachment" className="w-full h-full object-cover" />
+                                        <div key={i} className="w-16 h-16 rounded overflow-hidden flex-shrink-0 border border-border cursor-pointer hover:opacity-90 relative">
+                                            <Image src={img} alt="Journal attachment" fill className="object-cover" unoptimized />
                                         </div>
                                     ))}
                                 </div>

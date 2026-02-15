@@ -12,6 +12,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Palette, Plus, Trash2, Calendar as CalendarIcon, Tag, Star, ArrowLeft, Image as ImageIcon, ExternalLink, MoreVertical } from 'lucide-react';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
+import Image from 'next/image';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
@@ -169,7 +170,7 @@ export function HobbyLog() {
                                     {/* Cover Image Area */}
                                     <div className="h-32 bg-muted/30 relative overflow-hidden">
                                         {hobby.coverImage ? (
-                                            <img src={hobby.coverImage} alt={hobby.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                            <Image src={hobby.coverImage} alt={hobby.title} fill className="object-cover group-hover:scale-105 transition-transform duration-500" unoptimized />
                                         ) : (
                                             <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-indigo-50 to-purple-50">
                                                 <Palette className="w-8 h-8 text-indigo-200" />
@@ -232,7 +233,7 @@ export function HobbyLog() {
                                 <div className="flex items-center gap-4">
                                     <div className="w-20 h-20 bg-muted rounded-md overflow-hidden flex-shrink-0 border flex items-center justify-center relative">
                                         {newHobbyCover ? (
-                                            <img src={newHobbyCover} alt="Cover" className="w-full h-full object-cover" />
+                                            <Image src={newHobbyCover} alt="Cover" fill className="object-cover" unoptimized />
                                         ) : (
                                             <ImageIcon className="w-8 h-8 text-muted-foreground/50" />
                                         )}
@@ -269,7 +270,7 @@ export function HobbyLog() {
                 {selectedHobby.coverImage && (
                     <>
                         <div className="absolute inset-0 bg-black/40 z-10" />
-                        <img src={selectedHobby.coverImage} className="absolute inset-0 w-full h-full object-cover" alt="cover" />
+                        <Image src={selectedHobby.coverImage} fill className="object-cover" alt="cover" unoptimized />
                     </>
                 )}
                 <div className="relative z-20 w-full p-6 text-white flex justify-between items-end">
@@ -344,7 +345,7 @@ export function HobbyLog() {
                                     )}>
                                         {post.images.map((img, idx) => (
                                             <div key={idx} className="rounded-lg overflow-hidden border bg-slate-50 relative aspect-video">
-                                                <img src={img} alt={`post-img-${idx}`} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500 cursor-zoom-in" />
+                                                <Image src={img} alt={`post-img-${idx}`} fill className="object-cover hover:scale-105 transition-transform duration-500 cursor-zoom-in" unoptimized />
                                             </div>
                                         ))}
                                     </div>
@@ -400,7 +401,7 @@ export function HobbyLog() {
                             <div className="flex gap-2 flex-wrap">
                                 {postImages.map((img, idx) => (
                                     <div key={idx} className="w-20 h-20 relative rounded-md overflow-hidden border group">
-                                        <img src={img} alt="preview" className="w-full h-full object-cover" />
+                                        <Image src={img} alt="preview" fill className="object-cover" unoptimized />
                                         <button
                                             onClick={() => setPostImages(prev => prev.filter((_, i) => i !== idx))}
                                             className="absolute top-0 right-0 bg-red-500 text-white w-5 h-5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"

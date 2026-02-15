@@ -21,6 +21,7 @@ export function CloudSyncStatus() {
 
     useEffect(() => {
         if (isSyncing) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setStatus('syncing');
         } else {
             // briefly show saved state

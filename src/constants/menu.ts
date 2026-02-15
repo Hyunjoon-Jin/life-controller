@@ -8,10 +8,12 @@ import {
 export type CategoryType = 'basic' | 'health' | 'growth' | 'record' | 'finance';
 export type TabType = 'calendar' | 'tasks' | 'projects' | 'people' | 'goals' | 'language' | 'reading' | 'exercise' | 'diet' | 'inbody' | 'hobby' | 'learning' | 'certificate' | 'portfolio' | 'journal' | 'ideas' | 'scraps' | 'report' | 'ledger' | 'assets' | 'fund' | 'realestate' | 'investment' | 'work_time' | 'templates' | 'full_schedule';
 
+import { LucideIcon } from 'lucide-react';
+
 export interface MenuItem {
     id: string;
     label: string;
-    icon: any;
+    icon: LucideIcon;
     desc: string;
 }
 

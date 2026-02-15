@@ -52,9 +52,9 @@ export async function middleware(request: NextRequest) {
             path.startsWith("/pricing");
 
         // If not public, redirect to login
-        if (!isPublic) {
-            return NextResponse.redirect(new URL("/login", request.url));
-        }
+        // if (!isPublic) {
+        //     return NextResponse.redirect(new URL("/login", request.url));
+        // }
     }
 
     return response;

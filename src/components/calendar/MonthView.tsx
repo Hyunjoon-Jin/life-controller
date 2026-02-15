@@ -145,11 +145,6 @@ export function MonthView({ currentDate, onDateClick, showProjectTasks }: { curr
                         if (!t.projectId) return false;
                         if (t.completed) return false; // Optional: Hide completed tasks
 
-                        // Check if task is active on this day (simplified: start <= day <= end/deadline)
-                        // Or just show on start date or deadline?
-                        // Let's show if 'deadline' matches this day OR 'startDate' matches this day
-                        // Common pattern: Show on deadline as "Due"
-
                         const targetDate = t.endDate ? new Date(t.endDate) : (t.deadline ? new Date(t.deadline) : (t.startDate ? new Date(t.startDate) : null));
                         if (!targetDate || !isValid(targetDate)) return false;
 
@@ -162,16 +157,16 @@ export function MonthView({ currentDate, onDateClick, showProjectTasks }: { curr
                             onClick={() => onDateClick(day)}
                             onContextMenu={(e) => handleContextMenu(e, day)}
                             className={cn(
-                                "min-h-[100px] p-2 border-r border-b border-border/[0.05] relative transition-colors hover:bg-muted/20 cursor-pointer overflow-hidden flex flex-col gap-1 select-none",
+                                "min-h-[80px] md:min-h-[100px] p-1 md:p-2 border-r border-b border-border/[0.05] relative transition-colors hover:bg-muted/20 cursor-pointer overflow-hidden flex flex-col gap-1 select-none",
                                 (dayIdx + 1) % 7 === 0 && "border-r-0",
                                 !isSameMonth(day, monthStart) && "bg-gray-50/30 text-muted-foreground",
                                 isToday(day) && "bg-primary/5"
                             )}
                         >
-                            <div className="flex justify-between items-start mb-0">
+                            <div className="flex justify-center md:justify-between items-start mb-0">
                                 <span
                                     className={cn(
-                                        "text-sm font-medium w-8 h-8 flex items-center justify-center rounded-full transition-all",
+                                        "text-xs md:text-sm font-medium w-6 h-6 md:w-8 md:h-8 flex items-center justify-center rounded-full transition-all",
                                         isToday(day)
                                             ? "bg-primary text-primary-foreground shadow-md scale-110"
                                             : "text-foreground group-hover:bg-muted"
@@ -181,9 +176,9 @@ export function MonthView({ currentDate, onDateClick, showProjectTasks }: { curr
                                 </span>
                             </div>
 
-                            <div className="space-y-1 w-full overflow-hidden">
-                                {/* Mobile View: Dots */}
-                                <div className="flex md:hidden flex-wrap gap-0.5 content-start">
+                            <div className="space-y-1 w-full overflow-hidden flex-1">
+                                {/* Mobile View: Dots - Centered Layout */}
+                                <div className="flex md:hidden flex-wrap justify-center gap-1 content-center h-full pb-2">
                                     {daysEvents.map(event => (
                                         <div key={event.id} className={cn("w-1.5 h-1.5 rounded-full", event.color?.split(' ')[1] || "bg-gray-400")} />
                                     ))}

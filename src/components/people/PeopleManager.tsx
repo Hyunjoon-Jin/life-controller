@@ -17,6 +17,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { PeopleMap } from './PeopleMap';
 import { format } from 'date-fns';
+import Image from 'next/image';
 
 
 export function PeopleManager() {
@@ -512,7 +513,7 @@ export function PeopleManager() {
                                             <div className="flex flex-col items-center justify-center gap-2">
                                                 {formData.businessCardImage ? (
                                                     <div className="relative w-full h-[150px] rounded-lg overflow-hidden border bg-background">
-                                                        <img src={formData.businessCardImage} alt="Business Card" className="w-full h-full object-contain" />
+                                                        <Image src={formData.businessCardImage} alt="Business Card" fill className="object-contain" unoptimized />
                                                         <Button
                                                             type="button"
                                                             size="icon"
@@ -619,8 +620,8 @@ export function PeopleManager() {
                         <DialogTitle>명함 미리보기</DialogTitle>
                     </DialogHeader>
                     {viewImage && (
-                        <div className="w-full h-[60vh] bg-black/5 flex items-center justify-center p-4">
-                            <img src={viewImage || ''} alt="Full Business Card" className="max-w-full max-h-full object-contain shadow-lg rounded-md" />
+                        <div className="w-full h-[60vh] bg-black/5 flex items-center justify-center p-4 relative">
+                            <Image src={viewImage || ''} alt="Full Business Card" fill className="object-contain" unoptimized />
                         </div>
                     )}
                 </DialogContent>

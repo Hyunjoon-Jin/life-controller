@@ -19,6 +19,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
+import Image from 'next/image';
 
 export function ScrapManager() {
     const { scraps, addScrap, updateScrap, deleteScrap } = useData();
@@ -279,8 +280,8 @@ export function ScrapManager() {
                         {filteredScraps.map(scrap => (
                             <div key={scrap.id} className="group relative bg-white border border-border rounded-2xl p-0 hover:shadow-md transition-all flex flex-col gap-2 overflow-hidden">
                                 {scrap.image && (
-                                    <div className="w-full aspect-video bg-gray-100 overflow-hidden">
-                                        <img src={scrap.image} alt={scrap.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                    <div className="w-full aspect-video bg-gray-100 overflow-hidden relative">
+                                        <Image src={scrap.image} alt={scrap.title} fill className="object-cover group-hover:scale-105 transition-transform duration-500" unoptimized />
                                     </div>
                                 )}
                                 <div className="p-4 pt-2 flex flex-col gap-2 flex-1">

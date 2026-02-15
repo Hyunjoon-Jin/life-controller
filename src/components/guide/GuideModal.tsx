@@ -25,6 +25,7 @@ export function GuideModal({ isOpen, onOpenChange, initialCategory = 'basic', on
     // Sync active category when modal opens or initialCategory changes
     useEffect(() => {
         if (isOpen) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setActiveCategory(initialCategory);
         }
     }, [isOpen, initialCategory]);

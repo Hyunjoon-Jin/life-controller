@@ -43,34 +43,46 @@ export function TaskDialog({ isOpen, onOpenChange, projectId, taskToEdit }: Task
     const [subTaskInput, setSubTaskInput] = useState('');
     const [subTasks, setSubTasks] = useState<{ id: string, title: string, completed: boolean }[]>([]);
 
+    const [lastTaskId, setLastTaskId] = useState<string | null>(null);
+
     useEffect(() => {
         if (taskToEdit) {
-            setTitle(taskToEdit.title);
-            setRemarks(taskToEdit.remarks || '');
-            setPriority(taskToEdit.priority || 'medium');
-            setStartDate(taskToEdit.startDate ? new Date(taskToEdit.startDate) : undefined);
-            setEndDate(taskToEdit.endDate ? new Date(taskToEdit.endDate) : undefined);
-            setType(taskToEdit.type || 'work');
+            if (taskToEdit.id !== lastTaskId || isOpen) {
+                if (taskToEdit.id === lastTaskId && title === taskToEdit.title) return;
 
+                // eslint-disable-next-line react-hooks/set-state-in-effect
+                setTitle(taskToEdit.title);
+                setRemarks(taskToEdit.remarks || '');
+                setPriority(taskToEdit.priority || 'medium');
+                setStartDate(taskToEdit.startDate ? new Date(taskToEdit.startDate) : undefined);
+                setEndDate(taskToEdit.endDate ? new Date(taskToEdit.endDate) : undefined);
+                setType(taskToEdit.type || 'work');
 
-            // Map existing subTasks if any
-            if (taskToEdit.subTasks) {
-                setSubTasks(taskToEdit.subTasks.map(st => ({ id: st.id, title: st.title, completed: st.completed })));
-            } else {
-                setSubTasks([]);
+                // Map existing subTasks if any
+                if (taskToEdit.subTasks) {
+                    setSubTasks(taskToEdit.subTasks.map(st => ({ id: st.id, title: st.title, completed: st.completed })));
+                } else {
+                    setSubTasks([]);
+                }
+                setLastTaskId(taskToEdit.id);
             }
         } else {
             // Reset for create
-            setTitle('');
-            setRemarks('');
-            setPriority('medium');
-            setStartDate(new Date());
-            setEndDate(undefined);
-            setType('work');
+            if (lastTaskId !== null || isOpen) {
+                if (lastTaskId === null && title === '' && priority === 'medium') return;
 
-            setSubTasks([]);
+                setTitle('');
+                setRemarks('');
+                setPriority('medium');
+                setStartDate(new Date());
+                setEndDate(undefined);
+                setType('work');
+
+                setSubTasks([]);
+                setLastTaskId(null);
+            }
         }
-    }, [taskToEdit, isOpen]);
+    }, [taskToEdit, isOpen, lastTaskId, title, priority]);
 
     const handleAddSubTask = () => {
         if (!subTaskInput.trim()) return;

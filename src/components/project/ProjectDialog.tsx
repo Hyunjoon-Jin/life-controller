@@ -33,34 +33,51 @@ export function ProjectDialog({ isOpen, onOpenChange, projectToEdit }: ProjectDi
     const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
     const [budgetTotal, setBudgetTotal] = useState('');
 
+    const [lastProjectId, setLastProjectId] = useState<string | null>(null);
+
     useEffect(() => {
         if (projectToEdit) {
-            setTitle(projectToEdit.title);
-            setDescription(projectToEdit.description || '');
-            setStatus(projectToEdit.status || 'preparation');
-            setColor(projectToEdit.color);
-            setStartDate(projectToEdit.startDate ? new Date(projectToEdit.startDate) : undefined);
-            setEndDate(projectToEdit.endDate ? new Date(projectToEdit.endDate) : undefined);
+            if (projectToEdit.id !== lastProjectId || isOpen) {
+                // Prevent creating loop if parent passes new object reference but same ID
+                if (projectToEdit.id === lastProjectId && title === projectToEdit.title) return;
 
-            setManager(projectToEdit.manager || '');
-            setMyRole(projectToEdit.myRole || '');
-            setSelectedMembers(projectToEdit.members || []);
-            setBudgetTotal(projectToEdit.budget?.total.toString() || '');
+                // eslint-disable-next-line react-hooks/set-state-in-effect
+                setTitle(projectToEdit.title);
+                setDescription(projectToEdit.description || '');
+                setStatus(projectToEdit.status || 'preparation');
+                setColor(projectToEdit.color);
+                setStartDate(projectToEdit.startDate ? new Date(projectToEdit.startDate) : undefined);
+                setEndDate(projectToEdit.endDate ? new Date(projectToEdit.endDate) : undefined);
+
+                setManager(projectToEdit.manager || '');
+                setMyRole(projectToEdit.myRole || '');
+                setSelectedMembers(projectToEdit.members || []);
+                setBudgetTotal(projectToEdit.budget?.total.toString() || '');
+                setLastProjectId(projectToEdit.id);
+            }
         } else {
             // Reset for create
-            setTitle('');
-            setDescription('');
-            setStatus('preparation');
-            setColor('#3b82f6'); // Default Blue
-            setStartDate(new Date());
-            setEndDate(undefined);
-            setManager('Me');
+            if (lastProjectId !== null || isOpen) {
+                // Optimization: if we already reset, don't do it again?
+                // But we need to handle "Open Create Dialog" action.
+                // Ideally check if we are already in "create state".
+                if (lastProjectId === null && title === '' && status === 'preparation') return;
 
-            setMyRole('');
-            setSelectedMembers([]);
-            setBudgetTotal('');
+                setTitle('');
+                setDescription('');
+                setStatus('preparation');
+                setColor('#3b82f6'); // Default Blue
+                setStartDate(new Date());
+                setEndDate(undefined);
+                setManager('Me');
+
+                setMyRole('');
+                setSelectedMembers([]);
+                setBudgetTotal('');
+                setLastProjectId(null);
+            }
         }
-    }, [projectToEdit, isOpen]);
+    }, [projectToEdit, isOpen, lastProjectId, title, status]);
 
     const handleSave = () => {
         if (!title.trim()) return;

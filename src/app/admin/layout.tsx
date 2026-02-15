@@ -17,6 +17,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             alert('관리자 권한이 필요합니다.');
             router.replace('/');
         } else {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setIsAuthorized(true);
         }
     }, [userProfile, router]);

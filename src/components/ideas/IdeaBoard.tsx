@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 
 const COLORS = [
     { name: 'yellow', value: 'bg-yellow-200 text-yellow-900 border-yellow-300' },
@@ -407,7 +408,7 @@ export function IdeaBoard() {
                             <div className="flex gap-2 overflow-x-auto py-2">
                                 {attachments.map((src, idx) => (
                                     <div key={idx} className="relative w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden border">
-                                        <img src={src} alt="attachment" className="w-full h-full object-cover" />
+                                        <Image src={src} alt="attachment" fill className="object-cover" unoptimized />
                                         <button
                                             onClick={() => removeAttachment(idx)}
                                             className="absolute top-0 right-0 bg-black/50 text-white p-0.5 hover:bg-red-500 rounded-bl"

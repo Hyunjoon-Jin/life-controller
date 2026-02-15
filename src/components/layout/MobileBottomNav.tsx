@@ -2,7 +2,8 @@ import { Home, Calendar, Activity, BookOpen, Menu, Sparkles, Briefcase, DollarSi
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { CategoryType, CATEGORIES } from '@/constants/menu';
+import { CategoryType } from '@/constants/menu';
+import { motion } from 'framer-motion';
 
 interface MobileBottomNavProps {
     appMode: 'life' | 'work';
@@ -24,7 +25,7 @@ export function MobileBottomNav({
     if (appMode === 'work') {
         // Simple Work Mode Bottom Nav
         return (
-            <div className="md:hidden fixed bottom-0 left-0 right-0 bg-background border-t border-border z-50 h-auto min-h-[64px] px-4 flex items-center justify-around pb-safe pt-1">
+            <div className="md:hidden fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-md border-t border-border z-50 h-auto min-h-[64px] px-4 flex items-center justify-around pb-safe pt-1">
                 <Button variant="ghost" className="flex flex-col gap-1 h-auto" onClick={() => setMainMode('home')}>
                     <Home className={cn("w-6 h-6", mainMode === 'home' ? "text-purple-600" : "text-muted-foreground")} />
                     <span className="text-[10px] font-medium">홈</span>
@@ -49,20 +50,28 @@ export function MobileBottomNav({
     ];
 
     return (
-        <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-[#1a1b1e] border-t border-gray-100 dark:border-gray-800 z-50 h-auto min-h-[70px] px-2 flex items-center justify-around pb-safe pt-2 shadow-[0_-5px_20px_rgba(0,0,0,0.03)]">
+        <div className="md:hidden fixed bottom-4 left-4 right-4 bg-white/80 dark:bg-[#1a1b1e]/80 backdrop-blur-xl border border-white/20 dark:border-white/10 z-50 h-[70px] px-2 flex items-center justify-around rounded-3xl shadow-lg ring-1 ring-black/5">
             {navItems.map(item => (
-                <button
+                <motion.button
                     key={item.id}
                     onClick={item.action}
-                    className="flex flex-col items-center justify-center w-full h-full gap-1"
+                    whileTap={{ scale: 0.9 }}
+                    className="flex flex-col items-center justify-center w-full h-full gap-1 relative"
                 >
                     <div className={cn(
-                        "p-1.5 rounded-xl transition-all duration-300",
+                        "p-1.5 rounded-xl transition-all duration-300 relative z-10",
                         item.isActive
-                            ? "bg-primary/10 text-primary -translate-y-1"
+                            ? "text-primary -translate-y-1"
                             : "text-gray-400 hover:text-gray-600"
                     )}>
-                        <item.icon className={cn("w-6 h-6", item.isActive && "fill-current")} strokeWidth={item.isActive ? 2.5 : 2} />
+                        {item.isActive && (
+                            <motion.div
+                                layoutId="navIndicator"
+                                className="absolute inset-0 bg-primary/10 rounded-xl"
+                                transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                            />
+                        )}
+                        <item.icon className={cn("w-6 h-6 relative z-10", item.isActive && "fill-current")} strokeWidth={item.isActive ? 2.5 : 2} />
                     </div>
                     <span className={cn(
                         "text-[10px] font-bold transition-colors",
@@ -70,18 +79,18 @@ export function MobileBottomNav({
                     )}>
                         {item.label}
                     </span>
-                </button>
+                </motion.button>
             ))}
 
             {/* More Menu (Drawer) */}
             <Sheet>
                 <SheetTrigger asChild>
-                    <button className="flex flex-col items-center justify-center w-full h-full gap-1">
+                    <motion.button whileTap={{ scale: 0.9 }} className="flex flex-col items-center justify-center w-full h-full gap-1">
                         <div className="p-1.5 rounded-xl text-gray-400 hover:text-gray-600">
                             <Menu className="w-6 h-6" strokeWidth={2} />
                         </div>
                         <span className="text-[10px] font-bold text-gray-400">전체</span>
-                    </button>
+                    </motion.button>
                 </SheetTrigger>
                 <SheetContent side="bottom" className="rounded-t-[32px] h-[80vh]">
                     <SheetHeader className="mb-6">

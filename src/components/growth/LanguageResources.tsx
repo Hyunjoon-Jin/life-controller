@@ -12,6 +12,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Plus, Trash2, ExternalLink, Bookmark, CheckCircle2, PlayCircle, BookOpen, MonitorPlay, Search, Filter } from 'lucide-react';
 import { LanguageResource } from '@/types';
 import { format } from 'date-fns';
+import Image from 'next/image';
 
 const RECOMMENDED_RESOURCES = [
     // English
@@ -173,7 +174,7 @@ export function LanguageResources({ language }: { language: string }) {
                         <Card key={idx} className="overflow-hidden hover:shadow-lg transition-all group">
                             <div className="h-40 bg-slate-100 relative overflow-hidden">
                                 {rec.thumbnail ? (
-                                    <img src={rec.thumbnail} alt={rec.title} className="w-full h-full object-cover transition-transform group-hover:scale-105" />
+                                    <Image src={rec.thumbnail} alt={rec.title} fill className="object-cover transition-transform group-hover:scale-105" unoptimized />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center text-slate-300">
                                         <BookOpen className="w-12 h-12" />
@@ -269,7 +270,7 @@ function ResourceCard({ resource, onUpdate, onDelete }: { resource: LanguageReso
         <Card className="flex flex-col h-full hover:shadow-md transition-shadow">
             <div className="h-32 bg-slate-100 relative group overflow-hidden">
                 {resource.thumbnail ? (
-                    <img src={resource.thumbnail} alt={resource.title} className="w-full h-full object-cover transition-transform group-hover:scale-105" />
+                    <Image src={resource.thumbnail} alt={resource.title} fill className="object-cover transition-transform group-hover:scale-105" unoptimized />
                 ) : (
                     <div className="w-full h-full flex items-center justify-center text-slate-300 bg-slate-50">
                         {resource.type === 'video' ? <PlayCircle className="w-10 h-10" /> : <BookOpen className="w-10 h-10" />}

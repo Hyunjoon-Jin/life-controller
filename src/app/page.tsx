@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { CalendarView } from '@/components/calendar/CalendarView';
 import GoalTree from '@/components/goals/GoalTree';
 import { HabitTracker } from '@/components/habits/HabitTracker';
@@ -29,7 +30,7 @@ import { MobileHeader } from '@/components/layout/MobileHeader';
 import { MobileBottomNav } from '@/components/layout/MobileBottomNav'; // Added
 import { MobileCategoryTabs } from '@/components/layout/MobileCategoryTabs'; // Added
 import { CloudSyncStatus } from '@/components/layout/CloudSyncStatus'; // Added
-import { CATEGORIES, SUB_MENUS, CategoryType, WORK_NAV_ITEMS } from '@/constants/menu';
+import { CATEGORIES, SUB_MENUS, CategoryType, WORK_NAV_ITEMS, TabType } from '@/constants/menu';
 import { TabHeader } from '@/components/layout/TabHeader';
 
 import { CertificateManager } from '@/components/growth/CertificateManager';
@@ -42,7 +43,7 @@ import { InvestmentTab } from '@/components/finance/InvestmentTab';
 import { LearningPlanner } from '@/components/growth/LearningPlanner';
 import { ReportGenerator } from '@/components/report/ReportGenerator';
 import { WeatherWidget } from '@/components/weather/WeatherWidget';
-import { HelpCircle, Calendar, Lightbulb, Users as UsersIcon, Link as LinkIcon, Target, Book, CheckSquare, ListTodo, Sparkles, Trophy, NotebookPen, UsersRound, Bookmark, Scale, Award, Briefcase, Home as HomeIcon, Clock, LayoutTemplate } from 'lucide-react';
+import { HelpCircle, Calendar, Sparkles, Briefcase, Home as HomeIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { Logo } from '@/components/ui/Logo';
@@ -64,6 +65,7 @@ export default function Home() {
   const [todayDate, setTodayDate] = useState('');
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     setTodayDate(new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }));
   }, []);
 
@@ -72,6 +74,7 @@ export default function Home() {
   useEffect(() => {
     if (appMode === 'work') {
       // Only reset to Dashboard when AppMode changes to Work
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       setActiveCategory('basic');
       setActiveTab('calendar');
     }
@@ -82,6 +85,7 @@ export default function Home() {
     if (appMode === 'life') {
       // If switching to Life Mode while in Work Management, go back to Home
       if (mainMode === 'work') {
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         setMainMode('home');
       }
     }
@@ -91,7 +95,7 @@ export default function Home() {
     setMainMode(mode);
     if (mode === 'schedule') {
       setActiveCategory(category);
-      setActiveTab(tab as any);
+      setActiveTab(tab as TabType);
     }
   };
 
@@ -121,8 +125,8 @@ export default function Home() {
         setAppMode={setAppMode}
         mainMode={mainMode}
         setMainMode={setMainMode}
-        activeCategory={activeCategory as any}
-        setActiveCategory={setActiveCategory as any}
+        activeCategory={activeCategory}
+        setActiveCategory={setActiveCategory}
       />
       {/* Mobile Header (Hidden on Desktop) */}
       <MobileHeader
@@ -138,9 +142,9 @@ export default function Home() {
       {/* Mobile Category Tabs (Sticky Top) */}
       {mainMode === 'schedule' && (
         <MobileCategoryTabs
-          activeCategory={activeCategory as any}
+          activeCategory={activeCategory}
           activeTab={activeTab}
-          onSelect={(t) => setActiveTab(t as any)}
+          onSelect={(t) => setActiveTab(t as TabType)}
         />
       )}
 
@@ -231,17 +235,33 @@ export default function Home() {
             onSelect={(category, tab) => {
               setMainMode('schedule');
               setActiveCategory(category);
-              setActiveTab(tab as any);
+              setActiveTab(tab as TabType);
             }}
           />
         </div>
       </div>
 
-      {
-        mainMode === 'home' ? (
-          <HomeDashboard onNavigate={setMainMode} onQuickLink={handleQuickLink} />
+      <AnimatePresence mode="wait">
+        {mainMode === 'home' ? (
+          <motion.div
+            key="home"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3 }}
+            className="w-full"
+          >
+            <HomeDashboard onNavigate={setMainMode} onQuickLink={handleQuickLink} />
+          </motion.div>
         ) : mainMode === 'schedule' ? (
-          <div className="flex-1 w-full max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 lg:gap-8 min-h-0">
+          <motion.div
+            key="schedule"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.3 }}
+            className="flex-1 w-full max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 lg:gap-8 min-h-0"
+          >
             {/* Left Column: Main Tabbed View */}
             <div className={cn(
               "flex flex-col min-h-[600px] md:min-h-[800px]",
@@ -356,7 +376,7 @@ export default function Home() {
                 )}
                 {activeTab === 'learning' && (
                   <div className="h-full animate-in fade-in zoom-in-95 duration-200">
-                    <LearningPlanner onNavigate={(tab) => handleQuickLink('schedule', 'basic', tab as any)} />
+                    <LearningPlanner onNavigate={(tab) => handleQuickLink('schedule', 'basic', tab)} />
                   </div>
                 )}
                 {activeTab === 'certificate' && (
@@ -438,11 +458,20 @@ export default function Home() {
                 <HabitTracker />
               </div>
             )}
-          </div>
+          </motion.div>
         ) : (
-          <WorkLayout viewMode="schedule" />
-        )
-      }
+          <motion.div
+            key="work"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 1.05 }}
+            transition={{ duration: 0.3 }}
+            className="h-full w-full"
+          >
+            <WorkLayout viewMode="schedule" />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <GuideModal
         isOpen={isGuideOpen}

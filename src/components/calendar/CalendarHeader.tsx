@@ -29,23 +29,41 @@ export function CalendarHeader({ currentDate, view, setView, onNext, onPrev, onT
     };
 
     return (
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between p-4 bg-white dark:bg-[#1C1C1E] rounded-3xl mb-4 shadow-sm border border-gray-100 dark:border-gray-800 gap-4">
-            <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" onClick={onToday} className="rounded-xl border-border dark:border-gray-700 dark:text-gray-200">오늘</Button>
-                <div className="flex items-center rounded-xl border border-border dark:border-gray-700 bg-transparent p-0.5">
-                    <Button variant="ghost" size="icon" onClick={onPrev} className="h-8 w-8 rounded-lg hover:bg-muted dark:text-gray-200">
-                        <ChevronLeft className="h-4 w-4" strokeWidth={1.5} />
-                    </Button>
-                    <div className="mx-2 font-extrabold text-lg min-w-[140px] text-center text-foreground dark:text-white">
-                        {renderTitle()}
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between p-3 md:p-4 bg-white dark:bg-[#1C1C1E] rounded-3xl mb-4 shadow-sm border border-gray-100 dark:border-gray-800 gap-3 md:gap-4">
+            <div className="flex items-center gap-2 w-full md:w-auto justify-between md:justify-start">
+                <div className="flex items-center gap-2">
+                    <Button variant="outline" size="sm" onClick={onToday} className="rounded-xl border-border dark:border-gray-700 dark:text-gray-200">오늘</Button>
+                    <div className="flex items-center rounded-xl border border-border dark:border-gray-700 bg-transparent p-0.5">
+                        <Button variant="ghost" size="icon" onClick={onPrev} className="h-8 w-8 rounded-lg hover:bg-muted dark:text-gray-200">
+                            <ChevronLeft className="h-4 w-4" strokeWidth={1.5} />
+                        </Button>
+                        <div className="mx-1 md:mx-2 font-extrabold text-base md:text-lg min-w-[100px] md:min-w-[140px] text-center text-foreground dark:text-white">
+                            {renderTitle()}
+                        </div>
+                        <Button variant="ghost" size="icon" onClick={onNext} className="h-8 w-8 rounded-lg hover:bg-muted dark:text-gray-200">
+                            <ChevronRight className="h-4 w-4" strokeWidth={1.5} />
+                        </Button>
                     </div>
-                    <Button variant="ghost" size="icon" onClick={onNext} className="h-8 w-8 rounded-lg hover:bg-muted dark:text-gray-200">
-                        <ChevronRight className="h-4 w-4" strokeWidth={1.5} />
-                    </Button>
+                </div>
+
+                {/* Mobile View Switcher (Visible only on small screens) */}
+                <div className="md:hidden flex items-center bg-muted/50 rounded-xl p-0.5">
+                    {(['month', 'week', 'day'] as CalendarViewType[]).map((v) => (
+                        <button
+                            key={v}
+                            onClick={() => setView(v)}
+                            className={cn(
+                                "px-2.5 py-1 text-xs font-bold rounded-lg capitalize transition-all",
+                                view === v ? "bg-white shadow-sm text-primary" : "text-muted-foreground"
+                            )}
+                        >
+                            {v === 'month' ? '월' : v === 'week' ? '주' : '일'}
+                        </button>
+                    ))}
                 </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
+            <div className="flex flex-wrap items-center gap-2 md:gap-3 w-full md:w-auto justify-end">
                 <button
                     onClick={() => setShowProjectTasks(!showProjectTasks)}
                     className={cn(
@@ -60,7 +78,8 @@ export function CalendarHeader({ currentDate, view, setView, onNext, onPrev, onT
                     <span className="sm:hidden">작업</span>
                 </button>
 
-                <div className="flex items-center bg-muted/50 rounded-2xl p-1 ml-auto md:ml-0">
+                {/* Desktop View Switcher */}
+                <div className="hidden md:flex items-center bg-muted/50 rounded-2xl p-1 ml-auto md:ml-0">
                     {(['month', 'week', 'day'] as CalendarViewType[]).map((v) => (
                         <button
                             key={v}

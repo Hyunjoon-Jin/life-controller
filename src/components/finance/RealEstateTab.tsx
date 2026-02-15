@@ -156,7 +156,7 @@ export function RealEstateTab() {
                             <div className="space-y-3">
                                 {scrap.memo && (
                                     <p className="text-sm text-slate-600 line-clamp-2 bg-slate-50 p-2 rounded-lg italic">
-                                        "{scrap.memo}"
+                                        &quot;{scrap.memo}&quot;
                                     </p>
                                 )}
                                 <Button

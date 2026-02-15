@@ -8,6 +8,7 @@ import { Smile, Image as ImageIcon, Save, X } from 'lucide-react';
 import { useData } from '@/context/DataProvider';
 import { generateId } from '@/lib/utils';
 import { JournalEntry } from '@/types';
+import Image from 'next/image';
 
 const MOODS = ['😊', '😐', '😔', '😡', '😴', '🤩', '🤔', '🤒'];
 
@@ -147,7 +148,7 @@ export function JournalEditor({ onClose, journal }: { onClose: () => void; journ
                     <div className="flex gap-2 overflow-x-auto py-2">
                         {images.map((img, idx) => (
                             <div key={idx} className="relative group flex-shrink-0 w-20 h-20 rounded-md overflow-hidden border">
-                                <img src={img} alt="attachment" className="w-full h-full object-cover" />
+                                <Image src={img} alt="attachment" fill className="object-cover" unoptimized />
                                 <button
                                     onClick={() => handleRemoveImage(idx)}
                                     className="absolute top-1 right-1 bg-black/50 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"

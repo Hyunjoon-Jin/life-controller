@@ -17,6 +17,7 @@ import { DietEntry, DietItem } from '@/types';
 import { FoodSearchDialog } from './FoodSearchDialog';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { DietAnalysis } from './DietAnalysis';
+import Image from 'next/image';
 export function DietLog() {
     const { dietEntries = [], addDietEntry, deleteDietEntry, updateDietEntry, inBodyEntries = [], exerciseSessions = [] } = useData();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -275,7 +276,9 @@ export function DietLog() {
                                                             {/* Image Section */}
                                                             {entry.image && (
                                                                 <div className="sm:w-[150px] w-full h-32 sm:h-auto shrink-0 relative">
-                                                                    <img src={entry.image} alt="Meal" className="w-full h-full object-cover" />
+                                                                    <div className="sm:w-[150px] w-full h-32 sm:h-auto shrink-0 relative">
+                                                                        <Image src={entry.image} alt="Meal" fill className="object-cover" unoptimized />
+                                                                    </div>
                                                                 </div>
                                                             )}
 

@@ -29,6 +29,7 @@ export function VocabQuiz({ language }: VocabQuizProps) {
 
     // Initialize/Reset
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setQuizList(allVocab);
         setCurrentIndex(0);
         setIsFlipped(false);

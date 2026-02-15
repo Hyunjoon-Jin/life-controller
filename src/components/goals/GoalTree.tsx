@@ -12,12 +12,10 @@ import {
     Plus,
     ChevronRight,
     ChevronDown,
-    ListTodo,
     Calendar,
     Trophy,
     Pencil,
     Trash2,
-    Target,
     Tag,
     ArrowUpDown
 } from 'lucide-react';
@@ -323,7 +321,7 @@ export default function GoalTree() {
 
             if (parentId) {
                 const findAndAdd = (list: Goal[]) => {
-                    for (let g of list) {
+                    for (const g of list) {
                         if (g.id === parentId) {
                             updateGoal({ ...g, subGoals: [...(g.subGoals || []), newGoal] });
                             return true;
@@ -342,7 +340,7 @@ export default function GoalTree() {
     };
 
     const findGoalById = (list: Goal[], id: string): Goal | null => {
-        for (let g of list) {
+        for (const g of list) {
             if (g.id === id) return g;
             if (g.subGoals) {
                 const found = findGoalById(g.subGoals, id);
@@ -372,7 +370,7 @@ export default function GoalTree() {
                     </div>
                     <div className="flex flex-wrap sm:flex-nowrap gap-2">
                         {/* Sort Dropdown */}
-                        <Select value={sortBy} onValueChange={(v) => setSortBy(v as any)}>
+                        <Select value={sortBy} onValueChange={(v) => setSortBy(v as 'deadline' | 'progress' | 'name')}>
                             <SelectTrigger className="w-[100px] h-10 text-xs bg-background shadow-sm border-border/60">
                                 <ArrowUpDown className="w-3 h-3 mr-1.5 opacity-50" />
                                 <SelectValue placeholder="정렬" />
@@ -388,7 +386,7 @@ export default function GoalTree() {
 
                         <div className="w-px h-6 bg-border/50 my-auto hidden sm:block mx-1" />
 
-                        <Select value={filterCategory} onValueChange={(v) => setFilterCategory(v as any)}>
+                        <Select value={filterCategory} onValueChange={(v) => setFilterCategory(v as GoalCategory | 'all')}>
                             <SelectTrigger className="w-[110px] h-10 text-xs bg-background shadow-sm border-border/60">
                                 <SelectValue placeholder="카테고리" />
                             </SelectTrigger>
@@ -404,7 +402,7 @@ export default function GoalTree() {
                             </SelectContent>
                         </Select>
 
-                        <Select value={filterPlanType} onValueChange={(v) => setFilterPlanType(v as any)}>
+                        <Select value={filterPlanType} onValueChange={(v) => setFilterPlanType(v as PlanType | 'all')}>
                             <SelectTrigger className="w-[110px] h-10 text-xs bg-background shadow-sm border-border/60">
                                 <SelectValue placeholder="유형" />
                             </SelectTrigger>

@@ -75,52 +75,64 @@ export function EventDialog({ isOpen, onOpenChange, event, initialDate, initialE
         return d;
     };
 
+    // Track the last event ID to prevent loops if the object reference changes but ID is same
+    const [lastEventId, setLastEventId] = useState<string | null>(null);
+
     useEffect(() => {
+        if (!isOpen) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setLastEventId(null);
+            return;
+        }
+
         if (event) {
-            setTitle(event.title);
-            setType(event.type || 'work');
-            setPriority(event.priority || 'medium');
-            setIsMeeting(event.isMeeting || false);
-            setIsAppointment(event.isAppointment || false);
-            setStartTime(format(roundToNearest15(event.start), 'HH:mm')); // Changed to HH:mm for consistency
-            setEndTime(format(roundToNearest15(event.end), 'HH:mm'));
-            setConnectedProjectId(event.connectedProjectId);
-            setConnectedGoalId(event.connectedGoalId);
-            setPrepTime(event.prepTime || 0);
-            setTravelTime(event.travelTime || 0);
+            if (event.id !== lastEventId) {
+                setLastEventId(event.id);
+                setTitle(event.title);
+                setType(event.type || 'work');
+                setPriority(event.priority || 'medium');
+                setIsMeeting(event.isMeeting || false);
+                setIsAppointment(event.isAppointment || false);
+                setStartTime(format(roundToNearest15(event.start), 'HH:mm'));
+                setEndTime(format(roundToNearest15(event.end), 'HH:mm'));
+                setConnectedProjectId(event.connectedProjectId);
+                setConnectedGoalId(event.connectedGoalId);
+                setPrepTime(event.prepTime || 0);
+                setTravelTime(event.travelTime || 0);
 
-            // If editing an existing event, we don't typically convert it to habit here,
-            // unless it WAS a habit event, but habit events usually edit the master habit.
-            // For simplicity in this dialog, we assume standard event editing.
-            setIsHabit(false);
-            setRepeatDays([]);
-        } else if (isOpen && initialDate) {
-            // Reset for new event
-            setTitle('');
-            setType('work');
-            setPriority('medium');
-            setIsMeeting(false);
-            setIsAppointment(false);
-            setConnectedProjectId(undefined);
-            setConnectedGoalId(undefined);
-            setPrepTime(0);
-            setTravelTime(0);
-            setIsHabit(false);
+                setIsHabit(false);
+                setRepeatDays([]);
+            }
+        } else if (initialDate) {
+            if (lastEventId !== 'new_entry') {
+                setLastEventId('new_entry');
 
-            const start = roundToNearest15(initialDate);
-            setRepeatDays([start.getDay()]); // Default to current day
+                setTitle('');
+                setType('work');
+                setPriority('medium');
+                setIsMeeting(false);
+                setIsAppointment(false);
+                setConnectedProjectId(undefined);
+                setConnectedGoalId(undefined);
+                setPrepTime(0);
+                setTravelTime(0);
+                setIsHabit(false);
 
-            setStartTime(format(start, 'HH:mm'));
+                const start = roundToNearest15(initialDate);
+                setRepeatDays([start.getDay()]);
 
-            if (initialEndDate) {
-                setEndTime(format(roundToNearest15(initialEndDate), 'HH:mm'));
-            } else {
-                const end = new Date(start);
-                end.setMinutes(end.getMinutes() + 30);
-                setEndTime(format(end, 'HH:mm'));
+                setStartTime(format(start, 'HH:mm'));
+
+                if (initialEndDate) {
+                    setEndTime(format(roundToNearest15(initialEndDate), 'HH:mm'));
+                } else {
+                    const end = new Date(start);
+                    end.setMinutes(end.getMinutes() + 30);
+                    setEndTime(format(end, 'HH:mm'));
+                }
             }
         }
-    }, [isOpen, event, initialDate, initialEndDate]);
+    }, [isOpen, event, initialDate, initialEndDate, lastEventId]);
 
     const handleSave = () => {
         if (!title.trim()) return;

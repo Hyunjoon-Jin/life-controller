@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Book } from '@/types';
 import { cn } from '@/lib/utils';
 import { BookOpen, Star, MoreVertical, Play, CheckCircle } from 'lucide-react';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
@@ -32,7 +33,7 @@ export function BookShelf({ onEdit }: BookShelfProps) {
                 book.coverUrl ? "bg-gray-100" : bgColor
             )}>
                 {book.coverUrl ? (
-                    <img src={book.coverUrl} alt={book.title} className="w-full h-full object-cover" />
+                    <Image src={book.coverUrl} alt={book.title} fill className="object-cover" unoptimized />
                 ) : (
                     <div className="w-full h-full flex flex-col items-center justify-center p-4 text-center">
                         <BookOpen className="w-8 h-8 opacity-20 mb-2" />

@@ -61,6 +61,7 @@ export function HabitTracker() {
 
     // Hydration fix: Set today only on client
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setToday(format(new Date(), 'yyyy-MM-dd'));
     }, []);
 

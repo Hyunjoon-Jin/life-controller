@@ -10,6 +10,7 @@ import { Book, BookStatus } from '@/types';
 import { useData } from '@/context/DataProvider';
 import { generateId, cn } from '@/lib/utils';
 import { Link2, Search, Loader2, BookOpen, Star, Quote } from 'lucide-react';
+import Image from 'next/image';
 
 interface BookSearchDialogProps {
     isOpen: boolean;
@@ -213,7 +214,7 @@ export function BookSearchDialog({ isOpen, onClose, bookToEdit }: BookSearchDial
                                                 <li>위 검색창에 책 제목을 입력하고 <strong>검색</strong>을 누르세요.</li>
                                                 <li>새 창에 뜨는 서점 사이트에서 원하는 책을 찾으세요.</li>
                                                 <li>그 책의 <strong>상세 페이지 URL(주소)</strong>을 복사하세요.</li>
-                                                <li>상단의 <strong>'URL로 가져오기'</strong> 탭으로 이동하여 주소를 붙여넣으세요.</li>
+                                                <li>그 책의 <strong>&apos;URL로 가져오기&apos;</strong> 탭으로 이동하여 주소를 붙여넣으세요.</li>
                                             </ol>
                                         </div>
                                     </div>
@@ -258,7 +259,7 @@ export function BookSearchDialog({ isOpen, onClose, bookToEdit }: BookSearchDial
                                 <div className="md:col-span-4 flex flex-col items-center gap-4">
                                     <div className="w-full aspect-[2/3] bg-muted rounded-lg border-2 border-dashed border-muted-foreground/20 flex flex-col items-center justify-center relative overflow-hidden group">
                                         {coverUrl ? (
-                                            <img src={coverUrl} alt="Cover" className="w-full h-full object-cover" />
+                                            <Image src={coverUrl} alt="Cover" fill className="object-cover" unoptimized />
                                         ) : (
                                             <div className="text-center p-4">
                                                 <BookOpen className="w-12 h-12 text-muted-foreground/30 mx-auto mb-2" />
