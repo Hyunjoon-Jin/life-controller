@@ -422,7 +422,7 @@ export function DayView({ currentDate, showProjectTasks, onNext, onPrev }: { cur
             const touch = e.touches[0];
             if (!touch) return;
             handleMouseMove({ clientY: touch.clientY } as MouseEvent);
-            if (dragStateRef.current?.hasMoved) {
+            if (dragStateRef.current?.hasMoved && e.cancelable) {
                 e.preventDefault(); // Prevent scroll during drag
             }
         };
