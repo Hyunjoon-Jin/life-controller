@@ -1,6 +1,5 @@
 import { createServerClient } from "@supabase/ssr";
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 
 export async function middleware(request: NextRequest) {
     let response = NextResponse.next({
@@ -10,17 +9,15 @@ export async function middleware(request: NextRequest) {
     });
 
     const supabase = createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL! || 'https://placeholder.supabase.co',
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY! || 'placeholder-key',
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
         {
             cookies: {
                 getAll() {
                     return request.cookies.getAll();
                 },
                 setAll(cookiesToSet) {
-                    cookiesToSet.forEach(({ name, value, options }) =>
-                        request.cookies.set(name, value)
-                    );
+                    cookiesToSet.forEach(({ name, value, options }) => request.cookies.set(name, value));
                     response = NextResponse.next({
                         request: {
                             headers: request.headers,
@@ -38,23 +35,26 @@ export async function middleware(request: NextRequest) {
         data: { user },
     } = await supabase.auth.getUser();
 
-    // If no user and not on public page (login, register, root/landing), redirect to login
-    if (!user &&
-        !request.nextUrl.pathname.startsWith("/login") &&
-        !request.nextUrl.pathname.startsWith("/register") &&
-        request.nextUrl.pathname !== "/" &&
-        !request.nextUrl.pathname.startsWith("/pricing") // Pricing page should be visible too? Maybe later. For now just root.
-    ) {
-        const url = request.nextUrl.clone();
-        url.pathname = "/login";
-        return NextResponse.redirect(url);
+    const path = request.nextUrl.pathname;
+
+    // 1. Auth Page Redirect: If User is logged in, redirect away from Login/Register
+    if (user && (path.startsWith("/login") || path.startsWith("/register"))) {
+        return NextResponse.redirect(new URL("/", request.url));
     }
 
-    // If user is logged in and on login/register page, redirect to home
-    if (user && (request.nextUrl.pathname.startsWith("/login") || request.nextUrl.pathname.startsWith("/register"))) {
-        const url = request.nextUrl.clone();
-        url.pathname = "/";
-        return NextResponse.redirect(url);
+    // 2. Protected Route Redirect: If User is NOT logged in
+    if (!user) {
+        // Define Public Paths
+        const isPublic =
+            path === "/" ||
+            path.startsWith("/login") ||
+            path.startsWith("/register") ||
+            path.startsWith("/pricing");
+
+        // If not public, redirect to login
+        if (!isPublic) {
+            return NextResponse.redirect(new URL("/login", request.url));
+        }
     }
 
     return response;
@@ -67,7 +67,7 @@ export const config = {
          * - _next/static (static files)
          * - _next/image (image optimization files)
          * - favicon.ico (favicon file)
-         * - api routes (API)
+         * - api routes (API) - Usually we don't run middleware on API unless needed
          */
         "/((?!_next/static|_next/image|favicon.ico|api).*)",
     ],
