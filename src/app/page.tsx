@@ -49,9 +49,12 @@ import { Logo } from '@/components/ui/Logo';
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 import { cn } from '@/lib/utils';
 
+import { LandingPage } from '@/components/landing/LandingPage';
+import { useAuth } from '@/components/auth/SessionProvider';
 import { useBirthdayNotifications } from '@/hooks/useBirthdayNotifications';
 
 export default function Home() {
+  const { user, isLoading } = useAuth(); // Auth Check
   useBirthdayNotifications(); // Initialize Birthday Check
   const [appMode, setAppMode] = useState<'life' | 'work'>('life');
   const [mainMode, setMainMode] = useState<'home' | 'schedule' | 'work'>('home');
@@ -92,6 +95,21 @@ export default function Home() {
     }
   };
 
+  // 1. Loading State
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-900" />
+      </div>
+    );
+  }
+
+  // 2. Unauthenticated -> Landing Page
+  if (!user) {
+    return <LandingPage />;
+  }
+
+  // 3. Authenticated -> Dashboard
   return (
     <main className={cn(
       "min-h-screen p-3 sm:p-4 md:p-6 lg:p-8 flex flex-col transition-all duration-500 pb-24 md:pb-6", // Added pb-24 for mobile nav
