@@ -22,8 +22,11 @@ export function ProjectSection({ onOpenProject }: ProjectSectionProps) {
             {/* Header with New Project Button */}
             <div className="flex items-center justify-between">
                 <h3 className="text-lg font-bold">프로젝트 관리</h3>
-                <Button size="sm" onClick={() => setIsNewProjectOpen(true)}>
-                    <Plus className="w-4 h-4 mr-2" /> 새 프로젝트
+                <Button
+                    onClick={() => setIsNewProjectOpen(true)}
+                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg shadow-blue-500/25 font-bold px-5 py-2.5 h-auto rounded-xl"
+                >
+                    <Plus className="w-5 h-5 mr-2" /> 새 프로젝트
                 </Button>
             </div>
 

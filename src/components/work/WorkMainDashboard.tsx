@@ -22,7 +22,7 @@ export function WorkMainDashboard({ onOpenProject, viewMode = 'schedule' }: Work
     return (
         <div className="h-full flex flex-col gap-6 overflow-hidden">
             {/* Content Area */}
-            <div className="flex-1 overflow-y-auto custom-scrollbar pr-1">
+            <div className="flex-1 overflow-y-auto custom-scrollbar p-6">
                 {viewMode === 'schedule' && <ScheduleSection />}
                 {viewMode === 'project' && <ProjectSection onOpenProject={onOpenProject} />}
 
