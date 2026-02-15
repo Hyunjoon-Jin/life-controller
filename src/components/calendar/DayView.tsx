@@ -3,7 +3,7 @@
 import { format, isSameDay, isValid } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { cn, generateId } from '@/lib/utils';
-import { Users, AlertCircle, Briefcase, Handshake } from 'lucide-react';
+import { Users, AlertCircle, Briefcase, Handshake, Plus } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { useData } from '@/context/DataProvider';
 import { CalendarEvent, EventType } from '@/types';
@@ -183,6 +183,18 @@ export function DayView({ currentDate, showProjectTasks, onNext, onPrev }: { cur
         setTempEvent(newTemp);
     };
 
+    // Mobile: Tap on grid cell to open create dialog directly
+    const handleGridTap = (hour: number, minute: number) => {
+        const date = new Date(currentDate);
+        date.setHours(hour, minute, 0, 0);
+        const endDate = new Date(date);
+        endDate.setMinutes(endDate.getMinutes() + 60);
+        setSelectedDate(date);
+        setSelectedEndDate(endDate);
+        setSelectedEvent(null);
+        setIsDialogOpen(true);
+    };
+
     const handleOpenCreate = (hour: number, minute: number) => {
         if (dragStateRef.current) return;
         const date = new Date(currentDate);
@@ -291,6 +303,36 @@ export function DayView({ currentDate, showProjectTasks, onNext, onPrev }: { cur
         setTempEvent(event);
     };
 
+    // Touch handlers for mobile
+    const startTouchMove = (e: React.TouchEvent, event: CalendarEvent) => {
+        e.stopPropagation();
+        const touch = e.touches[0];
+        setDragState({
+            id: event.id,
+            mode: 'move',
+            originalStart: new Date(event.start),
+            originalEnd: new Date(event.end),
+            initialY: touch.clientY,
+            hasMoved: false
+        });
+        setTempEvent(event);
+    };
+
+    const startTouchResize = (e: React.TouchEvent, event: CalendarEvent) => {
+        e.stopPropagation();
+        e.preventDefault();
+        const touch = e.touches[0];
+        setDragState({
+            id: event.id,
+            mode: 'resize',
+            originalStart: new Date(event.start),
+            originalEnd: new Date(event.end),
+            initialY: touch.clientY,
+            hasMoved: false
+        });
+        setTempEvent(event);
+    };
+
     useEffect(() => {
         const handleMouseMove = (e: MouseEvent) => {
             const currentDragState = dragStateRef.current;
@@ -375,12 +417,30 @@ export function DayView({ currentDate, showProjectTasks, onNext, onPrev }: { cur
         };
 
 
+        // Touch handlers for mobile
+        const handleTouchMove = (e: TouchEvent) => {
+            const touch = e.touches[0];
+            if (!touch) return;
+            handleMouseMove({ clientY: touch.clientY } as MouseEvent);
+            if (dragStateRef.current?.hasMoved) {
+                e.preventDefault(); // Prevent scroll during drag
+            }
+        };
+
+        const handleTouchEnd = () => {
+            handleMouseUp();
+        };
+
         window.addEventListener('mousemove', handleMouseMove);
         window.addEventListener('mouseup', handleMouseUp);
+        window.addEventListener('touchmove', handleTouchMove, { passive: false });
+        window.addEventListener('touchend', handleTouchEnd);
 
         return () => {
             window.removeEventListener('mousemove', handleMouseMove);
             window.removeEventListener('mouseup', handleMouseUp);
+            window.removeEventListener('touchmove', handleTouchMove);
+            window.removeEventListener('touchend', handleTouchEnd);
         };
     }, [updateEvent, pixelsPerHour]); // Removed dragState and tempEvent dependencies!
 
@@ -437,7 +497,7 @@ export function DayView({ currentDate, showProjectTasks, onNext, onPrev }: { cur
 
             {/* Content */}
             <div
-                className="flex-1 overflow-y-auto relative custom-scrollbar touch-none"
+                className="flex-1 overflow-y-auto relative custom-scrollbar touch-pan-y"
                 ref={timelineRef}
             >
                 {/* Scrollable Container Wrapper */}
@@ -477,8 +537,15 @@ export function DayView({ currentDate, showProjectTasks, onNext, onPrev }: { cur
                                     {[0, 15, 30, 45].map((minute) => (
                                         <div
                                             key={minute}
-                                            className="flex-1 last:border-b-0 hover:bg-primary/5 transition-colors cursor-pointer relative"
+                                            className="flex-1 last:border-b-0 hover:bg-primary/5 transition-colors cursor-pointer relative md:min-h-0 min-h-[16px]"
                                             onMouseDown={(e) => handleGridMouseDown(e, hour, minute)}
+                                            onClick={(e) => {
+                                                // Mobile: tap to create (only on the grid itself, not events)
+                                                if (e.target !== e.currentTarget) return;
+                                                if (window.innerWidth < 768) {
+                                                    handleGridTap(hour, minute);
+                                                }
+                                            }}
                                         />
                                     ))}
                                 </div>
@@ -534,6 +601,7 @@ export function DayView({ currentDate, showProjectTasks, onNext, onPrev }: { cur
                                         transition: isDragging ? 'none' : 'all 0.2s ease-out' // Smooth transitions when zooming
                                     }}
                                     onMouseDown={(e) => startMove(e, event)}
+                                    onTouchStart={(e) => startTouchMove(e, event)}
                                     onClick={(e) => {
                                         e.stopPropagation();
                                         if (justDraggedRef.current) return;
@@ -582,18 +650,37 @@ export function DayView({ currentDate, showProjectTasks, onNext, onPrev }: { cur
                                         </div>
                                     )}
 
-                                    {/* Resize Handle with cleaner UI */}
+                                    {/* Resize Handle - visible on mobile, hover on desktop */}
                                     <div
-                                        className="absolute bottom-0 left-0 right-0 h-2 cursor-ns-resize opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center z-20"
+                                        className="absolute bottom-0 left-0 right-0 h-4 md:h-2 cursor-ns-resize opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex items-center justify-center z-20"
                                         onMouseDown={(e) => startResize(e, event)}
+                                        onTouchStart={(e) => startTouchResize(e, event)}
                                     >
-                                        <div className="w-4 h-0.5 bg-black/10 rounded-full" />
+                                        <div className="w-8 md:w-4 h-1 md:h-0.5 bg-black/20 md:bg-black/10 rounded-full" />
                                     </div>
                                 </div>
                             );
                         })}
                     </div>
                 </div>
+
+                {/* Mobile FAB for quick event creation */}
+                <button
+                    className="md:hidden fixed bottom-24 right-6 z-50 w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-xl shadow-blue-500/30 flex items-center justify-center active:scale-95 transition-transform"
+                    onClick={() => {
+                        const now = new Date();
+                        const start = new Date(currentDate);
+                        start.setHours(now.getHours(), Math.floor(now.getMinutes() / 15) * 15, 0, 0);
+                        const end = new Date(start);
+                        end.setHours(end.getHours() + 1);
+                        setSelectedDate(start);
+                        setSelectedEndDate(end);
+                        setSelectedEvent(null);
+                        setIsDialogOpen(true);
+                    }}
+                >
+                    <Plus className="w-7 h-7" />
+                </button>
             </div>
 
             <EventDialog
