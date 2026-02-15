@@ -15,7 +15,7 @@ export function ScheduleSection() {
         .filter(e => isSameDay(new Date(e.start), today))
         .filter(e => e.type === 'work' || e.isMeeting || e.isWorkLog || !!e.connectedProjectId)
         .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
-    const todayTasks = tasks.filter(t => !t.completed && (t.dueDate ? isSameDay(new Date(t.dueDate), today) : false));
+    const todayTasks = tasks.filter(t => !t.completed && !!t.projectId && (t.dueDate ? isSameDay(new Date(t.dueDate), today) : false));
 
     return (
         <div className="space-y-6">

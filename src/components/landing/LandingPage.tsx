@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/ui/Logo';
 import { Lightbulb, Calendar, Target, TrendingUp, CheckCircle, ArrowRight } from 'lucide-react';
+import { FeaturePreview } from './FeaturePreview';
 
 export function LandingPage() {
     return (
@@ -102,6 +103,9 @@ export function LandingPage() {
                     </div>
                 </div>
             </section>
+
+            {/* Interactive Feature Preview */}
+            <FeaturePreview />
 
             {/* Footer */}
             <footer className="py-12 bg-white border-t border-slate-100">
