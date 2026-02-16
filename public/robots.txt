@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://life-controller.vercel.app/sitemap.xml
