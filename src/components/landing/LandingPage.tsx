@@ -8,7 +8,7 @@ import { Logo } from '@/components/ui/Logo';
 import {
     Calendar, Target, Activity, DollarSign,
     Sparkles, Briefcase, ChevronRight, Zap,
-    Shield, Heart, Star,
+    Shield, Globe, Heart, Star,
     Layers, MousePointer, Rocket
 } from 'lucide-react';
 import { BentoGrid, BentoCard, BentoVisuals } from './BentoGrid';
@@ -469,8 +469,12 @@ export function LandingPage() {
                             </div>
                         </div>
                     </div>
-                    <div className="container mx-auto text-center pt-12 border-t border-slate-100 dark:border-white/5 opacity-40 text-xs">
-                        © {new Date().getFullYear()} Life Controller. All rights reserved.
+                    <div className="container mx-auto text-center pt-12 border-t border-slate-100 dark:border-white/5 opacity-40 text-xs flex flex-col md:flex-row justify-between items-center gap-4">
+                        <p>© {new Date().getFullYear()} Life Controller. All rights reserved.</p>
+                        <div className="flex gap-6">
+                            <Link href="/privacy" className="hover:underline hover:opacity-100 transition-opacity">Privacy Policy</Link>
+                            <Link href="/terms" className="hover:underline hover:opacity-100 transition-opacity">Terms of Service</Link>
+                        </div>
                     </div>
                 </footer>
             </section>

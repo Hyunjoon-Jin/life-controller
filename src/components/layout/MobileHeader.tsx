@@ -9,6 +9,7 @@ import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { UserMenu } from '@/components/auth/UserMenu';
 import { cn } from '@/lib/utils';
 import { CATEGORIES } from '@/constants/menu';
+import { AdBanner } from '@/components/ads/AdBanner';
 
 interface MobileHeaderProps {
     appMode: 'life' | 'work';
@@ -124,6 +125,11 @@ export function MobileHeader({
                                 </div>
                             )}
                         </div>
+                    </div>
+
+                    {/* AdBanner in Menu */}
+                    <div className="mb-4">
+                        <AdBanner dataAdSlot="1234567890" dataAdFormat="rectangle" className="w-full" />
                     </div>
 
                     {/* Footer: User & Help */}

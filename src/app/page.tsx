@@ -54,6 +54,7 @@ import { cn } from '@/lib/utils';
 import { LandingPage } from '@/components/landing/LandingPage';
 import { useAuth } from '@/components/auth/SessionProvider';
 import { useBirthdayNotifications } from '@/hooks/useBirthdayNotifications';
+import { AdBanner } from '@/components/ads/AdBanner';
 
 export default function Home() {
   const { user, isLoading } = useAuth(); // Auth Check
@@ -474,13 +475,12 @@ export default function Home() {
             </div>
 
             {/* Right Column: Tools & Widgets (Desktop Only) - Show ONLY on Dashboard */}
-            {activeTab === 'calendar' && (
-              <div className="hidden lg:flex lg:col-span-3 xl:col-span-3 space-y-4 md:space-y-6 flex-col h-full overflow-y-auto custom-scrollbar pb-6">
-                <UpcomingTasks />
-                <Pomodoro />
-                <HabitTracker />
-              </div>
-            )}
+            <div className="hidden lg:flex lg:col-span-3 xl:col-span-3 space-y-4 md:space-y-6 flex-col h-full overflow-y-auto custom-scrollbar pb-6">
+              <UpcomingTasks />
+              <Pomodoro />
+              <HabitTracker />
+              <AdBanner dataAdSlot="1234567890" dataAdFormat="rectangle" className="w-full" />
+            </div>
           </motion.div>
         ) : (
           <motion.div
