@@ -1,22 +1,24 @@
 'use client';
 
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence, Reorder } from 'framer-motion';
 import {
     Calendar, Target, DollarSign, Activity,
     CheckCircle2, Clock, TrendingUp, TrendingDown,
     Plus, ChevronRight, Flame, BookOpen, Trash2, PieChart, Sparkles,
-    User, Briefcase, GraduationCap, Lightbulb
+    User, Briefcase, GraduationCap, Lightbulb, Users, Settings, Bell
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 const DEMO_TABS = [
-    { id: 'schedule', label: '일정 관리', icon: Calendar, color: 'blue' },
-    { id: 'goals', label: '목표 달성', icon: Target, color: 'green' },
-    { id: 'finance', label: '자산 관리', icon: DollarSign, color: 'emerald' },
-    { id: 'health', label: '건강 관리', icon: Activity, color: 'rose' },
-    { id: 'ideas', label: '아이디어', icon: Lightbulb, color: 'amber' },
+    { id: 'schedule', label: 'Schedule', icon: Calendar, color: 'blue' },
+    { id: 'goals', label: 'Goals', icon: Target, color: 'green' },
+    { id: 'finance', label: 'Finance', icon: DollarSign, color: 'emerald' },
+    { id: 'health', label: 'Health', icon: Activity, color: 'rose' },
+    { id: 'team', label: 'Team', icon: Users, color: 'purple' }, // New Team Tab
+    { id: 'ideas', label: 'Ideas', icon: Lightbulb, color: 'amber' },
 ] as const;
 
 type DemoTabId = typeof DEMO_TABS[number]['id'];
@@ -30,6 +32,20 @@ const PERSONAS = [
 export function InteractiveDemo() {
     const [activeTab, setActiveTab] = useState<DemoTabId>('schedule');
     const [activePersona, setActivePersona] = useState('office');
+    const [frameMode, setFrameMode] = useState<'mobile' | 'tablet'>('mobile');
+    const [currentTime, setCurrentTime] = useState('');
+    const [demoNotification, setDemoNotification] = useState<string | null>(null);
+
+    // Clock Effect
+    useEffect(() => {
+        const updateTime = () => {
+            const now = new Date();
+            setCurrentTime(now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }));
+        };
+        updateTime();
+        const interval = setInterval(updateTime, 1000);
+        return () => clearInterval(interval);
+    }, []);
 
     // --- Demo State Management ---
     const [tasks, setTasks] = useState([
@@ -138,179 +154,276 @@ export function InteractiveDemo() {
                 ))}
             </div>
 
+            {/* Control Bar */}
+            <div className="flex justify-end gap-2 mb-4 px-4">
+                <div className="bg-slate-100 dark:bg-white/5 p-1 rounded-xl flex">
+                    <button
+                        onClick={() => setFrameMode('mobile')}
+                        className={cn(
+                            "p-2 rounded-lg transition-all",
+                            frameMode === 'mobile' ? "bg-white text-slate-900 shadow-sm" : "text-slate-400 hover:text-slate-600"
+                        )}
+                    >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+                    </button>
+                    <button
+                        onClick={() => setFrameMode('tablet')}
+                        className={cn(
+                            "p-2 rounded-lg transition-all",
+                            frameMode === 'tablet' ? "bg-white text-slate-900 shadow-sm" : "text-slate-400 hover:text-slate-600"
+                        )}
+                    >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+                    </button>
+                </div>
+            </div>
+
             {/* Interactive Panel */}
-            <div className="bg-white dark:bg-slate-900 rounded-[40px] border border-slate-100 dark:border-white/5 p-8 md:p-12 shadow-[0_32px_80px_rgba(0,0,0,0.06)] min-h-[500px] flex flex-col md:flex-row gap-12">
+            <div className="bg-white dark:bg-slate-900 rounded-[40px] border border-slate-100 dark:border-white/5 p-8 md:p-12 shadow-[0_32px_80px_rgba(0,0,0,0.06)] min-h-[500px] flex flex-col md:flex-row gap-8 lg:gap-12 overflow-hidden relative">
+                {/* Reset Button */}
+                <button
+                    onClick={() => {
+                        setActivePersona('office');
+                        setActiveTab('schedule');
+                        setTasks([
+                            { id: '1', title: '팀 스탠드업 미팅', time: '09:00', done: true },
+                            { id: '2', title: '신규 기능 기획서 작성', time: '11:00', done: false },
+                            { id: '3', title: '사용자 인터뷰 결과 정리', time: '14:30', done: false },
+                        ]);
+                    }}
+                    className="absolute top-6 right-6 text-xs font-bold text-slate-300 hover:text-blue-500 transition-colors z-10"
+                >
+                    Reset Demo
+                </button>
 
                 {/* Left: Input Dashboard */}
-                <div className="flex-1 space-y-8">
-                    <AnimatePresence mode="wait">
-                        {activeTab === 'schedule' && (
-                            <motion.div
-                                key="sc-input" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
-                                className="space-y-6"
-                            >
-                                <div className="space-y-2">
-                                    <h4 className="text-2xl font-black text-slate-900 dark:text-white">실제처럼 기록해보세요</h4>
-                                    <p className="text-sm text-slate-500 font-medium">데모 화면에 할 일을 추가하고 체크해보세요.</p>
-                                </div>
-                                <div className="flex gap-2">
-                                    <input
-                                        type="text"
-                                        value={newTask}
-                                        onChange={(e) => setNewTask(e.target.value)}
-                                        onKeyDown={(e) => e.key === 'Enter' && addTask()}
-                                        placeholder="할 일을 입력하세요 (예: 비타민 챙겨먹기)"
-                                        className="flex-1 h-14 px-4 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl text-sm font-bold outline-none ring-2 ring-transparent focus:ring-blue-500 transition-all"
-                                    />
-                                    <Button onClick={addTask} size="icon" className="w-14 h-14 rounded-2xl bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-500/20">
-                                        <Plus className="w-6 h-6" />
-                                    </Button>
-                                </div>
-                            </motion.div>
-                        )}
+                <div className="flex-1 space-y-8 relative">
+                    {/* Mobile Swipe Indicator */}
+                    <div className="md:hidden absolute -top-4 left-1/2 -translate-x-1/2 w-12 h-1 bg-slate-200 dark:bg-slate-700 rounded-full mb-4" />
 
-                        {activeTab === 'goals' && (
-                            <motion.div key="gl-input" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-6">
-                                <div className="space-y-2">
-                                    <h4 className="text-2xl font-black text-slate-900 dark:text-white">목표를 쪼개어 정복하세요</h4>
-                                    <p className="text-sm text-slate-500 font-medium">슬라이더를 움직여 진행률 변화를 확인하세요.</p>
-                                </div>
-                                <div className="space-y-8 py-4">
-                                    {demoGoals.map((goal, i) => (
-                                        <div key={goal.id} className="space-y-3">
-                                            <div className="flex justify-between items-end">
-                                                <div className="flex items-center gap-2">
-                                                    <goal.icon className="w-4 h-4 text-emerald-500" />
-                                                    <span className="text-sm font-black text-slate-700 dark:text-slate-300">{goal.title}</span>
+                    <motion.div
+                        drag="x"
+                        dragConstraints={{ left: 0, right: 0 }}
+                        dragElastic={0.2}
+                        onDragEnd={(e, { offset, velocity }) => {
+                            const swipe = offset.x;
+                            if (swipe < -50) {
+                                // Swipe Left -> Next Tab
+                                const currentIndex = DEMO_TABS.findIndex(t => t.id === activeTab);
+                                const nextIndex = (currentIndex + 1) % DEMO_TABS.length;
+                                setActiveTab(DEMO_TABS[nextIndex].id);
+                            } else if (swipe > 50) {
+                                // Swipe Right -> Prev Tab
+                                const currentIndex = DEMO_TABS.findIndex(t => t.id === activeTab);
+                                const prevIndex = (currentIndex - 1 + DEMO_TABS.length) % DEMO_TABS.length;
+                                setActiveTab(DEMO_TABS[prevIndex].id);
+                            }
+                        }}
+                        className="h-full touch-pan-y"
+                    >
+                        <AnimatePresence mode="wait">
+                            {activeTab === 'schedule' && (
+                                <motion.div
+                                    key="sc-input" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
+                                    className="space-y-6"
+                                >
+                                    <div className="space-y-2">
+                                        <h4 className="text-2xl font-black text-slate-900 dark:text-white">실제처럼 기록해보세요</h4>
+                                        <p className="text-sm text-slate-500 font-medium">데모 화면에 할 일을 추가하고 체크해보세요. (좌우로 스와이프하여 메뉴 전환)</p>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <input
+                                            type="text"
+                                            value={newTask}
+                                            onChange={(e) => setNewTask(e.target.value)}
+                                            onKeyDown={(e) => e.key === 'Enter' && addTask()}
+                                            placeholder="할 일을 입력하세요 (예: 비타민 챙겨먹기)"
+                                            className="flex-1 h-14 px-4 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl text-sm font-bold outline-none ring-2 ring-transparent focus:ring-blue-500 transition-all"
+                                        />
+                                        <Button onClick={addTask} size="icon" className="w-14 h-14 rounded-2xl bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-500/20">
+                                            <Plus className="w-6 h-6" />
+                                        </Button>
+                                    </div>
+                                </motion.div>
+                            )}
+
+                            {activeTab === 'goals' && (
+                                <motion.div key="gl-input" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-6">
+                                    <div className="space-y-2">
+                                        <h4 className="text-2xl font-black text-slate-900 dark:text-white">목표를 쪼개어 정복하세요</h4>
+                                        <p className="text-sm text-slate-500 font-medium">슬라이더를 움직여 진행률 변화를 확인하세요.</p>
+                                    </div>
+                                    <div className="space-y-8 py-4">
+                                        {demoGoals.map((goal, i) => (
+                                            <div key={goal.id} className="space-y-3">
+                                                <div className="flex justify-between items-end">
+                                                    <div className="flex items-center gap-2">
+                                                        <goal.icon className="w-4 h-4 text-emerald-500" />
+                                                        <span className="text-sm font-black text-slate-700 dark:text-slate-300">{goal.title}</span>
+                                                    </div>
+                                                    <span className="text-lg font-black text-emerald-600">{goal.progress}%</span>
                                                 </div>
-                                                <span className="text-lg font-black text-emerald-600">{goal.progress}%</span>
+                                                <input
+                                                    type="range"
+                                                    value={goal.progress}
+                                                    onChange={(e) => {
+                                                        const newGoals = [...demoGoals];
+                                                        newGoals[i].progress = parseInt(e.target.value);
+                                                        setDemoGoals(newGoals);
+                                                    }}
+                                                    className="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full appearance-none cursor-pointer accent-emerald-500"
+                                                />
                                             </div>
+                                        ))}
+                                    </div>
+                                </motion.div>
+                            )}
+
+                            {activeTab === 'finance' && (
+                                <motion.div key="fi-input" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-6">
+                                    <div className="space-y-2">
+                                        <h4 className="text-2xl font-black text-slate-900 dark:text-white">자산을 시뮬레이션 하세요</h4>
+                                        <p className="text-sm text-slate-500 font-medium">수입과 지출을 입력해보세요.</p>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Monthly Income (만)</label>
                                             <input
-                                                type="range"
-                                                value={goal.progress}
-                                                onChange={(e) => {
-                                                    const newGoals = [...demoGoals];
-                                                    newGoals[i].progress = parseInt(e.target.value);
-                                                    setDemoGoals(newGoals);
-                                                }}
-                                                className="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full appearance-none cursor-pointer accent-emerald-500"
+                                                type="number"
+                                                value={financeInput.income}
+                                                onChange={(e) => setFinanceInput({ ...financeInput, income: e.target.value })}
+                                                className="w-full h-14 px-4 bg-blue-50 dark:bg-blue-900/20 border-none rounded-2xl text-lg font-black text-blue-600 outline-none"
                                             />
                                         </div>
-                                    ))}
-                                </div>
-                            </motion.div>
-                        )}
-
-                        {activeTab === 'finance' && (
-                            <motion.div key="fi-input" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-6">
-                                <div className="space-y-2">
-                                    <h4 className="text-2xl font-black text-slate-900 dark:text-white">자산을 시뮬레이션 하세요</h4>
-                                    <p className="text-sm text-slate-500 font-medium">수입과 지출을 입력해보세요.</p>
-                                </div>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Monthly Income (만)</label>
-                                        <input
-                                            type="number"
-                                            value={financeInput.income}
-                                            onChange={(e) => setFinanceInput({ ...financeInput, income: e.target.value })}
-                                            className="w-full h-14 px-4 bg-blue-50 dark:bg-blue-900/20 border-none rounded-2xl text-lg font-black text-blue-600 outline-none"
-                                        />
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Monthly Expense (만)</label>
+                                            <input
+                                                type="number"
+                                                value={financeInput.expense}
+                                                onChange={(e) => setFinanceInput({ ...financeInput, expense: e.target.value })}
+                                                className="w-full h-14 px-4 bg-red-50 dark:bg-red-900/20 border-none rounded-2xl text-lg font-black text-red-600 outline-none"
+                                            />
+                                        </div>
                                     </div>
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Monthly Expense (만)</label>
-                                        <input
-                                            type="number"
-                                            value={financeInput.expense}
-                                            onChange={(e) => setFinanceInput({ ...financeInput, expense: e.target.value })}
-                                            className="w-full h-14 px-4 bg-red-50 dark:bg-red-900/20 border-none rounded-2xl text-lg font-black text-red-600 outline-none"
-                                        />
-                                    </div>
-                                </div>
-                            </motion.div>
-                        )}
+                                </motion.div>
+                            )}
 
-                        {activeTab === 'health' && (
-                            <motion.div key="he-input" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-6">
-                                <div className="space-y-2">
-                                    <h4 className="text-2xl font-black text-slate-900 dark:text-white">건강 지표를 트래킹하세요</h4>
-                                    <p className="text-sm text-slate-500 font-medium">어제보다 더 나은 당신을 기록하세요.</p>
-                                </div>
-                                <div className="grid grid-cols-3 gap-3">
-                                    {['스쿼트', '러닝', '수분섭취'].map((label) => (
-                                        <Button key={label} variant="outline" className="h-16 rounded-2xl border-slate-100 hover:border-rose-200 hover:bg-rose-50 dark:hover:bg-rose-900/10 font-bold text-slate-600">
-                                            {label} 추가
+                            {activeTab === 'health' && (
+                                <motion.div key="he-input" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-6">
+                                    <div className="space-y-2">
+                                        <h4 className="text-2xl font-black text-slate-900 dark:text-white">건강 지표를 트래킹하세요</h4>
+                                        <p className="text-sm text-slate-500 font-medium">어제보다 더 나은 당신을 기록하세요.</p>
+                                    </div>
+                                    <div className="grid grid-cols-3 gap-3">
+                                        {['스쿼트', '러닝', '수분섭취'].map((label) => (
+                                            <Button key={label} variant="outline" className="h-16 rounded-2xl border-slate-100 hover:border-rose-200 hover:bg-rose-50 dark:hover:bg-rose-900/10 font-bold text-slate-600">
+                                                {label} 추가
+                                            </Button>
+                                        ))}
+                                    </div>
+                                </motion.div>
+                            )}
+
+                            {activeTab === 'ideas' && (
+                                <motion.div key="id-input" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-6">
+                                    <div className="space-y-2">
+                                        <h4 className="text-2xl font-black text-slate-900 dark:text-white">메모를 던져보세요</h4>
+                                        <p className="text-sm text-slate-500 font-medium">떠오르는 아이디어를 즉시 고정하세요.</p>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <input
+                                            type="text"
+                                            value={newTask}
+                                            onChange={(e) => setNewTask(e.target.value)}
+                                            onKeyDown={(e) => e.key === 'Enter' && addNote()}
+                                            placeholder="새로운 아이디어..."
+                                            className="flex-1 h-14 px-4 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl text-sm font-bold outline-none ring-2 ring-transparent focus:ring-amber-500 transition-all"
+                                        />
+                                        <Button onClick={addNote} size="icon" className="w-14 h-14 rounded-2xl bg-amber-500 text-white hover:bg-amber-600">
+                                            <Plus className="w-6 h-6" />
                                         </Button>
-                                    ))}
-                                </div>
-                            </motion.div>
-                        )}
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </motion.div>
+                </div>
 
-                        {activeTab === 'ideas' && (
-                            <motion.div key="id-input" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-6">
-                                <div className="space-y-2">
-                                    <h4 className="text-2xl font-black text-slate-900 dark:text-white">메모를 던져보세요</h4>
-                                    <p className="text-sm text-slate-500 font-medium">떠오르는 아이디어를 즉시 고정하세요.</p>
+                {/* Right: Preview Screen (Mobile Frame Style) */}
+                <motion.div
+                    layout
+                    className={cn(
+                        "bg-slate-50 dark:bg-black/50 rounded-[48px] border-[8px] border-slate-900 dark:border-slate-800 shadow-2xl relative overflow-hidden h-[540px] mx-auto md:mx-0 transition-all duration-500",
+                        frameMode === 'mobile' ? "w-full md:w-[360px]" : "w-full md:w-[600px]"
+                    )}
+                >
+                    {/* Top Bar (Fake Status Bar) */}
+                    <div className="h-12 w-full flex items-center justify-between px-6 pt-3 relative z-20">
+                        <span className="text-[12px] font-bold text-slate-900 dark:text-white pointer-events-none select-none">{currentTime}</span>
+                        <div className="flex gap-1.5 items-center">
+                            <div className="flex gap-0.5 items-end h-3">
+                                <div className="w-1 h-1.5 bg-slate-900 dark:bg-white rounded-[1px]" />
+                                <div className="w-1 h-2 bg-slate-900 dark:bg-white rounded-[1px]" />
+                                <div className="w-1 h-3 bg-slate-900 dark:bg-white rounded-[1px]" />
+                            </div>
+                            <div className="w-5 h-2.5 bg-slate-900 dark:bg-white rounded-[2px] opacity-20 border border-slate-900 dark:border-white" />
+                        </div>
+                    </div>
+
+                    {/* Fake Notification Toast */}
+                    <AnimatePresence>
+                        {demoNotification && (
+                            <motion.div
+                                initial={{ y: -50, opacity: 0 }}
+                                animate={{ y: 0, opacity: 1 }}
+                                exit={{ y: -50, opacity: 0 }}
+                                className="absolute top-14 left-4 right-4 bg-white/90 dark:bg-slate-800/90 backdrop-blur-md p-3 rounded-xl shadow-lg z-30 flex items-center gap-3 border border-slate-100 dark:border-white/10"
+                            >
+                                <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 flex items-center justify-center">
+                                    <Bell className="w-4 h-4" />
                                 </div>
-                                <div className="flex gap-2">
-                                    <input
-                                        type="text"
-                                        value={newTask}
-                                        onChange={(e) => setNewTask(e.target.value)}
-                                        onKeyDown={(e) => e.key === 'Enter' && addNote()}
-                                        placeholder="새로운 아이디어..."
-                                        className="flex-1 h-14 px-4 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl text-sm font-bold outline-none ring-2 ring-transparent focus:ring-amber-500 transition-all"
-                                    />
-                                    <Button onClick={addNote} size="icon" className="w-14 h-14 rounded-2xl bg-amber-500 text-white hover:bg-amber-600">
-                                        <Plus className="w-6 h-6" />
-                                    </Button>
+                                <div>
+                                    <p className="text-xs font-bold text-slate-900 dark:text-white">New Alert</p>
+                                    <p className="text-[10px] text-slate-500">{demoNotification}</p>
                                 </div>
                             </motion.div>
                         )}
                     </AnimatePresence>
-                </div>
 
-                {/* Right: Preview Screen (Mobile Frame Style) */}
-                <div className="w-full md:w-[360px] bg-slate-50 dark:bg-black/50 rounded-[48px] border-[8px] border-slate-900 dark:border-slate-800 shadow-2xl relative overflow-hidden h-[540px]">
-                    {/* Top Bar */}
-                    <div className="h-10 w-full flex items-center justify-between px-8 pt-2">
-                        <span className="text-[10px] font-bold">9:41</span>
-                        <div className="flex gap-1.5">
-                            <div className="w-4 h-2 bg-slate-900 dark:bg-white rounded-sm" />
-                        </div>
-                    </div>
-
-                    <div className="p-6 h-full overflow-y-auto custom-scrollbar">
+                    <div className={cn("p-6 h-[calc(100%-3rem)] overflow-y-auto custom-scrollbar relative", frameMode === 'tablet' ? "grid grid-cols-2 gap-6 content-start" : "")}>
                         <AnimatePresence mode="wait">
                             {activeTab === 'schedule' && (
-                                <motion.div key="sc-preview" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-6">
+                                <motion.div key="sc-preview" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className={cn("space-y-6", frameMode === 'tablet' && "col-span-2")}>
                                     <div className="space-y-1">
                                         <h5 className="text-xs font-black text-slate-400 uppercase tracking-widest">Today's Schedule</h5>
-                                        <p className="text-xl font-black text-slate-900 dark:text-white">준비되셨나요?</p>
+                                        <p className="text-xl font-black text-slate-900 dark:text-white">순서를 변경해보세요</p>
                                     </div>
-                                    <div className="space-y-3">
-                                        {tasks.map((t, i) => (
-                                            <motion.div
-                                                key={t.id}
-                                                layout
-                                                initial={{ opacity: 0, scale: 0.9 }}
-                                                animate={{ opacity: 1, scale: 1 }}
-                                                onClick={() => toggleTask(t.id)}
-                                                className={cn(
-                                                    "p-4 rounded-3xl border transition-all cursor-pointer flex items-center gap-3",
-                                                    t.done ? "bg-white border-blue-100 shadow-sm" : "bg-slate-100/50 border-transparent"
-                                                )}
-                                            >
-                                                <div className={cn("w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors", t.done ? "bg-blue-600 border-blue-600" : "border-slate-300")}>
-                                                    {t.done && <CheckCircle2 className="w-3 h-3 text-white" />}
+
+                                    <Reorder.Group axis="y" values={tasks} onReorder={setTasks} className={cn("space-y-3", frameMode === 'tablet' && "grid grid-cols-2 gap-4 space-y-0")}>
+                                        {tasks.map((t) => (
+                                            <Reorder.Item key={t.id} value={t}>
+                                                <div
+                                                    onClick={() => toggleTask(t.id)}
+                                                    className={cn(
+                                                        "p-4 rounded-3xl border transition-all cursor-grab active:cursor-grabbing flex items-center gap-3",
+                                                        t.done ? "bg-white border-blue-100 shadow-sm" : "bg-slate-100/50 border-transparent hover:bg-white hover:shadow-md"
+                                                    )}
+                                                >
+                                                    <div className={cn("w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors", t.done ? "bg-blue-600 border-blue-600" : "border-slate-300")}>
+                                                        {t.done && <CheckCircle2 className="w-3 h-3 text-white" />}
+                                                    </div>
+                                                    <span className={cn("text-sm font-bold flex-1", t.done ? "text-slate-900 line-through opacity-50" : "text-slate-600")}>
+                                                        {t.title}
+                                                    </span>
+                                                    <div className="text-[10px] font-bold text-slate-300">
+                                                        {t.time}
+                                                    </div>
                                                 </div>
-                                                <span className={cn("text-sm font-bold", t.done ? "text-slate-900 line-through opacity-50" : "text-slate-600")}>
-                                                    {t.title}
-                                                </span>
-                                            </motion.div>
+                                            </Reorder.Item>
                                         ))}
-                                    </div>
-                                    <div className="p-4 bg-blue-600 rounded-[28px] text-white shadow-xl shadow-blue-500/30">
+                                    </Reorder.Group>
+
+                                    <div className={cn("p-4 bg-blue-600 rounded-[28px] text-white shadow-xl shadow-blue-500/30", frameMode === 'tablet' && "col-span-2")}>
                                         <p className="text-[10px] font-black uppercase opacity-60 mb-1">Completion Rate</p>
                                         <div className="flex items-center justify-between">
                                             <span className="text-2xl font-black">{Math.round(taskProgress)}%</span>
@@ -321,12 +434,12 @@ export function InteractiveDemo() {
                             )}
 
                             {activeTab === 'goals' && (
-                                <motion.div key="gl-preview" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-8">
+                                <motion.div key="gl-preview" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className={cn("space-y-8", frameMode === 'tablet' && "col-span-2")}>
                                     <div className="space-y-1">
                                         <h5 className="text-xs font-black text-slate-400 uppercase tracking-widest">Growth Progress</h5>
                                         <p className="text-xl font-black text-slate-900 dark:text-white">Step by Step</p>
                                     </div>
-                                    <div className="space-y-6">
+                                    <div className={cn("space-y-6", frameMode === 'tablet' && "grid grid-cols-2 gap-6 space-y-0")}>
                                         {demoGoals.map(goal => (
                                             <div key={goal.id} className="space-y-3">
                                                 <div className="flex justify-between text-xs font-black">
@@ -347,7 +460,7 @@ export function InteractiveDemo() {
                             )}
 
                             {activeTab === 'finance' && (
-                                <motion.div key="fi-preview" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-8">
+                                <motion.div key="fi-preview" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className={cn("space-y-8", frameMode === 'tablet' && "col-span-2")}>
                                     <div className="p-6 bg-slate-900 dark:bg-slate-800 rounded-[32px] text-white space-y-4">
                                         <p className="text-[10px] font-black uppercase opacity-50 tracking-widest">Total Savings</p>
                                         <h3 className="text-3xl font-black tracking-tighter">
@@ -379,22 +492,43 @@ export function InteractiveDemo() {
                                 </motion.div>
                             )}
 
+                            {activeTab === 'health' && (
+                                <motion.div key="he-preview" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className={cn("space-y-8", frameMode === 'tablet' && "col-span-2")}>
+                                    <div className="space-y-1">
+                                        <h5 className="text-xs font-black text-slate-400 uppercase tracking-widest">Daily Health</h5>
+                                        <p className="text-xl font-black text-slate-900 dark:text-white">건강이 자산입니다</p>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="p-4 bg-rose-50 dark:bg-rose-900/20 rounded-3xl text-center">
+                                            <div className="text-2xl font-black text-rose-500">2,450</div>
+                                            <div className="text-[10px] font-bold text-slate-400 uppercase">Calories</div>
+                                        </div>
+                                        <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-3xl text-center">
+                                            <div className="text-2xl font-black text-blue-500">1.2L</div>
+                                            <div className="text-[10px] font-bold text-slate-400 uppercase">Water</div>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            )}
+
                             {activeTab === 'ideas' && (
-                                <motion.div key="id-preview" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4">
+                                <motion.div key="id-preview" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className={cn("space-y-4 h-full", frameMode === 'tablet' && "col-span-2")}>
                                     <div className="space-y-1 mb-4">
                                         <h5 className="text-xs font-black text-slate-400 uppercase tracking-widest">Idea Board</h5>
-                                        <p className="text-xl font-black text-slate-900 dark:text-white">빠른 메모</p>
+                                        <p className="text-xl font-black text-slate-900 dark:text-white">자유롭게 움직여보세요</p>
                                     </div>
-                                    <div className="grid grid-cols-1 gap-4">
-                                        {notes.map(note => (
+                                    <div className="relative h-[350px] bg-slate-100 dark:bg-white/5 rounded-3xl p-4 overflow-hidden border-2 border-dashed border-slate-200 dark:border-white/10">
+                                        {notes.map((note, i) => (
                                             <motion.div
                                                 key={note.id}
                                                 layout
                                                 drag
-                                                dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
-                                                initial={{ opacity: 0, rotate: -5 }}
-                                                animate={{ opacity: 1, rotate: Math.random() * 6 - 3 }}
-                                                className={cn("p-4 rounded-2xl shadow-sm text-xs font-black text-slate-800", note.color)}
+                                                dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }} // Constraints relative to parent
+                                                initial={{ opacity: 0, scale: 0.8, rotate: Math.random() * 10 - 5 }}
+                                                animate={{ opacity: 1, scale: 1, rotate: Math.random() * 10 - 5, x: i % 2 === 0 ? -10 : 10, y: i * 40 }}
+                                                whileDrag={{ scale: 1.1, zIndex: 10, cursor: 'grabbing' }}
+                                                className={cn("absolute p-4 rounded-xl shadow-md text-xs font-black text-slate-800 w-40 cursor-grab", note.color)}
+                                                style={{ left: '50%', marginLeft: '-5rem', top: '20px' }}
                                             >
                                                 {note.content}
                                             </motion.div>
@@ -409,7 +543,7 @@ export function InteractiveDemo() {
                     <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-4 bg-white/10 backdrop-blur-md p-1 rounded-full border border-white/10">
                         {[1, 2, 3, 4].map(i => <div key={i} className="w-2 h-2 rounded-full bg-white/20" />)}
                     </div>
-                </div>
+                </motion.div>
             </div>
 
             {/* CTA under Demo */}

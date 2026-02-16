@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -14,66 +14,146 @@ import {
 import { BentoGrid, BentoCard, BentoVisuals } from './BentoGrid';
 import { InteractiveDemo } from './InteractiveDemo';
 import { ModeSwitch } from './ModeSwitch';
+import { FAQSection } from './FAQSection';
+import { NewsletterSection } from './NewsletterSection';
+import { PricingSection } from './PricingSection';
+import { ErrorBoundary } from './ErrorBoundary';
 import { cn } from '@/lib/utils';
+import { useScroll, useTransform } from 'framer-motion';
+
+const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Life Controller",
+    "applicationCategory": "ProductivityApplication",
+    "operatingSystem": "Web",
+    "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "KRW"
+    },
+    "description": "All-in-one productivity tool for life and work balance."
+};
 
 export function LandingPage() {
     const [landingMode, setLandingMode] = useState<'life' | 'work'>('life');
     const [scrollProgress, setScrollProgress] = useState(0);
     const visuals = BentoVisuals();
+    const containerRef = useRef<HTMLDivElement>(null);
 
-    // Placeholder for tasks state, assuming it's part of an interactive demo or similar
-    // This state is needed for the `toggleTask` function to be syntactically correct.
-    // If `toggleTask` is meant for `InteractiveDemo`, it should be defined there.
-    // For now, defining it here to make the provided `toggleTask` snippet syntactically valid.
-    const [tasks, setTasks] = useState<{ id: string; done: boolean; text: string }[]>([]);
+    // Mode Persistence & SEO
+    useEffect(() => {
+        const savedMode = localStorage.getItem('life_controller_landing_mode') as 'life' | 'work';
+        if (savedMode) setLandingMode(savedMode);
+    }, []);
 
-    // Placeholder for notes state, assuming it's part of an interactive demo or similar
-    const [notes, setNotes] = useState<string[]>([]);
+    useEffect(() => {
+        document.title = landingMode === 'life'
+            ? "Life Controller | 당신의 하루를 작품처럼"
+            : "Life Controller | 업무 생산성의 한계를 넘다";
 
-    // The `toggleTask` function as provided in the instruction.
-    // Its placement here is based on the instruction's snippet, but it might be intended for a child component.
-    const toggleTask = (id: string) => {
-        setTasks(tasks.map(t => t.id === id ? { ...t, done: !t.done } : t));
-    };
+        const metaDesc = document.querySelector('meta[name="description"]');
+        if (metaDesc) {
+            metaDesc.setAttribute('content', landingMode === 'life'
+                ? "목표, 일정, 습관, 자산 관리를 한 곳에서. Life Controller로 당신의 일상을 체계적으로 설계하세요."
+                : "팀 협업, 프로젝트 관리, 성과 분석까지. 업무 효율을 극대화하는 올인원 비즈니스 솔루션.");
+        }
+    }, [landingMode]);
 
-    // The `addNote` function as provided in the instruction.
-    // The body of `addNote` in the instruction was identical to `handleScroll`, which is likely an error.
-    // I'm providing a placeholder body for `addNote` to ensure syntactic correctness.
-    const addNote = () => {
-        // This function's body was incorrect in the provided snippet.
-        // Assuming it's meant to add a note, here's a placeholder.
-        setNotes(prevNotes => [...prevNotes, `New note at ${new Date().toLocaleTimeString()}`]);
+    const handleModeChange = (mode: 'life' | 'work') => {
+        setLandingMode(mode);
+        localStorage.setItem('life_controller_landing_mode', mode);
     };
 
     useEffect(() => {
         const handleScroll = () => {
-            const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
-            const progress = (window.scrollY / totalHeight) * 100;
+            // For snap scroll container, we might need to check container scrollTop if using ref
+            const container = containerRef.current;
+            if (!container) return;
+
+            const totalHeight = container.scrollHeight - container.clientHeight;
+            const progress = (container.scrollTop / totalHeight) * 100;
             setScrollProgress(progress);
         };
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
+
+        const container = containerRef.current;
+        if (container) {
+            container.addEventListener('scroll', handleScroll);
+        }
+        return () => container?.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    const { scrollY } = useScroll({ container: containerRef });
+    const y1 = useTransform(scrollY, [0, 500], [0, 200]);
+    const y2 = useTransform(scrollY, [0, 500], [0, -150]);
+
+    // Scroll Snap & Keyboard Navigation
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            const sections = document.querySelectorAll('section[data-snap="true"]');
+            const windowHeight = window.innerHeight;
+
+            // Find current active section index
+            let currentIndex = 0;
+            sections.forEach((section, i) => {
+                const rect = section.getBoundingClientRect();
+                if (rect.top >= -windowHeight / 2 && rect.top < windowHeight / 2) {
+                    currentIndex = i;
+                }
+            });
+
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (currentIndex < sections.length - 1) {
+                    sections[currentIndex + 1].scrollIntoView({ behavior: 'smooth' });
+                }
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (currentIndex > 0) {
+                    sections[currentIndex - 1].scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
     }, []);
 
     return (
-        <div className={cn(
-            "min-h-screen transition-colors duration-1000",
-            landingMode === 'life' ? "bg-white text-slate-900" : "bg-slate-950 text-white"
-        )}>
+        <div
+            ref={containerRef}
+            className={cn(
+                "h-screen overflow-y-scroll snap-y snap-mandatory scroll-smooth transition-colors duration-1000",
+                landingMode === 'life' ? "bg-white text-slate-900" : "bg-slate-950 text-white"
+            )}
+        >
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
             {/* Scroll Progress Indicator (Item 17) */}
-            <div className="fixed right-6 top-1/2 -translate-y-1/2 z-[60] hidden lg:flex flex-col gap-4">
-                {[0, 25, 50, 75, 100].map((p) => (
+            <div className="fixed right-6 top-1/2 -translate-y-1/2 z-[60] hidden lg:flex flex-col gap-4 items-center">
+                <div className="absolute top-0 bottom-0 w-0.5 bg-slate-200 dark:bg-white/10 -z-10" />
+                <motion.div
+                    className="absolute top-0 w-0.5 bg-blue-600 -z-10"
+                    style={{ height: `${scrollProgress}%` }}
+                />
+                {[0, 15, 30, 45, 60, 75, 90, 100].map((p, i) => (
                     <div
                         key={p}
+                        onClick={() => {
+                            const sections = document.querySelectorAll('section[data-snap="true"]');
+                            if (sections[i]) sections[i].scrollIntoView({ behavior: 'smooth' });
+                        }}
                         className={cn(
-                            "w-2 h-2 rounded-full transition-all duration-300",
-                            scrollProgress >= p ? "bg-blue-600 scale-125" : "bg-slate-200 dark:bg-white/10"
+                            "w-2 h-2 rounded-full transition-all duration-300 border-2 border-white dark:border-slate-900 cursor-pointer hover:scale-150",
+                            scrollProgress >= p ? "bg-blue-600 scale-125" : "bg-slate-200 dark:bg-white/20"
                         )}
                     />
                 ))}
             </div>
 
-            {/* Header */}
+            {/* Header - Fixed but inside relative to viewport */}
             <header className={cn(
                 "fixed top-0 w-full z-50 backdrop-blur-md border-b transition-colors duration-500",
                 landingMode === 'life' ? "bg-white/80 border-gray-100" : "bg-slate-950/80 border-white/5"
@@ -82,7 +162,7 @@ export function LandingPage() {
                     <Logo variant="full" className={cn("scale-90 transition-all", landingMode === 'work' && "brightness-0 invert")} />
 
                     <div className="hidden md:block">
-                        <ModeSwitch mode={landingMode} setMode={setLandingMode} />
+                        <ModeSwitch mode={landingMode} setMode={handleModeChange} />
                     </div>
 
                     <div className="flex items-center gap-4">
@@ -106,17 +186,19 @@ export function LandingPage() {
                 </div>
             </header>
 
-            {/* Hero Section */}
-            <section className="pt-40 pb-20 md:pt-56 md:pb-32 px-6 relative overflow-hidden">
+            {/* 1. Hero Section */}
+            <section data-snap="true" className="min-h-screen snap-start pt-20 flex flex-col justify-center relative overflow-hidden">
                 {/* Floating UI Elements (Item 13) */}
                 <div className="absolute inset-0 pointer-events-none overflow-hidden">
                     <motion.div
-                        animate={{ y: [0, -20, 0], rotate: [0, 5, 0] }}
+                        style={{ y: y1 }}
+                        animate={{ rotate: [0, 5, 0] }}
                         transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
                         className="absolute top-1/4 left-10 w-48 h-32 bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl shadow-2xl opacity-40 hidden xl:block"
                     />
                     <motion.div
-                        animate={{ y: [0, 20, 0], rotate: [0, -5, 0] }}
+                        style={{ y: y2 }}
+                        animate={{ rotate: [0, -5, 0] }}
                         transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
                         className="absolute bottom-1/4 right-10 w-40 h-40 bg-white/5 backdrop-blur-xl border border-white/10 rounded-full shadow-2xl opacity-30 hidden xl:block"
                     />
@@ -131,7 +213,7 @@ export function LandingPage() {
                 <div className="container mx-auto text-center max-w-5xl relative z-10">
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
+                        whileInView={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8 }}
                     >
                         <div className={cn(
@@ -174,8 +256,8 @@ export function LandingPage() {
                 </div>
             </section>
 
-            {/* Bento Grid Features */}
-            <section className="py-24 md:py-40 px-6">
+            {/* 2. Bento Grid Features */}
+            <section data-snap="true" className="min-h-screen snap-start flex flex-col justify-center py-20 px-6">
                 <div className="container mx-auto max-w-6xl">
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-20">
                         <div className="max-w-xl">
@@ -232,9 +314,10 @@ export function LandingPage() {
                 </div>
             </section>
 
-            {/* Stats Section (Item 19) */}
-            <section className="py-20 relative overflow-hidden">
-                <div className="container mx-auto px-6 max-w-6xl grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            {/* 3. Stats & Comparison (Grouped) */}
+            <section data-snap="true" className="min-h-screen snap-start flex flex-col justify-center py-20 px-6">
+                {/* Stats */}
+                <div className="container mx-auto px-6 max-w-6xl grid grid-cols-2 md:grid-cols-4 gap-8 text-center mb-24">
                     {[
                         { label: "오늘 생성된 목표", value: "2,450+", icon: Target },
                         { label: "완료된 할 일", value: "18,200+", icon: CheckCircle2 },
@@ -256,12 +339,10 @@ export function LandingPage() {
                         </motion.div>
                     ))}
                 </div>
-            </section>
 
-            {/* Comparison Section (Item 20) */}
-            <section className="py-24 md:py-40 px-6">
+                {/* Comparison */}
                 <div className="container mx-auto max-w-4xl">
-                    <h2 className="text-3xl md:text-5xl font-black text-center mb-20 tracking-tight">
+                    <h2 className="text-3xl md:text-5xl font-black text-center mb-16 tracking-tight">
                         비교할수록, <span className="text-blue-600">LIFE Controller</span>
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -299,9 +380,9 @@ export function LandingPage() {
                 </div>
             </section>
 
-            {/* Interactive Demo Section */}
-            <section className={cn(
-                "py-24 md:py-40 px-6 transition-colors duration-1000",
+            {/* 4. Interactive Demo Section */}
+            <section data-snap="true" className={cn(
+                "min-h-screen snap-start flex flex-col justify-center py-24 px-6 transition-colors duration-1000",
                 landingMode === 'life' ? "bg-slate-50" : "bg-slate-900/50"
             )}>
                 <div className="container mx-auto">
@@ -317,60 +398,79 @@ export function LandingPage() {
                         </p>
                     </div>
 
-                    <InteractiveDemo />
+                    <ErrorBoundary>
+                        <InteractiveDemo />
+                    </ErrorBoundary>
                 </div>
             </section>
 
-            {/* Trust Badges */}
-            <section className="py-20 border-y border-slate-100 dark:border-white/5">
-                <div className="container mx-auto px-6 max-w-6xl">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8 opacity-40">
-                        <div className="flex items-center gap-2 justify-center font-bold"><Shield className="w-5 h-5" /> Enterprise Secure</div>
-                        <div className="flex items-center gap-2 justify-center font-bold"><Globe className="w-5 h-5" /> Cloud Sync</div>
-                        <div className="flex items-center gap-2 justify-center font-bold"><ZapIcon className="w-5 h-5" /> Dark Mode Ready</div>
-                        <div className="flex items-center gap-2 justify-center font-bold"><Heart className="w-5 h-5" /> User Focused</div>
-                    </div>
-                </div>
+            {/* 5. Pricing Section (Item 27) */}
+            <section data-snap="true" className="min-h-screen snap-start flex flex-col justify-center">
+                <PricingSection mode={landingMode} />
             </section>
 
-            {/* Footer */}
-            <footer className={cn(
-                "py-20 px-6 border-t font-medium transition-colors",
-                landingMode === 'life' ? "bg-white border-slate-100" : "bg-slate-950 border-white/5"
-            )}>
-                <div className="container mx-auto max-w-6xl grid grid-cols-1 md:grid-cols-4 gap-12 mb-20">
-                    <div className="col-span-1 md:col-span-1">
-                        <Logo variant="full" className={cn("mb-6 scale-90", landingMode === 'work' && "brightness-0 invert")} />
-                        <p className="text-sm opacity-50">성장을 위한 완벽한 동반자. 당신의 삶을 직접 설계하고 관리하세요.</p>
-                    </div>
-                    {/* Simplified Footer Columns */}
-                    <div>
-                        <h4 className="font-bold mb-6">Product</h4>
-                        <ul className="space-y-4 text-sm opacity-50">
-                            <li>Features</li>
-                            <li>Demo</li>
-                            <li>Pricing</li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 className="font-bold mb-6">Company</h4>
-                        <ul className="space-y-4 text-sm opacity-50">
-                            <li>About</li>
-                            <li>Blog</li>
-                            <li>Careers</li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 className="font-bold mb-6">Contact</h4>
-                        <div className="flex gap-4">
-                            <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-white/5 flex items-center justify-center cursor-pointer hover:scale-110 transition-transform"><Star className="w-5 h-5" /></div>
+            {/* 6. FAQ Section (Item 24) */}
+            <section data-snap="true" className="min-h-screen snap-start flex flex-col justify-center">
+                <FAQSection mode={landingMode} />
+            </section>
+
+            {/* 7. Newsletter, Trust, Footer */}
+            <section data-snap="true" className="min-h-screen snap-start flex flex-col justify-center relative bg-slate-50 dark:bg-slate-900">
+                <div className="flex-1 flex flex-col justify-center">
+                    <NewsletterSection mode={landingMode} />
+                </div>
+
+                {/* Trust Badges */}
+                <div className="py-12 border-y border-slate-100 dark:border-white/5 bg-white dark:bg-slate-950">
+                    <div className="container mx-auto px-6 max-w-6xl">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 opacity-40">
+                            <div className="flex items-center gap-2 justify-center font-bold"><Shield className="w-5 h-5" /> Enterprise Secure</div>
+                            <div className="flex items-center gap-2 justify-center font-bold"><Globe className="w-5 h-5" /> Cloud Sync</div>
+                            <div className="flex items-center gap-2 justify-center font-bold"><ZapIcon className="w-5 h-5" /> Dark Mode Ready</div>
+                            <div className="flex items-center gap-2 justify-center font-bold"><Heart className="w-5 h-5" /> User Focused</div>
                         </div>
                     </div>
                 </div>
-                <div className="container mx-auto text-center pt-12 border-t border-slate-100 dark:border-white/5 opacity-40 text-xs">
-                    © {new Date().getFullYear()} Life Controller. All rights reserved.
-                </div>
-            </footer>
+
+                {/* Footer */}
+                <footer className={cn(
+                    "py-20 px-6 font-medium transition-colors",
+                    landingMode === 'life' ? "bg-white" : "bg-slate-950"
+                )}>
+                    <div className="container mx-auto max-w-6xl grid grid-cols-1 md:grid-cols-4 gap-12 mb-20">
+                        <div className="col-span-1 md:col-span-1">
+                            <Logo variant="full" className={cn("mb-6 scale-90", landingMode === 'work' && "brightness-0 invert")} />
+                            <p className="text-sm opacity-50">성장을 위한 완벽한 동반자. 당신의 삶을 직접 설계하고 관리하세요.</p>
+                        </div>
+                        {/* Simplified Footer Columns */}
+                        <div>
+                            <h4 className="font-bold mb-6">Product</h4>
+                            <ul className="space-y-4 text-sm opacity-50">
+                                <li>Features</li>
+                                <li>Demo</li>
+                                <li>Pricing</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 className="font-bold mb-6">Company</h4>
+                            <ul className="space-y-4 text-sm opacity-50">
+                                <li>About</li>
+                                <li>Blog</li>
+                                <li>Careers</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 className="font-bold mb-6">Contact</h4>
+                            <div className="flex gap-4">
+                                <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-white/5 flex items-center justify-center cursor-pointer hover:scale-110 transition-transform"><Star className="w-5 h-5" /></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="container mx-auto text-center pt-12 border-t border-slate-100 dark:border-white/5 opacity-40 text-xs">
+                        © {new Date().getFullYear()} Life Controller. All rights reserved.
+                    </div>
+                </footer>
+            </section>
         </div>
     );
 }
