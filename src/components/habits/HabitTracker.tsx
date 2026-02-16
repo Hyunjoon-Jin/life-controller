@@ -602,6 +602,30 @@ export function HabitTracker() {
             </div>
 
             <div className="grid gap-3">
+                {/* Daily Summary Header */}
+                {habits.filter(h => h.isTracked !== false).length > 0 && today && (
+                    <div className="flex items-center justify-between px-3 py-2 bg-muted/30 rounded-xl border border-border/30">
+                        <span className="text-xs font-bold text-muted-foreground">오늘의 달성률</span>
+                        <div className="flex items-center gap-2">
+                            <div className="h-2 w-24 bg-muted rounded-full overflow-hidden">
+                                <div
+                                    className="h-full bg-primary rounded-full transition-all duration-500"
+                                    style={{
+                                        width: `${Math.round(
+                                            (habits.filter(h => h.isTracked !== false && h.completedDates.includes(today)).length /
+                                                Math.max(habits.filter(h => h.isTracked !== false).length, 1)) * 100
+                                        )}%`
+                                    }}
+                                />
+                            </div>
+                            <span className="text-xs font-bold text-primary">
+                                {habits.filter(h => h.isTracked !== false && h.completedDates.includes(today)).length}/
+                                {habits.filter(h => h.isTracked !== false).length}
+                            </span>
+                        </div>
+                    </div>
+                )}
+
                 {habits.filter(habit => habit.isTracked !== false).map(habit => {
                     const isCompleted = habit.completedDates.includes(today);
                     const target = habit.targetCount || 1;
@@ -639,7 +663,17 @@ export function HabitTracker() {
                                         </div>
                                     </div>
                                     <div className="text-xs font-medium text-muted-foreground flex items-center gap-1 mt-1">
-                                        <Flame className="w-3 h-3 text-orange-500" /> {habit.streak}일 연속
+                                        {(habit.streak || 0) > 0 ? (
+                                            <span className={cn(
+                                                "flex items-center gap-1 px-1.5 py-0.5 rounded-full",
+                                                (habit.streak || 0) >= 7 ? "bg-orange-100 text-orange-600" : "text-muted-foreground"
+                                            )}>
+                                                <Flame className="w-3 h-3 text-orange-500" />
+                                                {habit.streak}일 연속
+                                            </span>
+                                        ) : (
+                                            habit.time && <span className="text-muted-foreground/60">{habit.time}</span>
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -667,8 +701,12 @@ export function HabitTracker() {
                 })}
 
                 {habits.length === 0 && (
-                    <div className="text-center py-4 text-muted-foreground text-sm">
-                        등록된 습관이 없습니다. 시작해보세요!
+                    <div className="flex flex-col items-center justify-center py-12 text-center">
+                        <div className="w-14 h-14 rounded-2xl bg-green-50 flex items-center justify-center mb-4">
+                            <Trophy className="w-7 h-7 text-green-400" />
+                        </div>
+                        <p className="text-base font-bold text-slate-800 mb-1">아직 습관이 없어요</p>
+                        <p className="text-sm text-slate-500 max-w-xs leading-relaxed">매일 반복할 습관을 추가해보세요!</p>
                     </div>
                 )}
             </div>

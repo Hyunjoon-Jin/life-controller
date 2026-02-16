@@ -12,10 +12,10 @@ import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuIte
 import { DatePicker } from '@/components/ui/date-picker';
 
 
-const MOCK_PROJECTS: Project[] = [
-    { id: '1', title: '개인', color: 'bg-blue-400' },
-    { id: '2', title: '일', color: 'bg-orange-400' },
-    { id: '3', title: '운동', color: 'bg-green-400' },
+const DEFAULT_PROJECTS: Project[] = [
+    { id: 'default-personal', title: '개인', color: 'bg-blue-400' },
+    { id: 'default-work', title: '일', color: 'bg-orange-400' },
+    { id: 'default-health', title: '운동', color: 'bg-green-400' },
 ];
 
 interface TaskBoardProps {
@@ -24,7 +24,8 @@ interface TaskBoardProps {
 }
 
 export function TaskBoard({ projectId, hideHeader = false }: TaskBoardProps) {
-    const { tasks, addTask, updateTask, deleteTask } = useData();
+    const { tasks, addTask, updateTask, deleteTask, projects: userProjects } = useData();
+    const displayProjects = userProjects.length > 0 ? userProjects : DEFAULT_PROJECTS;
     // If projectId is passed, lock selection to it. Otherwise default to 'all'
     const [selectedProjectId, setSelectedProjectId] = useState<string>(projectId || 'all');
 
@@ -78,7 +79,7 @@ export function TaskBoard({ projectId, hideHeader = false }: TaskBoardProps) {
                 completed: false,
                 priority: 'medium',
                 // Use the forced projectId, or selected one, or default to '1' (Personal)
-                projectId: projectId || (selectedProjectId === 'all' ? '1' : selectedProjectId),
+                projectId: projectId || (selectedProjectId === 'all' ? (displayProjects[0]?.id || 'default-personal') : selectedProjectId),
                 type: newTaskType,
                 remarks: newTaskRemarks,
                 deadline: newTaskDeadline,
@@ -159,7 +160,7 @@ export function TaskBoard({ projectId, hideHeader = false }: TaskBoardProps) {
                             >
                                 모든 작업
                             </button>
-                            {MOCK_PROJECTS.map(p => (
+                            {displayProjects.map(p => (
                                 <button
                                     key={p.id}
                                     onClick={() => setSelectedProjectId(p.id)}
@@ -219,7 +220,6 @@ export function TaskBoard({ projectId, hideHeader = false }: TaskBoardProps) {
                                             </select>
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-sm font-bold text-muted-foreground">마감 기한</label>
                                             <label className="text-sm font-bold text-muted-foreground">마감 기한</label>
                                             <DatePicker
                                                 date={newTaskDeadline}
@@ -350,9 +350,12 @@ export function TaskBoard({ projectId, hideHeader = false }: TaskBoardProps) {
             {/* List Content */}
             <div className="flex-1 overflow-y-auto custom-scrollbar">
                 {filteredTasks.length === 0 ? (
-                    <div className="p-12 text-center text-muted-foreground flex flex-col items-center gap-2">
-                        <ListTodo className="w-10 h-10 opacity-20" />
-                        <p className="font-medium">등록된 작업이 없습니다.</p>
+                    <div className="flex flex-col items-center justify-center py-16 text-center">
+                        <div className="w-16 h-16 rounded-2xl bg-blue-50 flex items-center justify-center mb-5">
+                            <ListTodo className="w-8 h-8 text-blue-400" />
+                        </div>
+                        <p className="text-lg font-bold text-slate-800 mb-2">등록된 작업이 없어요</p>
+                        <p className="text-sm text-slate-500 max-w-xs leading-relaxed">새 작업을 추가하여 할 일을 관리하세요!</p>
                     </div>
                 ) : (
                     filteredTasks.map(task => (

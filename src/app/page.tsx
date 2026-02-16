@@ -13,6 +13,7 @@ import { IdeaBoard } from '@/components/ideas/IdeaBoard';
 import { PeopleManager } from '@/components/people/PeopleManager';
 import { ScrapManager } from '@/components/scraps/ScrapManager';
 import { Pomodoro } from '@/components/tools/Pomodoro';
+import { DataExportButton } from '@/components/tools/DataExportButton';
 import { GuideModal } from '@/components/guide/GuideModal';
 import { WorkLayout } from '@/components/project/WorkLayout';
 import { WorkTimeSection } from '@/components/work/sections/WorkTimeSection';
@@ -241,6 +242,7 @@ export default function Home() {
             <HelpCircle className="w-5 h-5" />
           </Button>
           <CloudSyncStatus />
+          <DataExportButton />
           <ThemeToggle />
           <UserMenu />
         </div>
