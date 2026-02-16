@@ -211,7 +211,7 @@ export function LandingPage() {
             </header>
 
             {/* 1. Hero Section */}
-            <section data-snap="true" className="min-h-screen snap-start pt-20 flex flex-col justify-center relative overflow-hidden">
+            <section data-snap="true" className="min-h-screen snap-start pt-12 flex flex-col justify-center relative overflow-hidden">
                 {/* Floating UI Elements (Item 13) */}
                 <div className="absolute inset-0 pointer-events-none overflow-hidden">
                     <motion.div
@@ -247,7 +247,7 @@ export function LandingPage() {
                             <Sparkles className="w-3 h-3" /> All-in-One Life & Work Controller
                         </div>
 
-                        <h1 className="text-5xl md:text-8xl font-black tracking-tighter mb-8 leading-[0.9] md:leading-[1.1]">
+                        <h1 className="text-4xl md:text-6xl font-black tracking-tighter mb-4 leading-[1.0]">
                             {landingMode === 'life' ? (
                                 <>당신의 하루를 <br /> <span className="text-blue-600">작품처럼</span> 설계하세요</>
                             ) : (
@@ -256,7 +256,7 @@ export function LandingPage() {
                         </h1>
 
                         <p className={cn(
-                            "text-lg md:text-2xl mb-12 max-w-3xl mx-auto leading-relaxed font-medium transition-colors",
+                            "text-lg md:text-xl mb-8 max-w-3xl mx-auto leading-relaxed font-medium transition-colors",
                             landingMode === 'life' ? "text-slate-600" : "text-slate-400"
                         )}>
                             {landingMode === 'life' ? (
@@ -269,7 +269,7 @@ export function LandingPage() {
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
                             <Link href="/register">
                                 <Button size="lg" className={cn(
-                                    "h-18 px-12 text-xl rounded-full font-black shadow-2xl transition-all hover:scale-105",
+                                    "h-14 px-10 text-lg rounded-full font-black shadow-2xl transition-all hover:scale-105",
                                     landingMode === 'life' ? "bg-slate-900 text-white" : "bg-white text-slate-950"
                                 )}>
                                     지금 무료로 시작하기 <ChevronRight className="ml-2 w-6 h-6" />
@@ -281,15 +281,15 @@ export function LandingPage() {
             </section>
 
             {/* 2. Bento Grid Features */}
-            <section data-snap="true" className="min-h-screen snap-start flex flex-col justify-center py-20 px-6">
+            <section data-snap="true" className="min-h-screen snap-start flex flex-col justify-center py-10 px-6">
                 <div className="container mx-auto max-w-6xl">
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-20">
                         <div className="max-w-xl">
-                            <h2 className="text-3xl md:text-5xl font-black tracking-tight mb-6">
+                            <h2 className="text-2xl md:text-4xl font-black tracking-tight mb-4">
                                 기능 하나하나가 <br /> <span className="text-blue-600">혁신적인</span> 이유
                             </h2>
                             <p className={cn(
-                                "text-lg font-medium",
+                                "text-base font-medium",
                                 landingMode === 'life' ? "text-slate-500" : "text-slate-400"
                             )}>
                                 단조로운 할 일 목록이 아닙니다. 데이터가 연결되고 성장이 가시화되는 진짜 도구입니다.
@@ -339,7 +339,7 @@ export function LandingPage() {
             </section>
 
             {/* 3. Stats & Comparison (Grouped) */}
-            <section data-snap="true" className="min-h-screen snap-start flex flex-col justify-center py-20 px-6">
+            <section data-snap="true" className="min-h-screen snap-start flex flex-col justify-center py-12 px-6">
                 {/* Stats */}
                 <div className="container mx-auto px-6 max-w-6xl grid grid-cols-2 md:grid-cols-4 gap-8 text-center mb-24">
                     {[
@@ -353,26 +353,26 @@ export function LandingPage() {
                             initial={{ opacity: 0, scale: 0.9 }}
                             whileInView={{ opacity: 1, scale: 1 }}
                             viewport={{ once: true }}
-                            className="space-y-2"
+                            className="space-y-1"
                         >
-                            <div className="w-10 h-10 rounded-full bg-blue-50 dark:bg-white/5 flex items-center justify-center mx-auto mb-4">
-                                <stat.icon className="w-5 h-5 text-blue-600" />
+                            <div className="w-8 h-8 rounded-full bg-blue-50 dark:bg-white/5 flex items-center justify-center mx-auto mb-2">
+                                <stat.icon className="w-4 h-4 text-blue-600" />
                             </div>
-                            <h4 className="text-3xl font-black tracking-tighter">{stat.value}</h4>
-                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{stat.label}</p>
+                            <h4 className="text-2xl font-black tracking-tighter">{stat.value}</h4>
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{stat.label}</p>
                         </motion.div>
                     ))}
                 </div>
 
                 {/* Comparison */}
                 <div className="container mx-auto max-w-4xl">
-                    <h2 className="text-3xl md:text-5xl font-black text-center mb-16 tracking-tight">
+                    <h2 className="text-2xl md:text-4xl font-black text-center mb-10 tracking-tight">
                         비교할수록, <span className="text-blue-600">LIFE Controller</span>
                     </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div className="p-8 rounded-[40px] bg-slate-100 dark:bg-white/5 border border-transparent">
-                            <h4 className="text-lg font-bold mb-6 text-slate-400">기본 플래너 / 노션</h4>
-                            <ul className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="p-6 rounded-[32px] bg-slate-100 dark:bg-white/5 border border-transparent">
+                            <h4 className="text-base font-bold mb-4 text-slate-400">기본 플래너 / 노션</h4>
+                            <ul className="space-y-3">
                                 {["단순 텍스트 기반 기록", "기능 간 데이터 파편화", "자동 분석 기능 부재", "복잡한 초기 세팅"].map((item, i) => (
                                     <li key={i} className="flex items-center gap-3 text-sm font-medium opacity-50">
                                         <div className="w-5 h-5 rounded-full bg-slate-200 dark:bg-white/10 flex items-center justify-center text-[10px]">✕</div>
@@ -406,7 +406,7 @@ export function LandingPage() {
 
             {/* 4. Interactive Demo Section */}
             <section data-snap="true" className={cn(
-                "min-h-screen snap-start flex flex-col justify-center py-24 px-6 transition-colors duration-1000",
+                "min-h-screen snap-start flex flex-col justify-center py-12 px-6 transition-colors duration-1000",
                 landingMode === 'life' ? "bg-slate-50" : "bg-slate-900/50"
             )}>
                 <div className="container mx-auto">
@@ -414,7 +414,7 @@ export function LandingPage() {
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[10px] font-black uppercase tracking-widest">
                             Live Demo
                         </div>
-                        <h2 className="text-3xl md:text-6xl font-black tracking-tight">
+                        <h2 className="text-2xl md:text-4xl font-black tracking-tight">
                             기다리지 말고 <span className="text-blue-600">지금 바로</span> 만져보세요
                         </h2>
                         <p className="text-slate-500 dark:text-slate-400 font-medium max-w-2xl mx-auto">
@@ -458,7 +458,7 @@ export function LandingPage() {
 
                 {/* Footer */}
                 <footer className={cn(
-                    "py-20 px-6 font-medium transition-colors",
+                    "py-10 px-6 font-medium transition-colors",
                     landingMode === 'life' ? "bg-white" : "bg-slate-950"
                 )}>
                     <div className="container mx-auto max-w-6xl grid grid-cols-1 md:grid-cols-4 gap-12 mb-20">
