@@ -24,15 +24,39 @@ export function OnboardingTour({ steps, onComplete, isOpen }: OnboardingTourProp
     const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
 
     useEffect(() => {
-        if (isOpen && steps[currentStep]) {
-            const el = document.querySelector(steps[currentStep].target);
-            if (el) {
-                setTargetRect(el.getBoundingClientRect());
-                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            } else if (steps[currentStep].position === 'center') {
-                setTargetRect(null);
+        const updatePosition = () => {
+            if (isOpen && steps[currentStep]) {
+                const el = document.querySelector(steps[currentStep].target);
+                if (el) {
+                    const rect = el.getBoundingClientRect();
+                    setTargetRect(rect);
+                    // Only scroll if off-screen
+                    if (rect.top < 0 || rect.bottom > window.innerHeight) {
+                        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                } else if (steps[currentStep].position === 'center') {
+                    setTargetRect(null);
+                }
             }
-        }
+        };
+
+        // Initial update with delay for animations
+        const timer1 = setTimeout(updatePosition, 100);
+        const timer2 = setTimeout(updatePosition, 500); // Double check after animation
+
+        // Poll for position changes (handling scroll/resize/animation)
+        const interval = setInterval(updatePosition, 100);
+
+        window.addEventListener('resize', updatePosition);
+        window.addEventListener('scroll', updatePosition, { capture: true });
+
+        return () => {
+            clearTimeout(timer1);
+            clearTimeout(timer2);
+            clearInterval(interval);
+            window.removeEventListener('resize', updatePosition);
+            window.removeEventListener('scroll', updatePosition, { capture: true });
+        };
     }, [isOpen, currentStep, steps]);
 
     if (!isOpen) return null;
@@ -77,8 +101,16 @@ export function OnboardingTour({ steps, onComplete, isOpen }: OnboardingTourProp
                 animate={{
                     opacity: 1,
                     scale: 1,
-                    left: targetRect ? (step.position === 'right' ? targetRect.right + 20 : step.position === 'left' ? targetRect.left - 340 : targetRect.left) : '50%',
-                    top: targetRect ? (step.position === 'bottom' ? targetRect.bottom + 20 : step.position === 'top' ? targetRect.top - 200 : targetRect.top) : '50%',
+                    left: targetRect ? (
+                        step.position === 'right' ? targetRect.right + 20 :
+                            step.position === 'left' ? targetRect.left - 340 :
+                                targetRect.left + (targetRect.width / 2) - 160 // Center horizontally
+                    ) : '50%',
+                    top: targetRect ? (
+                        step.position === 'bottom' ? targetRect.bottom + 20 :
+                            step.position === 'top' ? targetRect.top - 200 : // Assuming height ~180px
+                                targetRect.top + (targetRect.height / 2) - 100 // Center vertically
+                    ) : '50%',
                     x: targetRect ? 0 : '-50%',
                     y: targetRect ? 0 : '-50%'
                 }}

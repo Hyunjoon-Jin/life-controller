@@ -20,7 +20,7 @@ const TOUR_STEPS = [
         target: '.hero-section', // Need to add these classes to components
         title: '대시보드에 오신 것을 환영합니다!',
         content: '여기서 당신의 오늘의 현황과 날씨, 주요 지표를 한눈에 확인할 수 있습니다.',
-        position: 'center' as const
+        position: 'bottom' as const
     },
     {
         target: '[data-tour="search"]',
