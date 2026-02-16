@@ -157,6 +157,15 @@ export type Habit = {
 export type EventType = 'work' | 'personal' | 'study' | 'hobby' | 'health' | 'finance' | 'social' | 'travel' | 'meal' | 'vacation' | 'other';
 export type EventPriority = 'high' | 'medium' | 'low';
 
+export type UserSettings = {
+    home_shortcuts: string[]; // Changed from TEXT[] DEFAULT ... to simple array type for TS
+    body_composition_goal?: any; // JSONB
+    global_memo?: string;
+    has_seen_guide?: boolean; // New: Track if user has seen the welcome guide
+    created_at: Date;
+    updated_at: Date;
+};
+
 export type JournalEntry = {
     id: string;
     date: Date;

@@ -13,6 +13,8 @@ import { Sparkles, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { GuideModal } from './GuideModal';
 import { OnboardingTour } from './OnboardingTour';
 
+import { createClient } from '@/lib/supabase';
+
 const TOUR_STEPS = [
     {
         target: '.hero-section', // Need to add these classes to components
@@ -43,18 +45,46 @@ const TOUR_STEPS = [
 export function WelcomeOnboarding() {
     const [isOpen, setIsOpen] = useState(false);
     const [isTourOpen, setIsTourOpen] = useState(false);
+    const supabase = createClient();
 
     useEffect(() => {
-        const hasVisited = localStorage.getItem('life_controller_visited');
-        if (!hasVisited) {
-            setIsOpen(true);
-            localStorage.setItem('life_controller_visited', 'true');
-        }
+        const checkGuideStatus = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return;
+
+            const { data: settings } = await supabase
+                .from('user_settings')
+                .select('has_seen_guide')
+                .eq('user_id', user.id)
+                .single();
+
+            if (settings && !settings.has_seen_guide) {
+                setIsOpen(true);
+            }
+        };
+
+        checkGuideStatus();
     }, []);
 
-    const startTour = () => {
+    const markAsSeen = async () => {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        await supabase
+            .from('user_settings')
+            .update({ has_seen_guide: true })
+            .eq('user_id', user.id);
+    };
+
+    const startTour = async () => {
         setIsOpen(false);
         setIsTourOpen(true);
+        await markAsSeen();
+    };
+
+    const handleClose = async () => {
+        setIsOpen(false);
+        await markAsSeen();
     };
 
     return (
@@ -103,7 +133,7 @@ export function WelcomeOnboarding() {
                             </Button>
                             <Button
                                 variant="ghost"
-                                onClick={() => setIsOpen(false)}
+                                onClick={handleClose}
                                 className="w-full h-12 rounded-2xl font-bold text-slate-500"
                             >
                                 나중에 살펴볼게요
