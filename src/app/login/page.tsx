@@ -121,6 +121,28 @@ export default function LoginPage() {
         setRecoveryEmail('');
     };
 
+    const handleGoogleLogin = async () => {
+        setIsLoading(true);
+        try {
+            const { error } = await supabase.auth.signInWithOAuth({
+                provider: 'google',
+                options: {
+                    redirectTo: `${window.location.origin}/auth/callback?next=/`,
+                    queryParams: {
+                        access_type: 'offline',
+                        prompt: 'consent',
+                    },
+                },
+            });
+
+            if (error) throw error;
+            // Note: No toast needed here as it redirects immediately
+        } catch (error: any) {
+            toast.error(error.message || '구글 로그인 중 오류가 발생했습니다.');
+            setIsLoading(false);
+        }
+    };
+
     return (
         <div className="min-h-screen flex bg-slate-50 dark:bg-slate-950 overflow-hidden">
             {/* Left Side - Brand & Visuals (Desktop Only) */}
@@ -360,7 +382,13 @@ export default function LoginPage() {
                         </div>
 
                         <div className="grid grid-cols-2 gap-3">
-                            <Button variant="outline" type="button" className="h-11 hover:bg-white hover:border-slate-300 dark:hover:bg-slate-900 transition-all">
+                            <Button
+                                variant="outline"
+                                type="button"
+                                onClick={handleGoogleLogin}
+                                disabled={isLoading}
+                                className="h-11 hover:bg-white hover:border-slate-300 dark:hover:bg-slate-900 transition-all"
+                            >
                                 <span className="mr-2">G</span> Google
                             </Button>
                             <Button variant="outline" type="button" className="h-11 hover:bg-white hover:border-slate-300 dark:hover:bg-slate-900 transition-all">

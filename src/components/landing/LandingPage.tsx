@@ -92,22 +92,46 @@ export function LandingPage() {
         const handleKeyDown = (e: KeyboardEvent) => {
             const sections = document.querySelectorAll('section[data-snap="true"]');
             const windowHeight = window.innerHeight;
+            const container = containerRef.current;
+            if (!container) return;
 
-            // Find current active section index
+            // Find current active section index based on visibility
             let currentIndex = 0;
             sections.forEach((section, i) => {
                 const rect = section.getBoundingClientRect();
-                if (rect.top >= -windowHeight / 2 && rect.top < windowHeight / 2) {
+                // A section is "active" if it takes up the majority of the viewport
+                if (rect.top <= windowHeight / 2 && rect.bottom >= windowHeight / 2) {
                     currentIndex = i;
                 }
             });
 
             if (e.key === 'ArrowDown') {
+                const currentSection = sections[currentIndex];
+                const rect = currentSection.getBoundingClientRect();
+
+                // If the bottom of the section is clearly below the viewport, allow normal scroll
+                // Using a small buffer (5px) for float precision
+                if (rect.bottom > windowHeight + 5) {
+                    // Let default behavior happen (scroll down)
+                    return;
+                }
+
+                // If we are at the bottom, jump to next section
                 e.preventDefault();
                 if (currentIndex < sections.length - 1) {
                     sections[currentIndex + 1].scrollIntoView({ behavior: 'smooth' });
                 }
             } else if (e.key === 'ArrowUp') {
+                const currentSection = sections[currentIndex];
+                const rect = currentSection.getBoundingClientRect();
+
+                // If the top of the section is clearly above the viewport, allow normal scroll
+                if (rect.top < -5) {
+                    // Let default behavior happen (scroll up)
+                    return;
+                }
+
+                // If we are at the top, jump to previous section
                 e.preventDefault();
                 if (currentIndex > 0) {
                     sections[currentIndex - 1].scrollIntoView({ behavior: 'smooth' });
