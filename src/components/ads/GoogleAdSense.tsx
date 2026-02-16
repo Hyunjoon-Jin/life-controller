@@ -7,7 +7,10 @@ type Props = {
 };
 
 export function GoogleAdSense({ pId }: Props) {
-    if (!pId) {
+    // Hardcode ID to ensure it works even if env var is missing in production
+    const adsenseId = pId || "ca-pub-8704292092201678";
+
+    if (!adsenseId) {
         return null;
     }
 
@@ -15,7 +18,7 @@ export function GoogleAdSense({ pId }: Props) {
         <Script
             id="google-adsense"
             async
-            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${pId}`}
+            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsenseId}`}
             crossOrigin="anonymous"
             strategy="afterInteractive"
         />
