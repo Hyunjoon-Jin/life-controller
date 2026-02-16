@@ -84,11 +84,11 @@ export function FAQSection({ mode }: { mode: 'life' | 'work' }) {
 
     return (
         <section className={cn(
-            "py-12 px-6 transition-colors duration-1000",
+            "py-0 px-6 transition-colors duration-1000",
             mode === 'life' ? "bg-white" : "bg-slate-950"
         )}>
             <div className="container mx-auto max-w-3xl">
-                <div className="text-center mb-10">
+                <div className="text-center mb-8">
                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 text-[10px] font-black uppercase tracking-widest mb-4">
                         <HelpCircle className="w-3 h-3" /> FAQ
                     </div>

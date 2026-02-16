@@ -8,8 +8,8 @@ import { Logo } from '@/components/ui/Logo';
 import {
     Calendar, Target, Activity, DollarSign,
     Sparkles, Briefcase, ChevronRight, Zap,
-    Shield, Globe, Zap as ZapIcon, Heart, Star,
-    Layers, MousePointer, Rocket, CheckCircle2
+    Shield, Heart, Star,
+    Layers, MousePointer, Rocket
 } from 'lucide-react';
 import { BentoGrid, BentoCard, BentoVisuals } from './BentoGrid';
 import { InteractiveDemo } from './InteractiveDemo';
@@ -211,7 +211,7 @@ export function LandingPage() {
             </header>
 
             {/* 1. Hero Section */}
-            <section data-snap="true" className="min-h-screen snap-start pt-12 flex flex-col justify-center relative overflow-hidden">
+            <section data-snap="true" className="h-screen snap-start flex flex-col justify-center relative overflow-hidden">
                 {/* Floating UI Elements (Item 13) */}
                 <div className="absolute inset-0 pointer-events-none overflow-hidden">
                     <motion.div
@@ -281,9 +281,9 @@ export function LandingPage() {
             </section>
 
             {/* 2. Bento Grid Features */}
-            <section data-snap="true" className="min-h-screen snap-start flex flex-col justify-center py-10 px-6">
-                <div className="container mx-auto max-w-6xl">
-                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-20">
+            <section data-snap="true" className="h-screen snap-start flex flex-col justify-center px-6 overflow-hidden">
+                <div className="container mx-auto max-w-6xl h-full flex flex-col justify-center">
+                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-10 shrink-0">
                         <div className="max-w-xl">
                             <h2 className="text-2xl md:text-4xl font-black tracking-tight mb-4">
                                 기능 하나하나가 <br /> <span className="text-blue-600">혁신적인</span> 이유
@@ -297,104 +297,81 @@ export function LandingPage() {
                         </div>
                     </div>
 
-                    <BentoGrid>
-                        <BentoCard
-                            title="스마트 스케줄러"
-                            description="일정과 할 일을 한눈에 관리하고 드래그하여 시간을 배치하세요."
-                            icon={Calendar}
-                            className="md:col-span-2 md:row-span-2"
-                            visual={visuals.Calendar}
-                            delay={0.1}
-                        />
-                        <BentoCard
-                            title="목표 & OKR"
-                            description="큰 꿈을 작은 행동으로 쪼개어 실현 가능한 계획으로 만듭니다."
-                            icon={Target}
-                            colorClassName="bg-emerald-50 dark:bg-emerald-900/30"
-                            iconClassName="text-emerald-600 dark:text-emerald-400"
-                            className="md:col-span-2"
-                            visual={visuals.Target}
-                            delay={0.2}
-                        />
-                        <BentoCard
-                            title="전방위 자산 관리"
-                            description="가계부, 자산, 투자 수익률까지 하나의 대시보드에서."
-                            icon={DollarSign}
-                            colorClassName="bg-purple-50 dark:bg-purple-900/30"
-                            iconClassName="text-purple-600 dark:text-purple-400"
-                            visual={visuals.Finance}
-                            delay={0.3}
-                        />
-                        <BentoCard
-                            title="통합 건강 기록"
-                            description="운동, 식단, 인바디 변화를 기록하고 신체 변화를 분석하세요."
-                            icon={Activity}
-                            colorClassName="bg-rose-50 dark:bg-rose-900/30"
-                            iconClassName="text-rose-600 dark:text-rose-400"
-                            className="md:col-span-2"
-                            delay={0.4}
-                        />
-                    </BentoGrid>
+                    <div className="flex-1 min-h-0">
+                        <BentoGrid className="h-full">
+                            <BentoCard
+                                title="스마트 스케줄러"
+                                description="일정과 할 일을 한눈에 관리하고 드래그하여 시간을 배치하세요."
+                                icon={Calendar}
+                                className="md:col-span-2 md:row-span-2"
+                                visual={visuals.Calendar}
+                                delay={0.1}
+                            />
+                            <BentoCard
+                                title="목표 & OKR"
+                                description="큰 꿈을 작은 행동으로 쪼개어 실현 가능한 계획으로 만듭니다."
+                                icon={Target}
+                                colorClassName="bg-emerald-50 dark:bg-emerald-900/30"
+                                iconClassName="text-emerald-600 dark:text-emerald-400"
+                                className="md:col-span-2"
+                                visual={visuals.Target}
+                                delay={0.2}
+                            />
+                            <BentoCard
+                                title="전방위 자산 관리"
+                                description="가계부, 자산, 투자 수익률까지 하나의 대시보드에서."
+                                icon={DollarSign}
+                                colorClassName="bg-purple-50 dark:bg-purple-900/30"
+                                iconClassName="text-purple-600 dark:text-purple-400"
+                                visual={visuals.Finance}
+                                delay={0.3}
+                            />
+                            <BentoCard
+                                title="통합 건강 기록"
+                                description="운동, 식단, 인바디 변화를 기록하고 신체 변화를 분석하세요."
+                                icon={Activity}
+                                colorClassName="bg-rose-50 dark:bg-rose-900/30"
+                                iconClassName="text-rose-600 dark:text-rose-400"
+                                className="md:col-span-2"
+                                delay={0.4}
+                            />
+                        </BentoGrid>
+                    </div>
                 </div>
             </section>
 
-            {/* 3. Stats & Comparison (Grouped) */}
-            <section data-snap="true" className="min-h-screen snap-start flex flex-col justify-center py-12 px-6">
-                {/* Stats */}
-                <div className="container mx-auto px-6 max-w-6xl grid grid-cols-2 md:grid-cols-4 gap-8 text-center mb-24">
-                    {[
-                        { label: "오늘 생성된 목표", value: "2,450+", icon: Target },
-                        { label: "완료된 할 일", value: "18,200+", icon: CheckCircle2 },
-                        { label: "활성 사용자", value: "5,000+", icon: Globe },
-                        { label: "데이터 동기화", value: "99.9%", icon: ZapIcon },
-                    ].map((stat, i) => (
-                        <motion.div
-                            key={i}
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            whileInView={{ opacity: 1, scale: 1 }}
-                            viewport={{ once: true }}
-                            className="space-y-1"
-                        >
-                            <div className="w-8 h-8 rounded-full bg-blue-50 dark:bg-white/5 flex items-center justify-center mx-auto mb-2">
-                                <stat.icon className="w-4 h-4 text-blue-600" />
-                            </div>
-                            <h4 className="text-2xl font-black tracking-tighter">{stat.value}</h4>
-                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{stat.label}</p>
-                        </motion.div>
-                    ))}
-                </div>
-
-                {/* Comparison */}
+            {/* 3. Comparison (Renamed from Stats & Comparison) */}
+            <section data-snap="true" className="h-screen snap-start flex flex-col justify-center px-6 overflow-hidden">
                 <div className="container mx-auto max-w-4xl">
                     <h2 className="text-2xl md:text-4xl font-black text-center mb-10 tracking-tight">
                         비교할수록, <span className="text-blue-600">LIFE Controller</span>
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="p-6 rounded-[32px] bg-slate-100 dark:bg-white/5 border border-transparent">
-                            <h4 className="text-base font-bold mb-4 text-slate-400">기본 플래너 / 노션</h4>
-                            <ul className="space-y-3">
+                        <div className="p-8 rounded-[32px] bg-slate-100 dark:bg-white/5 border border-transparent flex flex-col justify-center">
+                            <h4 className="text-xl font-bold mb-6 text-slate-400">기본 플래너 / 노션</h4>
+                            <ul className="space-y-4">
                                 {["단순 텍스트 기반 기록", "기능 간 데이터 파편화", "자동 분석 기능 부재", "복잡한 초기 세팅"].map((item, i) => (
-                                    <li key={i} className="flex items-center gap-3 text-sm font-medium opacity-50">
-                                        <div className="w-5 h-5 rounded-full bg-slate-200 dark:bg-white/10 flex items-center justify-center text-[10px]">✕</div>
+                                    <li key={i} className="flex items-center gap-3 text-base font-medium opacity-50">
+                                        <div className="w-6 h-6 rounded-full bg-slate-200 dark:bg-white/10 flex items-center justify-center text-xs">✕</div>
                                         {item}
                                     </li>
                                 ))}
                             </ul>
                         </div>
-                        <div className="p-8 rounded-[40px] bg-white dark:bg-slate-900 border-4 border-blue-600/20 shadow-2xl relative overflow-hidden">
-                            <div className="absolute top-0 right-0 p-4">
-                                <Zap className="w-8 h-8 text-blue-600 opacity-20" />
+                        <div className="p-10 rounded-[40px] bg-white dark:bg-slate-900 border-4 border-blue-600/20 shadow-2xl relative overflow-hidden flex flex-col justify-center">
+                            <div className="absolute top-0 right-0 p-6">
+                                <Zap className="w-10 h-10 text-blue-600 opacity-20" />
                             </div>
-                            <h4 className="text-lg font-black mb-6 text-blue-600">LIFE Controller</h4>
-                            <ul className="space-y-4">
+                            <h4 className="text-2xl font-black mb-8 text-blue-600">LIFE Controller</h4>
+                            <ul className="space-y-5">
                                 {[
                                     "강력한 데이터 시각화 엔진",
                                     "목표-일정-금융-건강 원스탑 통합",
                                     "일상/업무 모드 즉시 전환",
                                     "자동 성과 분석 리포트"
                                 ].map((item, i) => (
-                                    <li key={i} className="flex items-center gap-3 text-sm font-black">
-                                        <div className="w-5 h-5 rounded-full bg-blue-600 flex items-center justify-center text-[10px] text-white">✓</div>
+                                    <li key={i} className="flex items-center gap-3 text-lg font-black">
+                                        <div className="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-xs text-white">✓</div>
                                         {item}
                                     </li>
                                 ))}
@@ -406,11 +383,11 @@ export function LandingPage() {
 
             {/* 4. Interactive Demo Section */}
             <section data-snap="true" className={cn(
-                "min-h-screen snap-start flex flex-col justify-center py-12 px-6 transition-colors duration-1000",
+                "h-screen snap-start flex flex-col justify-center px-6 transition-colors duration-1000 overflow-hidden",
                 landingMode === 'life' ? "bg-slate-50" : "bg-slate-900/50"
             )}>
-                <div className="container mx-auto">
-                    <div className="text-center mb-16 space-y-4">
+                <div className="container mx-auto h-full flex flex-col justify-center">
+                    <div className="text-center mb-10 space-y-4 shrink-0">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[10px] font-black uppercase tracking-widest">
                             Live Demo
                         </div>
@@ -422,24 +399,26 @@ export function LandingPage() {
                         </p>
                     </div>
 
-                    <ErrorBoundary>
-                        <InteractiveDemo />
-                    </ErrorBoundary>
+                    <div className="flex-1 min-h-0 flex flex-col justify-center">
+                        <ErrorBoundary>
+                            <InteractiveDemo />
+                        </ErrorBoundary>
+                    </div>
                 </div>
             </section>
 
             {/* 5. Pricing Section (Item 27) */}
-            <section data-snap="true" className="min-h-screen snap-start flex flex-col justify-center">
+            <section data-snap="true" className="h-screen snap-start flex flex-col justify-center overflow-hidden">
                 <PricingSection mode={landingMode} />
             </section>
 
             {/* 6. FAQ Section (Item 24) */}
-            <section data-snap="true" className="min-h-screen snap-start flex flex-col justify-center">
+            <section data-snap="true" className="h-screen snap-start flex flex-col justify-center overflow-hidden">
                 <FAQSection mode={landingMode} />
             </section>
 
             {/* 7. Newsletter, Trust, Footer */}
-            <section data-snap="true" className="min-h-screen snap-start flex flex-col justify-center relative bg-slate-50 dark:bg-slate-900">
+            <section data-snap="true" className="h-screen snap-start flex flex-col justify-center relative bg-slate-50 dark:bg-slate-900 overflow-hidden">
                 <div className="flex-1 flex flex-col justify-center">
                     <NewsletterSection mode={landingMode} />
                 </div>
@@ -450,7 +429,7 @@ export function LandingPage() {
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 opacity-40">
                             <div className="flex items-center gap-2 justify-center font-bold"><Shield className="w-5 h-5" /> Enterprise Secure</div>
                             <div className="flex items-center gap-2 justify-center font-bold"><Globe className="w-5 h-5" /> Cloud Sync</div>
-                            <div className="flex items-center gap-2 justify-center font-bold"><ZapIcon className="w-5 h-5" /> Dark Mode Ready</div>
+                            <div className="flex items-center gap-2 justify-center font-bold"><Zap className="w-5 h-5" /> Dark Mode Ready</div>
                             <div className="flex items-center gap-2 justify-center font-bold"><Heart className="w-5 h-5" /> User Focused</div>
                         </div>
                     </div>

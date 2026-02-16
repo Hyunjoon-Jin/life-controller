@@ -54,11 +54,11 @@ export function PricingSection({ mode }: { mode: 'life' | 'work' }) {
 
     return (
         <section className={cn(
-            "py-12 px-6 transition-colors duration-1000",
+            "py-0 px-6 transition-colors duration-1000",
             mode === 'life' ? "bg-slate-50" : "bg-slate-900/50"
         )}>
             <div className="container mx-auto max-w-5xl">
-                <div className="text-center mb-10">
+                <div className="text-center mb-6">
                     <h2 className="text-2xl md:text-4xl font-black tracking-tight mb-4">
                         단순하고 투명한 <span className="text-blue-600">요금제</span>
                     </h2>
