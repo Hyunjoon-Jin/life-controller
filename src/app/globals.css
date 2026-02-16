@@ -221,4 +221,31 @@
   .pb-safe {
     padding-bottom: env(safe-area-inset-bottom);
   }
+
+  .pt-safe {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .min-h-touch {
+    min-height: 44px;
+  }
+
+  .touch-manipulation {
+    touch-action: manipulation;
+  }
+}
+
+@media screen and (max-width: 640px) {
+
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+html,
+body {
+  overscroll-behavior-y: contain;
+  touch-action: manipulation;
 }

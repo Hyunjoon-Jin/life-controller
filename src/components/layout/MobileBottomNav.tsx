@@ -1,5 +1,7 @@
+'use client';
+
 import { useState, useRef, useEffect } from 'react';
-import { Home, Calendar, Activity, BookOpen, Menu, Sparkles, Briefcase, DollarSign, PenTool } from 'lucide-react';
+import { Home, Calendar, Activity, BookOpen, Menu, Sparkles, Briefcase, DollarSign, PenTool, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
@@ -28,7 +30,24 @@ export function MobileBottomNav({
     setActiveTab,
 }: MobileBottomNavProps) {
     const [expandedCategory, setExpandedCategory] = useState<CategoryType | null>(null);
+    const [isHidden, setIsHidden] = useState(false);
+    const lastScrollY = useRef(0);
     const popupRef = useRef<HTMLDivElement>(null);
+
+    // Auto-hide on scroll
+    useEffect(() => {
+        const handleScroll = () => {
+            const currentScrollY = window.scrollY;
+            if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
+                setIsHidden(true);
+            } else {
+                setIsHidden(false);
+            }
+            lastScrollY.current = currentScrollY;
+        };
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
     // Close popup on outside click
     useEffect(() => {
@@ -43,48 +62,17 @@ export function MobileBottomNav({
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [expandedCategory]);
 
-    if (appMode === 'work') {
-        return (
-            <div className="md:hidden fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-md border-t border-border z-50 h-auto min-h-[64px] px-4 flex items-center justify-around pb-safe pt-1">
-                <Button variant="ghost" className="flex flex-col gap-1 h-auto" onClick={() => setMainMode('home')}>
-                    <Home className={cn("w-6 h-6", mainMode === 'home' ? "text-purple-600" : "text-muted-foreground")} />
-                    <span className="text-[10px] font-medium">홈</span>
-                </Button>
-                <Button variant="ghost" className="flex flex-col gap-1 h-auto" onClick={() => setMainMode('work')}>
-                    <Briefcase className={cn("w-6 h-6", mainMode === 'work' ? "text-purple-600" : "text-muted-foreground")} />
-                    <span className="text-[10px] font-medium">업무</span>
-                </Button>
-                <Button variant="ghost" className="flex flex-col gap-1 h-auto" onClick={() => setAppMode('life')}>
-                    <Sparkles className="w-6 h-6 text-muted-foreground" />
-                    <span className="text-[10px] font-medium">일상모드</span>
-                </Button>
-            </div>
-        );
-    }
-
-    const navItems: { id: CategoryType | 'home'; label: string; icon: any; }[] = [
-        { id: 'home', label: '홈', icon: Home },
-        { id: 'basic', label: '일정', icon: Calendar },
-        { id: 'health', label: '건강', icon: Activity },
-        { id: 'growth', label: '성장', icon: BookOpen },
-    ];
-
     const handleNavTap = (id: CategoryType | 'home') => {
         if (id === 'home') {
             setMainMode('home');
             setExpandedCategory(null);
             return;
         }
-
         const category = id as CategoryType;
-
-        // If already on this category and popup is showing, close it
         if (expandedCategory === category) {
             setExpandedCategory(null);
             return;
         }
-
-        // Show sub-tab popup for this category
         setExpandedCategory(category);
     };
 
@@ -102,7 +90,6 @@ export function MobileBottomNav({
 
     return (
         <>
-            {/* Overlay for closing popup */}
             <AnimatePresence>
                 {expandedCategory && (
                     <motion.div
@@ -115,7 +102,13 @@ export function MobileBottomNav({
                 )}
             </AnimatePresence>
 
-            <div ref={popupRef} className="md:hidden fixed bottom-4 left-4 right-4 z-50">
+            <div
+                ref={popupRef}
+                className={cn(
+                    "md:hidden fixed bottom-4 left-4 right-4 z-50 transition-transform duration-300",
+                    isHidden ? "translate-y-[100px]" : "translate-y-0"
+                )}
+            >
                 {/* Sub-tab popup */}
                 <AnimatePresence>
                     {expandedCategory && (
@@ -151,13 +144,6 @@ export function MobileBottomNav({
                                                 <div className="text-sm font-bold">{tab.label}</div>
                                                 <div className="text-[11px] text-muted-foreground truncate">{tab.desc}</div>
                                             </div>
-                                            {isSelected && (
-                                                <motion.div
-                                                    initial={{ scale: 0 }}
-                                                    animate={{ scale: 1 }}
-                                                    className="w-2 h-2 bg-primary rounded-full shrink-0"
-                                                />
-                                            )}
                                         </motion.button>
                                     );
                                 })}
@@ -167,55 +153,39 @@ export function MobileBottomNav({
                 </AnimatePresence>
 
                 {/* Bottom Nav Bar */}
-                <div className="bg-white/80 dark:bg-[#1a1b1e]/80 backdrop-blur-xl border border-white/20 dark:border-white/10 h-[70px] px-2 flex items-center justify-around rounded-3xl shadow-lg ring-1 ring-black/5">
-                    {navItems.map(item => (
-                        <motion.button
-                            key={item.id}
-                            onClick={() => handleNavTap(item.id)}
-                            whileTap={{ scale: 0.9 }}
-                            className="flex flex-col items-center justify-center w-full h-full gap-1 relative"
-                        >
-                            <div className={cn(
-                                "p-1.5 rounded-xl transition-all duration-300 relative z-10",
-                                isActive(item.id)
-                                    ? "text-primary -translate-y-1"
-                                    : expandedCategory === item.id
-                                        ? "text-primary/70"
-                                        : "text-gray-400 hover:text-gray-600"
-                            )}>
-                                {isActive(item.id) && (
-                                    <motion.div
-                                        layoutId="navIndicator"
-                                        className="absolute inset-0 bg-primary/10 rounded-xl"
-                                        transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                                    />
-                                )}
-                                <item.icon className={cn("w-6 h-6 relative z-10", isActive(item.id) && "fill-current")} strokeWidth={isActive(item.id) ? 2.5 : 2} />
-                            </div>
-                            <span className={cn(
-                                "text-[10px] font-bold transition-colors",
-                                isActive(item.id) ? "text-primary" : expandedCategory === item.id ? "text-primary/70" : "text-gray-400"
-                            )}>
-                                {item.label}
-                            </span>
-                            {/* Expand indicator */}
-                            {expandedCategory === item.id && (
-                                <motion.div
-                                    layoutId="expandIndicator"
-                                    className="absolute -top-1 w-1 h-1 bg-primary rounded-full"
-                                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                                />
-                            )}
-                        </motion.button>
-                    ))}
+                <div className="bg-white/80 dark:bg-[#1a1b1e]/80 backdrop-blur-xl border border-white/20 dark:border-white/10 h-[70px] px-2 flex items-center justify-around rounded-3xl shadow-lg ring-1 ring-black/5 pb-safe">
+                    <motion.button onClick={() => handleNavTap('home')} whileTap={{ scale: 0.9 }} className="flex flex-col items-center justify-center w-full h-full gap-1">
+                        <Home className={cn("w-6 h-6", isActive('home') ? "text-primary fill-primary" : "text-gray-400")} />
+                        <span className={cn("text-[10px] font-bold", isActive('home') ? "text-primary" : "text-gray-400")}>홈</span>
+                    </motion.button>
 
-                    {/* More Menu */}
+                    <motion.button onClick={() => handleNavTap('basic')} whileTap={{ scale: 0.9 }} className="flex flex-col items-center justify-center w-full h-full gap-1">
+                        <Calendar className={cn("w-6 h-6", isActive('basic') ? "text-primary fill-primary" : "text-gray-400")} />
+                        <span className={cn("text-[10px] font-bold", isActive('basic') ? "text-primary" : "text-gray-400")}>일정</span>
+                    </motion.button>
+
+                    {/* Quick Add FAB */}
+                    <div className="relative -top-6">
+                        <Button
+                            size="icon"
+                            className="h-14 w-14 rounded-full shadow-lg bg-primary hover:bg-primary/90 text-primary-foreground border-4 border-background active:scale-90 transition-transform"
+                            onClick={() => {
+                                // For now, we can trigger a generic add or use standard logic
+                            }}
+                        >
+                            <Plus className="h-8 w-8" />
+                        </Button>
+                    </div>
+
+                    <motion.button onClick={() => handleNavTap('health')} whileTap={{ scale: 0.9 }} className="flex flex-col items-center justify-center w-full h-full gap-1">
+                        <Activity className={cn("w-6 h-6", isActive('health') ? "text-primary fill-primary" : "text-gray-400")} />
+                        <span className={cn("text-[10px] font-bold", isActive('health') ? "text-primary" : "text-gray-400")}>건강</span>
+                    </motion.button>
+
                     <Sheet>
                         <SheetTrigger asChild>
-                            <motion.button whileTap={{ scale: 0.9 }} className="flex flex-col items-center justify-center w-full h-full gap-1" onClick={() => setExpandedCategory(null)}>
-                                <div className="p-1.5 rounded-xl text-gray-400 hover:text-gray-600">
-                                    <Menu className="w-6 h-6" strokeWidth={2} />
-                                </div>
+                            <motion.button whileTap={{ scale: 0.9 }} className="flex flex-col items-center justify-center w-full h-full gap-1">
+                                <Menu className="w-6 h-6 text-gray-400" />
                                 <span className="text-[10px] font-bold text-gray-400">전체</span>
                             </motion.button>
                         </SheetTrigger>
@@ -224,6 +194,12 @@ export function MobileBottomNav({
                                 <SheetTitle>전체 메뉴</SheetTitle>
                             </SheetHeader>
                             <div className="grid grid-cols-4 gap-4">
+                                <button onClick={() => { setMainMode('schedule'); setActiveCategory('growth'); setExpandedCategory(null); }} className="flex flex-col items-center gap-2 p-4 bg-gray-50 rounded-2xl">
+                                    <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center">
+                                        <BookOpen className="w-6 h-6" />
+                                    </div>
+                                    <span className="text-xs font-bold text-gray-700">자기계발</span>
+                                </button>
                                 <button onClick={() => { setMainMode('schedule'); setActiveCategory('finance'); setExpandedCategory(null); }} className="flex flex-col items-center gap-2 p-4 bg-gray-50 rounded-2xl">
                                     <div className="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center">
                                         <DollarSign className="w-6 h-6" />
@@ -236,11 +212,11 @@ export function MobileBottomNav({
                                     </div>
                                     <span className="text-xs font-bold text-gray-700">기록보관</span>
                                 </button>
-                                <button onClick={() => setAppMode('work')} className="flex flex-col items-center gap-2 p-4 bg-purple-50 rounded-2xl col-span-2">
+                                <button onClick={() => setAppMode('work')} className="flex flex-col items-center gap-2 p-4 bg-purple-50 rounded-2xl">
                                     <div className="w-12 h-12 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center">
                                         <Briefcase className="w-6 h-6" />
                                     </div>
-                                    <span className="text-xs font-bold text-gray-700">업무 모드로 전환</span>
+                                    <span className="text-xs font-bold text-gray-700">업무모드</span>
                                 </button>
                             </div>
                         </SheetContent>

@@ -41,6 +41,7 @@ export const metadata: Metadata = {
 };
 
 import { SessionReset } from '@/components/auth/SessionReset';
+import { PullToRefreshHandler } from "@/components/layout/PullToRefreshHandler";
 
 export default function RootLayout({
   children,
@@ -56,6 +57,7 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Asta+Sans:wght@300..800&family=Gowun+Batang&display=swap" rel="stylesheet" />
       </head>
       <body className={`${nanum.variable} font-sans antialiased bg-background text-foreground tracking-tight`} suppressHydrationWarning>
+        <PullToRefreshHandler />
         <ServiceWorkerUnregister />
 
         <AuthProvider>
