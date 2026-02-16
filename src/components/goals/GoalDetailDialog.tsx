@@ -5,10 +5,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Goal, Task, CalendarEvent } from '@/types';
 import { useData } from '@/context/DataProvider'; // Assuming context is available
-import { Trophy, Calendar as CalendarIcon, ListTodo, Plus, ChevronRight, ChevronDown, CheckCircle2, Circle, Clock, Tag, Target } from 'lucide-react';
+import { Trophy, Calendar as CalendarIcon, ListTodo, Plus, ChevronRight, ChevronDown, CheckCircle2, Circle, Clock, Tag, Target, Pencil, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
+import { useRef, useEffect } from 'react';
 
 interface GoalDetailDialogProps {
     isOpen: boolean;
@@ -17,11 +18,19 @@ interface GoalDetailDialogProps {
 }
 
 export function GoalDetailDialog({ isOpen, onOpenChange, goal }: GoalDetailDialogProps) {
-    const { goals, tasks, events, updateGoal, updateTask, addTask } = useData();
+    const { goals, tasks, events, updateGoal, updateTask, deleteTask, addTask } = useData();
     const [activeTab, setActiveTab] = useState<'overview' | 'tasks' | 'schedule'>('overview');
 
     // Local state for adding new task directly
     const [newTaskTitle, setNewTaskTitle] = useState('');
+
+    // Editing task state
+    const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
+    const [editingTaskTitle, setEditingTaskTitle] = useState('');
+
+    // Draggable progress state
+    const progressBarRef = useRef<HTMLDivElement>(null);
+    const isDragging = useRef(false);
 
     if (!goal) return null;
 
@@ -68,6 +77,65 @@ export function GoalDetailDialog({ isOpen, onOpenChange, goal }: GoalDetailDialo
         updateTask({ ...task, completed: !task.completed });
     };
 
+    const handleDeleteTask = (taskId: string) => {
+        if (confirm('이 할 일을 삭제하시겠습니까?')) {
+            deleteTask(taskId);
+        }
+    };
+
+    const startEditingTask = (task: Task) => {
+        setEditingTaskId(task.id);
+        setEditingTaskTitle(task.title);
+    };
+
+    const saveTaskEdit = (task: Task) => {
+        if (!editingTaskTitle.trim()) return;
+        updateTask({ ...task, title: editingTaskTitle });
+        setEditingTaskId(null);
+    };
+
+    // Draggable Progress Logic
+    const handleProgressInteraction = (e: React.MouseEvent | React.TouchEvent) => {
+        if (!progressBarRef.current) return;
+        const rect = progressBarRef.current.getBoundingClientRect();
+        const clientX = 'touches' in e ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
+        const x = clientX - rect.left;
+        const newProgress = Math.max(0, Math.min(100, Math.round((x / rect.width) * 100)));
+        updateGoal({ ...goal, progress: newProgress });
+    };
+
+    const onMouseDown = (e: React.MouseEvent) => {
+        isDragging.current = true;
+        handleProgressInteraction(e);
+        window.addEventListener('mousemove', onMouseMove);
+        window.addEventListener('mouseup', onMouseUp);
+    };
+
+    const onMouseMove = (e: any) => {
+        if (!isDragging.current) return;
+        handleProgressInteraction(e);
+    };
+
+    const onMouseUp = () => {
+        isDragging.current = false;
+        window.removeEventListener('mousemove', onMouseMove);
+        window.removeEventListener('mouseup', onMouseUp);
+    };
+
+    const onTouchStart = (e: React.TouchEvent) => {
+        isDragging.current = true;
+        handleProgressInteraction(e);
+    };
+
+    const onTouchMove = (e: React.TouchEvent) => {
+        if (!isDragging.current) return;
+        handleProgressInteraction(e);
+    };
+
+    const onTouchEnd = () => {
+        isDragging.current = false;
+    };
+
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-[800px] h-[80vh] flex flex-col p-0 overflow-hidden bg-card text-card-foreground">
@@ -110,16 +178,38 @@ export function GoalDetailDialog({ isOpen, onOpenChange, goal }: GoalDetailDialo
                         </div>
                     </div>
 
-                    {/* Progress Bar */}
-                    <div className="h-4 w-full bg-slate-200 dark:bg-slate-800 backdrop-blur-sm rounded-full overflow-hidden border border-border/20 shadow-inner relative">
+                    {/* Progress Bar (Draggable) */}
+                    <div className="space-y-2">
+                        <div className="flex justify-between items-end mb-1">
+                            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-70">Progress Control</span>
+                            <span className="text-xs font-bold text-primary italic">드래그하여 조정 가능</span>
+                        </div>
                         <div
-                            className={cn(
-                                "h-full rounded-full transition-all duration-1000 ease-out shadow-[0_2px_10px_rgba(0,0,0,0.1)] relative overflow-hidden",
-                                goal.progress === 100 ? "bg-gradient-to-r from-emerald-400 to-emerald-500" : "bg-gradient-to-r from-blue-400 to-blue-600"
-                            )}
-                            style={{ width: `${goal.progress}%` }}
+                            ref={progressBarRef}
+                            onMouseDown={onMouseDown}
+                            onTouchStart={onTouchStart}
+                            onTouchMove={onTouchMove}
+                            onTouchEnd={onTouchEnd}
+                            className="h-6 w-full bg-slate-200 dark:bg-slate-800 backdrop-blur-sm rounded-full overflow-hidden border border-border/20 shadow-inner relative cursor-pointer touch-none group"
                         >
-                            <div className="absolute inset-0 bg-white/20 animate-[shimmer_2s_infinite] skew-x-12" />
+                            <div
+                                className={cn(
+                                    "h-full rounded-full transition-all duration-300 ease-out shadow-[0_2px_10px_rgba(0,0,0,0.1)] relative overflow-hidden",
+                                    goal.progress === 100 ? "bg-gradient-to-r from-emerald-400 to-emerald-500" : "bg-gradient-to-r from-blue-400 to-blue-600"
+                                )}
+                                style={{ width: `${goal.progress}%` }}
+                            >
+                                <div className="absolute inset-0 bg-white/20 animate-[shimmer_2s_infinite] skew-x-12" />
+                            </div>
+
+                            {/* Glow Handle */}
+                            <div
+                                className="absolute top-1/2 -translate-y-1/2 w-6 h-6 bg-white rounded-full shadow-xl border-2 border-primary/50 flex items-center justify-center transition-transform group-hover:scale-110 pointer-events-none"
+                                style={{ left: `calc(${goal.progress}% - 12px)` }}
+                            >
+                                <div className="w-1 h-3 bg-primary/20 rounded-full mx-0.5" />
+                                <div className="w-1 h-3 bg-primary/20 rounded-full mx-0.5" />
+                            </div>
                         </div>
                     </div>
 
@@ -230,14 +320,40 @@ export function GoalDetailDialog({ isOpen, onOpenChange, goal }: GoalDetailDialo
                                             >
                                                 {task.completed ? <CheckCircle2 className="w-6 h-6" /> : <Circle className="w-6 h-6" />}
                                             </button>
-                                            <span className={cn("flex-1 font-medium", task.completed && "line-through text-muted-foreground opacity-70")}>
-                                                {task.title}
-                                            </span>
-                                            {task.deadline && (
-                                                <span className={cn("text-xs px-2.5 py-1 rounded-full font-medium border", new Date(task.deadline) < new Date() ? "bg-red-50 text-red-600 border-red-100" : "bg-muted text-muted-foreground border-border")}>
-                                                    {format(new Date(task.deadline), 'M/d')}
+
+                                            {editingTaskId === task.id ? (
+                                                <input
+                                                    autoFocus
+                                                    className="flex-1 bg-muted/30 border-none px-2 py-1 rounded focus:outline-none focus:ring-1 focus:ring-primary"
+                                                    value={editingTaskTitle}
+                                                    onChange={(e) => setEditingTaskTitle(e.target.value)}
+                                                    onBlur={() => saveTaskEdit(task)}
+                                                    onKeyDown={(e) => e.key === 'Enter' && saveTaskEdit(task)}
+                                                />
+                                            ) : (
+                                                <span
+                                                    className={cn("flex-1 font-medium cursor-pointer", task.completed && "line-through text-muted-foreground opacity-70")}
+                                                    onClick={() => startEditingTask(task)}
+                                                >
+                                                    {task.title}
                                                 </span>
                                             )}
+
+                                            <div className="flex items-center gap-1.5">
+                                                {task.deadline && (
+                                                    <span className={cn("text-xs px-2.5 py-1 rounded-full font-medium border", new Date(task.deadline) < new Date() ? "bg-red-50 text-red-600 border-red-100" : "bg-muted text-muted-foreground border-border")}>
+                                                        {format(new Date(task.deadline), 'M/d')}
+                                                    </span>
+                                                )}
+                                                <div className="flex opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary" onClick={() => startEditingTask(task)}>
+                                                        <Pencil className="w-4 h-4" />
+                                                    </Button>
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive" onClick={() => handleDeleteTask(task.id)}>
+                                                        <Trash2 className="w-4 h-4" />
+                                                    </Button>
+                                                </div>
+                                            </div>
                                         </div>
                                     ))
                                 )}

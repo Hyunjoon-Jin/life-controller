@@ -467,7 +467,14 @@ export function DataProvider({ children }: { children: ReactNode }) {
     const deleteDocument = (id: string) => { setArchiveDocuments(prev => prev.filter(x => x.id !== id)); bg(() => dbDelete('archive_documents', id)); };
 
     // Goals (recursive sub-goals)
-    const addGoal = (goal: Goal) => { setGoals(prev => [...prev, goal]); bg(() => insertRow('goals', goal)); };
+    const addGoal = (goal: Goal) => {
+        setGoals(prev => [...prev, goal]);
+        bg(() => insertRow('goals', goal));
+        if (goal.isHabit) {
+            const newEvents = generateEventsFromGoalHabit(goal);
+            if (newEvents.length > 0) setEvents(prev => [...prev, ...newEvents]);
+        }
+    };
     const updateGoal = (updatedGoal: Goal) => {
         const updateRecursive = (list: Goal[]): Goal[] => {
             return list.map(g => {
@@ -478,6 +485,18 @@ export function DataProvider({ children }: { children: ReactNode }) {
         };
         setGoals(updateRecursive(goals));
         bg(() => dbUpdate('goals', updatedGoal.id, updatedGoal));
+
+        // Sync habit events
+        const shouldExistEvents = generateEventsFromGoalHabit(updatedGoal);
+        const existingGoalHabitEvents = events.filter(e => e.id.startsWith(`goal-habit-${updatedGoal.id}`));
+        const existingEventIds = new Set(existingGoalHabitEvents.map(e => e.id));
+        const newEventsToAdd = shouldExistEvents.filter(e => !existingEventIds.has(e.id));
+        const shouldExistIds = new Set(shouldExistEvents.map(e => e.id));
+        const eventsToKeep = events.filter(e => {
+            if (!e.id.startsWith(`goal-habit-${updatedGoal.id}`)) return true;
+            return shouldExistIds.has(e.id);
+        });
+        setEvents([...eventsToKeep, ...newEventsToAdd]);
     };
     const deleteGoal = (id: string) => {
         const deleteRecursive = (list: Goal[]): Goal[] => {
@@ -488,6 +507,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         };
         setGoals(deleteRecursive(goals));
         bg(() => dbDelete('goals', id));
+        setEvents(prev => prev.filter(e => !e.id.startsWith(`goal-habit-${id}`)));
     };
 
     // Habit → Calendar Event generation
@@ -515,6 +535,37 @@ export function DataProvider({ children }: { children: ReactNode }) {
                 connectedProjectId: habit.connectedProjectId, connectedGoalId: habit.connectedGoalId,
                 prepTime: habit.prepTime, travelTime: habit.travelTime, color: habit.color, description: habit.description
             });
+        });
+        return generatedEvents;
+    };
+
+    const generateEventsFromGoalHabit = (goal: Goal): CalendarEvent[] => {
+        if (!goal.isHabit || !goal.habitFrequency) return [];
+        const generatedEvents: CalendarEvent[] = [];
+        const today = new Date();
+        const weekStart = startOfWeek(today, { weekStartsOn: 0 });
+        const weekEnd = endOfWeek(today, { weekStartsOn: 0 });
+        const daysToGenerate = eachDayOfInterval({ start: weekStart, end: weekEnd });
+
+        daysToGenerate.forEach(day => {
+            const dayOfWeek = day.getDay();
+
+            // For now: daily = all days, weekly = Monday (day 1), monthly = 1st of month
+            let shouldAdd = false;
+            if (goal.habitFrequency === 'daily') shouldAdd = true;
+            else if (goal.habitFrequency === 'weekly' && dayOfWeek === 1) shouldAdd = true;
+            else if (goal.habitFrequency === 'monthly' && day.getDate() === 1) shouldAdd = true;
+
+            if (shouldAdd) {
+                const startDate = new Date(day); startDate.setHours(9, 0, 0, 0); // Default 9 AM
+                const endDate = new Date(day); endDate.setHours(10, 0, 0, 0); // Default 1 hour
+                const eventId = `goal-habit-${goal.id}-${format(day, 'yyyy-MM-dd')}`;
+                generatedEvents.push({
+                    id: eventId, title: `[습관] ${goal.title}`, start: startDate, end: endDate,
+                    connectedGoalId: goal.id, isHabitEvent: true, color: '#10b981', // Emerald
+                    description: goal.memo
+                });
+            }
         });
         return generatedEvents;
     };

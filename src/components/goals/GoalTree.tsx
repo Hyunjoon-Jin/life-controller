@@ -1,7 +1,7 @@
 
 import { useState, useMemo } from 'react';
 import { isValid } from 'date-fns';
-import { Goal, PlanType, GoalCategory } from '@/types';
+import { Goal, PlanType, GoalCategory, Priority } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -17,7 +17,8 @@ import {
     Pencil,
     Trash2,
     Tag,
-    ArrowUpDown
+    ArrowUpDown,
+    Target
 } from 'lucide-react';
 import { cn, generateId } from '@/lib/utils';
 import { useData } from '@/context/DataProvider';
@@ -33,7 +34,7 @@ function GoalItem({ goal, level = 0, onAddSubGoal, onEdit, onDetail, forceExpand
     forceExpand?: boolean
 }) {
     const { deleteGoal } = useData();
-    const [expanded, setExpanded] = useState(true);
+    const [expanded, setExpanded] = useState(false);
 
     const isExpanded = forceExpand || expanded;
     const hasSubGoals = goal.subGoals && goal.subGoals.length > 0;
@@ -115,6 +116,26 @@ function GoalItem({ goal, level = 0, onAddSubGoal, onEdit, onDetail, forceExpand
                                     <h4 className={cn("font-bold text-foreground hover:text-primary transition-colors truncate", level === 0 ? "text-base" : "text-sm")}>
                                         {goal.title}
                                     </h4>
+                                    {goal.priority && (
+                                        <span className={cn(
+                                            "text-[10px] px-1.5 py-0 rounded font-black uppercase tracking-wider shrink-0",
+                                            goal.priority === 'high' ? "bg-red-500 text-white" :
+                                                goal.priority === 'medium' ? "bg-blue-500 text-white" :
+                                                    "bg-gray-400 text-white"
+                                        )}>
+                                            {goal.priority === 'high' ? '높음' : goal.priority === 'medium' ? '보통' : '낮음'}
+                                        </span>
+                                    )}
+                                    {goal.isHabit && (
+                                        <span className="text-[10px] px-1.5 py-0 rounded bg-emerald-500 text-white font-black uppercase tracking-wider shrink-0">
+                                            습관형
+                                        </span>
+                                    )}
+                                    {goal.tags && goal.tags.map(tag => (
+                                        <span key={tag} className="text-[10px] px-1.5 py-0 rounded bg-secondary/10 text-secondary border border-secondary/20 font-bold shrink-0">
+                                            #{tag}
+                                        </span>
+                                    ))}
                                     {goal.category && (
                                         <span className={cn("text-[11px] px-1.5 py-0 rounded border font-bold uppercase tracking-wider shrink-0", getCategoryColor(goal.category))}>
                                             {getCategoryLabel(goal.category)}
@@ -212,6 +233,10 @@ export default function GoalTree() {
     const [newGoalDeadline, setNewGoalDeadline] = useState('');
     const [newGoalMemo, setNewGoalMemo] = useState('');
     const [newGoalProgress, setNewGoalProgress] = useState(0);
+    const [newGoalPriority, setNewGoalPriority] = useState<Priority>('medium');
+    const [newGoalTags, setNewGoalTags] = useState<string>('');
+    const [isHabitGoal, setIsHabitGoal] = useState(false);
+    const [habitFreq, setHabitFreq] = useState<'daily' | 'weekly' | 'monthly'>('daily');
 
     const [selectedGoal, setSelectedGoal] = useState<Goal | null>(null);
     const [isDetailOpen, setIsDetailOpen] = useState(false);
@@ -269,6 +294,10 @@ export default function GoalTree() {
         setNewGoalDeadline('');
         setNewPlanType('short-term');
         setNewGoalCategory('other');
+        setNewGoalPriority('medium');
+        setNewGoalTags('');
+        setIsHabitGoal(false);
+        setHabitFreq('daily');
 
         setIsDialogOpen(true);
     };
@@ -284,6 +313,10 @@ export default function GoalTree() {
         setNewGoalDeadline(goal.deadline && isValid(new Date(goal.deadline)) ? new Date(goal.deadline).toISOString().split('T')[0] : '');
         setNewPlanType(goal.planType || 'short-term');
         setNewGoalCategory(goal.category || 'other');
+        setNewGoalPriority(goal.priority || 'medium');
+        setNewGoalTags(goal.tags ? goal.tags.join(', ') : '');
+        setIsHabitGoal(goal.isHabit || false);
+        setHabitFreq(goal.habitFrequency || 'daily');
 
         setIsDialogOpen(true);
     };
@@ -298,6 +331,10 @@ export default function GoalTree() {
             category: newGoalCategory,
             deadline: newGoalDeadline ? new Date(newGoalDeadline) : undefined,
             memo: newGoalMemo,
+            priority: newGoalPriority,
+            tags: newGoalTags ? newGoalTags.split(',').map(t => t.trim()).filter(t => t !== '') : [],
+            isHabit: isHabitGoal,
+            habitFrequency: isHabitGoal ? habitFreq : undefined,
         };
 
         if (editingGoalId) {
@@ -468,6 +505,77 @@ export default function GoalTree() {
                                 placeholder="달성하고 싶은 목표를 입력하세요..."
                                 className="text-base"
                             />
+                        </div>
+
+                        {/* Priority & Tags */}
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1">
+                                    추가 태그
+                                </Label>
+                                <Input
+                                    value={newGoalTags}
+                                    onChange={(e) => setNewGoalTags(e.target.value)}
+                                    placeholder="쉼표로 구분 (예: 코딩, 운동)"
+                                    className="text-sm"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1">
+                                    중요도
+                                </Label>
+                                <Select value={newGoalPriority} onValueChange={(v) => setNewGoalPriority(v as Priority)}>
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent className="z-[99999]">
+                                        <SelectItem value="high">🔥 높음</SelectItem>
+                                        <SelectItem value="medium">⚡ 보통</SelectItem>
+                                        <SelectItem value="low">🌱 낮음</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+
+                        {/* Habit Toggle */}
+                        <div className="space-y-3 p-4 bg-emerald-50/50 dark:bg-emerald-950/20 rounded-xl border border-emerald-100 dark:border-emerald-900/30">
+                            <div className="flex items-center justify-between">
+                                <div className="space-y-0.5">
+                                    <Label className="text-sm font-bold flex items-center gap-2">
+                                        <Target className="w-4 h-4 text-emerald-500" /> 습관형 목표로 설정
+                                    </Label>
+                                    <p className="text-xs text-muted-foreground">달성률 대신 반복 실천을 중점적으로 관리합니다.</p>
+                                </div>
+                                <input
+                                    type="checkbox"
+                                    className="w-5 h-5 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer"
+                                    checked={isHabitGoal}
+                                    onChange={(e) => setIsHabitGoal(e.target.checked)}
+                                />
+                            </div>
+
+                            {isHabitGoal && (
+                                <div className="pt-2 animate-in slide-in-from-top-2 duration-200">
+                                    <Label className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest mb-1.5 block">반복 주기</Label>
+                                    <div className="flex gap-2">
+                                        {['daily', 'weekly', 'monthly'].map((f) => (
+                                            <Button
+                                                key={f}
+                                                type="button"
+                                                variant={habitFreq === f ? 'default' : 'outline'}
+                                                size="sm"
+                                                className={cn(
+                                                    "flex-1 text-xs h-8 rounded-lg",
+                                                    habitFreq === f && "bg-emerald-500 hover:bg-emerald-600 text-white border-none"
+                                                )}
+                                                onClick={() => setHabitFreq(f as any)}
+                                            >
+                                                {f === 'daily' ? '매일' : f === 'weekly' ? '매주' : '매월'}
+                                            </Button>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">

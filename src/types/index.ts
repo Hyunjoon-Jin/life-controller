@@ -116,9 +116,14 @@ export type Goal = {
     progress: number;
     planType?: PlanType;
     category?: GoalCategory;
+    priority?: Priority;
+    tags?: string[];
+    isHabit?: boolean;
+    habitFrequency?: 'daily' | 'weekly' | 'monthly';
     deadline?: Date;
     memo?: string;
     subGoals?: Goal[];
+    collapsed?: boolean;
 };
 
 export type Habit = {

@@ -50,6 +50,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useWeather } from '@/hooks/useWeather';
 import { GlowingGrid, GlowingEffectItem } from '@/components/ui/glowing-effect';
 import { motion, AnimatePresence } from 'framer-motion';
+import { SetupChecklist } from './SetupChecklist';
 
 interface HomeDashboardProps {
     onNavigate: (mode: 'home' | 'schedule' | 'work') => void;
@@ -202,7 +203,7 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
             className="flex flex-col gap-4 sm:gap-6 w-full max-w-7xl mx-auto pb-20"
         >
             {/* 1. Hero Section (Branding & Status) */}
-            <motion.div variants={itemVariants}>
+            <motion.div variants={itemVariants} className="hero-section">
                 <GlowingEffectItem>
                     <div className="flex flex-col md:flex-row justify-between md:items-end gap-6 h-full relative z-10">
                         {/* Left: Branding & Quote */}
@@ -299,7 +300,7 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
             </motion.div>
 
             {/* 2. Search (Minimal) */}
-            <motion.div variants={itemVariants} className="z-20">
+            <motion.div variants={itemVariants} className="z-20" data-tour="search">
                 <GlowingEffectItem className="p-0">
                     <div className="px-2">
                         <SearchWidget />
@@ -307,8 +308,13 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
                 </GlowingEffectItem>
             </motion.div>
 
+            {/* Setup Checklist (Onboarding) */}
+            <motion.div variants={itemVariants} data-tour="checklist">
+                <SetupChecklist />
+            </motion.div>
+
             {/* 3. Icons (Customizable) */}
-            <motion.div variants={itemVariants}>
+            <motion.div variants={itemVariants} data-tour="shortcuts">
                 <GlowingEffectItem>
                     <div className="flex items-center justify-between mb-5">
                         <h3 className="text-lg font-bold text-slate-800">내 서비스</h3>
