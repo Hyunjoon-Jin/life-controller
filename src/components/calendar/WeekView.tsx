@@ -4,7 +4,7 @@ import { format, startOfWeek, endOfWeek, eachDayOfInterval, isToday, isSameDay, 
 import { ko } from 'date-fns/locale';
 import { cn, generateId } from '@/lib/utils';
 import { Plus, Target, CheckCircle } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useData } from '@/context/DataProvider';
 import { CalendarEvent } from '@/types';
 import { EventDialog } from './EventDialog';
@@ -31,9 +31,14 @@ export function WeekView({ currentDate, showProjectTasks, onDateClick }: { curre
         originalEnd: Date;
         initialY: number;
     } | null>(null);
+    const dragStateRef = useRef(dragState);
 
     const [tempEvent, setTempEvent] = useState<CalendarEvent | null>(null);
+    const tempEventRef = useRef(tempEvent);
     const [now, setNow] = useState(new Date());
+
+    useEffect(() => { dragStateRef.current = dragState; }, [dragState]);
+    useEffect(() => { tempEventRef.current = tempEvent; }, [tempEvent]);
 
     useEffect(() => {
         const interval = setInterval(() => setNow(new Date()), 60000);
@@ -89,13 +94,41 @@ export function WeekView({ currentDate, showProjectTasks, onDateClick }: { curre
 
     const startMove = (e: React.MouseEvent, event: CalendarEvent) => {
         e.stopPropagation();
-        e.preventDefault(); // Prevent text selection
+        e.preventDefault();
         setDragState({
             id: event.id,
             mode: 'move',
             originalStart: new Date(event.start),
             originalEnd: new Date(event.end),
             initialY: e.clientY
+        });
+        setTempEvent(event);
+    };
+
+    // Touch handlers for mobile
+    const startTouchMove = (e: React.TouchEvent, event: CalendarEvent) => {
+        e.stopPropagation();
+        const touch = e.touches[0];
+        setDragState({
+            id: event.id,
+            mode: 'move',
+            originalStart: new Date(event.start),
+            originalEnd: new Date(event.end),
+            initialY: touch.clientY
+        });
+        setTempEvent(event);
+    };
+
+    const startTouchResize = (e: React.TouchEvent, event: CalendarEvent) => {
+        e.stopPropagation();
+        e.preventDefault();
+        const touch = e.touches[0];
+        setDragState({
+            id: event.id,
+            mode: 'resize',
+            originalStart: new Date(event.start),
+            originalEnd: new Date(event.end),
+            initialY: touch.clientY
         });
         setTempEvent(event);
     };
@@ -153,12 +186,29 @@ export function WeekView({ currentDate, showProjectTasks, onDateClick }: { curre
             }
         };
 
+        const handleTouchMove = (e: TouchEvent) => {
+            const touch = e.touches[0];
+            if (!touch) return;
+            handleMouseMove({ clientY: touch.clientY } as MouseEvent);
+            if (dragStateRef.current && e.cancelable) {
+                e.preventDefault();
+            }
+        };
+
+        const handleTouchEnd = () => {
+            handleMouseUp();
+        };
+
         window.addEventListener('mousemove', handleMouseMove);
         window.addEventListener('mouseup', handleMouseUp);
+        window.addEventListener('touchmove', handleTouchMove, { passive: false });
+        window.addEventListener('touchend', handleTouchEnd);
 
         return () => {
             window.removeEventListener('mousemove', handleMouseMove);
             window.removeEventListener('mouseup', handleMouseUp);
+            window.removeEventListener('touchmove', handleTouchMove);
+            window.removeEventListener('touchend', handleTouchEnd);
         };
     }, [dragState, tempEvent, updateEvent, PIXELS_PER_HOUR]);
 
@@ -321,7 +371,7 @@ export function WeekView({ currentDate, showProjectTasks, onDateClick }: { curre
             </div>
 
             {/* Grid Content - Column Based Layout */}
-            <div className="flex-1 overflow-y-auto custom-scrollbar relative flex">
+            <div className="flex-1 overflow-y-auto custom-scrollbar relative flex touch-pan-y">
                 {/* Time Labels Column */}
                 <div className="w-16 flex-shrink-0 bg-white border-r border-border/[0.05] z-20 sticky left-0">
                     {hours.map((hour) => (
@@ -401,6 +451,7 @@ export function WeekView({ currentDate, showProjectTasks, onDateClick }: { curre
                                             color: colors.text
                                         }}
                                         onMouseDown={(e) => startMove(e, event)}
+                                        onTouchStart={(e) => startTouchMove(e, event)}
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             if (!isDragging) handleOpenEdit(event);
@@ -413,10 +464,13 @@ export function WeekView({ currentDate, showProjectTasks, onDateClick }: { curre
                                             </div>
                                         </div>
 
-                                        {/* Resize Handle */}
-                                        <div className="hidden group-hover:block absolute bottom-0 left-0 right-0 h-1.5 cursor-ns-resize hover:bg-black/5 rounded-b-md"
+                                        {/* Resize Handle - visible on mobile, hover on desktop */}
+                                        <div className="absolute bottom-0 left-0 right-0 h-3 md:h-1.5 cursor-ns-resize md:opacity-0 md:group-hover:opacity-100 transition-opacity flex items-center justify-center"
                                             onMouseDown={(e) => startResize(e, event)}
-                                        />
+                                            onTouchStart={(e) => startTouchResize(e, event)}
+                                        >
+                                            <div className="w-6 md:w-4 h-0.5 bg-black/15 md:bg-black/5 rounded-full" />
+                                        </div>
                                     </div>
                                 );
                             })}

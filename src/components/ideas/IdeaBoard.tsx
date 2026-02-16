@@ -191,9 +191,16 @@ export function IdeaBoard() {
 
             <div className="flex-1 p-6 overflow-y-auto custom-scrollbar">
                 {filteredMemos.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center h-[300px] text-muted-foreground opacity-50">
-                        <span className="text-4xl mb-4">{searchQuery ? '🔍' : '📝'}</span>
-                        <p>{searchQuery ? '검색 결과가 없습니다.' : '떠오르는 영감을 기록해보세요!'}</p>
+                    <div className="flex flex-col items-center justify-center py-16 text-center">
+                        <div className="w-16 h-16 rounded-2xl bg-indigo-50 flex items-center justify-center mb-5">
+                            <span className="text-3xl">{searchQuery ? '🔍' : '💡'}</span>
+                        </div>
+                        <p className="text-lg font-bold text-slate-800 mb-2">
+                            {searchQuery ? '검색 결과가 없습니다' : '아이디어가 아직 없어요'}
+                        </p>
+                        <p className="text-sm text-slate-500 max-w-xs leading-relaxed">
+                            {searchQuery ? '다른 키워드로 검색해 보세요.' : '떠오르는 영감을 기록해보세요!'}
+                        </p>
                     </div>
                 ) : (
                     <div className="columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-4 space-y-4">

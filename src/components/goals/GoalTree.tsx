@@ -436,12 +436,16 @@ export default function GoalTree() {
                     />
                 ))}
                 {filteredGoals.length === 0 && (
-                    <div className="text-center py-12 text-muted-foreground">
-                        <Trophy className="w-12 h-12 mx-auto mb-3 opacity-10" />
-                        <p className="text-sm font-medium">
-                            {isFiltering ? '검색 결과가 없습니다.' : '아직 등록된 목표가 없습니다.'}
+                    <div className="flex flex-col items-center justify-center py-16 text-center">
+                        <div className="w-16 h-16 rounded-2xl bg-amber-50 flex items-center justify-center mb-5">
+                            <Trophy className="w-8 h-8 text-amber-400" />
+                        </div>
+                        <p className="text-lg font-bold text-slate-800 mb-2">
+                            {isFiltering ? '검색 결과가 없습니다' : '아직 등록된 목표가 없어요'}
                         </p>
-                        {!isFiltering && <p className="text-xs text-muted-foreground mt-1">새로운 목표를 추가하고 계획을 시작해 보세요!</p>}
+                        {!isFiltering && (
+                            <p className="text-sm text-slate-500 max-w-xs leading-relaxed">새로운 목표를 추가하고 계획을 시작해 보세요!</p>
+                        )}
                     </div>
                 )}
             </div>

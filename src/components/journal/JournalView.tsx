@@ -114,9 +114,16 @@ export function JournalView() {
 
             <div className="flex-1 overflow-y-auto space-y-4 pr-2 custom-scrollbar">
                 {sortedJournals.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center h-full text-muted-foreground text-sm opacity-50">
-                        <NotebookPen className="w-8 h-8 mb-2" />
-                        <p>{searchTerm || filterMood !== 'all' ? '검색 결과가 없습니다.' : '작성된 일기가 없습니다. 지금 시작해보세요!'}</p>
+                    <div className="flex flex-col items-center justify-center py-16 text-center">
+                        <div className="w-16 h-16 rounded-2xl bg-orange-50 flex items-center justify-center mb-5">
+                            <NotebookPen className="w-8 h-8 text-orange-400" />
+                        </div>
+                        <p className="text-lg font-bold text-slate-800 mb-2">
+                            {searchTerm || filterMood !== 'all' ? '검색 결과가 없습니다' : '작성된 일기가 없어요'}
+                        </p>
+                        <p className="text-sm text-slate-500 max-w-xs leading-relaxed">
+                            {searchTerm || filterMood !== 'all' ? '다른 조건으로 검색해 보세요.' : '오늘의 생각과 감정을 기록해보세요!'}
+                        </p>
                     </div>
                 ) : (
                     sortedJournals.map(entry => (
