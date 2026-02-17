@@ -6,7 +6,7 @@ import { Task, Project, CalendarEvent } from "@/types";
 // WARN: In a real app, API calls should be done server-side to protect the key.
 // But for this client-side demo/personal app, we might use it directly or via a Next.js API route.
 // For now, we'll try to use it, but provide a fallback if no key.
-const API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY || "";
+const API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY || "AQ.Ab8RN6JYkhVSq7PmbMe4bAkeIvF6XVilN0ACUrsv_gyRMgfh3A";
 
 const genAI = new GoogleGenerativeAI(API_KEY);
 
@@ -17,19 +17,20 @@ export async function generateMorningBriefing(
     events: CalendarEvent[]
 ): Promise<string> {
     if (!API_KEY) {
-        return `## ☀️ Good Morning, ${name}!
-(Gemini API Key is missing. This is a simulated briefing.)
+        return `## 🤖 AI 브리핑 준비 중
+(현재 Gemini API 키가 설정되지 않아 시뮬레이션 모드로 표시됩니다.)
 
-**📅 Today's Schedule**
-You have ${events.length} events scheduled for today.
+**📅 오늘의 주요 일정**
+오늘은 총 ${events.length}개의 일정이 잡혀 있습니다.
 
-**✅ Priority Tasks**
-You have ${tasks.filter(t => t.priority === 'high' && !t.completed).length} high-priority tasks remaining.
+**✅ 우선순위 할 일**
+우선적으로 처리해야 할 고우선순위 작업이 ${tasks.filter(t => t.priority === 'high' && !t.completed).length}개 있습니다.
 
-**🚀 Project Updates**
-Active Projects: ${projects.filter(p => p.status === 'active').length}
+**🚀 프로젝트 현황**
+현재 진행 중인 프로젝트는 ${projects.filter(p => p.status === 'active').length}개입니다.
 
-*Tip: Add NEXT_PUBLIC_GEMINI_API_KEY to your .env.local to get real AI insights!*`;
+---
+💡 **팁**: 실제 AI 정밀 분석을 받고 싶다면 \`.env.local\` 파일에 \`NEXT_PUBLIC_GEMINI_API_KEY\`를 추가해 주세요!`;
     }
 
     try {

@@ -105,10 +105,10 @@ export function WorkSidebar({ className, currentView, onViewChange }: WorkSideba
                     {!isCollapsed && (
                         <div className="flex-1 min-w-0">
                             <h2 className="font-bold text-sm truncate">
-                                {selectedProject ? selectedProject.title : "Work Space"}
+                                {selectedProject ? selectedProject.title : "워크 모드"}
                             </h2>
                             <p className="text-xs text-slate-400 truncate">
-                                {selectedProject ? "Project View" : "Overview"}
+                                {selectedProject ? "프로젝트 뷰" : "전체 개요"}
                             </p>
                         </div>
                     )}
