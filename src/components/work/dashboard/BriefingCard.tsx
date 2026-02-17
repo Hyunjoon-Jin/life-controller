@@ -57,6 +57,7 @@ export function BriefingCard() {
         setLoading(true);
         setExpanded(true);
         try {
+            console.log("Generating AI Briefing with key:", "starts with AQ.***");
             const todayStr = new Date().toISOString().split('T')[0];
             // Filter Work: Type is work/meeting OR linked to a project (assuming projects are work or filtered)
             const todaysEvents = events.filter(e =>
@@ -160,8 +161,11 @@ export function BriefingCard() {
                                     {briefing || ''}
                                 </ReactMarkdown>
                                 <div className="flex justify-end mt-2">
-                                    <Button variant="ghost" size="sm" onClick={handleGenerate} className="text-xs text-muted-foreground hover:text-indigo-500 h-6">
-                                        <RefreshCw className="w-3 h-3 mr-1" /> 다시 생성
+                                    <Button variant="ghost" size="sm" onClick={() => {
+                                        localStorage.removeItem('morning_briefing_content');
+                                        handleGenerate();
+                                    }} className="text-xs text-muted-foreground hover:text-indigo-500 h-6">
+                                        <RefreshCw className="w-3 h-3 mr-1" /> 다시 생성 (캐시 삭제)
                                     </Button>
                                 </div>
                             </div>
