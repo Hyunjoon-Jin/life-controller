@@ -38,6 +38,9 @@ const nanum = localFont({
 export const metadata: Metadata = {
   title: 'LIFE Controller',
   description: 'Comprehensive productivity platform',
+  other: {
+    'google-adsense-account': 'ca-pub-8704292092201678',
+  },
 };
 
 import { SessionReset } from '@/components/auth/SessionReset';
