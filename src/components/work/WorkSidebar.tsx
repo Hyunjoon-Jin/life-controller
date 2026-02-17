@@ -96,24 +96,6 @@ export function WorkSidebar({ className, currentView, onViewChange }: WorkSideba
                 {isCollapsed ? <ChevronRight className="w-3 h-3" /> : <ChevronLeft className="w-3 h-3" />}
             </button>
 
-            {/* Header / Context Switcher */}
-            <div className="p-4 mb-2">
-                <div className={cn("flex items-center gap-3", isCollapsed && "justify-center")}>
-                    <div className="w-8 h-8 rounded-lg bg-indigo-500 flex items-center justify-center text-white shrink-0">
-                        {selectedProject ? <Briefcase className="w-4 h-4" /> : <LayoutDashboard className="w-4 h-4" />}
-                    </div>
-                    {!isCollapsed && (
-                        <div className="flex-1 min-w-0">
-                            <h2 className="font-bold text-sm truncate">
-                                {selectedProject ? selectedProject.title : "워크 모드"}
-                            </h2>
-                            <p className="text-xs text-slate-400 truncate">
-                                {selectedProject ? "프로젝트 뷰" : "전체 개요"}
-                            </p>
-                        </div>
-                    )}
-                </div>
-            </div>
 
             {/* Navigation Items */}
             <div className="flex-1 px-3 space-y-1 overflow-y-auto custom-scrollbar">
