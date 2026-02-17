@@ -17,35 +17,6 @@ export function MegaMenuNav({ activeCategory, activeTab, onSelect, appMode = 'li
     const [isOpen, setIsOpen] = useState(false);
     const [hoveredCategory, setHoveredCategory] = useState<CategoryType>(activeCategory);
 
-    // If Work Mode, we use a flat list and direct navigation
-    if (appMode === 'work') {
-        return (
-            <div className="w-full relative z-50">
-                <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-2 max-w-7xl mx-auto">
-                    <div className="px-4 font-bold text-sm h-10 flex items-center bg-[#E1BEE7] text-[#4A148C] rounded-full cursor-default shrink-0 border-2 border-[#CE93D8]">
-                        <span className="mr-1">💼</span> 전체 메뉴
-                    </div>
-                    <div className="h-4 w-[1px] bg-[#CE93D8] mx-2" />
-
-                    {WORK_NAV_ITEMS.map(item => (
-                        <button
-                            key={item.id}
-                            onClick={() => onSelect('basic', item.id)}
-                            className={cn(
-                                "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap",
-                                activeTab === item.id
-                                    ? "bg-[#9C27B0] text-white shadow-md"
-                                    : "text-[#4A148C]/70 hover:bg-[#CE93D8]/30 hover:text-[#4A148C]"
-                            )}
-                        >
-                            {item.label}
-                        </button>
-                    ))}
-                </div>
-            </div>
-        );
-    }
-
     // Life Mode Logic (Existing)
     const visibleCategories = CATEGORIES; // In Life mode show all categories
 

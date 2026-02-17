@@ -34,7 +34,7 @@ export async function generateMorningBriefing(
     }
 
     try {
-        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
         const today = new Date().toISOString().split('T')[0];
 
@@ -68,9 +68,9 @@ export async function generateMorningBriefing(
         const result = await model.generateContent(prompt);
         const response = await result.response;
         return response.text();
-    } catch (error) {
+    } catch (error: any) {
         console.error("Gemini API Error:", error);
-        return "Failed to generate briefing. Please check your network or API key.";
+        return `Failed to generate briefing. Error: ${error.message || 'Unknown error'}. Please check your network or API key.`;
     }
 }
 
@@ -89,7 +89,7 @@ export async function suggestTaskDetails(
     }
 
     try {
-        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
         const projectList = projects.map(p => `- ${p.title} (ID: ${p.id})`).join('\n');
 
@@ -138,7 +138,7 @@ export async function summarizeMeeting(minutes: string): Promise<{ summary: stri
     }
 
     try {
-        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
         const prompt = `
         Analyze the following meeting minutes and provide:
         1. A concise summary (in Korean, 2-3 sentences).
@@ -169,7 +169,7 @@ export async function recommendSmartSchedule(tasks: Task[], events: CalendarEven
     if (!API_KEY) return [];
 
     try {
-        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
         const todayStr = new Date().toISOString().split('T')[0];
 
         const prompt = `
@@ -201,7 +201,7 @@ export async function suggestNextProjectTasks(project: Project, tasks: Task[]): 
     if (!API_KEY) return "AI 프로젝트 분석을 위해 API 키가 필요합니다.";
 
     try {
-        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
         const prompt = `
         Analyze the following project and its tasks to suggest 3 next logical steps or new tasks to focus on.
         Project: ${project.title} (${project.description})
