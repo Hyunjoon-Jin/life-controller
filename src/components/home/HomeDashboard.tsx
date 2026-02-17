@@ -75,6 +75,7 @@ const ALL_SHORTCUTS = [
     { id: 'ideas', label: '아이디어', icon: Lightbulb, color: 'bg-yellow-50 text-yellow-600 dark:bg-yellow-900/40 dark:text-yellow-400', mode: 'schedule', cat: 'record', tab: 'ideas' },
     { id: 'scraps', label: '스크랩', icon: Bookmark, color: 'bg-lime-50 text-lime-600 dark:bg-lime-900/40 dark:text-lime-400', mode: 'schedule', cat: 'record', tab: 'scraps' },
     { id: 'ledger', label: '가계부', icon: PiggyBank, color: 'bg-amber-50 text-amber-600 dark:bg-amber-900/40 dark:text-amber-400', mode: 'schedule', cat: 'finance', tab: 'ledger' },
+    { id: 'work', label: '업무', icon: Briefcase, color: 'bg-slate-50 text-slate-600 dark:bg-slate-800 dark:text-slate-300', mode: 'work', cat: 'basic', tab: 'projects' },
 ] as const;
 
 export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
@@ -336,7 +337,11 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
                                     colorClass={item.color}
                                     labelClassName="text-slate-600 group-hover:text-slate-900"
                                     onClick={() => {
-                                        onQuickLink(item.mode as any, item.cat as any, item.tab);
+                                        if (item.mode === 'work') {
+                                            onNavigate('work');
+                                        } else {
+                                            onQuickLink(item.mode as any, item.cat as any, item.tab);
+                                        }
                                     }}
                                 />
                             </motion.div>

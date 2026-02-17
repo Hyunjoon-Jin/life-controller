@@ -201,6 +201,22 @@ export default function Home() {
             >
               <Sparkles className="w-4 h-4" /> 일상 모드
             </HoverBorderGradient>
+
+            <HoverBorderGradient
+              as="button"
+              containerClassName="rounded-full"
+              className={cn(
+                "px-4 py-2 text-sm font-bold flex items-center gap-2",
+                appMode === 'work' ? "bg-[#9C27B0] text-white" : "bg-transparent text-gray-500 hover:text-gray-700"
+              )}
+              onClick={() => {
+                setAppMode('work');
+                setMainMode('work');
+              }}
+              duration={1.5}
+            >
+              <Briefcase className="w-4 h-4" /> 업무 모드
+            </HoverBorderGradient>
           </div>
 
           <div className={cn(
