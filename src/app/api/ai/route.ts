@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import * as cheerio from 'cheerio';
 
-const API_KEY = process.env.GEMINI_API_KEY || "";
+const API_KEY = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY || process.env.GOOGLE_API_KEY || "";
 const genAI = new GoogleGenerativeAI(API_KEY);
 
 export async function POST(req: NextRequest) {
@@ -11,9 +11,15 @@ export async function POST(req: NextRequest) {
     }
 
     try {
-        const { action, payload } = await req.json();
+        const body = await req.json();
+        const { action, payload } = body;
 
-        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+        if (!API_KEY) {
+            console.error("[API/AI] Error: Missing API Key");
+            return NextResponse.json({ error: "Gemini API Key is missing on server" }, { status: 500 });
+        }
+
+        const model = genAI.getGenerativeModel({ model: "gemini-3-pro-preview" });
 
         switch (action) {
             case 'briefing': {
@@ -87,8 +93,12 @@ export async function POST(req: NextRequest) {
             case 'summarize_url': {
                 const { url } = payload;
                 try {
-                    const response = await fetch(url);
-                    if (!response.ok) throw new Error('Failed to fetch URL');
+                    const response = await fetch(url, {
+                        headers: {
+                            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+                        }
+                    });
+                    if (!response.ok) throw new Error(`Failed to fetch URL: ${response.status} ${response.statusText}`);
                     const html = await response.text();
                     const $ = cheerio.load(html);
 
@@ -109,9 +119,12 @@ export async function POST(req: NextRequest) {
                     const result = await model.generateContent(prompt);
                     const jsonText = result.response.text().replace(/```json/g, '').replace(/```/g, '').trim();
                     return NextResponse.json(JSON.parse(jsonText));
-                } catch (error) {
+                } catch (error: any) {
                     console.error("URL Summarization Error:", error);
-                    return NextResponse.json({ summary: "URL을 불러오거나 요약하는 데 실패했습니다.", tags: [] });
+                    return NextResponse.json({
+                        summary: `요약 실패: ${error.message || "알 수 없는 오류"}`,
+                        tags: ["에러"]
+                    });
                 }
             }
 
@@ -157,7 +170,7 @@ export async function POST(req: NextRequest) {
                 return NextResponse.json({ error: "Invalid action" }, { status: 400 });
         }
     } catch (error: any) {
-        console.error("Gemini API Route Error:", error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        console.error("AI API Error:", error);
+        return NextResponse.json({ error: error.message || "Internal Server Error" }, { status: 500 });
     }
 }
