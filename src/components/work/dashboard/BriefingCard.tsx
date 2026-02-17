@@ -57,7 +57,6 @@ export function BriefingCard() {
         setLoading(true);
         setExpanded(true);
         try {
-            console.log("Generating AI Briefing with key:", "starts with AQ.***");
             const todayStr = new Date().toISOString().split('T')[0];
             // Filter Work: Type is work/meeting OR linked to a project (assuming projects are work or filtered)
             const todaysEvents = events.filter(e =>
