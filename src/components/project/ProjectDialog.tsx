@@ -18,7 +18,7 @@ interface ProjectDialogProps {
 }
 
 export function ProjectDialog({ isOpen, onOpenChange, projectToEdit }: ProjectDialogProps) {
-    const { addProject, updateProject, people } = useData();
+    const { addProject, updateProject, people, projects, tasks, addTask, goals } = useData();
 
     // Form State
     const [title, setTitle] = useState('');
@@ -32,8 +32,14 @@ export function ProjectDialog({ isOpen, onOpenChange, projectToEdit }: ProjectDi
     const [myRole, setMyRole] = useState('');
     const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
     const [budgetTotal, setBudgetTotal] = useState('');
+    const [isTemplate, setIsTemplate] = useState(false);
+    const [selectedTemplateId, setSelectedTemplateId] = useState<string>('');
+    const [selectedGoalId, setSelectedGoalId] = useState<string>('');
 
     const [lastProjectId, setLastProjectId] = useState<string | null>(null);
+
+    // Filter available templates
+    const templates = projects.filter(p => p.isTemplate);
 
     useEffect(() => {
         if (projectToEdit) {
@@ -53,6 +59,8 @@ export function ProjectDialog({ isOpen, onOpenChange, projectToEdit }: ProjectDi
                 setMyRole(projectToEdit.myRole || '');
                 setSelectedMembers(projectToEdit.members || []);
                 setBudgetTotal(projectToEdit.budget?.total.toString() || '');
+                setIsTemplate(projectToEdit.isTemplate || false);
+                setSelectedGoalId(projectToEdit.connectedGoalId || '');
                 setLastProjectId(projectToEdit.id);
             }
         } else {
@@ -74,16 +82,38 @@ export function ProjectDialog({ isOpen, onOpenChange, projectToEdit }: ProjectDi
                 setMyRole('');
                 setSelectedMembers([]);
                 setBudgetTotal('');
+                setIsTemplate(false);
+                setSelectedTemplateId('');
+                setSelectedGoalId('');
                 setLastProjectId(null);
             }
         }
     }, [projectToEdit, isOpen, lastProjectId, title, status]);
 
+    const handleTemplateSelect = (templateId: string) => {
+        setSelectedTemplateId(templateId);
+        if (templateId) {
+            const template = templates.find(t => t.id === templateId);
+            if (template) {
+                setTitle(`${template.title} (Copy)`);
+                setDescription(template.description || '');
+                setColor(template.color);
+                setManager(template.manager || '');
+                setMyRole(template.myRole || '');
+                setBudgetTotal(template.budget?.total.toString() || '');
+                // Do NOT copy status, dates, members usually? Or maybe yes.
+                // Let's keep status as preparation.
+            }
+        }
+    };
+
     const handleSave = () => {
         if (!title.trim()) return;
 
+        const newProjectId = projectToEdit ? projectToEdit.id : Date.now().toString();
+
         const projectData: Project = {
-            id: projectToEdit ? projectToEdit.id : Date.now().toString(),
+            id: newProjectId,
             title,
             description,
             status: status as any,
@@ -94,18 +124,38 @@ export function ProjectDialog({ isOpen, onOpenChange, projectToEdit }: ProjectDi
             startDate: startDate,
             endDate: endDate,
             budget: {
-
                 total: Number(budgetTotal) || 0,
                 spent: projectToEdit?.budget?.spent || 0
             },
             progress: projectToEdit?.progress || 0,
-            parentId: projectToEdit?.parentId
+            parentId: projectToEdit?.parentId,
+            isTemplate: isTemplate,
+            connectedGoalId: selectedGoalId
         };
 
         if (projectToEdit) {
             updateProject(projectData);
         } else {
             addProject(projectData);
+
+            // If created from template, duplicate tasks
+            if (selectedTemplateId) {
+                const templateTasks = tasks.filter(t => t.projectId === selectedTemplateId);
+                templateTasks.forEach(task => {
+                    addTask({
+                        ...task,
+                        id: Date.now().toString() + Math.random().toString(36).substr(2, 5), // Generate new ID
+                        projectId: newProjectId,
+                        completed: false, // Reset completion
+                        progress: 0,
+                        startDate: undefined, // Reset dates or shift them? Reset is safer.
+                        endDate: undefined,
+                        dependencies: [], // Reset dependencies for now as IDs changed. (To keep dependencies, we need a map of oldId -> newId)
+                    });
+                });
+                // Note: Re-linking dependencies is complex because we need to map old IDs to new IDs.
+                // For "Phase 2", basic duplication is enough. Advanced: Dependency mapping.
+            }
         }
         onOpenChange(false);
     };
@@ -128,6 +178,26 @@ export function ProjectDialog({ isOpen, onOpenChange, projectToEdit }: ProjectDi
                     </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
+
+                    {/* Template Selection (Only on Create) */}
+                    {!projectToEdit && templates.length > 0 && (
+                        <div className="grid grid-cols-4 items-center gap-4 bg-muted/30 p-2 rounded-lg border border-dashed border-gray-200">
+                            <Label className="text-right text-xs">템플릿 불러오기</Label>
+                            <div className="col-span-3">
+                                <select
+                                    className="w-full text-sm border rounded p-1.5"
+                                    value={selectedTemplateId}
+                                    onChange={(e) => handleTemplateSelect(e.target.value)}
+                                >
+                                    <option value="">(선택 안함 - 빈 프로젝트)</option>
+                                    {templates.map(t => (
+                                        <option key={t.id} value={t.id}>{t.title}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
+                    )}
+
                     {/* Basic Info */}
                     <div className="grid grid-cols-4 items-center gap-4">
                         <Label className="text-right">프로젝트명</Label>
@@ -237,6 +307,35 @@ export function ProjectDialog({ isOpen, onOpenChange, projectToEdit }: ProjectDi
                             className="col-span-3"
                             placeholder="0"
                         />
+                    </div>
+
+                    {/* Goal Alignment */}
+                    <div className="grid grid-cols-4 items-center gap-4">
+                        <Label className="text-right">상위 목표</Label>
+                        <select
+                            value={selectedGoalId}
+                            onChange={(e) => setSelectedGoalId(e.target.value)}
+                            className="col-span-3 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                            <option value="">(연동 안함)</option>
+                            {/* Flatten goals for selection - specialized logic might be needed for nested goals */}
+                            {goals.map(g => (
+                                <option key={g.id} value={g.id}>{g.title}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                        <Label className="text-right">옵션</Label>
+                        <div className="col-span-3 flex items-center gap-2">
+                            <input
+                                type="checkbox"
+                                id="isTemplate"
+                                checked={isTemplate}
+                                onChange={(e) => setIsTemplate(e.target.checked)}
+                                className="h-4 w-4 rounded border-gray-300"
+                            />
+                            <label htmlFor="isTemplate" className="text-sm cursor-pointer">이 프로젝트를 템플릿으로 저장</label>
+                        </div>
                     </div>
                     <div className="grid grid-cols-4 items-start gap-4">
                         <Label className="text-right mt-2">설명</Label>

@@ -1,9 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Plus, X, Calendar as CalendarIcon, Save, Trash2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, X, Calendar as CalendarIcon, Save, Trash2, Check, ChevronsUpDown, Sparkles, Loader2 } from 'lucide-react';
 import { Task, Priority } from '@/types';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Command } from 'cmdk';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -18,9 +20,11 @@ interface TaskDialogProps {
     onOpenChange: (open: boolean) => void;
     projectId: string;
     taskToEdit?: Task | null; // If null, create mode
+    defaultStatus?: string | null; // New: 'todo', 'in_progress', 'done'
+    initialPriority?: Priority; // New
 }
 
-export function TaskDialog({ isOpen, onOpenChange, projectId, taskToEdit }: TaskDialogProps) {
+export function TaskDialog({ isOpen, onOpenChange, projectId, taskToEdit, defaultStatus, initialPriority }: TaskDialogProps) {
     const { addTask, updateTask, deleteTask } = useData();
 
     const handleDelete = () => {
@@ -37,28 +41,37 @@ export function TaskDialog({ isOpen, onOpenChange, projectId, taskToEdit }: Task
     const [startDate, setStartDate] = useState<Date | undefined>(undefined);
     const [endDate, setEndDate] = useState<Date | undefined>(undefined);
     const [type, setType] = useState('work');
+    const [estimatedTime, setEstimatedTime] = useState<number | undefined>(undefined);
+    const [tags, setTags] = useState<string[]>([]); // New Tags State
+    const [isAnalyzing, setIsAnalyzing] = useState(false); // New AI State
 
+    // Dependency State
+    const [dependencies, setDependencies] = useState<string[]>([]);
+    const [isDependencyOpen, setIsDependencyOpen] = useState(false);
 
-    // Subtasks State (Simple string array for local editing, mapped to Task[] on save)
+    // Subtasks State
     const [subTaskInput, setSubTaskInput] = useState('');
     const [subTasks, setSubTasks] = useState<{ id: string, title: string, completed: boolean }[]>([]);
 
     const [lastTaskId, setLastTaskId] = useState<string | null>(null);
 
+    const { projects } = useData(); // Get projects for AI analysis
+
     useEffect(() => {
         if (taskToEdit) {
             if (taskToEdit.id !== lastTaskId || isOpen) {
-                if (taskToEdit.id === lastTaskId && title === taskToEdit.title) return;
+                if (taskToEdit.id === lastTaskId && title === taskToEdit.title && dependencies === taskToEdit.dependencies) return;
 
-                // eslint-disable-next-line react-hooks/set-state-in-effect
                 setTitle(taskToEdit.title);
                 setRemarks(taskToEdit.remarks || '');
                 setPriority(taskToEdit.priority || 'medium');
                 setStartDate(taskToEdit.startDate ? new Date(taskToEdit.startDate) : undefined);
                 setEndDate(taskToEdit.endDate ? new Date(taskToEdit.endDate) : undefined);
                 setType(taskToEdit.type || 'work');
+                setEstimatedTime(taskToEdit.estimatedTime);
+                setTags(taskToEdit.tags || []);
+                setDependencies(taskToEdit.dependencies || []);
 
-                // Map existing subTasks if any
                 if (taskToEdit.subTasks) {
                     setSubTasks(taskToEdit.subTasks.map(st => ({ id: st.id, title: st.title, completed: st.completed })));
                 } else {
@@ -67,22 +80,44 @@ export function TaskDialog({ isOpen, onOpenChange, projectId, taskToEdit }: Task
                 setLastTaskId(taskToEdit.id);
             }
         } else {
-            // Reset for create
             if (lastTaskId !== null || isOpen) {
-                if (lastTaskId === null && title === '' && priority === 'medium') return;
-
                 setTitle('');
                 setRemarks('');
-                setPriority('medium');
+                setPriority(initialPriority || 'medium');
                 setStartDate(new Date());
                 setEndDate(undefined);
                 setType('work');
-
+                setEstimatedTime(undefined);
+                setTags([]);
+                setDependencies([]);
                 setSubTasks([]);
                 setLastTaskId(null);
             }
         }
-    }, [taskToEdit, isOpen, lastTaskId, title, priority]);
+    }, [taskToEdit, isOpen, lastTaskId, title, priority, initialPriority, dependencies]);
+
+    // ... handleAddSubTask, removeSubTask ... 
+
+    const handleAIAnalyze = async () => {
+        if (!title.trim()) return;
+        setIsAnalyzing(true);
+        try {
+            const { suggestTaskDetails } = await import('@/lib/gemini');
+            const result = await suggestTaskDetails(title, remarks, projects); // Pass projects
+
+            if (result) {
+                setPriority(result.priority);
+                setTags(result.tags || []);
+                if (result.category) setType(result.category);
+                if (result.estimatedTime) setEstimatedTime(result.estimatedTime);
+                // Project suggestion could be handled here if we had a project selector
+            }
+        } catch (error) {
+            console.error("AI Analysis Failed", error);
+        } finally {
+            setIsAnalyzing(false);
+        }
+    };
 
     const handleAddSubTask = () => {
         if (!subTaskInput.trim()) return;
@@ -97,29 +132,44 @@ export function TaskDialog({ isOpen, onOpenChange, projectId, taskToEdit }: Task
     const handleSave = () => {
         if (!title.trim()) return;
 
+        let completed = false;
+        let progress = 0;
+
+        if (taskToEdit) {
+            completed = taskToEdit.completed;
+            progress = taskToEdit.progress || 0;
+        } else {
+            if (defaultStatus === 'done') {
+                completed = true;
+                progress = 100;
+            } else if (defaultStatus === 'in_progress') {
+                completed = false;
+                progress = 50;
+            }
+        }
+
         const taskData: Task = {
             id: taskToEdit ? taskToEdit.id : Date.now().toString(),
             title,
-            completed: taskToEdit ? taskToEdit.completed : false,
+            completed,
             projectId: projectId,
             priority,
             remarks,
             type,
             startDate: startDate,
             endDate: endDate,
-            // Reconstruct subTasks
-
+            estimatedTime: estimatedTime || undefined,
+            tags: tags,
             subTasks: subTasks.map(st => ({
                 id: st.id,
                 title: st.title,
                 completed: st.completed,
-                priority: 'medium', // Default
+                priority: 'medium',
                 projectId: projectId
             })),
-            // Keep existing fields
-            dependencies: taskToEdit?.dependencies || [],
-            progress: taskToEdit?.progress || 0,
-            source: 'timeline' // Mark as Timeline Task
+            dependencies: dependencies,
+            progress,
+            source: 'timeline'
         };
 
         if (taskToEdit) {
@@ -152,6 +202,23 @@ export function TaskDialog({ isOpen, onOpenChange, projectId, taskToEdit }: Task
                                     className="col-span-3 font-semibold"
                                     placeholder="작업 이름을 입력하세요"
                                 />
+                                <div className="absolute right-0 top-0 -translate-y-1/2 translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    {/* Placeholder for optional hover actions */}
+                                </div>
+                            </div>
+
+                            {/* AI Suggestion Button */}
+                            <div className="flex justify-end">
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="text-xs text-indigo-600 h-6 px-2 hover:bg-indigo-50"
+                                    onClick={handleAIAnalyze}
+                                    disabled={!title || isAnalyzing}
+                                >
+                                    {isAnalyzing ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <Sparkles className="w-3 h-3 mr-1" />}
+                                    AI 자동 분류
+                                </Button>
                             </div>
 
                             <div className="grid grid-cols-4 items-center gap-4">
@@ -205,11 +272,109 @@ export function TaskDialog({ isOpen, onOpenChange, projectId, taskToEdit }: Task
                                         className="w-full"
                                     />
                                 </div>
+                            </div>
 
+                            <div className="grid grid-cols-4 items-center gap-4">
+                                <Label className="text-right">예상 소요</Label>
+                                <div className="col-span-3 flex items-center gap-2">
+                                    <Input
+                                        type="number"
+                                        value={estimatedTime}
+                                        onChange={(e) => setEstimatedTime(Number(e.target.value))}
+                                        className="w-24"
+                                        placeholder="분"
+                                    />
+                                    <span className="text-sm text-muted-foreground">분 (입력 시 자동 스케줄링 가능)</span>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-4 items-start gap-4">
+                                <Label className="text-right mt-2">태그</Label>
+                                <div className="col-span-3">
+                                    <div className="flex flex-wrap gap-2 mb-2">
+                                        {tags.map(tag => (
+                                            <div key={tag} className="bg-indigo-50 text-indigo-700 text-xs px-2 py-1 rounded-md flex items-center gap-1">
+                                                <span>#{tag}</span>
+                                                <button onClick={() => setTags(tags.filter(t => t !== tag))} className="hover:bg-indigo-200 rounded-full p-0.5"><X className="w-3 h-3" /></button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <Input
+                                        placeholder="태그 입력 후 Enter"
+                                        className="h-8 text-sm"
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                                const val = (e.currentTarget as HTMLInputElement).value.trim();
+                                                if (val && !tags.includes(val)) {
+                                                    setTags([...tags, val]);
+                                                    (e.currentTarget as HTMLInputElement).value = '';
+                                                }
+                                                e.preventDefault();
+                                            }
+                                        }}
+                                    />
+                                </div>
                             </div>
                         </div>
 
                         <div className="border-t border-gray-100 my-2"></div>
+
+                        {/* Dependencies */}
+                        <div className="space-y-4">
+                            <div className="grid grid-cols-4 items-start gap-4">
+                                <Label className="text-right mt-2">선행 작업</Label>
+                                <div className="col-span-3">
+                                    <div className="flex flex-wrap gap-2 mb-2">
+                                        {dependencies.map(depId => {
+                                            const depTask = useData().tasks.find(t => t.id === depId);
+                                            return (
+                                                <div key={depId} className="bg-secondary text-secondary-foreground text-xs px-2 py-1 rounded-md flex items-center gap-1">
+                                                    <span>{depTask?.title || 'Unknown Task'}</span>
+                                                    <button onClick={() => setDependencies(dependencies.filter(d => d !== depId))} className="hover:bg-red-200 rounded-full p-0.5"><X className="w-3 h-3" /></button>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                    <Popover open={isDependencyOpen} onOpenChange={setIsDependencyOpen}>
+                                        <PopoverTrigger asChild>
+                                            <Button variant="outline" size="sm" className="w-full justify-start text-left font-normal text-muted-foreground">
+                                                <Plus className="w-4 h-4 mr-2" /> 선행 작업 추가...
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="p-0 w-[400px]" align="start">
+                                            <Command className="w-full">
+                                                <Command.Input placeholder="작업 검색..." className="h-9 border-none focus:ring-0" />
+                                                <Command.List className="max-h-[200px] overflow-y-auto">
+                                                    <Command.Empty>작업을 찾을 수 없습니다.</Command.Empty>
+                                                    <Command.Group>
+                                                        {useData().tasks
+                                                            .filter(t => t.projectId === projectId && t.id !== (taskToEdit?.id) && t.source === 'timeline')
+                                                            .map(task => (
+                                                                <Command.Item
+                                                                    key={task.id}
+                                                                    onSelect={() => {
+                                                                        if (!dependencies.includes(task.id)) {
+                                                                            setDependencies([...dependencies, task.id]);
+                                                                        }
+                                                                        setIsDependencyOpen(false);
+                                                                    }}
+                                                                    className="cursor-pointer"
+                                                                >
+                                                                    <div className="flex items-center gap-2">
+                                                                        <div className={cn("w-2 h-2 rounded-full", task.completed ? "bg-green-500" : "bg-gray-300")} />
+                                                                        <span>{task.title}</span>
+                                                                        {dependencies.includes(task.id) && <Check className="ml-auto w-4 h-4" />}
+                                                                    </div>
+                                                                </Command.Item>
+                                                            ))}
+                                                    </Command.Group>
+                                                </Command.List>
+                                            </Command>
+                                        </PopoverContent>
+                                    </Popover>
+                                </div>
+                            </div>
+                        </div>
 
                         {/* Detailed Info */}
                         <div className="space-y-4">

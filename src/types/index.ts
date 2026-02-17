@@ -19,6 +19,10 @@ export type Task = {
     connectedGoalId?: string; // New: Linked Goal
     source?: 'timeline' | 'daily'; // New: To separate Daily vs Timeline tasks
     category?: string; // New: Task category (e.g. Work, Study)
+    estimatedTime?: number; // New: Estimated time in minutes for auto-scheduling
+    actualTime?: number; // New: Actual time spent in minutes
+    completedAt?: Date; // New: Timestamp for completion
+    tags?: string[]; // New: Task tags for Smart Tagging
 };
 
 export type ProjectStatus = 'preparation' | 'active' | 'completed' | 'hold';
@@ -94,6 +98,8 @@ export type Project = {
     resources?: ProjectResource[]; // New: Resource Library
     automationRules?: AutomationRule[]; // New: Automation
     isArchived?: boolean; // New: Archive flag
+    isTemplate?: boolean; // New: Template flag
+    connectedGoalId?: string; // New: Link to High-level Goal
 };
 
 export type ArchiveDocument = {

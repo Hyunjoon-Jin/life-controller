@@ -191,6 +191,9 @@ interface DataContextType {
     deleteCustomExercise: (id: string) => void;
     globalMemo: string;
     setGlobalMemo: (memo: string) => void;
+    activeTaskId: string | null;
+    taskTimer: number;
+    toggleTaskTimer: (taskId: string) => void;
 }
 
 
@@ -247,6 +250,54 @@ export function DataProvider({ children }: { children: ReactNode }) {
     const [isAccountWithdrawn, setIsAccountWithdrawn] = useState(false); // New: Account Status State
     const { user, signOut } = useAuth(); // Use signOut from useAuth
     const dataLoadedRef = useRef(false);
+
+    // ============================================
+    // Time Tracking Logic
+    // ============================================
+    const [activeTaskId, setActiveTaskId] = useState<string | null>(null);
+    const [taskTimer, setTaskTimer] = useState<number>(0);
+    const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+    // Timer Effect
+    useEffect(() => {
+        if (activeTaskId) {
+            timerRef.current = setInterval(() => {
+                setTaskTimer(prev => prev + 1);
+            }, 1000);
+        } else {
+            if (timerRef.current) clearInterval(timerRef.current);
+        }
+        return () => {
+            if (timerRef.current) clearInterval(timerRef.current);
+        };
+    }, [activeTaskId]);
+
+    const toggleTaskTimer = async (taskId: string) => {
+        if (activeTaskId === taskId) {
+            // Stop current
+            const task = tasks.find(t => t.id === taskId);
+            if (task) {
+                const newTime = (task.actualTime || 0) + taskTimer;
+                setTasks(prev => prev.map(t => t.id === taskId ? { ...t, actualTime: newTime } : t));
+                bg(() => dbUpdate('tasks', taskId, { actual_time: newTime }));
+            }
+            setActiveTaskId(null);
+            setTaskTimer(0);
+        } else {
+            // If another task was running, save its time
+            if (activeTaskId) {
+                const prevTask = tasks.find(t => t.id === activeTaskId);
+                if (prevTask) {
+                    const newTime = (prevTask.actualTime || 0) + taskTimer;
+                    setTasks(prev => prev.map(t => t.id === activeTaskId ? { ...t, actualTime: newTime } : t));
+                    bg(() => dbUpdate('tasks', activeTaskId, { actual_time: newTime }));
+                }
+            }
+            // Start new task
+            setActiveTaskId(taskId);
+            setTaskTimer(0);
+        }
+    };
 
     // ============================================
     // Helper: background DB operation (fire and forget with error logging)
@@ -968,25 +1019,20 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
     return (
         <DataContext.Provider value={{
-            tasks, setTasks,
+            tasks, setTasks, addTask, updateTask, deleteTask,
             projects, setProjects, addProject, updateProject, deleteProject,
             archiveDocuments, setArchiveDocuments, addDocument, updateDocument, deleteDocument,
-            goals, setGoals,
-            habits, setHabits,
-            events, setEvents,
-            journals, setJournals,
-            memos, setMemos,
-            people, setPeople,
-            scraps, setScraps,
-            addTask, updateTask, deleteTask,
-            addGoal, updateGoal, deleteGoal,
-            addHabit, updateHabit, deleteHabit,
-            addEvent, updateEvent, deleteEvent,
-            addJournal, updateJournal, deleteJournal,
-            addMemo, updateMemo, deleteMemo,
-            addPerson, updatePerson, deletePerson,
-            addScrap, updateScrap, deleteScrap,
+            goals, setGoals, addGoal, updateGoal, deleteGoal,
+            habits, setHabits, addHabit, updateHabit, deleteHabit,
+            events, setEvents, addEvent, updateEvent, deleteEvent,
+            journals, setJournals, addJournal, updateJournal, deleteJournal,
+            memos, setMemos, addMemo, updateMemo, deleteMemo,
+            people, setPeople, addPerson, updatePerson, deletePerson,
+            scraps, setScraps, addScrap, updateScrap, deleteScrap,
             selectedWorkProjectId, setSelectedWorkProjectId,
+            activeTaskId,
+            taskTimer,
+            toggleTaskTimer,
             languageEntries, setLanguageEntries,
             addLanguageEntry, updateLanguageEntry, deleteLanguageEntry,
             languageResources, setLanguageResources,
@@ -1013,7 +1059,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
             educations, addEducation, updateEducation, deleteEducation,
             careers, setCareers, addCareer, updateCareer, deleteCareer,
             activities, setActivities, addActivity, updateActivity, deleteActivity,
-            isSyncing, forceSync,
+            isSyncing,
+            forceSync,
             bodyCompositionGoal,
             setBodyCompositionGoal: setBodyCompositionGoalAndSync,
             homeShortcuts,

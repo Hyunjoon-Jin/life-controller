@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { format, isToday, isSameDay } from 'date-fns';
 import { Calendar as CalendarIcon, Clock, CheckCircle2, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { MorningBriefing } from '../MorningBriefing';
+import { BriefingCard } from '../dashboard/BriefingCard';
 
 export function ScheduleSection() {
     const { events, tasks } = useData();
@@ -19,7 +19,7 @@ export function ScheduleSection() {
 
     return (
         <div className="space-y-6">
-            <MorningBriefing />
+            <BriefingCard />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Today's Meetings/Events */}

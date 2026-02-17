@@ -47,6 +47,62 @@ export function TimeAnalytics({ project }: TimeAnalyticsProps) {
         ? Math.round((projectTasks.filter(t => t.completed).length / projectTasks.length) * 100)
         : 0;
 
+
+    // Workload Heatmap Data
+    const heatmapData = useMemo(() => {
+        const data: { [key: string]: number } = {};
+        const today = new Date();
+        const oneYearAgo = new Date();
+        oneYearAgo.setFullYear(today.getFullYear() - 1);
+
+        projectTasks.forEach(task => {
+            if (task.startDate) {
+                const dateStr = new Date(task.startDate).toISOString().split('T')[0];
+                data[dateStr] = (data[dateStr] || 0) + 1;
+            }
+            if (task.dueDate) {
+                const dateStr = new Date(task.dueDate).toISOString().split('T')[0];
+                data[dateStr] = (data[dateStr] || 0) + 1;
+            }
+        });
+
+        // Fill empty days for the last 365 days
+        const result = [];
+        for (let d = new Date(oneYearAgo); d <= today; d.setDate(d.getDate() + 1)) {
+            const dateStr = d.toISOString().split('T')[0];
+            result.push({
+                date: dateStr,
+                count: data[dateStr] || 0
+            });
+        }
+        return result;
+    }, [projectTasks]);
+
+    // Burn-down Chart Mock Data (Simulated based on project duration)
+    const burndownData = useMemo(() => {
+        // Ideal: Linear drop from total tasks to 0 between start and end of project
+        // Actual: Count remained tasks over time. 
+        // Since we lack historical event logs in this simple app, we'll simulate "Ideal" vs "Current Snapshot"
+        // For a real app, we'd need a separate 'History' table.
+
+        const total = projectTasks.length;
+        if (total === 0) return [];
+
+        return [
+            { name: 'Start', ideal: total, actual: total },
+            { name: 'Now', ideal: Math.round(total * 0.5), actual: projectTasks.filter(t => !t.completed).length },
+            { name: 'End', ideal: 0, actual: null }
+        ];
+    }, [projectTasks]);
+
+    const getHeatmapColor = (count: number) => {
+        if (count === 0) return 'bg-gray-100 dark:bg-gray-800';
+        if (count <= 2) return 'bg-green-200 dark:bg-green-900';
+        if (count <= 4) return 'bg-green-400 dark:bg-green-700';
+        if (count <= 6) return 'bg-green-600 dark:bg-green-500';
+        return 'bg-green-800 dark:bg-green-300';
+    };
+
     return (
         <div className="space-y-6 animate-in fade-in duration-300">
             <div className="flex items-center justify-between">
@@ -100,33 +156,54 @@ export function TimeAnalytics({ project }: TimeAnalyticsProps) {
                 </Card>
             </div>
 
+            {/* Heatmap Section */}
+            <Card>
+                <CardHeader>
+                    <CardTitle>업무 밀도 (Workload Heatmap)</CardTitle>
+                    <CardDescription>지난 1년간의 업무 집중도를 시각화합니다.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="flex flex-wrap gap-1">
+                        {heatmapData.slice(-120).map((day, i) => ( // Show last ~4 months for better mobile view
+                            <div
+                                key={i}
+                                className={`w-3 h-3 rounded-sm ${getHeatmapColor(day.count)}`}
+                                title={`${day.date}: ${day.count} tasks`}
+                            />
+                        ))}
+                    </div>
+                    <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground justify-end">
+                        <span>Less</span>
+                        <div className="flex gap-1">
+                            <div className="w-3 h-3 rounded-sm bg-gray-100 dark:bg-gray-800"></div>
+                            <div className="w-3 h-3 rounded-sm bg-green-200 dark:bg-green-900"></div>
+                            <div className="w-3 h-3 rounded-sm bg-green-400 dark:bg-green-700"></div>
+                            <div className="w-3 h-3 rounded-sm bg-green-600 dark:bg-green-500"></div>
+                            <div className="w-3 h-3 rounded-sm bg-green-800 dark:bg-green-300"></div>
+                        </div>
+                        <span>More</span>
+                    </div>
+                </CardContent>
+            </Card>
+
             {/* Charts Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Burn-down Chart (Placeholder/Simulated) */}
                 <Card className="col-span-1">
                     <CardHeader>
-                        <CardTitle>작업 상태 분포</CardTitle>
-                        <CardDescription>완료 vs 미완료 작업 비율</CardDescription>
+                        <CardTitle>번다운 차트 (Burn-down)</CardTitle>
+                        <CardDescription>남은 작업량의 추이 (Simulated)</CardDescription>
                     </CardHeader>
                     <CardContent className="h-[300px]">
                         <ResponsiveContainer width="100%" height="100%">
-                            <PieChart>
-                                <Pie
-                                    data={statusData}
-                                    cx="50%"
-                                    cy="50%"
-                                    innerRadius={60}
-                                    outerRadius={80}
-                                    fill="#8884d8"
-                                    paddingAngle={5}
-                                    dataKey="value"
-                                >
-                                    {statusData.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                    ))}
-                                </Pie>
-                                <Tooltip />
+                            <BarChart data={burndownData}>
+                                <XAxis dataKey="name" fontSize={12} tickLine={false} axisLine={false} />
+                                <YAxis fontSize={12} tickLine={false} axisLine={false} />
+                                <Tooltip cursor={{ fill: 'transparent' }} />
                                 <Legend />
-                            </PieChart>
+                                <Bar dataKey="ideal" name="Ideal" fill="#e2e8f0" radius={[4, 4, 0, 0]} barSize={20} />
+                                <Bar dataKey="actual" name="Actual" fill="#3b82f6" radius={[4, 4, 0, 0]} barSize={20} />
+                            </BarChart>
                         </ResponsiveContainer>
                     </CardContent>
                 </Card>
@@ -148,6 +225,37 @@ export function TimeAnalytics({ project }: TimeAnalyticsProps) {
                                     ))}
                                 </Bar>
                             </BarChart>
+                        </ResponsiveContainer>
+                    </CardContent>
+                </Card>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <Card className="col-span-1">
+                    <CardHeader>
+                        <CardTitle>작업 상태 분포</CardTitle>
+                        <CardDescription>완료 vs 미완료 작업 비율</CardDescription>
+                    </CardHeader>
+                    <CardContent className="h-[200px]">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <PieChart>
+                                <Pie
+                                    data={statusData}
+                                    cx="50%"
+                                    cy="50%"
+                                    innerRadius={60}
+                                    outerRadius={80}
+                                    fill="#8884d8"
+                                    paddingAngle={5}
+                                    dataKey="value"
+                                >
+                                    {statusData.map((entry, index) => (
+                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                    ))}
+                                </Pie>
+                                <Tooltip />
+                                <Legend />
+                            </PieChart>
                         </ResponsiveContainer>
                     </CardContent>
                 </Card>

@@ -12,13 +12,33 @@ import { Clock, Plus, Save, Play, Pause, RotateCcw, CheckSquare, FileText, Send 
 import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 
-interface MeetingModeProps {
-    project: Project;
-    onClose: () => void;
-}
+export function MeetingMode({ project: initialProject, onClose }: { project?: Project, onClose: () => void }) {
+    const { addJournal, addTask, projects } = useData();
+    const [selectedProjectId, setSelectedProjectId] = useState<string>(initialProject?.id || '');
+    const project = projects.find(p => p.id === selectedProjectId) || initialProject;
 
-export function MeetingMode({ project, onClose }: MeetingModeProps) {
-    const { addJournal, addTask } = useData(); // We might save minutes as Journal or specialized Meeting Note
+    // ... (rest of state)
+
+    // ... (rest of logic)
+
+    // In Header:
+    // <div className="flex items-center gap-4">
+    //    ...
+    //    <div>
+    //       {project ? (
+    //           <h2 className="font-bold text-lg">{project.title} - 회의 진행 중</h2>
+    //       ) : (
+    //           <select 
+    //               value={selectedProjectId} 
+    //               onChange={e => setSelectedProjectId(e.target.value)}
+    //               className="bg-transparent font-bold text-lg border-none focus:ring-0 cursor-pointer"
+    //           >
+    //               <option value="" disabled>프로젝트 선택...</option>
+    //               {projects.map(p => <option key={p.id} value={p.id}>{p.title}</option>)}
+    //           </select>
+    //       )}
+    //       ...
+
 
     // Timer State
     const [seconds, setSeconds] = useState(0);
@@ -77,7 +97,7 @@ export function MeetingMode({ project, onClose }: MeetingModeProps) {
                 id: Date.now().toString() + Math.random().toString().slice(2, 5),
                 title: actionTitle,
                 completed: false,
-                projectId: project.id,
+                projectId: project?.id || '', // Use optional chaining
                 priority: 'medium',
                 dueDate: new Date(), // Due today by default
                 source: 'timeline'
@@ -107,9 +127,21 @@ export function MeetingMode({ project, onClose }: MeetingModeProps) {
                     <div className="bg-primary/10 text-primary p-2 rounded-lg">
                         <Clock className="w-6 h-6" />
                     </div>
-                    <div>
-                        <h2 className="font-bold text-lg">{project.title} - 회의 진행 중</h2>
-                        <div className="text-xs text-muted-foreground font-mono">{formatTime(seconds)}</div>
+                    <div className="flex items-center gap-2">
+                        {project ? (
+                            <h2 className="font-bold text-lg">{project.title} - 회의 진행 중</h2>
+                        ) : (
+                            <select
+                                value={selectedProjectId}
+                                onChange={e => setSelectedProjectId(e.target.value)}
+                                className="bg-transparent font-bold text-lg border-none focus:ring-0 cursor-pointer w-64"
+                            >
+                                <option value="" disabled>프로젝트 선택 (선택 사항)</option>
+                                <option value="">(프로젝트 없음)</option>
+                                {projects.map(p => <option key={p.id} value={p.id}>{p.title}</option>)}
+                            </select>
+                        )}
+                        <div className="text-xs text-muted-foreground font-mono ml-2 mt-1">{formatTime(seconds)}</div>
                     </div>
 
                     {/* Timer Controls */}

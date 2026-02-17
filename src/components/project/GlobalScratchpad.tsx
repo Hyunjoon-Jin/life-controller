@@ -7,12 +7,29 @@ import { StickyNote, X, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useData } from '@/context/DataProvider';
 
-export function GlobalScratchpad() {
+interface GlobalScratchpadProps {
+    triggerVisible?: boolean;
+}
+
+export function GlobalScratchpad({ triggerVisible = true }: GlobalScratchpadProps) {
     const [isOpen, setIsOpen] = useState(false);
     const { globalMemo: note, setGlobalMemo: setNote } = useData();
     const [isMinimized, setIsMinimized] = useState(false);
 
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.altKey && e.code === 'KeyQ') {
+                setIsOpen(prev => !prev);
+                e.preventDefault();
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, []);
+
     if (!isOpen) {
+        if (!triggerVisible) return null; // Hidden trigger mode (for Zen Mode)
         return (
             <Button
                 variant="outline"
