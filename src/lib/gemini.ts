@@ -128,3 +128,93 @@ export async function suggestTaskDetails(
         };
     }
 }
+
+export async function summarizeMeeting(minutes: string): Promise<{ summary: string, actionItems: string[] }> {
+    if (!API_KEY) {
+        return {
+            summary: "Gemini API 키가 설정되지 않아 시뮬레이션된 핵심 요약을 제공합니다. 회의록의 주요 내용을 한글로 요약하여 보여줍니다.",
+            actionItems: ["추가된 액션 아이템 1", "추가된 액션 아이템 2"]
+        };
+    }
+
+    try {
+        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+        const prompt = `
+        Analyze the following meeting minutes and provide:
+        1. A concise summary (in Korean, 2-3 sentences).
+        2. A list of actionable items (in Korean).
+
+        Minutes:
+        ${minutes}
+
+        Output JSON ONLY:
+        {
+            "summary": "...",
+            "actionItems": ["item1", "item2"]
+        }
+        `;
+
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        const text = response.text();
+        const jsonStr = text.replace(/```json/g, '').replace(/```/g, '').trim();
+        return JSON.parse(jsonStr);
+    } catch (error) {
+        console.error("Gemini Meeting Error:", error);
+        return { summary: "요약 생성에 실패했습니다.", actionItems: [] };
+    }
+}
+
+export async function recommendSmartSchedule(tasks: Task[], events: CalendarEvent[]): Promise<{ taskId: string, start: string, end: string, reason: string }[]> {
+    if (!API_KEY) return [];
+
+    try {
+        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+        const todayStr = new Date().toISOString().split('T')[0];
+
+        const prompt = `
+        You are an AI Productivity Assistant.
+        Analyze today's events and pending tasks to suggest the best time slots for each task today.
+        Consider task priority, duration, and existing busy slots.
+
+        Tasks: ${JSON.stringify(tasks.filter(t => !t.completed && t.estimatedTime).map(t => ({ id: t.id, title: t.title, priority: t.priority, duration: t.estimatedTime })))}
+        Events: ${JSON.stringify(events.filter(e => new Date(e.start).toISOString().startsWith(todayStr)).map(e => ({ title: e.title, start: e.start, end: e.end })))}
+
+        Output JSON ONLY (List of suggestions for today):
+        [
+            { "taskId": "...", "start": "ISO_STRING", "end": "ISO_STRING", "reason": "Consistent with energy levels/priority" }
+        ]
+        `;
+
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        const text = response.text();
+        const jsonStr = text.replace(/```json/g, '').replace(/```/g, '').trim();
+        return JSON.parse(jsonStr);
+    } catch (error) {
+        console.error("Gemini Scheduler Error:", error);
+        return [];
+    }
+}
+
+export async function suggestNextProjectTasks(project: Project, tasks: Task[]): Promise<string> {
+    if (!API_KEY) return "AI 프로젝트 분석을 위해 API 키가 필요합니다.";
+
+    try {
+        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+        const prompt = `
+        Analyze the following project and its tasks to suggest 3 next logical steps or new tasks to focus on.
+        Project: ${project.title} (${project.description})
+        Tasks (Current Status): ${JSON.stringify(tasks.map(t => ({ title: t.title, completed: t.completed })))}
+
+        Provide the response in Korean, in a concise bulleted list with a brief reasoning.
+        `;
+
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        return response.text();
+    } catch (error) {
+        console.error("Gemini Insight Error:", error);
+        return "프로젝트 분석 중 오류가 발생했습니다.";
+    }
+}

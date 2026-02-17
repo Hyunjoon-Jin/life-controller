@@ -8,14 +8,38 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea'; // Ideally use TextareaAutosize
 import TextareaAutosize from 'react-textarea-autosize';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Clock, Plus, Save, Play, Pause, RotateCcw, CheckSquare, FileText, Send } from 'lucide-react';
+import { Clock, Plus, Save, Play, Pause, RotateCcw, CheckSquare, FileText, Send, Sparkles, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { summarizeMeeting } from '@/lib/gemini';
 
 export function MeetingMode({ project: initialProject, onClose }: { project?: Project, onClose: () => void }) {
     const { addJournal, addTask, projects } = useData();
     const [selectedProjectId, setSelectedProjectId] = useState<string>(initialProject?.id || '');
     const project = projects.find(p => p.id === selectedProjectId) || initialProject;
+
+    const [isSummarizing, setIsSummarizing] = useState(false);
+
+    const handleAISummary = async () => {
+        if (!minutes.trim()) return;
+        setIsSummarizing(true);
+        try {
+            const result = await summarizeMeeting(minutes);
+            if (result) {
+                // Prepend summary to minutes
+                setMinutes(`# [AI 요약]\n${result.summary}\n\n---\n\n${minutes}`);
+
+                // Add action items to the list
+                if (result.actionItems && result.actionItems.length > 0) {
+                    setQuickActions(prev => [...prev, ...result.actionItems]);
+                }
+            }
+        } catch (error) {
+            console.error("AI Summary failed", error);
+        } finally {
+            setIsSummarizing(false);
+        }
+    };
 
     // ... (rest of state)
 
@@ -240,6 +264,16 @@ export function MeetingMode({ project: initialProject, onClose }: { project?: Pr
                         <h3 className="font-bold flex items-center gap-2">
                             <FileText className="w-4 h-4 text-orange-500" /> 회의록
                         </h3>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            disabled={!minutes.trim() || isSummarizing}
+                            onClick={handleAISummary}
+                            className="text-xs text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50"
+                        >
+                            {isSummarizing ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <Sparkles className="w-3 h-3 mr-1" />}
+                            AI 요약 및 요점 추출
+                        </Button>
                     </div>
                     <div className="flex-1 p-6 overflow-y-auto" onClick={(e) => {
                         // Focus textarea if clicking on whitespace

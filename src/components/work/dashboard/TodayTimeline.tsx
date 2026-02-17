@@ -7,13 +7,45 @@ import { Clock, Calendar as CalendarIcon, MoreHorizontal, Sparkles, Loader2 } fr
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { autoScheduleTasks } from '@/lib/scheduler';
+import { recommendSmartSchedule } from '@/lib/gemini';
 import { toast } from 'sonner';
 import { useState } from 'react';
 
 export function TodayTimeline() {
     const { events, tasks, updateTask } = useData();
     const [isScheduling, setIsScheduling] = useState(false);
+    const [isAIScheduling, setIsAIScheduling] = useState(false);
     const today = new Date();
+
+    const handleAISmartSchedule = async () => {
+        setIsAIScheduling(true);
+        try {
+            const suggestions = await recommendSmartSchedule(tasks, events);
+            if (suggestions.length === 0) {
+                toast.info("AI가 추천할 만한 스케줄 조합을 찾지 못했습니다.");
+                return;
+            }
+
+            let count = 0;
+            for (const item of suggestions) {
+                const task = tasks.find(t => t.id === item.taskId);
+                if (task) {
+                    await updateTask({
+                        ...task,
+                        startDate: new Date(item.start),
+                        endDate: new Date(item.end)
+                    });
+                    count++;
+                }
+            }
+            toast.success(`AI가 ${count}개의 작업을 지능적으로 배치했습니다!`);
+        } catch (error) {
+            console.error(error);
+            toast.error("AI 스케줄링 중 오류가 발생했습니다.");
+        } finally {
+            setIsAIScheduling(false);
+        }
+    };
 
     const todayEvents = events
         .filter(e => isSameDay(new Date(e.start), today))
@@ -64,13 +96,24 @@ export function TodayTimeline() {
                     <Button
                         variant="ghost"
                         size="sm"
+                        onClick={handleAISmartSchedule}
+                        disabled={isAIScheduling}
+                        className="text-xs text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50"
+                        title="AI가 작업 성격을 분석하여 최적의 시간 추천"
+                    >
+                        {isAIScheduling ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4 mr-1 text-purple-500" />}
+                        {isAIScheduling ? "AI 분석 중..." : "AI 지능형 배치"}
+                    </Button>
+                    <Button
+                        variant="ghost"
+                        size="sm"
                         onClick={handleAutoSchedule}
                         disabled={isScheduling}
-                        className="text-xs text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50"
-                        title="빈 시간에 할 일 자동 배치"
+                        className="text-xs text-slate-500 hover:bg-slate-50"
+                        title="빈 시간에 할 일 단순 배치"
                     >
-                        {isScheduling ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4 mr-1" />}
-                        {isScheduling ? "배치 중..." : "자동 채우기"}
+                        {isScheduling ? <Loader2 className="w-4 h-4 animate-spin" /> : <Clock className="w-4 h-4 mr-1" />}
+                        {isScheduling ? "배치 중..." : "단순 자동 채우기"}
                     </Button>
                     <Button variant="ghost" size="icon" className="h-8 w-8">
                         <MoreHorizontal className="w-4 h-4 text-slate-400" />

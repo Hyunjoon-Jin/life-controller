@@ -1,15 +1,18 @@
 'use client';
 
-import { Project } from '@/types';
+import { Project, Task } from '@/types';
 import { differenceInDays, format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip } from 'recharts';
-import { Calendar, DollarSign, Users, Clock, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Calendar, DollarSign, Users, Clock, AlertCircle, CheckCircle2, Sparkles, Loader2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
+import { useState } from 'react';
 
 import { useData } from '@/context/DataProvider';
 import { BurndownChart } from './BurndownChart';
+import { suggestNextProjectTasks } from '@/lib/gemini';
+import ReactMarkdown from 'react-markdown';
 
 interface ProjectDashboardProps {
     project: Project;
@@ -18,6 +21,21 @@ interface ProjectDashboardProps {
 export function ProjectDashboard({ project }: ProjectDashboardProps) {
     const { tasks } = useData();
     const projectTasks = tasks.filter(t => t.projectId === project.id);
+
+    const [insight, setInsight] = useState<string | null>(null);
+    const [isAnalyzing, setIsAnalyzing] = useState(false);
+
+    const handleGetInsight = async () => {
+        setIsAnalyzing(true);
+        try {
+            const result = await suggestNextProjectTasks(project, projectTasks);
+            setInsight(result);
+        } catch (error) {
+            console.error("Failed to get project insight", error);
+        } finally {
+            setIsAnalyzing(false);
+        }
+    };
 
     // Calculate D-Day
     const today = new Date();
@@ -206,6 +224,40 @@ export function ProjectDashboard({ project }: ProjectDashboardProps) {
                     </Card>
                 </div>
             </div>
+
+            {/* AI Insights Card */}
+            <Card className="border-indigo-100 bg-indigo-50/10">
+                <CardHeader className="flex flex-row items-center justify-between">
+                    <CardTitle className="flex items-center gap-2">
+                        <Sparkles className="h-5 w-5 text-indigo-500" />
+                        AI 프로젝트 인사이트
+                    </CardTitle>
+                    <button
+                        onClick={handleGetInsight}
+                        disabled={isAnalyzing}
+                        className="text-xs text-indigo-600 hover:text-indigo-700 font-medium flex items-center gap-1"
+                    >
+                        {isAnalyzing ? <Loader2 className="h-3 w-3 animate-spin" /> : <Sparkles className="h-3 w-3" />}
+                        {insight ? "다시 분석" : "분석 시작"}
+                    </button>
+                </CardHeader>
+                <CardContent>
+                    {isAnalyzing ? (
+                        <div className="py-8 flex flex-col items-center justify-center text-sm text-muted-foreground">
+                            <Sparkles className="h-8 w-8 text-indigo-200 animate-pulse mb-2" />
+                            프로젝트 데이터를 분석하여 최적의 다음 단계를 제안하고 있습니다...
+                        </div>
+                    ) : insight ? (
+                        <div className="prose prose-sm max-w-none dark:prose-invert">
+                            <ReactMarkdown>{insight}</ReactMarkdown>
+                        </div>
+                    ) : (
+                        <div className="py-6 text-center text-sm text-muted-foreground">
+                            "분석 시작"을 클릭하여 이 프로젝트를 위한 AI 맞춤 제안을 받아보세요.
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
         </div>
     );
 }
