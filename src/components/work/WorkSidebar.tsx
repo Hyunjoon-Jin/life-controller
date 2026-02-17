@@ -102,9 +102,6 @@ export function WorkSidebar({ className, currentView, onViewChange }: WorkSideba
                 {!selectedWorkProjectId ? (
                     // GLOBAL MODE
                     <>
-                        <div className={cn("px-2 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wider", isCollapsed && "hidden")}>
-                            Global
-                        </div>
                         <SidebarItem
                             icon={LayoutDashboard}
                             label="대시보드"
@@ -118,9 +115,6 @@ export function WorkSidebar({ className, currentView, onViewChange }: WorkSideba
                             onClick={() => onViewChange('tasks')}
                         />
 
-                        <div className={cn("px-2 py-2 mt-4 text-xs font-semibold text-slate-400 uppercase tracking-wider", isCollapsed && "hidden")}>
-                            Pinned Projects
-                        </div>
                         {projects.slice(0, 3).map(p => (
                             <SidebarItem
                                 key={p.id}

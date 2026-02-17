@@ -23,7 +23,6 @@ import { ZenMode } from '@/components/work/ZenMode';
 // New Imports
 import { WorkPeopleSection } from './WorkPeopleSection';
 import { WorkTemplateSection } from './WorkTemplateSection';
-import { WorkSidebar } from '@/components/work/WorkSidebar';
 import { ProjectKanban } from './ProjectKanban';
 import { ProjectWiki } from './tabs/ProjectWiki';
 import { ResourceLibrary } from './tabs/ResourceLibrary';
@@ -65,16 +64,9 @@ export function WorkLayout({ viewMode: propViewMode }: { viewMode?: ViewMode }) 
     return (
         <div className={cn(
             "h-full flex text-foreground w-full transition-all duration-500",
-            isFocusMode ? "fixed inset-0 z-[100] bg-[#0f1012] overflow-y-auto p-4" : "max-w-7xl mx-auto flex-row gap-0" // Changed to flex-row for sidebar
+            isFocusMode ? "fixed inset-0 z-[100] bg-[#0f1012] overflow-y-auto p-4" : "max-w-7xl mx-auto flex-col gap-0" // Changed to flex-col as sidebar is gone
         )}>
-            {/* Smart Sidebar */}
-            {!isFocusMode && (
-                <WorkSidebar
-                    className="hidden md:flex rounded-l-3xl my-6 ml-6 h-[calc(100%-48px)]"
-                    currentView={activeViewMode}
-                    onViewChange={setLocalViewMode}
-                />
-            )}
+            {/* Smart Sidebar Removed as per user request */}
 
             <div className={cn(
                 "flex-1 flex flex-col min-w-0 transition-all duration-500",
