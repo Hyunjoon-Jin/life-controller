@@ -11,7 +11,7 @@ export function PriorityTasks() {
 
     // High priority tasks first, then by date (if exists), then by creation
     const priorityTasks = tasks
-        .filter(t => !t.completed)
+        .filter(t => !t.completed && (t.category === 'work' || t.projectId)) // Filter Work Only: category is work OR it belongs to a project (assuming projects are work-centric in this view)
         .sort((a, b) => {
             if (a.priority === 'high' && b.priority !== 'high') return -1;
             if (a.priority !== 'high' && b.priority === 'high') return 1;

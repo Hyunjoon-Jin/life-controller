@@ -7,7 +7,7 @@ import {
     Transaction, Asset, Certificate, PortfolioItem, RealEstateScrap, StockAnalysis,
     WorkLog, ExerciseRoutine, FinanceGoal, MonthlyBudget, CustomFood, ExerciseDefinition,
     ArchiveDocument, UserProfile, Education, Career, Activity, Hobby, HobbyPost,
-    LanguageResource, BodyCompositionGoal
+    LanguageResource, BodyCompositionGoal, WikiPage, ProjectResource, ProjectRisk, CustomFieldDefinition
 } from '@/types';
 import { fetchAll, insertRow, updateRow, deleteRow, upsertSingleton, fetchSingleton, toSnakeCase } from '@/lib/supabase-data';
 const dbUpdate = updateRow;
@@ -15,10 +15,18 @@ const dbDelete = deleteRow;
 import { useAuth } from '@/components/auth/SessionProvider';
 import { toast } from 'sonner';
 import { differenceInMinutes, isSameDay, startOfWeek, endOfWeek, eachDayOfInterval, format } from 'date-fns';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
 
 interface DataContextType {
     tasks: Task[];
     setTasks: (tasks: Task[]) => void;
+    // ...
+    // Custom Fields
+    customFieldDefinitions: CustomFieldDefinition[];
+    addCustomFieldDefinition: (def: CustomFieldDefinition) => void;
+    updateCustomFieldDefinition: (def: CustomFieldDefinition) => void;
+    deleteCustomFieldDefinition: (id: string) => void;
+
     projects: Project[];
     setProjects: (projects: Project[]) => void;
     addProject: (project: Project) => void;
@@ -194,6 +202,22 @@ interface DataContextType {
     activeTaskId: string | null;
     taskTimer: number;
     toggleTaskTimer: (taskId: string) => void;
+
+    // Project Mgmt 2.0
+    wikiPages: WikiPage[];
+    addWikiPage: (page: WikiPage) => void;
+    updateWikiPage: (page: WikiPage) => void;
+    deleteWikiPage: (id: string) => void;
+
+    projectResources: ProjectResource[];
+    addProjectResource: (resource: ProjectResource) => void;
+    updateProjectResource: (resource: ProjectResource) => void;
+    deleteProjectResource: (id: string) => void;
+
+    projectRisks: ProjectRisk[];
+    addProjectRisk: (risk: ProjectRisk) => void;
+    updateProjectRisk: (risk: ProjectRisk) => void;
+    deleteProjectRisk: (id: string) => void;
 }
 
 
@@ -206,6 +230,27 @@ export function DataProvider({ children }: { children: ReactNode }) {
     const [selectedWorkProjectId, setSelectedWorkProjectId] = useState<string | null>(null);
     const [archiveDocuments, setArchiveDocuments] = useState<ArchiveDocument[]>([]);
     const [goals, setGoals] = useState<Goal[]>([]);
+
+    // Project Mgmt 2.0 State
+    const [wikiPages, setWikiPages] = useState<WikiPage[]>([]);
+    const [projectResources, setProjectResources] = useState<ProjectResource[]>([]);
+    const [projectRisks, setProjectRisks] = useState<ProjectRisk[]>([]);
+
+    // Custom Field Definitions (Persisted locally for now as per PM 2.0)
+    const [customFieldDefinitions, setCustomFieldDefinitions] = useLocalStorage<CustomFieldDefinition[]>('customFieldDefinitions', []);
+
+    const addCustomFieldDefinition = (def: CustomFieldDefinition) => {
+        setCustomFieldDefinitions(prev => [...prev, def]);
+    };
+
+    const updateCustomFieldDefinition = (def: CustomFieldDefinition) => {
+        setCustomFieldDefinitions(prev => prev.map(d => d.id === def.id ? def : d));
+    };
+
+    const deleteCustomFieldDefinition = (id: string) => {
+        setCustomFieldDefinitions(prev => prev.filter(d => d.id !== id));
+    };
+
     const [habits, setHabits] = useState<Habit[]>([]);
     const [events, setEvents] = useState<CalendarEvent[]>([]);
     const [journals, setJournals] = useState<JournalEntry[]>([]);
@@ -460,7 +505,26 @@ export function DataProvider({ children }: { children: ReactNode }) {
                 setArchiveDocuments(archiveData);
                 setEducations(eduData);
                 setCareers(careerData);
+                setEducations(eduData);
+                setCareers(careerData);
                 setActivities(actData);
+
+                // Project Management 2.0 Load - Lazy load or eager? Eager for now.
+                // Note: These tables might not exist yet in Supabase, so wrapping in try-catch block individually is safer, 
+                // but for now we assume schema exists or fetchAll handles error gracefully (it usually returns [] on specific errors if handled).
+                // Actually fetchAll returns empty array on error? No, it throws.
+                // We should add these to the Promise.all
+                // BUT, to avoid breaking existing flow if tables are missing, let's do a separate block or adding to array.
+                // Let's assume tables will be created.
+
+                const [wikiData, resourceData, riskData] = await Promise.all([
+                    fetchAll<WikiPage>('wiki_pages').catch(() => []),
+                    fetchAll<ProjectResource>('project_resources').catch(() => []),
+                    fetchAll<ProjectRisk>('project_risks').catch(() => [])
+                ]);
+                setWikiPages(wikiData);
+                setProjectResources(resourceData);
+                setProjectRisks(riskData);
 
                 // Load singletons
                 // Load singletons
@@ -718,6 +782,21 @@ export function DataProvider({ children }: { children: ReactNode }) {
     const addHobbyPost = (p: HobbyPost) => { setHobbyPosts(prev => [...prev, p]); bg(() => insertRow('hobby_posts', p)); };
     const updateHobbyPost = (p: HobbyPost) => { setHobbyPosts(prev => prev.map(x => x.id === p.id ? p : x)); bg(() => dbUpdate('hobby_posts', p.id, p)); };
     const deleteHobbyPost = (id: string) => { setHobbyPosts(prev => prev.filter(x => x.id !== id)); bg(() => dbDelete('hobby_posts', id)); };
+
+    // Project Wiki
+    const addWikiPage = (p: WikiPage) => { setWikiPages(prev => [...prev, p]); bg(() => insertRow('wiki_pages', p)); };
+    const updateWikiPage = (p: WikiPage) => { setWikiPages(prev => prev.map(x => x.id === p.id ? p : x)); bg(() => dbUpdate('wiki_pages', p.id, p)); };
+    const deleteWikiPage = (id: string) => { setWikiPages(prev => prev.filter(x => x.id !== id)); bg(() => dbDelete('wiki_pages', id)); };
+
+    // Project Resources
+    const addProjectResource = (r: ProjectResource) => { setProjectResources(prev => [...prev, r]); bg(() => insertRow('project_resources', r)); };
+    const updateProjectResource = (r: ProjectResource) => { setProjectResources(prev => prev.map(x => x.id === r.id ? r : x)); bg(() => dbUpdate('project_resources', r.id, r)); };
+    const deleteProjectResource = (id: string) => { setProjectResources(prev => prev.filter(x => x.id !== id)); bg(() => dbDelete('project_resources', id)); };
+
+    // Project Risks
+    const addProjectRisk = (r: ProjectRisk) => { setProjectRisks(prev => [...prev, r]); bg(() => insertRow('project_risks', r)); };
+    const updateProjectRisk = (r: ProjectRisk) => { setProjectRisks(prev => prev.map(x => x.id === r.id ? r : x)); bg(() => dbUpdate('project_risks', r.id, r)); };
+    const deleteProjectRisk = (id: string) => { setProjectRisks(prev => prev.filter(x => x.id !== id)); bg(() => dbDelete('project_risks', id)); };
 
     // Finance: Transactions (with asset balance sync)
     const addTransaction = (transaction: Transaction) => {
@@ -1033,6 +1112,14 @@ export function DataProvider({ children }: { children: ReactNode }) {
             activeTaskId,
             taskTimer,
             toggleTaskTimer,
+            customFieldDefinitions,
+            addCustomFieldDefinition,
+            updateCustomFieldDefinition,
+            deleteCustomFieldDefinition,
+            // Project Mgmt 2.0 Exports
+            wikiPages, addWikiPage, updateWikiPage, deleteWikiPage,
+            projectResources, addProjectResource, updateProjectResource, deleteProjectResource,
+            projectRisks, addProjectRisk, updateProjectRisk, deleteProjectRisk,
             languageEntries, setLanguageEntries,
             addLanguageEntry, updateLanguageEntry, deleteLanguageEntry,
             languageResources, setLanguageResources,

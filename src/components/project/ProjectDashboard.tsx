@@ -8,11 +8,17 @@ import { Calendar, DollarSign, Users, Clock, AlertCircle, CheckCircle2 } from 'l
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 
+import { useData } from '@/context/DataProvider';
+import { BurndownChart } from './BurndownChart';
+
 interface ProjectDashboardProps {
     project: Project;
 }
 
 export function ProjectDashboard({ project }: ProjectDashboardProps) {
+    const { tasks } = useData();
+    const projectTasks = tasks.filter(t => t.projectId === project.id);
+
     // Calculate D-Day
     const today = new Date();
     const endDate = project.endDate ? new Date(project.endDate) : null;
@@ -108,8 +114,17 @@ export function ProjectDashboard({ project }: ProjectDashboardProps) {
 
             {/* Main Dashboard Content */}
             <div className="grid grid-cols-1 md:grid-cols-7 gap-6">
-                {/* Left: Project Details (4 cols) */}
+                {/* Left: Project Details & Burndown (4 cols) */}
                 <div className="md:col-span-4 space-y-6">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>번다운 차트 (Burndown Chart)</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <BurndownChart project={project} tasks={projectTasks} />
+                        </CardContent>
+                    </Card>
+
                     <Card className="h-full">
                         <CardHeader>
                             <CardTitle>프로젝트 개요</CardTitle>

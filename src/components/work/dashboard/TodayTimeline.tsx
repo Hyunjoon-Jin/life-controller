@@ -17,6 +17,7 @@ export function TodayTimeline() {
 
     const todayEvents = events
         .filter(e => isSameDay(new Date(e.start), today))
+        .filter(e => e.type === 'work' || e.isMeeting || e.isWorkLog || !!e.connectedProjectId) // Work Filter
         .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
 
     const handleAutoSchedule = async () => {

@@ -2,7 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Plus, X, Calendar as CalendarIcon, Save, Trash2, Check, ChevronsUpDown, Sparkles, Loader2 } from 'lucide-react';
-import { Task, Priority } from '@/types';
+import { TaskCustomFields } from '@/components/project/TaskCustomFields';
+import { TaskRecurrence } from '@/components/project/TaskRecurrence';
+import { Task, Priority, TaskCustomField, RecurrenceRule } from '@/types';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command } from 'cmdk';
@@ -43,6 +45,8 @@ export function TaskDialog({ isOpen, onOpenChange, projectId, taskToEdit, defaul
     const [type, setType] = useState('work');
     const [estimatedTime, setEstimatedTime] = useState<number | undefined>(undefined);
     const [tags, setTags] = useState<string[]>([]); // New Tags State
+    const [customFields, setCustomFields] = useState<TaskCustomField[]>([]); // New Custom Fields State
+    const [recurrence, setRecurrence] = useState<RecurrenceRule | undefined>(undefined); // New Recurrence State
     const [isAnalyzing, setIsAnalyzing] = useState(false); // New AI State
 
     // Dependency State
@@ -134,14 +138,17 @@ export function TaskDialog({ isOpen, onOpenChange, projectId, taskToEdit, defaul
 
         let completed = false;
         let progress = 0;
+        let completedAt: Date | undefined = undefined;
 
         if (taskToEdit) {
             completed = taskToEdit.completed;
             progress = taskToEdit.progress || 0;
+            completedAt = taskToEdit.completedAt;
         } else {
             if (defaultStatus === 'done') {
                 completed = true;
                 progress = 100;
+                completedAt = new Date();
             } else if (defaultStatus === 'in_progress') {
                 completed = false;
                 progress = 50;
@@ -160,6 +167,8 @@ export function TaskDialog({ isOpen, onOpenChange, projectId, taskToEdit, defaul
             endDate: endDate,
             estimatedTime: estimatedTime || undefined,
             tags: tags,
+            customFields,
+            recurrence,
             subTasks: subTasks.map(st => ({
                 id: st.id,
                 title: st.title,
@@ -169,6 +178,7 @@ export function TaskDialog({ isOpen, onOpenChange, projectId, taskToEdit, defaul
             })),
             dependencies: dependencies,
             progress,
+            completedAt,
             source: 'timeline'
         };
 
@@ -315,6 +325,24 @@ export function TaskDialog({ isOpen, onOpenChange, projectId, taskToEdit, defaul
                                     />
                                 </div>
                             </div>
+                        </div>
+
+                        <div className="border-t border-gray-100 my-2"></div>
+
+                        {/* Recurrence & Custom Fields */}
+                        <div className="space-y-6">
+                            <TaskRecurrence
+                                recurrence={recurrence}
+                                onChange={setRecurrence}
+                            />
+
+                            <div className="border-t border-gray-100"></div>
+
+                            <TaskCustomFields
+                                taskFields={customFields}
+                                onChange={setCustomFields}
+                                projectId={projectId}
+                            />
                         </div>
 
                         <div className="border-t border-gray-100 my-2"></div>

@@ -109,9 +109,9 @@ export function ProjectKanban({ project }: ProjectKanbanProps) {
             const newGroup = destRow; // 'high', 'medium', 'low'
 
             // Update Status
-            if (newStatus === 'done') updates = { ...updates, completed: true, progress: 100 };
-            else if (newStatus === 'in_progress') updates = { ...updates, completed: false, progress: 50 };
-            else if (newStatus === 'todo') updates = { ...updates, completed: false, progress: 0 };
+            if (newStatus === 'done') updates = { ...updates, completed: true, progress: 100, completedAt: new Date() };
+            else if (newStatus === 'in_progress') updates = { ...updates, completed: false, progress: 50, completedAt: undefined };
+            else if (newStatus === 'todo') updates = { ...updates, completed: false, progress: 0, completedAt: undefined };
 
             // Update Group (Priority)
             if (groupBy === 'priority') {
@@ -120,9 +120,9 @@ export function ProjectKanban({ project }: ProjectKanbanProps) {
         } else {
             // Board Mode
             if (groupBy === 'status') {
-                if (destId === 'done') updates = { completed: true, progress: 100 };
-                else if (destId === 'in_progress') updates = { completed: false, progress: 50 };
-                else if (destId === 'todo') updates = { completed: false, progress: 0 };
+                if (destId === 'done') updates = { completed: true, progress: 100, completedAt: new Date() };
+                else if (destId === 'in_progress') updates = { completed: false, progress: 50, completedAt: undefined };
+                else if (destId === 'todo') updates = { completed: false, progress: 0, completedAt: undefined };
             } else if (groupBy === 'priority') {
                 updates = { priority: destId as Priority };
             }

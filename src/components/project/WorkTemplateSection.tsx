@@ -15,6 +15,7 @@ import {
 import { cn } from '@/lib/utils';
 import { DocumentTemplate } from '@/types';
 import { toast } from 'sonner';
+import { TaskAutoStatus } from '@/components/project/TaskAutoStatus';
 
 // Mock Data for Community Hub - Korean Translation
 const MOCK_STORE_TEMPLATES: DocumentTemplate[] = [
@@ -151,6 +152,12 @@ export function WorkTemplateSection() {
                     >
                         내 템플릿 ({myTemplates.length})
                     </TabsTrigger>
+                    <TabsTrigger
+                        value="automation"
+                        className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4 py-3 text-sm"
+                    >
+                        자동화 규칙
+                    </TabsTrigger>
                 </TabsList>
 
                 <div className="flex-1 overflow-hidden mt-6 relative">
@@ -282,6 +289,15 @@ export function WorkTemplateSection() {
                                     })}
                                 </div>
                             )}
+                        </div>
+                    </TabsContent>
+
+                    {/* AUTOMATION TAB */}
+                    <TabsContent value="automation" className="h-full m-0 absolute inset-0">
+                        <div className="h-full overflow-y-auto custom-scrollbar pr-2 pb-10">
+                            <div className="max-w-3xl mx-auto py-6">
+                                <TaskAutoStatus />
+                            </div>
                         </div>
                     </TabsContent>
                 </div>

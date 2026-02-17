@@ -24,10 +24,16 @@ import { ZenMode } from '@/components/work/ZenMode';
 import { WorkPeopleSection } from './WorkPeopleSection';
 import { WorkTemplateSection } from './WorkTemplateSection';
 import { WorkSidebar } from '@/components/work/WorkSidebar';
-import { ProjectKanban } from './ProjectKanban'; // Keep for sub-navigation or inside Project?
-// We will use ProjectDashboard for 'Project Mgmt' tab, but maybe toggle inside?
+import { ProjectKanban } from './ProjectKanban';
+import { ProjectWiki } from './tabs/ProjectWiki';
+import { ResourceLibrary } from './tabs/ResourceLibrary';
+import { ProjectRisks } from './tabs/ProjectRisks';
+import { ProjectStakeholders } from './tabs/ProjectStakeholders';
+import { ProjectMilestones } from './tabs/ProjectMilestones';
+import { ProjectBudget } from './tabs/ProjectBudget';
+import { ProjectRetrospective } from './tabs/ProjectRetrospective';
 
-type ViewMode = 'schedule' | 'project' | 'personnel' | 'workhours' | 'templates';
+type ViewMode = 'schedule' | 'project' | 'personnel' | 'workhours' | 'templates' | 'wiki' | 'resources' | 'risks' | 'stakeholders' | 'milestones' | 'budget' | 'retrospective';
 
 export function WorkLayout({ viewMode: propViewMode }: { viewMode?: ViewMode }) {
     const [localViewMode, setLocalViewMode] = useState<ViewMode>('schedule');
@@ -170,6 +176,15 @@ export function WorkLayout({ viewMode: propViewMode }: { viewMode?: ViewMode }) 
                                             {activeViewMode === 'personnel' && <WorkPeopleSection project={selectedProject} />}
                                             {activeViewMode === 'workhours' && <TimeAnalytics project={selectedProject} />}
                                             {activeViewMode === 'templates' && <WorkTemplateSection />}
+
+
+                                            {activeViewMode === 'wiki' && <ProjectWiki project={selectedProject} />}
+                                            {activeViewMode === 'resources' && <ResourceLibrary project={selectedProject} />}
+                                            {activeViewMode === 'risks' && <ProjectRisks project={selectedProject} />}
+                                            {activeViewMode === 'stakeholders' && <ProjectStakeholders project={selectedProject} />}
+                                            {activeViewMode === 'milestones' && <ProjectMilestones project={selectedProject} />}
+                                            {activeViewMode === 'budget' && <ProjectBudget project={selectedProject} />}
+                                            {activeViewMode === 'retrospective' && <ProjectRetrospective project={selectedProject} />}
                                         </div>
                                     </div>
                                 ) : (

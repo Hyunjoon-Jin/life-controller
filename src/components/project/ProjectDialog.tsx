@@ -35,6 +35,7 @@ export function ProjectDialog({ isOpen, onOpenChange, projectToEdit }: ProjectDi
     const [isTemplate, setIsTemplate] = useState(false);
     const [selectedTemplateId, setSelectedTemplateId] = useState<string>('');
     const [selectedGoalId, setSelectedGoalId] = useState<string>('');
+    const [category, setCategory] = useState<'work' | 'personal' | 'study'>('work');
 
     const [lastProjectId, setLastProjectId] = useState<string | null>(null);
 
@@ -61,6 +62,7 @@ export function ProjectDialog({ isOpen, onOpenChange, projectToEdit }: ProjectDi
                 setBudgetTotal(projectToEdit.budget?.total.toString() || '');
                 setIsTemplate(projectToEdit.isTemplate || false);
                 setSelectedGoalId(projectToEdit.connectedGoalId || '');
+                setCategory(projectToEdit.category || 'work');
                 setLastProjectId(projectToEdit.id);
             }
         } else {
@@ -85,6 +87,7 @@ export function ProjectDialog({ isOpen, onOpenChange, projectToEdit }: ProjectDi
                 setIsTemplate(false);
                 setSelectedTemplateId('');
                 setSelectedGoalId('');
+                setCategory('work');
                 setLastProjectId(null);
             }
         }
@@ -130,7 +133,8 @@ export function ProjectDialog({ isOpen, onOpenChange, projectToEdit }: ProjectDi
             progress: projectToEdit?.progress || 0,
             parentId: projectToEdit?.parentId,
             isTemplate: isTemplate,
-            connectedGoalId: selectedGoalId
+            connectedGoalId: selectedGoalId,
+            category: category
         };
 
         if (projectToEdit) {
@@ -269,6 +273,20 @@ export function ProjectDialog({ isOpen, onOpenChange, projectToEdit }: ProjectDi
                             <option value="active">진행 중</option>
                             <option value="hold">보류됨</option>
                             <option value="completed">완료됨</option>
+                        </select>
+                    </div>
+
+                    {/* Category Selection */}
+                    <div className="grid grid-cols-4 items-center gap-4">
+                        <Label className="text-right">카테고리</Label>
+                        <select
+                            value={category}
+                            onChange={(e) => setCategory(e.target.value as any)}
+                            className="col-span-3 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                            <option value="work">업무 (Work)</option>
+                            <option value="personal">개인 (Personal)</option>
+                            <option value="study">학습 (Study)</option>
                         </select>
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">

@@ -38,11 +38,12 @@ export function ProjectResources({ project }: ProjectResourcesProps) {
 
         const newResource: ProjectResource = {
             id: Date.now().toString(),
+            projectId: project.id,
             title,
             url,
             type: finalType,
             description: desc,
-            createdAt: new Date()
+            addedAt: new Date()
         };
 
         const updatedProject = {

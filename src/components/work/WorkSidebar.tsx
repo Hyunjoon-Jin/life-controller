@@ -18,7 +18,10 @@ import {
     BookOpen,
     Link2,
     FolderTree,
-    Clock
+    Clock,
+    Flag,
+    DollarSign,
+    Repeat
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -185,10 +188,51 @@ export function WorkSidebar({ className, currentView, onViewChange }: WorkSideba
                             onClick={() => onViewChange('workhours')}
                         />
                         <SidebarItem
-                            icon={LayoutDashboard}
                             label="템플릿"
                             isActive={currentView === 'templates'}
                             onClick={() => onViewChange('templates')}
+                        />
+                        <SidebarItem
+                            icon={BookOpen}
+                            label="Wiki / 문서"
+                            isActive={currentView === 'wiki'}
+                            onClick={() => onViewChange('wiki')}
+                        />
+                        <SidebarItem
+                            icon={Link2}
+                            label="리소스"
+                            isActive={currentView === 'resources'}
+                            onClick={() => onViewChange('resources')}
+                        />
+                        <SidebarItem
+                            icon={BarChart2} // Using BarChart2 for Risk temporarily, or AlertTriangle if imported
+                            label="리스크 관리"
+                            isActive={currentView === 'risks'}
+                            onClick={() => onViewChange('risks')}
+                        />
+                        <SidebarItem
+                            icon={Flag}
+                            label="마일스톤"
+                            isActive={currentView === 'milestones'}
+                            onClick={() => onViewChange('milestones')}
+                        />
+                        <SidebarItem
+                            icon={Users}
+                            label="이해관계자"
+                            isActive={currentView === 'stakeholders'}
+                            onClick={() => onViewChange('stakeholders')}
+                        />
+                        <SidebarItem
+                            icon={DollarSign}
+                            label="예산 관리"
+                            isActive={currentView === 'budget'}
+                            onClick={() => onViewChange('budget')}
+                        />
+                        <SidebarItem
+                            icon={Repeat}
+                            label="회고 (KPT)"
+                            isActive={currentView === 'retrospective'}
+                            onClick={() => onViewChange('retrospective')}
                         />
                     </>
                 )}

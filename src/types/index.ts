@@ -23,6 +23,8 @@ export type Task = {
     actualTime?: number; // New: Actual time spent in minutes
     completedAt?: Date; // New: Timestamp for completion
     tags?: string[]; // New: Task tags for Smart Tagging
+    customFields?: TaskCustomField[]; // New: Custom Metadata
+    recurrence?: RecurrenceRule; // New: Recurring Task Logic
 };
 
 export type ProjectStatus = 'preparation' | 'active' | 'completed' | 'hold';
@@ -57,15 +59,28 @@ export type Stakeholder = {
     notes?: string;
 };
 
-export type ProjectResource = {
+export type CustomFieldDefinition = {
     id: string;
-    title: string;
-    type: 'link' | 'file' | 'image' | 'figma' | 'github' | 'drive' | 'notion';
-    url: string;
-    description?: string;
-    tags?: string[];
-    createdAt: Date;
+    projectId?: string; // If project-specific, otherwise global
+    name: string;
+    type: 'text' | 'number' | 'date' | 'select' | 'user';
+    options?: string[]; // For select type
 };
+
+export type TaskCustomField = {
+    fieldId: string;
+    value: string | number | Date | string[];
+};
+
+export type RecurrenceRule = {
+    frequency: 'daily' | 'weekly' | 'monthly' | 'yearly';
+    interval: number; // e.g. every 2 weeks
+    byDay?: number[]; // 0=Sun, 1=Mon...
+    endDate?: Date;
+    count?: number; // End after X occurrences
+};
+
+
 
 export type AutomationRule = {
     id: string;
@@ -100,6 +115,72 @@ export type Project = {
     isArchived?: boolean; // New: Archive flag
     isTemplate?: boolean; // New: Template flag
     connectedGoalId?: string; // New: Link to High-level Goal
+    category?: 'work' | 'personal' | 'study'; // New: Project Category
+    // Project Management 2.0 Helper Types
+    risk?: 'low' | 'medium' | 'high'; // Calculated or manually set
+    health?: 'on-track' | 'at-risk' | 'off-track'; // Calculated
+    milestones?: Milestone[]; // New: Milestones
+    budgetItems?: ProjectBudgetItem[]; // New: Budget Details
+    retrospectives?: ProjectRetrospectiveItem[]; // New: Retrospective
+};
+
+export type Milestone = {
+    id: string;
+    projectId: string;
+    title: string;
+    date: Date;
+    description?: string;
+    status: 'pending' | 'completed' | 'overdue';
+    order: number;
+};
+
+export type ProjectBudgetItem = {
+    id: string;
+    projectId: string;
+    description: string;
+    amount: number;
+    type: 'expense' | 'income'; // Project budget usually tracks expenses against budget
+    date: Date;
+    category: string;
+};
+
+export type ProjectRetrospectiveItem = {
+    id: string;
+    projectId: string;
+    type: 'keep' | 'problem' | 'try';
+    content: string;
+    votes: number;
+    createdAt: Date;
+};
+
+export type WikiPage = {
+    id: string;
+    projectId: string;
+    title: string;
+    content: string; // Markdown supported
+    tags?: string[];
+    createdAt: Date;
+    updatedAt: Date;
+};
+
+export type ProjectResource = {
+    id: string;
+    projectId: string;
+    title: string;
+    type: 'link' | 'file' | 'credential' | 'design' | 'figma' | 'github' | 'drive' | 'notion' | 'image';
+    url: string;
+    description?: string;
+    addedAt: Date;
+};
+
+export type ProjectRisk = {
+    id: string;
+    projectId: string;
+    description: string;
+    probability: 'low' | 'medium' | 'high';
+    impact: 'low' | 'medium' | 'high';
+    mitigationStrategy?: string;
+    status: 'open' | 'mitigated' | 'closed';
 };
 
 export type ArchiveDocument = {

@@ -58,9 +58,21 @@ export function BriefingCard() {
         setExpanded(true);
         try {
             const todayStr = new Date().toISOString().split('T')[0];
-            const todaysEvents = events.filter(e => new Date(e.start).toISOString().startsWith(todayStr));
-            const relevantTasks = tasks.filter(t => !t.completed && (t.priority === 'high' || (t.dueDate && new Date(t.dueDate).toISOString().startsWith(todayStr))));
-            const activeProjects = projects.filter(p => p.status === 'active');
+            // Filter Work: Type is work/meeting OR linked to a project (assuming projects are work or filtered)
+            const todaysEvents = events.filter(e =>
+                new Date(e.start).toISOString().startsWith(todayStr) &&
+                (e.type === 'work' || e.isMeeting || e.isWorkLog || !!e.connectedProjectId)
+            );
+
+            // Filter Work: Category is work OR belongs to a project
+            const relevantTasks = tasks.filter(t =>
+                !t.completed &&
+                (t.category === 'work' || t.projectId) &&
+                (t.priority === 'high' || (t.dueDate && new Date(t.dueDate).toISOString().startsWith(todayStr)))
+            );
+
+            // Filter Work: Category is work
+            const activeProjects = projects.filter(p => p.status === 'active' && p.category === 'work');
 
             const result = await generateMorningBriefing(
                 userName,

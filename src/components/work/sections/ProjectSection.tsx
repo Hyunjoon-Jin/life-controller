@@ -1,13 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useData } from '@/context/DataProvider';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Briefcase, Plus, MoreHorizontal, ArrowRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { WorkloadHeatmap } from '../WorkloadHeatmap';
-import { RecentWorkspace } from '../RecentWorkspace';
 import { ProjectDialog } from '@/components/project/ProjectDialog';
+import { PortfolioHeader, PortfolioViewMode } from '../portfolio/PortfolioHeader';
+import { PortfolioTimeline } from '../portfolio/PortfolioTimeline';
+import { GroupedProjectList } from '../portfolio/GroupedProjectList';
+import { WorkloadHeatmap } from '../WorkloadHeatmap';
 
 interface ProjectSectionProps {
     onOpenProject: (id: string) => void;
@@ -17,61 +16,69 @@ export function ProjectSection({ onOpenProject }: ProjectSectionProps) {
     const { projects } = useData();
     const [isNewProjectOpen, setIsNewProjectOpen] = useState(false);
 
+    // Portfolio State
+    const [viewMode, setViewMode] = useState<PortfolioViewMode>('grid');
+    const [searchQuery, setSearchQuery] = useState('');
+    const [groupBy, setGroupBy] = useState('none');
+    const [showArchived, setShowArchived] = useState(false);
+
+    // Filter and Sort Projects
+    const filteredProjects = useMemo(() => {
+        return projects.filter(project => {
+            // Archive Filter
+            if (!showArchived && project.isArchived) return false;
+            if (showArchived && !project.isArchived) return false; // Optional: Show only archived? Or show all including archived? Usually "Show Archived" implies adding them back or switching view. Let's make it a toggle: Hide Archived (default) vs Show All? 
+            // Actually, "Archive Vault" usually means a separate view, but a toggle is easier for now.
+            // Let's say: if showArchived is true, show ONLY archived. If false, show ONLY active.
+            // Or if showArchived is true, show ALL.
+            // Let's go with: Toggle between "Active Projects" and "Archived Projects".
+            if (showArchived !== !!project.isArchived) return false;
+
+            // Search Filter
+            if (searchQuery) {
+                const query = searchQuery.toLowerCase();
+                return (
+                    project.title.toLowerCase().includes(query) ||
+                    project.description?.toLowerCase().includes(query) ||
+                    project.manager?.toLowerCase().includes(query)
+                );
+            }
+
+            return true;
+        });
+    }, [projects, showArchived, searchQuery]);
+
     return (
-        <div className="space-y-6">
-            {/* Header with New Project Button */}
-            <div className="flex items-center justify-between">
-                <h3 className="text-lg font-bold">프로젝트 관리</h3>
-                <Button
-                    onClick={() => setIsNewProjectOpen(true)}
-                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg shadow-blue-500/25 font-bold px-5 py-2.5 h-auto rounded-xl"
-                >
-                    <Plus className="w-5 h-5 mr-2" /> 새 프로젝트
-                </Button>
-            </div>
+        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <PortfolioHeader
+                viewMode={viewMode}
+                onViewModeChange={setViewMode}
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+                groupBy={groupBy}
+                onGroupByChange={setGroupBy}
+                onNewProject={() => setIsNewProjectOpen(true)}
+                onArchiveToggle={() => setShowArchived(!showArchived)}
+                showArchived={showArchived}
+            />
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <Card className="lg:col-span-2 border-none shadow-sm bg-slate-50">
-                    <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-sm font-bold flex items-center gap-2">
-                            <Briefcase className="w-4 h-4 text-primary" />
-                            최근 진행한 프로젝트
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-0">
-                        <RecentWorkspace onOpenProject={onOpenProject} />
-                    </CardContent>
-                </Card>
+            {viewMode === 'timeline' ? (
+                <PortfolioTimeline
+                    projects={filteredProjects}
+                    onOpenProject={onOpenProject}
+                />
+            ) : (
+                <GroupedProjectList
+                    projects={filteredProjects}
+                    onOpenProject={onOpenProject}
+                    viewMode={viewMode === 'list' ? 'list' : 'grid'}
+                    groupBy={groupBy}
+                />
+            )}
 
-                <Card className="border-none shadow-sm h-fit">
-                    <CardHeader>
-                        <CardTitle className="text-sm font-bold">프로젝트 통계</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="flex justify-between items-center text-sm">
-                            <span className="text-muted-foreground">진행 중</span>
-                            <span className="font-bold">{projects.filter(p => !p.isArchived).length}개</span>
-                        </div>
-                        <div className="flex justify-between items-center text-sm">
-                            <span className="text-muted-foreground">완료됨</span>
-                            <span className="font-bold">{projects.filter(p => p.isArchived).length}개</span>
-                        </div>
-                        <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
-                            <div
-                                className="h-full bg-primary"
-                                style={{ width: `${(projects.filter(p => p.isArchived).length / (projects.length || 1)) * 100}%` }}
-                            />
-                        </div>
-                        <Button variant="outline" className="w-full text-xs" onClick={() => { }}>
-                            전체 분석 보기 <ArrowRight className="w-3 h-3 ml-2" />
-                        </Button>
-                    </CardContent>
-                </Card>
-            </div>
+            {/* Only show Heatmap in Grid/List view to avoid clutter, or maybe always? */}
+            {viewMode !== 'timeline' && <WorkloadHeatmap />}
 
-            <WorkloadHeatmap />
-
-            {/* Project Creation Dialog */}
             <ProjectDialog
                 isOpen={isNewProjectOpen}
                 onOpenChange={setIsNewProjectOpen}
