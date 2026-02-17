@@ -100,3 +100,29 @@ export async function suggestNextProjectTasks(project: Project, tasks: Task[]): 
         return "분석 중 오류가 발생했습니다.";
     }
 }
+export async function summarizeUrl(url: string): Promise<{ summary: string, tags: string[] }> {
+    try {
+        const result = await callAIApi('summarize_url', { url });
+        return result;
+    } catch (error) {
+        return { summary: "요약을 실패했습니다.", tags: [] };
+    }
+}
+
+export async function analyzeBookNote(note: string, title?: string): Promise<{ summary: string, insights: string[], actionItems: string[] }> {
+    try {
+        const result = await callAIApi('analyze_book_note', { note, title });
+        return result;
+    } catch (error) {
+        return { summary: "분석을 실패했습니다.", insights: [], actionItems: [] };
+    }
+}
+
+export async function generateStudyPlan(goal: string, type: 'certificate' | 'language'): Promise<{ weeklyPlan: { week: number, topic: string, details: string }[] }> {
+    try {
+        const result = await callAIApi('generate_study_plan', { goal, type });
+        return result;
+    } catch (error) {
+        return { weeklyPlan: [] };
+    }
+}

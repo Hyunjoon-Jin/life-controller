@@ -8,8 +8,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Label } from '@/components/ui/label';
 import {
     Bookmark, Plus, Trash2, ExternalLink, Globe, Pencil, X, Search,
-    Filter, SortAsc, ArrowUpDown, Check, RotateCcw
+    Filter, SortAsc, ArrowUpDown, Check, RotateCcw, Sparkles, Loader2
 } from 'lucide-react';
+import { summarizeUrl } from '@/lib/gemini';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -37,7 +38,25 @@ export function ScrapManager() {
     const [selectedTag, setSelectedTag] = useState<string | null>(null);
 
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isSummarizing, setIsSummarizing] = useState(false);
     const [editingScrap, setEditingScrap] = useState<Scrap | null>(null);
+
+    const handleAISummarize = async () => {
+        if (!formData.url) return;
+        setIsSummarizing(true);
+        try {
+            const { summary, tags } = await summarizeUrl(formData.url);
+            setFormData(prev => ({
+                ...prev,
+                memo: prev.memo ? `${prev.memo}\n\n[AI 요약]\n${summary}` : `[AI 요약]\n${summary}`,
+                tags: [...new Set([...prev.tags, ...tags])]
+            }));
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setIsSummarizing(false);
+        }
+    };
 
     const handleSave = async () => {
         if (!formData.url) return;
@@ -367,6 +386,28 @@ export function ScrapManager() {
                                 onChange={e => setFormData({ ...formData, url: e.target.value })}
                                 className="bg-muted border-transparent focus-visible:ring-primary/30"
                             />
+                        </div>
+                        <div className="flex justify-end -mt-2 mb-2">
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={handleAISummarize}
+                                disabled={!formData.url || isSummarizing}
+                                className="h-6 text-xs text-purple-600 hover:text-purple-700 hover:bg-purple-50 px-2"
+                            >
+                                {isSummarizing ? (
+                                    <>
+                                        <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+                                        요약 중...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Sparkles className="w-3 h-3 mr-1" />
+                                        AI 3줄 요약
+                                    </>
+                                )}
+                            </Button>
                         </div>
                         <div className="space-y-2">
                             <Label>제목 (선택, 비워두면 자동 수집)</Label>

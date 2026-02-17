@@ -9,7 +9,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Book, BookStatus } from '@/types';
 import { useData } from '@/context/DataProvider';
 import { generateId, cn } from '@/lib/utils';
-import { Link2, Search, Loader2, BookOpen, Star, Quote } from 'lucide-react';
+import { Link2, Search, Loader2, BookOpen, Star, Quote, Sparkles } from 'lucide-react';
+import { analyzeBookNote } from '@/lib/gemini';
 import Image from 'next/image';
 
 interface BookSearchDialogProps {
@@ -21,6 +22,30 @@ interface BookSearchDialogProps {
 export function BookSearchDialog({ isOpen, onClose, bookToEdit }: BookSearchDialogProps) {
     const { addBook, updateBook } = useData();
     const [isLoading, setIsLoading] = useState(false);
+    const [isAnalyzing, setIsAnalyzing] = useState(false);
+
+    const handleAIAnalyze = async () => {
+        if (!review.trim()) return;
+        setIsAnalyzing(true);
+        try {
+            const { summary, insights, actionItems } = await analyzeBookNote(review, title);
+            const formattedResult = `
+[AI 독서 분석]
+💡 핵심 요약: ${summary}
+
+✨ 주요 인사이트:
+${insights.map(i => `- ${i}`).join('\n')}
+
+🚀 실천 가이드:
+${actionItems.map(a => `- ${a}`).join('\n')}
+`;
+            setReview(prev => `${prev}\n\n${formattedResult}`);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setIsAnalyzing(false);
+        }
+    };
 
     // Tab State
     const [activeTab, setActiveTab] = useState<'search' | 'url'>('search');
@@ -337,7 +362,29 @@ export function BookSearchDialog({ isOpen, onClose, bookToEdit }: BookSearchDial
                                     </div>
 
                                     <div className="space-y-2 flex-1 flex flex-col">
-                                        <Label>서평 / 메모</Label>
+                                        <div className="flex justify-between items-center">
+                                            <Label>서평 / 메모</Label>
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={handleAIAnalyze}
+                                                disabled={!review.trim() || isAnalyzing}
+                                                className="h-6 text-xs text-purple-600 hover:text-purple-700 hover:bg-purple-50 px-2"
+                                            >
+                                                {isAnalyzing ? (
+                                                    <>
+                                                        <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+                                                        분석 중...
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <Sparkles className="w-3 h-3 mr-1" />
+                                                        AI 독서 분석
+                                                    </>
+                                                )}
+                                            </Button>
+                                        </div>
                                         <Textarea
                                             value={review}
                                             onChange={(e) => setReview(e.target.value)}

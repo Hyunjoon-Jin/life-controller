@@ -2,7 +2,7 @@
 
 import { useData } from '@/context/DataProvider';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { BookOpen, Award, Target, Calendar, Plus, ChevronRight, CheckCircle2, Clock, Edit2, GraduationCap, Flame, TrendingUp, AlertCircle, Trash2 } from 'lucide-react';
+import { BookOpen, Award, Target, Calendar, Plus, ChevronRight, CheckCircle2, Clock, Edit2, GraduationCap, Flame, TrendingUp, AlertCircle, Trash2, Sparkles, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { format, differenceInDays, isAfter } from 'date-fns';
@@ -10,10 +10,12 @@ import { ko } from 'date-fns/locale';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { useState } from 'react';
 import { generateId, cn } from '@/lib/utils';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Certificate, LanguageResource } from '@/types';
+import { generateStudyPlan } from '@/lib/gemini';
 
 export interface LearningPlannerProps {
     onNavigate?: (tab: string) => void;
@@ -39,6 +41,23 @@ export function LearningPlanner({ onNavigate }: LearningPlannerProps) {
     const [langResourceType, setLangResourceType] = useState<LanguageResource['type']>('book');
     const [langUrl, setLangUrl] = useState('');
     const [langCategory, setLangCategory] = useState('General');
+    const [memo, setMemo] = useState('');
+
+    const [isPlanning, setIsPlanning] = useState(false);
+
+    const handleGeneratePlan = async () => {
+        if (!title) return;
+        setIsPlanning(true);
+        try {
+            const { weeklyPlan } = await generateStudyPlan(title, goalType);
+            const formattedPlan = weeklyPlan.map(w => `[${w.week}주차] ${w.topic}\n- ${w.details}`).join('\n\n');
+            setMemo(prev => prev ? `${prev}\n\n[AI 학습 플랜]\n${formattedPlan}` : `[AI 학습 플랜]\n${formattedPlan}`);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setIsPlanning(false);
+        }
+    };
 
     // --- Computed Values ---
     const totalCerts = certificates.length;
@@ -89,7 +108,8 @@ export function LearningPlanner({ onNavigate }: LearningPlannerProps) {
                 name: title,
                 issuer: issuer || '-',
                 date: date ? new Date(date) : new Date(),
-                status: 'studying'
+                status: 'studying',
+                memo
             };
             if (editingCertId) {
                 const existing = certificates.find(c => c.id === editingCertId);
@@ -106,7 +126,8 @@ export function LearningPlanner({ onNavigate }: LearningPlannerProps) {
                 status: 'tostudy',
                 url: langUrl,
                 category: langCategory,
-                createdAt: new Date()
+                createdAt: new Date(),
+                memo
             };
             if (editingLangId) {
                 const existing = languageResources.find(r => r.id === editingLangId);
@@ -127,6 +148,7 @@ export function LearningPlanner({ onNavigate }: LearningPlannerProps) {
         setLangResourceType('book');
         setLangUrl('');
         setLangCategory('General');
+        setMemo('');
         setEditingCertId(null);
         setEditingLangId(null);
     };
@@ -139,6 +161,7 @@ export function LearningPlanner({ onNavigate }: LearningPlannerProps) {
         setTitle(c.name);
         setIssuer(c.issuer);
         setDate(c.date ? format(new Date(c.date), 'yyyy-MM-dd') : '');
+        setMemo(c.memo || '');
         setIsDialogOpen(true);
     };
 
@@ -150,6 +173,7 @@ export function LearningPlanner({ onNavigate }: LearningPlannerProps) {
         setLangResourceType(r.type);
         setLangUrl(r.url);
         setLangCategory(r.category);
+        setMemo(r.memo || '');
         setIsDialogOpen(true);
     };
 
@@ -501,6 +525,37 @@ export function LearningPlanner({ onNavigate }: LearningPlannerProps) {
                                     </div>
                                 </>
                             )}
+                            <div className="grid gap-2">
+                                <div className="flex justify-between items-center">
+                                    <Label>학습 메모 / AI 로드맵</Label>
+                                    <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={handleGeneratePlan}
+                                        disabled={!title || isPlanning}
+                                        className="h-6 text-xs text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 px-2"
+                                    >
+                                        {isPlanning ? (
+                                            <>
+                                                <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+                                                계획 생성 중...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Sparkles className="w-3 h-3 mr-1" />
+                                                AI 학습 플랜 생성
+                                            </>
+                                        )}
+                                    </Button>
+                                </div>
+                                <Textarea
+                                    value={memo}
+                                    onChange={e => setMemo(e.target.value)}
+                                    placeholder="세부 목표나 학습 계획을 입력하거나, AI로 자동 생성해보세요."
+                                    className="min-h-[120px] resize-none"
+                                />
+                            </div>
                         </div>
                     </Tabs>
 
