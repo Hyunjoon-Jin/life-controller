@@ -34,7 +34,7 @@ export function GlobalScratchpad({ triggerVisible = true }: GlobalScratchpadProp
             <Button
                 variant="outline"
                 size="icon"
-                className="fixed bottom-6 right-6 md:bottom-28 md:right-8 h-12 w-12 rounded-full shadow-lg z-50 bg-yellow-400 hover:bg-yellow-500 text-black border-yellow-500"
+                className="fixed bottom-6 right-6 md:bottom-28 md:right-8 h-12 w-12 md:h-14 md:w-14 rounded-full shadow-lg z-50 bg-yellow-400 hover:bg-yellow-500 text-black border-yellow-500"
                 onClick={() => setIsOpen(true)}
                 title="글로벌 메모장"
             >

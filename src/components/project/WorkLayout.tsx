@@ -85,7 +85,7 @@ export function WorkLayout({ viewMode: propViewMode }: { viewMode?: ViewMode }) 
                     "flex-1 min-w-0 transition-all duration-500 overflow-hidden",
                     isFocusMode
                         ? "rounded-none bg-[#0f172a] text-gray-100 fixed inset-0 z-[100]" // Full screen override
-                        : "bg-white rounded-3xl shadow-sm border border-gray-100 h-full"
+                        : "bg-white rounded-xl shadow-sm border border-gray-100 h-full"
                 )}>
                     <AnimatePresence mode="wait">
                         {isFocusMode ? (

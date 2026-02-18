@@ -18,7 +18,7 @@ interface WorkMainDashboardProps {
 
 export function WorkMainDashboard({ onOpenProject, viewMode = 'schedule' }: WorkMainDashboardProps) {
     return (
-        <div className="h-full flex flex-col overflow-hidden bg-slate-50 dark:bg-slate-900/50">
+        <div className="h-full flex flex-col overflow-hidden bg-slate-50 dark:bg-slate-900/50 p-6">
             {viewMode === 'schedule' ? (
                 <WorkDashboard />
             ) : (
