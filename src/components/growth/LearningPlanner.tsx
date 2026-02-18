@@ -470,19 +470,19 @@ export function LearningPlanner({ onNavigate }: LearningPlannerProps) {
 
                         <div className="py-4 space-y-4">
                             <div className="grid gap-2">
-                                <Label>목표 명칭</Label>
-                                <Input value={title} onChange={e => setTitle(e.target.value)} placeholder={goalType === 'certificate' ? '예: 정보처리기사' : '예: 비즈니스 회화 마스터'} />
+                                <Label htmlFor="goal-title">목표 명칭</Label>
+                                <Input id="goal-title" value={title} onChange={e => setTitle(e.target.value)} placeholder={goalType === 'certificate' ? '예: 정보처리기사' : '예: 비즈니스 회화 마스터'} />
                             </div>
 
                             {goalType === 'certificate' && (
                                 <>
                                     <div className="grid gap-2">
-                                        <Label>시행 기관</Label>
-                                        <Input value={issuer} onChange={e => setIssuer(e.target.value)} placeholder="예: 한국산업인력공단" />
+                                        <Label htmlFor="cert-issuer">시행 기관</Label>
+                                        <Input id="cert-issuer" value={issuer} onChange={e => setIssuer(e.target.value)} placeholder="예: 한국산업인력공단" />
                                     </div>
                                     <div className="grid gap-2">
-                                        <Label>시험 예정일 (선택)</Label>
-                                        <Input type="date" value={date} onChange={e => setDate(e.target.value)} />
+                                        <Label htmlFor="cert-date">시험 예정일 (선택)</Label>
+                                        <Input id="cert-date" type="date" value={date} onChange={e => setDate(e.target.value)} />
                                     </div>
                                 </>
                             )}
@@ -490,8 +490,9 @@ export function LearningPlanner({ onNavigate }: LearningPlannerProps) {
                             {goalType === 'language' && (
                                 <>
                                     <div className="grid gap-2">
-                                        <Label>언어 종류</Label>
+                                        <Label htmlFor="lang-type">언어 종류</Label>
                                         <select
+                                            id="lang-type"
                                             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                                             value={langType}
                                             onChange={e => setLangType(e.target.value)}
@@ -506,8 +507,9 @@ export function LearningPlanner({ onNavigate }: LearningPlannerProps) {
                                         </select>
                                     </div>
                                     <div className="grid gap-2">
-                                        <Label>자료 유형</Label>
+                                        <Label htmlFor="lang-resource-type">자료 유형</Label>
                                         <select
+                                            id="lang-resource-type"
                                             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                                             value={langResourceType}
                                             onChange={e => setLangResourceType(e.target.value as LanguageResource['type'])}
@@ -520,14 +522,14 @@ export function LearningPlanner({ onNavigate }: LearningPlannerProps) {
                                         </select>
                                     </div>
                                     <div className="grid gap-2">
-                                        <Label>URL (선택)</Label>
-                                        <Input value={langUrl} onChange={e => setLangUrl(e.target.value)} placeholder="https://..." />
+                                        <Label htmlFor="lang-url">URL (선택)</Label>
+                                        <Input id="lang-url" value={langUrl} onChange={e => setLangUrl(e.target.value)} placeholder="https://..." />
                                     </div>
                                 </>
                             )}
                             <div className="grid gap-2">
                                 <div className="flex justify-between items-center">
-                                    <Label>학습 메모 / AI 로드맵</Label>
+                                    <Label htmlFor="goal-memo">학습 메모 / AI 로드맵</Label>
                                     <Button
                                         type="button"
                                         variant="ghost"
@@ -550,6 +552,7 @@ export function LearningPlanner({ onNavigate }: LearningPlannerProps) {
                                     </Button>
                                 </div>
                                 <Textarea
+                                    id="goal-memo"
                                     value={memo}
                                     onChange={e => setMemo(e.target.value)}
                                     placeholder="세부 목표나 학습 계획을 입력하거나, AI로 자동 생성해보세요."

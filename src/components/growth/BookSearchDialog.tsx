@@ -323,8 +323,9 @@ ${actionItems.map(a => `- ${a}`).join('\n')}
                                 <div className="md:col-span-8 flex flex-col gap-5">
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2 col-span-2">
-                                            <Label>제목 <span className="text-red-500">*</span></Label>
+                                            <Label htmlFor="book-title">제목 <span className="text-red-500">*</span></Label>
                                             <Input
+                                                id="book-title"
                                                 value={title}
                                                 onChange={(e) => setTitle(e.target.value)}
                                                 className="font-bold text-lg"
@@ -332,24 +333,27 @@ ${actionItems.map(a => `- ${a}`).join('\n')}
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label>저자</Label>
+                                            <Label htmlFor="book-author">저자</Label>
                                             <Input
+                                                id="book-author"
                                                 value={author}
                                                 onChange={(e) => setAuthor(e.target.value)}
                                                 placeholder="지은이"
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label>총 페이지</Label>
+                                            <Label htmlFor="book-pages">총 페이지</Label>
                                             <Input
+                                                id="book-pages"
                                                 type="number"
                                                 value={totalPages}
                                                 onChange={(e) => setTotalPages(e.target.value)}
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label>상태</Label>
+                                            <Label htmlFor="book-status">상태</Label>
                                             <select
+                                                id="book-status"
                                                 value={status}
                                                 onChange={(e) => setStatus(e.target.value as BookStatus)}
                                                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
@@ -363,7 +367,7 @@ ${actionItems.map(a => `- ${a}`).join('\n')}
 
                                     <div className="space-y-2 flex-1 flex flex-col">
                                         <div className="flex justify-between items-center">
-                                            <Label>서평 / 메모</Label>
+                                            <Label htmlFor="book-review">서평 / 메모</Label>
                                             <Button
                                                 type="button"
                                                 variant="ghost"
@@ -386,6 +390,7 @@ ${actionItems.map(a => `- ${a}`).join('\n')}
                                             </Button>
                                         </div>
                                         <Textarea
+                                            id="book-review"
                                             value={review}
                                             onChange={(e) => setReview(e.target.value)}
                                             placeholder="책에 대한 감상이나 메모를 남겨주세요..."

@@ -19,7 +19,9 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "Gemini API Key is missing on server" }, { status: 500 });
         }
 
-        const model = genAI.getGenerativeModel({ model: "gemini-3-pro-preview" });
+        console.log(`[DEBUG] Using Key starting with: ${API_KEY.substring(0, 5)}...`);
+
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
         switch (action) {
             case 'briefing': {
@@ -171,6 +173,7 @@ export async function POST(req: NextRequest) {
         }
     } catch (error: any) {
         console.error("AI API Error:", error);
-        return NextResponse.json({ error: error.message || "Internal Server Error" }, { status: 500 });
+        const keyPrefix = API_KEY ? API_KEY.substring(0, 5) : "NONE";
+        return NextResponse.json({ error: `[Key: ${keyPrefix}...] ${error.message || "Internal Server Error"}` }, { status: 500 });
     }
 }

@@ -379,8 +379,9 @@ export function ScrapManager() {
                     </DialogHeader>
                     <div className="grid gap-4 py-4">
                         <div className="space-y-2">
-                            <Label>URL (필수)</Label>
+                            <Label htmlFor="scrap-url">URL (필수)</Label>
                             <Input
+                                id="scrap-url"
                                 placeholder="https://..."
                                 value={formData.url}
                                 onChange={e => setFormData({ ...formData, url: e.target.value })}
@@ -410,8 +411,9 @@ export function ScrapManager() {
                             </Button>
                         </div>
                         <div className="space-y-2">
-                            <Label>제목 (선택, 비워두면 자동 수집)</Label>
+                            <Label htmlFor="scrap-title">제목 (선택, 비워두면 자동 수집)</Label>
                             <Input
+                                id="scrap-title"
                                 placeholder="기사 제목 (자동 입력됨)"
                                 value={formData.title}
                                 onChange={e => setFormData({ ...formData, title: e.target.value })}
@@ -419,8 +421,9 @@ export function ScrapManager() {
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label>메모 (선택)</Label>
+                            <Label htmlFor="scrap-memo">메모 (선택)</Label>
                             <textarea
+                                id="scrap-memo"
                                 className="w-full bg-muted border-transparent rounded-xl p-3 text-sm h-20 resize-none focus:outline-none focus:ring-2 focus:ring-primary/20"
                                 placeholder="내용 요약이나 생각..."
                                 value={formData.memo}
@@ -429,9 +432,10 @@ export function ScrapManager() {
                         </div>
 
                         <div className="space-y-2">
-                            <Label>태그</Label>
+                            <Label htmlFor="scrap-tags">태그</Label>
                             <div className="flex gap-2">
                                 <Input
+                                    id="scrap-tags"
                                     placeholder="태그 입력 (Enter로 추가)"
                                     value={formData.currentTag}
                                     onChange={e => setFormData({ ...formData, currentTag: e.target.value })}

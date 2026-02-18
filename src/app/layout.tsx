@@ -62,9 +62,9 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Asta+Sans:wght@300..800&family=Gowun+Batang&display=swap" rel="stylesheet" />
-        <GoogleAdSense pId={process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_ID!} />
       </head>
       <body className={`${nanum.variable} font-sans antialiased bg-background text-foreground tracking-tight`} suppressHydrationWarning>
+        <GoogleAdSense pId={process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_ID!} />
         <PullToRefreshHandler />
         <ServiceWorkerUnregister />
 
