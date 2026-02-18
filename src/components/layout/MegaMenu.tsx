@@ -94,7 +94,7 @@ export function MegaMenuNav({ activeCategory, activeTab, onSelect, appMode = 'li
 
             {/* Mega Menu Dropdown */}
             {isOpen && (
-                <div className="absolute top-full left-0 w-full bg-popover text-popover-foreground rounded-[32px] shadow-2xl border border-border p-2 min-h-[400px] flex overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                <div className="absolute top-full left-0 w-full bg-white dark:bg-popover text-popover-foreground rounded-[32px] shadow-2xl border border-border p-2 min-h-[400px] flex overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 z-50">
 
                     {/* Left: Categories List */}
                     <div className="w-48 py-4 px-2 border-r border-border flex flex-col gap-1">
