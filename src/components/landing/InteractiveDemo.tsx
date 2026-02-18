@@ -179,7 +179,7 @@ export function InteractiveDemo() {
             </div>
 
             {/* Interactive Panel */}
-            <div className="bg-white dark:bg-slate-900 rounded-[40px] border border-slate-100 dark:border-white/5 p-8 md:p-12 shadow-[0_32px_80px_rgba(0,0,0,0.06)] min-h-[500px] flex flex-col md:flex-row gap-8 lg:gap-12 overflow-hidden relative">
+            <div className="bg-card rounded-[40px] border border-border p-8 md:p-12 shadow-[0_32px_80px_rgba(0,0,0,0.06)] min-h-[500px] flex flex-col md:flex-row gap-8 lg:gap-12 overflow-hidden relative">
                 {/* Reset Button */}
                 <button
                     onClick={() => {

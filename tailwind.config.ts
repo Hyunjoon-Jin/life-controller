@@ -9,8 +9,8 @@ const config: Config = {
     theme: {
         extend: {
             fontFamily: {
-                sans: ["Asta Sans", "Chiron Geon GoRound TC", "Gowun Dodum", "var(--font-nanum)", "NanumSquareRound", "Pretendard Variable", "Pretendard", "-apple-system", "BlinkMacSystemFont", "system-ui", "Roboto", "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "sans-serif"],
-                serif: ["Gowun Batang", "Batang", "serif"],
+                sans: ["var(--font-asta)", "var(--font-nanum)", "Chiron Geon GoRound TC", "Gowun Dodum", "NanumSquareRound", "Pretendard Variable", "Pretendard", "-apple-system", "BlinkMacSystemFont", "system-ui", "Roboto", "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "sans-serif"],
+                serif: ["var(--font-gowun)", "Batang", "serif"],
             },
             colors: {
                 background: "hsl(var(--background))",

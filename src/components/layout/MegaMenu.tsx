@@ -22,10 +22,10 @@ export function MegaMenuNav({ activeCategory, activeTab, onSelect, appMode = 'li
         return (
             <div className="w-full relative z-50">
                 <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-2 max-w-7xl mx-auto">
-                    <div className="px-4 font-bold text-sm h-10 flex items-center bg-[#E1BEE7] text-[#4A148C] rounded-full cursor-default shrink-0 border-2 border-[#CE93D8]">
+                    <div className="px-4 font-bold text-sm h-10 flex items-center bg-secondary/20 text-secondary-foreground rounded-full cursor-default shrink-0 border-2 border-secondary/30">
                         <span className="mr-1">💼</span> 전체 메뉴
                     </div>
-                    <div className="h-4 w-[1px] bg-[#CE93D8] mx-2" />
+                    <div className="h-4 w-[1px] bg-border mx-2" />
 
                     {WORK_NAV_ITEMS.map(item => (
                         <button
@@ -34,8 +34,8 @@ export function MegaMenuNav({ activeCategory, activeTab, onSelect, appMode = 'li
                             className={cn(
                                 "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap",
                                 activeTab === item.id
-                                    ? "bg-[#9C27B0] text-white shadow-md"
-                                    : "text-[#4A148C]/70 hover:bg-[#CE93D8]/30 hover:text-[#4A148C]"
+                                    ? "bg-secondary text-secondary-foreground shadow-md"
+                                    : "text-muted-foreground hover:bg-secondary/10 hover:text-secondary"
                             )}
                         >
                             {item.label}
@@ -94,10 +94,10 @@ export function MegaMenuNav({ activeCategory, activeTab, onSelect, appMode = 'li
 
             {/* Mega Menu Dropdown */}
             {isOpen && (
-                <div className="absolute top-full left-0 w-full bg-white dark:bg-gray-900 rounded-[32px] shadow-2xl border border-gray-100 dark:border-gray-800 p-2 min-h-[400px] flex overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                <div className="absolute top-full left-0 w-full bg-popover text-popover-foreground rounded-[32px] shadow-2xl border border-border p-2 min-h-[400px] flex overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
 
                     {/* Left: Categories List */}
-                    <div className="w-48 py-4 px-2 border-r border-gray-100 dark:border-gray-800 flex flex-col gap-1">
+                    <div className="w-48 py-4 px-2 border-r border-border flex flex-col gap-1">
                         {visibleCategories.map(cat => (
                             <button
                                 key={cat.id}
@@ -105,8 +105,8 @@ export function MegaMenuNav({ activeCategory, activeTab, onSelect, appMode = 'li
                                 className={cn(
                                     "text-left px-5 py-3.5 rounded-2xl text-[15px] font-bold transition-all flex justify-between items-center group",
                                     hoveredCategory === cat.id
-                                        ? "bg-gray-100 dark:bg-gray-800 text-black dark:text-white"
-                                        : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
+                                        ? "bg-muted text-foreground"
+                                        : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
                                 )}
                             >
                                 {cat.label}
@@ -116,8 +116,8 @@ export function MegaMenuNav({ activeCategory, activeTab, onSelect, appMode = 'li
                     </div>
 
                     {/* Center: Sub Menus Grid */}
-                    <div className="flex-1 p-6 bg-white dark:bg-gray-900">
-                        <h3 className="text-lg font-bold mb-6 text-gray-900 dark:text-white px-2">
+                    <div className="flex-1 p-6 bg-card">
+                        <h3 className="text-lg font-bold mb-6 text-foreground px-2">
                             {CATEGORIES.find(c => c.id === hoveredCategory)?.label} 서비스
                         </h3>
                         <div className="flex flex-col gap-1">

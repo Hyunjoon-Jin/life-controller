@@ -77,7 +77,7 @@ export function WorkHeader({ isFocusMode, onToggleFocusMode, onOpenMeetingMode }
                             variant="ghost"
                             size="sm"
                             onClick={onOpenMeetingMode}
-                            className="text-slate-500 hover:text-slate-900 border border-transparent hover:bg-gray-100"
+                            className="text-muted-foreground hover:text-foreground border border-transparent hover:bg-muted"
                         >
                             <Zap className="w-4 h-4 mr-2 text-yellow-500" />
                             <span className="hidden sm:inline">미팅 모드</span>
@@ -91,8 +91,8 @@ export function WorkHeader({ isFocusMode, onToggleFocusMode, onOpenMeetingMode }
                         className={cn(
                             "gap-2 transition-all",
                             isFocusMode
-                                ? "bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/20 border-transparent"
-                                : "text-slate-500 hover:text-slate-900"
+                                ? "bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20 border-transparent"
+                                : "text-muted-foreground hover:text-foreground"
                         )}
                     >
                         {isFocusMode ? (

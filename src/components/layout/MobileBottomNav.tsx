@@ -117,7 +117,7 @@ export function MobileBottomNav({
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             exit={{ opacity: 0, y: 20, scale: 0.95 }}
                             transition={{ type: 'spring', stiffness: 500, damping: 35 }}
-                            className="mb-3 bg-white/95 dark:bg-[#1a1b1e]/95 backdrop-blur-xl rounded-2xl shadow-xl border border-white/30 dark:border-white/10 overflow-hidden ring-1 ring-black/5"
+                            className="mb-3 bg-popover/95 backdrop-blur-xl rounded-2xl shadow-xl border border-border overflow-hidden ring-1 ring-black/5"
                         >
                             <div className="p-3 space-y-1">
                                 {SUB_MENUS[expandedCategory]?.map((tab: any) => {
@@ -153,7 +153,7 @@ export function MobileBottomNav({
                 </AnimatePresence>
 
                 {/* Bottom Nav Bar */}
-                <div className="bg-white/80 dark:bg-[#1a1b1e]/80 backdrop-blur-xl border border-white/20 dark:border-white/10 h-[70px] px-2 flex items-center justify-around rounded-3xl shadow-lg ring-1 ring-black/5 pb-safe">
+                <div className="bg-background/80 backdrop-blur-xl border border-border/50 h-[70px] px-2 flex items-center justify-around rounded-3xl shadow-lg ring-1 ring-black/5 pb-safe">
                     <motion.button onClick={() => handleNavTap('home')} whileTap={{ scale: 0.9 }} className="flex flex-col items-center justify-center w-full h-full gap-1">
                         <Home className={cn("w-6 h-6", isActive('home') ? "text-primary fill-primary" : "text-gray-400")} />
                         <span className={cn("text-[10px] font-bold", isActive('home') ? "text-primary" : "text-gray-400")}>홈</span>

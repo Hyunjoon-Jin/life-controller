@@ -173,13 +173,13 @@ export function GanttChart({ project }: GanttChartProps) {
     return (
         <PremiumGate featureName="Project Gantt Chart">
             <div
-                className="flex flex-col h-full bg-card rounded-xl border border-gray-200 shadow-sm overflow-hidden animate-in fade-in duration-300 select-none"
+                className="flex flex-col h-full bg-card rounded-xl border border-border shadow-sm overflow-hidden animate-in fade-in duration-300 select-none"
                 onMouseMove={handleMouseMove}
                 onMouseUp={() => handleMouseUp()} // Global release
                 onMouseLeave={() => handleMouseUp()}
             >
                 {/* Toolbar */}
-                <div className="flex items-center justify-between p-4 border-b border-gray-200">
+                <div className="flex items-center justify-between p-4 border-b border-border">
                     <div className="flex items-center gap-2">
                         <Button variant="ghost" size="icon" onClick={handlePrev}>
                             <ChevronLeft className="w-4 h-4" />
@@ -216,8 +216,8 @@ export function GanttChart({ project }: GanttChartProps) {
                 <div className="flex-1 overflow-auto custom-scrollbar relative">
                     <div className="min-w-fit relative">
                         {/* Header Row (Dates) */}
-                        <div className="flex border-b border-gray-200 sticky top-0 bg-card z-30" style={{ height: 40 }}>
-                            <div className="w-[200px] flex-shrink-0 border-r border-gray-200 p-2 font-semibold bg-white dark:bg-zinc-950 flex items-center sticky left-0 z-50 shadow-[4px_0_24px_-12px_rgba(0,0,0,0.1)]">
+                        <div className="flex border-b border-border sticky top-0 bg-card z-30" style={{ height: 40 }}>
+                            <div className="w-[200px] flex-shrink-0 border-r border-border p-2 font-semibold bg-background flex items-center sticky left-0 z-50 shadow-[4px_0_24px_-12px_rgba(0,0,0,0.1)]">
                                 작업명
                             </div>
                             <div className="flex">
@@ -225,8 +225,8 @@ export function GanttChart({ project }: GanttChartProps) {
                                     <div
                                         key={day.toISOString()}
                                         className={cn(
-                                            "flex-shrink-0 border-r border-gray-200 flex flex-col items-center justify-center text-xs",
-                                            isSameDay(day, new Date()) ? "bg-blue-50" : ""
+                                            "flex-shrink-0 border-r border-border flex flex-col items-center justify-center text-xs",
+                                            isSameDay(day, new Date()) ? "bg-primary/5" : ""
                                         )}
                                         style={{ width: CELL_WIDTH }}
                                     >

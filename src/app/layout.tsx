@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
+import { Asta_Sans, Gowun_Batang } from 'next/font/google';
 import './globals.css';
 
 import { DataProvider } from '@/context/DataProvider';
@@ -8,6 +9,20 @@ import { AuthProvider } from '@/components/auth/SessionProvider';
 import { Toaster } from 'sonner';
 import { ServiceWorkerUnregister } from '@/components/ServiceWorkerUnregister';
 import { GlobalErrorBoundary } from '@/components/ui/global-error-boundary';
+
+const asta = Asta_Sans({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700', '800'],
+  variable: '--font-asta',
+  display: 'swap',
+});
+
+const gowun = Gowun_Batang({
+  weight: '400',
+  subsets: ['latin'],
+  variable: '--font-gowun',
+  display: 'swap',
+});
 
 const nanum = localFont({
   src: [
@@ -59,11 +74,8 @@ export default function RootLayout({
     <html lang="ko" suppressHydrationWarning>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Asta+Sans:wght@300..800&family=Gowun+Batang&display=swap" rel="stylesheet" />
       </head>
-      <body className={`${nanum.variable} font-sans antialiased bg-background text-foreground tracking-tight`} suppressHydrationWarning>
+      <body className={`${asta.variable} ${gowun.variable} ${nanum.variable} font-sans antialiased bg-background text-foreground tracking-tight`} suppressHydrationWarning>
         <GoogleAdSense pId={process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_ID!} />
         <PullToRefreshHandler />
         <ServiceWorkerUnregister />

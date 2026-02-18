@@ -39,13 +39,13 @@ export const StockWidget = memo(function StockWidget({ symbol = "KOSPI:KOSPI", h
     }, [symbol]);
 
     return (
-        <div className="bg-white dark:bg-[#202022] rounded-[24px] p-5 shadow-sm min-h-[160px] flex flex-col" style={{ height }}>
+        <div className="bg-card text-card-foreground rounded-xl p-5 shadow-sm min-h-[160px] flex flex-col border border-border" style={{ height }}>
             <div className="flex justify-between items-start mb-2">
                 <div>
-                    <h3 className="font-bold text-lg text-[#333D4B] dark:text-gray-200">
+                    <h3 className="font-bold text-lg text-foreground">
                         {symbol === 'KOSPI:KOSPI' ? '시장 지표' : symbol}
                     </h3>
-                    <p className="text-[#8B95A1] text-sm">
+                    <p className="text-muted-foreground text-sm">
                         {symbol === 'KOSPI:KOSPI' ? 'KOSPI 현재 흐름' : '실시간 시세 & 추이'}
                     </p>
                 </div>

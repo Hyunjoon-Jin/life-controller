@@ -92,7 +92,7 @@ function SchedulePreview() {
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: i * 0.1 }}
-                            className="flex items-center gap-3 p-3 bg-white rounded-xl border border-slate-100 shadow-sm"
+                            className="flex items-center gap-3 p-3 bg-card rounded-xl border border-border shadow-sm"
                         >
                             <div className={cn("w-1 h-8 rounded-full", event.color)} />
                             <div>
@@ -305,7 +305,7 @@ export function FeaturePreview() {
     };
 
     return (
-        <section className="py-20 md:py-28 px-4 bg-white relative overflow-hidden">
+        <section className="py-20 md:py-28 px-4 bg-background relative overflow-hidden">
             {/* Background Decoration */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[radial-gradient(ellipse,_var(--tw-gradient-stops))] from-blue-50/50 via-transparent to-transparent pointer-events-none" />
 
@@ -348,7 +348,7 @@ export function FeaturePreview() {
                 </div>
 
                 {/* Content Panel */}
-                <div className="bg-slate-50/70 backdrop-blur-sm rounded-3xl border border-slate-100 p-6 md:p-8 min-h-[380px] shadow-sm">
+                <div className="bg-muted/50 backdrop-blur-sm rounded-3xl border border-border p-6 md:p-8 min-h-[380px] shadow-sm">
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={activeTab}

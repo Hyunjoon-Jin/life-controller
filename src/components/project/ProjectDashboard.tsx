@@ -55,10 +55,10 @@ export function ProjectDashboard({ project }: ProjectDashboardProps) {
 
     const getStatusColor = (status?: string) => {
         switch (status) {
-            case 'active': return 'text-blue-500';
-            case 'completed': return 'text-green-500';
-            case 'hold': return 'text-orange-500';
-            default: return 'text-gray-500';
+            case 'active': return 'text-primary';
+            case 'completed': return 'text-green-500'; // Keep specific for success
+            case 'hold': return 'text-orange-500'; // Keep specific for warning
+            default: return 'text-muted-foreground';
         }
     };
 
@@ -216,7 +216,7 @@ export function ProjectDashboard({ project }: ProjectDashboardProps) {
                                     <span>사용함 ({budgetPercent}%)</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <div className="w-3 h-3 rounded-full bg-gray-200" />
+                                    <div className="w-3 h-3 rounded-full bg-muted" />
                                     <span>남음 ({100 - budgetPercent}%)</span>
                                 </div>
                             </div>
@@ -226,7 +226,7 @@ export function ProjectDashboard({ project }: ProjectDashboardProps) {
             </div>
 
             {/* AI Insights Card */}
-            <Card className="border-indigo-100 bg-indigo-50/10">
+            <Card className="border-primary/20 bg-primary/5">
                 <CardHeader className="flex flex-row items-center justify-between">
                     <CardTitle className="flex items-center gap-2">
                         <Sparkles className="h-5 w-5 text-indigo-500" />

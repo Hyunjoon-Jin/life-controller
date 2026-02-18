@@ -138,7 +138,7 @@ export function LandingPage() {
             ref={containerRef}
             className={cn(
                 "h-screen overflow-y-scroll snap-y snap-mandatory scroll-smooth transition-colors duration-1000",
-                landingMode === 'life' ? "bg-white text-slate-900" : "bg-slate-950 text-white"
+                landingMode === 'life' ? "bg-white text-slate-900" : "bg-slate-950 text-white dark"
             )}
         >
             <script

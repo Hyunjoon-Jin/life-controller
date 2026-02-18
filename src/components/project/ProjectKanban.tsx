@@ -160,10 +160,10 @@ export function ProjectKanban({ project }: ProjectKanbanProps) {
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
                         className={cn(
-                            "bg-white dark:bg-slate-800 p-3 rounded-lg shadow-sm border transaction-all group select-none mb-3",
-                            isSelected ? "ring-2 ring-indigo-500 border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20" :
-                                isBlocked ? "border-red-200 dark:border-red-900/50 bg-red-50/50 dark:bg-red-900/10" :
-                                    "border-slate-200 dark:border-slate-700 hover:border-indigo-300 dark:hover:border-indigo-500",
+                            "bg-card p-3 rounded-lg shadow-sm border transaction-all group select-none mb-3",
+                            isSelected ? "ring-2 ring-primary border-primary bg-primary/5" :
+                                isBlocked ? "border-destructive/30 bg-destructive/10" :
+                                    "border-border hover:border-primary/50",
                             snapshot.isDragging ? "rotate-2 scale-105 shadow-xl z-50 opacity-90" : ""
                         )}
                         onClick={(e) => {
@@ -277,7 +277,7 @@ export function ProjectKanban({ project }: ProjectKanbanProps) {
                         // --- BOARD LAYOUT ---
                         <div className="flex gap-4 h-full overflow-x-auto pb-4 px-1">
                             {(groupBy === 'status' ? Object.values(statusColumns) : Object.values(priorityGroups)).map((col: any) => (
-                                <div key={col.id} className="w-80 flex-shrink-0 flex flex-col bg-slate-100/50 dark:bg-slate-800/30 rounded-xl border border-slate-200 dark:border-slate-700/50">
+                                <div key={col.id} className="w-80 flex-shrink-0 flex flex-col bg-muted/30 rounded-xl border border-border">
                                     <div className="p-3 font-medium text-sm flex items-center justify-between">
                                         <div className="flex items-center gap-2">
                                             <div className={cn("w-2 h-2 rounded-full", col.color.split(' ')[1] || 'bg-slate-400')} />

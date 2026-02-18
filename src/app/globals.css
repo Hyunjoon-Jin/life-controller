@@ -146,7 +146,7 @@
     /* Fixed: Added hsl wrapper */
     color: hsl(var(--foreground));
     /* Fixed: Added hsl wrapper */
-    font-family: 'Asta Sans', 'Gowun Batang', sans-serif;
+    /* font-family: 'Asta Sans', 'Gowun Batang', sans-serif; - Handled by Tailwind sans-serif default with variables */
   }
 
   /* Mobile Input Zoom Fix */

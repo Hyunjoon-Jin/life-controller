@@ -50,14 +50,14 @@ export function ZenMode({ onExit }: ZenModeProps) {
             className="flex flex-col items-center justify-center h-full w-full text-center space-y-12 relative"
         >
             {/* Background Atmosphere */}
-            <div className="absolute inset-0 bg-gradient-to-b from-slate-900 via-[#0f172a] to-slate-900 pointer-events-none -z-10" />
+            <div className="absolute inset-0 bg-gradient-to-b from-background via-black/90 to-background pointer-events-none -z-10" />
 
             {/* Exit Button */}
             <Button
                 variant="ghost"
                 size="icon"
                 onClick={onExit}
-                className="absolute top-8 right-8 text-slate-500 hover:text-white hover:bg-white/10"
+                className="absolute top-8 right-8 text-muted-foreground hover:text-foreground hover:bg-accent"
             >
                 <Minimize2 className="w-6 h-6" />
             </Button>
@@ -68,10 +68,11 @@ export function ZenMode({ onExit }: ZenModeProps) {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 0.6, y: 0 }}
                     transition={{ delay: 0.5 }}
-                    className="text-lg text-indigo-300 font-medium tracking-wide"
+                    className="text-lg text-primary font-medium tracking-wide"
                 >
                     {quote}
                 </motion.p>
+
 
                 {currentTask ? (
                     <motion.div
@@ -90,7 +91,7 @@ export function ZenMode({ onExit }: ZenModeProps) {
                         <div className="flex items-center justify-center gap-6">
                             <Button
                                 size="lg"
-                                className="h-16 w-16 rounded-full bg-white text-slate-900 hover:bg-indigo-50 hover:scale-105 transition-all text-xl"
+                                className="h-16 w-16 rounded-full bg-foreground text-background hover:bg-accent hover:text-accent-foreground hover:scale-105 transition-all text-xl"
                                 onClick={() => toggleTaskTimer(activeTaskId!)}
                             >
                                 {activeTaskId ? <Pause className="w-8 h-8 fill-current" /> : <Play className="w-8 h-8 fill-current ml-1" />}
@@ -99,7 +100,7 @@ export function ZenMode({ onExit }: ZenModeProps) {
                             <Button
                                 size="lg"
                                 variant="outline"
-                                className="h-16 w-16 rounded-full border-2 border-white/20 text-white hover:bg-green-500/20 hover:border-green-500 hover:text-green-500 transition-all"
+                                className="h-16 w-16 rounded-full border-2 border-muted text-muted-foreground hover:bg-green-500/20 hover:border-green-500 hover:text-green-500 transition-all"
                                 onClick={handleComplete}
                                 title="Complete Task"
                             >

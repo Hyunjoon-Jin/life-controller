@@ -112,18 +112,18 @@ export function SettingsModal({ children }: { children: React.ReactNode }) {
                     </div>
 
                     {/* Delete Account */}
-                    <div className="bg-red-50 dark:bg-red-900/10 p-4 rounded-lg border border-red-100 dark:border-red-900/20 mt-4">
-                        <h4 className="font-bold text-red-700 dark:text-red-400 text-sm mb-1 flex items-center gap-2">
+                    <div className="bg-destructive/5 p-4 rounded-lg border border-destructive/20 mt-4">
+                        <h4 className="font-bold text-destructive text-sm mb-1 flex items-center gap-2">
                             <Trash2 className="w-4 h-4" /> 회원 탈퇴
                         </h4>
-                        <p className="text-xs text-red-600/80 dark:text-red-400/80 mb-3">
+                        <p className="text-xs text-destructive/80 mb-3">
                             탈퇴 시 30일간 유예 기간을 가지며, 이후 데이터는 영구 삭제됩니다.
                         </p>
                         <Button
                             variant="destructive"
                             size="sm"
                             onClick={handleDeleteAccount}
-                            className="w-full text-xs bg-red-600 hover:bg-red-700 text-white"
+                            className="w-full text-xs"
                         >
                             계정 탈퇴하기
                         </Button>
@@ -133,10 +133,10 @@ export function SettingsModal({ children }: { children: React.ReactNode }) {
                     {/* Account Linking */}
                     <div className="space-y-3 pb-4 border-b">
                         <Label className="text-base">계정 연동</Label>
-                        <div className="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-lg border border-slate-100 dark:border-slate-800">
+                        <div className="bg-muted/30 p-4 rounded-lg border border-border">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center shadow-sm border border-slate-200 dark:border-slate-700">
+                                    <div className="w-10 h-10 bg-card rounded-full flex items-center justify-center shadow-sm border border-border">
                                         <svg className="w-5 h-5" viewBox="0 0 24 24">
                                             <path
                                                 d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"

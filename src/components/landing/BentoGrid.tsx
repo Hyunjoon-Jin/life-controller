@@ -2,7 +2,8 @@
 
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { LucideIcon, Calendar, Target, Activity, DollarSign, Sparkles, Briefcase, Zap } from 'lucide-react';
+import { Calendar, Target, Activity, DollarSign, Sparkles, Briefcase, Zap } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 
 interface BentoGridProps {
     className?: string;
@@ -45,7 +46,7 @@ export function BentoCard({
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay }}
             className={cn(
-                "group relative overflow-hidden rounded-[32px] border border-slate-100 dark:border-white/5 bg-white dark:bg-slate-900 p-6 flex flex-col justify-between transition-all hover:shadow-2xl hover:shadow-indigo-500/10",
+                "group relative overflow-hidden rounded-[32px] border border-border bg-card text-card-foreground p-6 flex flex-col justify-between transition-all hover:shadow-2xl hover:shadow-primary/10",
                 className
             )}
         >
@@ -55,10 +56,10 @@ export function BentoCard({
                 <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center mb-4 transition-transform group-hover:scale-110", colorClassName || "bg-indigo-50 dark:bg-indigo-900/30")}>
                     <Icon className={cn("w-6 h-6", iconClassName || "text-indigo-600 dark:text-indigo-400")} />
                 </div>
-                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2 leading-tight">
+                <h3 className="text-xl font-bold text-card-foreground mb-2 leading-tight">
                     {title}
                 </h3>
-                <p className="text-sm text-slate-500 dark:text-slate-400 font-medium leading-relaxed">
+                <p className="text-sm text-muted-foreground font-medium leading-relaxed">
                     {description}
                 </p>
             </div>

@@ -50,7 +50,7 @@ export function MobileCategoryTabs({ activeCategory, activeTab, onSelect }: Mobi
                             onClick={() => onSelect(tab.id)}
                             className={cn(
                                 "flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all border shrink-0",
-                                "bg-white dark:bg-gray-800 text-muted-foreground border-gray-200 dark:border-gray-700 hover:bg-gray-50"
+                                "bg-card text-muted-foreground border-border hover:bg-accent hover:text-accent-foreground"
                             )}
                         >
                             {tab.icon && <tab.icon className="w-3.5 h-3.5" />}

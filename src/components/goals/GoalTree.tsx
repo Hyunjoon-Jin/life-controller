@@ -412,7 +412,7 @@ export default function GoalTree() {
                                 <ArrowUpDown className="w-3 h-3 mr-1.5 opacity-50" />
                                 <SelectValue placeholder="정렬" />
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectContent className="bg-white dark:bg-slate-950">
                                 <SelectItem value="deadline">마감순</SelectItem>
                                 <SelectItem value="progress">진행률순</SelectItem>
                                 <SelectItem value="name">이름순</SelectItem>
@@ -427,7 +427,7 @@ export default function GoalTree() {
                             <SelectTrigger className="w-[110px] h-10 text-xs bg-background shadow-sm border-border/60">
                                 <SelectValue placeholder="카테고리" />
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectContent className="bg-white dark:bg-slate-950">
                                 <SelectItem value="all">전체 분류</SelectItem>
                                 <SelectItem value="financial">재테크</SelectItem>
                                 <SelectItem value="health">건강</SelectItem>
@@ -443,7 +443,7 @@ export default function GoalTree() {
                             <SelectTrigger className="w-[110px] h-10 text-xs bg-background shadow-sm border-border/60">
                                 <SelectValue placeholder="유형" />
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectContent className="bg-white dark:bg-slate-950">
                                 <SelectItem value="all">전체 유형</SelectItem>
                                 <SelectItem value="short-term">단기 목표</SelectItem>
                                 <SelectItem value="long-term">장기 목표</SelectItem>
@@ -528,7 +528,7 @@ export default function GoalTree() {
                                     <SelectTrigger className="w-full">
                                         <SelectValue />
                                     </SelectTrigger>
-                                    <SelectContent className="z-[99999]">
+                                    <SelectContent className="z-[99999] bg-white dark:bg-slate-950">
                                         <SelectItem value="high">🔥 높음</SelectItem>
                                         <SelectItem value="medium">⚡ 보통</SelectItem>
                                         <SelectItem value="low">🌱 낮음</SelectItem>
@@ -587,7 +587,7 @@ export default function GoalTree() {
                                     <SelectTrigger className="w-full">
                                         <SelectValue />
                                     </SelectTrigger>
-                                    <SelectContent className="z-[99999]">
+                                    <SelectContent className="z-[99999] bg-white dark:bg-slate-950">
                                         <SelectItem value="financial">재테크</SelectItem>
                                         <SelectItem value="health">건강</SelectItem>
                                         <SelectItem value="career">커리어</SelectItem>
@@ -606,7 +606,7 @@ export default function GoalTree() {
                                     <SelectTrigger className="w-full">
                                         <SelectValue />
                                     </SelectTrigger>
-                                    <SelectContent className="z-[99999]">
+                                    <SelectContent className="z-[99999] bg-white dark:bg-slate-950">
                                         <SelectItem value="short-term">단기 목표</SelectItem>
                                         <SelectItem value="long-term">장기 목표</SelectItem>
                                         <SelectItem value="project">프로젝트</SelectItem>

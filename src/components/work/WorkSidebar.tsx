@@ -55,8 +55,8 @@ export function WorkSidebar({ className, currentView, onViewChange }: WorkSideba
             className={cn(
                 "w-full flex items-center gap-3 p-2.5 rounded-xl transition-all duration-200 group relative",
                 isActive
-                    ? "bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 font-medium"
-                    : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800",
+                    ? "bg-primary/5 text-primary font-medium"
+                    : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
                 isCollapsed && "justify-center px-2"
             )}
             title={isCollapsed ? label : undefined}
@@ -84,14 +84,14 @@ export function WorkSidebar({ className, currentView, onViewChange }: WorkSideba
             animate={{ width: isCollapsed ? 72 : 240 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
             className={cn(
-                "h-full border-r border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col z-20 relative shrink-0",
+                "h-full border-r border-border bg-background flex flex-col z-20 relative shrink-0",
                 className
             )}
         >
             {/* Toggle Button */}
             <button
                 onClick={toggleCollapse}
-                className="absolute -right-3 top-6 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full p-1 shadow-sm text-slate-400 hover:text-slate-600 z-50"
+                className="absolute -right-3 top-6 bg-background border border-border rounded-full p-1 shadow-sm text-muted-foreground hover:text-foreground z-50"
             >
                 {isCollapsed ? <ChevronRight className="w-3 h-3" /> : <ChevronLeft className="w-3 h-3" />}
             </button>

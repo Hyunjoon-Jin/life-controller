@@ -75,7 +75,7 @@ export function SetupChecklist() {
                     exit={{ opacity: 0, height: 0 }}
                     className="mb-8"
                 >
-                    <Card className="overflow-hidden border-none shadow-[0_20px_50px_rgba(0,0,0,0.05)] bg-gradient-to-br from-indigo-50 to-white dark:from-slate-900/50 dark:to-slate-900 rounded-[32px] p-0">
+                    <Card className="overflow-hidden border-none shadow-[0_20px_50px_rgba(0,0,0,0.05)] bg-gradient-to-br from-primary/5 to-card rounded-[32px] p-0">
                         <div className="p-6 md:p-8">
                             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
                                 <div>
@@ -117,8 +117,8 @@ export function SetupChecklist() {
                                         className={cn(
                                             "p-4 rounded-2xl border transition-all flex flex-col gap-3 group relative overflow-hidden",
                                             m.completed
-                                                ? "bg-white dark:bg-slate-800 border-emerald-100 dark:border-emerald-900/30 shadow-sm"
-                                                : "bg-slate-50/50 dark:bg-slate-900/50 border-slate-100 dark:border-white/5 hover:border-indigo-200 dark:hover:border-indigo-900/30"
+                                                ? "bg-card border-emerald-100 dark:border-emerald-900/30 shadow-sm"
+                                                : "bg-muted/30 border-border hover:border-primary/30"
                                         )}
                                     >
                                         <div className="flex items-center justify-between relative z-10">
