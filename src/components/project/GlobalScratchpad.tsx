@@ -34,7 +34,7 @@ export function GlobalScratchpad({ triggerVisible = true }: GlobalScratchpadProp
             <Button
                 variant="outline"
                 size="icon"
-                className="fixed bottom-6 right-6 h-12 w-12 rounded-full shadow-lg z-50 bg-yellow-400 hover:bg-yellow-500 text-black border-yellow-500"
+                className="fixed bottom-6 right-6 md:bottom-28 md:right-8 h-12 w-12 rounded-full shadow-lg z-50 bg-yellow-400 hover:bg-yellow-500 text-black border-yellow-500"
                 onClick={() => setIsOpen(true)}
                 title="글로벌 메모장"
             >
@@ -45,7 +45,7 @@ export function GlobalScratchpad({ triggerVisible = true }: GlobalScratchpadProp
 
     if (isMinimized) {
         return (
-            <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 bg-yellow-100 border border-yellow-300 rounded-full p-1 pl-3 shadow-lg animate-in fade-in slide-in-from-bottom-2">
+            <div className="fixed bottom-6 right-6 md:bottom-28 md:right-8 z-50 flex items-center gap-2 bg-yellow-100 border border-yellow-300 rounded-full p-1 pl-3 shadow-lg animate-in fade-in slide-in-from-bottom-2">
                 <span className="text-xs font-bold text-yellow-800 cursor-pointer" onClick={() => setIsMinimized(false)}>메모장</span>
                 <Button
                     variant="ghost"
@@ -68,7 +68,7 @@ export function GlobalScratchpad({ triggerVisible = true }: GlobalScratchpadProp
     }
 
     return (
-        <div className="fixed bottom-6 right-6 w-80 h-96 bg-yellow-50 dark:bg-zinc-800 border-2 border-yellow-400 rounded-xl shadow-2xl z-50 flex flex-col animate-in fade-in slide-in-from-bottom-4 zoom-in-95">
+        <div className="fixed bottom-6 right-6 md:bottom-28 md:right-8 w-80 h-96 bg-yellow-50 dark:bg-zinc-800 border-2 border-yellow-400 rounded-xl shadow-2xl z-50 flex flex-col animate-in fade-in slide-in-from-bottom-4 zoom-in-95">
             {/* Header */}
             <div className="flex items-center justify-between p-3 border-b border-yellow-200 dark:border-zinc-700 bg-yellow-100 dark:bg-zinc-900/50 rounded-t-lg handle cursor-move">
                 <div className="flex items-center gap-2 text-yellow-800 dark:text-yellow-500 font-bold">
