@@ -336,6 +336,7 @@ export type Person = {
     role?: string; // Alias for jobTitle
     phone?: string; // Alias for contact
     avatar?: string; // Alias for photo
+    isFavorite?: boolean; // Favorite flag
 };
 
 export type CalendarViewType = 'month' | 'week' | 'day';
