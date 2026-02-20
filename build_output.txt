@@ -1,0 +1,30 @@
+
+> daily-scheduler@0.1.0 build
+> next build
+
+▲ Next.js 16.1.4 (Turbopack)
+- Environments: .env.local, .env
+
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+  Creating an optimized production build ...
+Turbopack build encountered 1 warnings:
+./
+Failed to find font override values for font `Asta Sans`
+Skipping generating a fallback font.
+
+
+✓ Compiled successfully in 28.3s
+  Running TypeScript ...
+Failed to compile.
+
+./src/components/growth/CertificateManager.tsx:338:30
+Type error: Cannot find name 'Textarea'.
+
+[0m [90m 336 |[39m                         [33m<[39m[33mdiv[39m className[33m=[39m[32m"space-y-3"[39m[33m>[39m
+ [90m 337 |[39m                             [33m<[39m[33mLabel[39m className[33m=[39m[32m"text-[10px] font-black text-white/20 uppercase tracking-widest ml-2"[39m[33m>[39m[33mNEURAL[39m [33mMEMO[39m [33m/[39m [33mANTAGRAVITY[39m [33mLOG[39m[33m<[39m[33m/[39m[33mLabel[39m[33m>[39m
+[31m[1m>[22m[39m[90m 338 |[39m                             [33m<[39m[33mTextarea[39m
+ [90m     |[39m                              [31m[1m^[22m[39m
+ [90m 339 |[39m                                 value[33m=[39m{memo}
+ [90m 340 |[39m                                 onChange[33m=[39m{e [33m=>[39m setMemo(e[33m.[39mtarget[33m.[39mvalue)}
+ [90m 341 |[39m                                 placeholder[33m=[39m[32m"ENTER SUPPLEMENTARY DATA..."[39m[0m
+Next.js build worker exited with code: 1 and signal: null

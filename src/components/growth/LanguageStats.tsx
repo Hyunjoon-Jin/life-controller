@@ -134,7 +134,7 @@ export function LanguageStats({ language }: LanguageStatsProps) {
                                         tickFormatter={(value) => `${value}M`}
                                     />
                                     <Tooltip
-                                        cursor={{ fill: 'rgba(255,255,255,0.03)', radius: [12, 12, 0, 0] }}
+                                        cursor={{ fill: 'rgba(255,255,255,0.03)' }}
                                         content={({ active, payload }) => {
                                             if (active && payload && payload.length) {
                                                 return (

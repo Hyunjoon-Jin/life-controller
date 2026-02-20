@@ -7,12 +7,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { format, differenceInDays } from 'date-fns';
 import {
     Plus, Trash2, Scale, Activity, TrendingUp, Ruler, Zap, Heart,
     Target, Calendar as CalendarIcon, ArrowRight, Camera, ScanLine,
-    Loader2, Sparkles, Brain, Fingerprint, ShieldCheck, ChevronRight
+    Loader2, Sparkles, Brain, Fingerprint, ShieldCheck, ChevronRight, Droplet
 } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { createWorker } from 'tesseract.js';

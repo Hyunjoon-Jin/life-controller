@@ -1,0 +1,30 @@
+
+> daily-scheduler@0.1.0 build
+> next build
+
+▲ Next.js 16.1.4 (Turbopack)
+- Environments: .env.local, .env
+
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+  Creating an optimized production build ...
+Turbopack build encountered 1 warnings:
+./
+Failed to find font override values for font `Asta Sans`
+Skipping generating a fallback font.
+
+
+✓ Compiled successfully in 28.6s
+  Running TypeScript ...
+Failed to compile.
+
+./src/components/growth/ExerciseLog.tsx:696:38
+Type error: Cannot find name 'ArrowLeft'.
+
+[0m [90m 694 |[39m                                 [33m<[39m[33m/[39m[33mdiv[39m[33m>[39m
+ [90m 695 |[39m                                 [33m<[39m[33mButton[39m variant[33m=[39m[32m"ghost"[39m className[33m=[39m[32m"w-full h-12 font-black text-[10px] text-white/20 tracking-widest uppercase hover:text-white transition-all"[39m onClick[33m=[39m{() [33m=>[39m setAddStep([32m'category'[39m)}[33m>[39m
+[31m[1m>[22m[39m[90m 696 |[39m                                     [33m<[39m[33mArrowLeft[39m className[33m=[39m[32m"mr-3 w-4 h-4"[39m [33m/[39m[33m>[39m [33mREVERT[39m [33mTO[39m [33mCATEGORY[39m
+ [90m     |[39m                                      [31m[1m^[22m[39m
+ [90m 697 |[39m                                 [33m<[39m[33m/[39m[33mButton[39m[33m>[39m
+ [90m 698 |[39m                             [33m<[39m[33m/[39m[33mdiv[39m[33m>[39m
+ [90m 699 |[39m                         )}[0m
+Next.js build worker exited with code: 1 and signal: null

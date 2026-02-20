@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import {
     BookOpen, Star, MoreVertical, Play, CheckCircle,
     Bookmark, Trash2, Settings2, Info, ArrowUpRight,
-    Library, ScrollText, Timer
+    Library, ScrollText, Timer, Archive
 } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';

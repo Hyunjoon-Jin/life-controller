@@ -1,0 +1,30 @@
+
+> daily-scheduler@0.1.0 build
+> next build
+
+▲ Next.js 16.1.4 (Turbopack)
+- Environments: .env.local, .env
+
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+  Creating an optimized production build ...
+Turbopack build encountered 1 warnings:
+./
+Failed to find font override values for font `Asta Sans`
+Skipping generating a fallback font.
+
+
+✓ Compiled successfully in 9.2s
+  Running TypeScript ...
+Failed to compile.
+
+./src/components/growth/HobbyLog.tsx:397:50
+Type error: Cannot find name 'ArrowUpRight'.
+
+[0m [90m 395 |[39m                                             [33m<[39m[33mspan[39m className[33m=[39m[32m"text-[9px] font-black text-white/20 uppercase tracking-widest group-hover/link:text-amber-500 transition-colors"[39m[33m>[39m[33mACCESS[39m [33mASSET[39m[33m<[39m[33m/[39m[33mspan[39m[33m>[39m
+ [90m 396 |[39m                                             [33m<[39m[33mdiv[39m className[33m=[39m[32m"w-8 h-8 rounded-lg bg-white/5 border border-white/5 flex items-center justify-center group-hover/link:bg-amber-500 transition-all"[39m[33m>[39m
+[31m[1m>[22m[39m[90m 397 |[39m                                                 [33m<[39m[33mArrowUpRight[39m className[33m=[39m[32m"w-4 h-4 text-white"[39m [33m/[39m[33m>[39m
+ [90m     |[39m                                                  [31m[1m^[22m[39m
+ [90m 398 |[39m                                             [33m<[39m[33m/[39m[33mdiv[39m[33m>[39m
+ [90m 399 |[39m                                         [33m<[39m[33m/[39m[33ma[39m[33m>[39m
+ [90m 400 |[39m                                     )}[0m
+Next.js build worker exited with code: 1 and signal: null

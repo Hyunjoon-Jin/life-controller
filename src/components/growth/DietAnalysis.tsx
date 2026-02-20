@@ -287,7 +287,7 @@ export function DietAnalysis({ entries, inBodyEntries, exerciseSessions }: DietA
                     <CardContent className="p-10 h-[400px] flex flex-col justify-between">
                         {macroRatioData.length > 0 ? (
                             <div className="flex-1">
-                                <ResponsiveContainer width="100%" height="250px">
+                                <ResponsiveContainer width="100%" height={250}>
                                     <PieChart>
                                         <Pie
                                             data={macroRatioData}

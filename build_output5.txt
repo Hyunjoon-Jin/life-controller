@@ -1,0 +1,30 @@
+
+> daily-scheduler@0.1.0 build
+> next build
+
+▲ Next.js 16.1.4 (Turbopack)
+- Environments: .env.local, .env
+
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+  Creating an optimized production build ...
+Turbopack build encountered 1 warnings:
+./
+Failed to find font override values for font `Asta Sans`
+Skipping generating a fallback font.
+
+
+✓ Compiled successfully in 8.8s
+  Running TypeScript ...
+Failed to compile.
+
+./src/components/growth/InBodyLog.tsx:276:26
+Type error: Cannot find name 'CardHeader'.
+
+[0m [90m 274 |[39m                 {sortedEntries[33m.[39mlength [33m>=[39m [35m2[39m [33m?[39m (
+ [90m 275 |[39m                     [33m<[39m[33mCard[39m className[33m=[39m[32m"glass-premium rounded-[40px] border border-white/5 bg-transparent overflow-hidden"[39m[33m>[39m
+[31m[1m>[22m[39m[90m 276 |[39m                         [33m<[39m[33mCardHeader[39m className[33m=[39m[32m"p-10 pb-0 flex flex-row items-center justify-between"[39m[33m>[39m
+ [90m     |[39m                          [31m[1m^[22m[39m
+ [90m 277 |[39m                             [33m<[39m[33mdiv[39m[33m>[39m
+ [90m 278 |[39m                                 [33m<[39m[33mCardTitle[39m className[33m=[39m[32m"text-xl font-black text-white tracking-widest uppercase"[39m[33m>[39m[33mCHRONOLOGICAL[39m [33mEVOLUTION[39m[33m<[39m[33m/[39m[33mCardTitle[39m[33m>[39m
+ [90m 279 |[39m                                 [33m<[39m[33mp[39m className[33m=[39m[32m"text-[9px] font-bold text-white/20 uppercase mt-1 tracking-widest"[39m[33m>[39m[33mSKELETAL[39m [33m&[39m [33mTISSUE[39m [33mMATURATION[39m[33m<[39m[33m/[39m[33mp[39m[33m>[39m[0m
+Next.js build worker exited with code: 1 and signal: null

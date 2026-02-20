@@ -13,7 +13,7 @@ import {
     Palette, Plus, Trash2, Calendar as CalendarIcon, Tag, Star,
     ArrowLeft, Image as ImageIcon, ExternalLink, MoreVertical,
     Sparkles, Camera, Book, Music, Ghost, Heart, Trophy, Edit3,
-    Terminal, Zap, Fingerprint, Activity, MousePointer2, X
+    Terminal, Zap, Fingerprint, Activity, MousePointer2, X, ArrowUpRight
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';

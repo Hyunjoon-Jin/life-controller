@@ -1,0 +1,30 @@
+
+> daily-scheduler@0.1.0 build
+> next build
+
+▲ Next.js 16.1.4 (Turbopack)
+- Environments: .env.local, .env
+
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+  Creating an optimized production build ...
+Turbopack build encountered 1 warnings:
+./
+Failed to find font override values for font `Asta Sans`
+Skipping generating a fallback font.
+
+
+✓ Compiled successfully in 8.6s
+  Running TypeScript ...
+Failed to compile.
+
+./src/components/growth/LanguageStats.tsx:137:83
+Type error: Type 'number[]' is not assignable to type 'string | number | undefined'.
+
+[0m [90m 135 |[39m                                     [33m/[39m[33m>[39m
+ [90m 136 |[39m                                     [33m<[39m[33mTooltip[39m
+[31m[1m>[22m[39m[90m 137 |[39m                                         cursor[33m=[39m{{ fill[33m:[39m [32m'rgba(255,255,255,0.03)'[39m[33m,[39m radius[33m:[39m [[35m12[39m[33m,[39m [35m12[39m[33m,[39m [35m0[39m[33m,[39m [35m0[39m] }}
+ [90m     |[39m                                                                                   [31m[1m^[22m[39m
+ [90m 138 |[39m                                         content[33m=[39m{({ active[33m,[39m payload }) [33m=>[39m {
+ [90m 139 |[39m                                             [36mif[39m (active [33m&&[39m payload [33m&&[39m payload[33m.[39mlength) {
+ [90m 140 |[39m                                                 [36mreturn[39m ([0m
+Next.js build worker exited with code: 1 and signal: null

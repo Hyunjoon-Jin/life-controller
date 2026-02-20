@@ -14,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import {
     Dumbbell, Plus, Trash2, Calendar as CalendarIcon, Timer, Trophy,
     Footprints, Target, Activity, TrendingUp, Search, ChevronDown,
-    Check, Flower2, Play, Flame, Zap, Heart, Clock, ChevronRight, X, Sparkles
+    Check, Flower2, Play, Flame, Zap, Heart, Clock, ChevronRight, X, Sparkles, ArrowLeft
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ExerciseCategory, ExerciseSession, ExerciseRoutine } from '@/types';

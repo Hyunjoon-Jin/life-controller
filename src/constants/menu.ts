@@ -1,7 +1,7 @@
 import {
     Calendar, ListTodo, UsersRound, Target, Book, Sparkles, Award, Briefcase,
     NotebookPen, Lightbulb, Bookmark, CheckSquare, Scale, ChevronRight,
-    Utensils, Dumbbell, Wallet, PieChart, Building, TrendingUp as TrendingUpIcon, FileText,
+    Utensils, Dumbbell, Wallet, PieChart, Building2, TrendingUp as TrendingUpIcon, FileText,
     Clock, LayoutTemplate
 } from 'lucide-react';
 
@@ -67,7 +67,7 @@ export const SUB_MENUS: Record<CategoryType, MenuItem[]> = {
         { id: 'ledger', label: '가계부', icon: CheckSquare, desc: '수입과 지출 관리' },
         { id: 'assets', label: '자산 현황', icon: Wallet, desc: '나의 부를 한눈에' },
         { id: 'investment', label: '투자 분석', icon: TrendingUpIcon, desc: '주식 및 금융상품 분석' },
-        { id: 'realestate', label: '부동산', icon: Building, desc: '내 집 마련 및 투자' },
+        { id: 'realestate', label: '부동산', icon: Building2, desc: '내 집 마련 및 투자' },
         { id: 'report', label: '활동 리포트', icon: FileText, desc: '성과 요약 및 데이터 추출' },
     ],
 };
