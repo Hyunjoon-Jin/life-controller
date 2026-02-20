@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from '@/components/ui/dialog';
 import {
-    Plus, Trash2, Edit2, Wallet, Landmark, TrendingUp, CreditCard,
+    Plus, Trash2, Edit2, Wallet, Landmark, TrendingUp, TrendingDown, CreditCard,
     Building2, Coins, ArrowUpRight, ArrowDownRight, Activity,
     ShieldCheck, Zap, Globe, Fingerprint, Terminal, Sparkles
 } from 'lucide-react';
