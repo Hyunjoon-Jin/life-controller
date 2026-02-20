@@ -16,11 +16,11 @@ interface WorkMainDashboardProps {
     viewMode?: 'schedule' | 'project';
 }
 
-export function WorkMainDashboard({ onOpenProject, viewMode = 'schedule' }: WorkMainDashboardProps) {
+export function WorkMainDashboard({ onOpenProject, viewMode = 'schedule', onNavigate }: WorkMainDashboardProps & { onNavigate?: (tab: string) => void }) {
     return (
         <div className="h-full flex flex-col overflow-hidden bg-slate-50 dark:bg-slate-900/50 p-6">
             {viewMode === 'schedule' ? (
-                <WorkDashboard />
+                <WorkDashboard onNavigate={onNavigate} onOpenProject={onOpenProject} />
             ) : (
                 <ProjectSection onOpenProject={onOpenProject} />
             )}

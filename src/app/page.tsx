@@ -20,6 +20,7 @@ import { WorkTimeSection } from '@/components/work/sections/WorkTimeSection';
 import { WorkTemplateSection } from '@/components/project/WorkTemplateSection';
 import { WorkPeopleSection } from '@/components/work/sections/WorkPeopleSection';
 import { HomeDashboard } from '@/components/home/HomeDashboard';
+import { WorkMainDashboard } from '@/components/work/WorkMainDashboard';
 import { LanguageLog } from '@/components/growth/LanguageLog';
 import { ReadingLog } from '@/components/growth/ReadingLog';
 import { ExerciseLog } from '@/components/growth/ExerciseLog';
@@ -328,7 +329,21 @@ export default function Home() {
 
                 {activeTab === 'calendar' && (
                   <div className="space-y-6 animate-in fade-in zoom-in-95 duration-200 h-full">
-                    {appMode === 'work' ? <WorkLayout viewMode="schedule" /> : <CalendarView />}
+                    {appMode === 'work' ? (
+                      <WorkMainDashboard
+                        viewMode="schedule"
+                        onOpenProject={(id: string) => {
+                          setActiveCategory('basic');
+                          setActiveTab('projects');
+                        }}
+                        onNavigate={(tab: string) => {
+                          setActiveCategory('basic');
+                          setActiveTab(tab as any);
+                        }}
+                      />
+                    ) : (
+                      <CalendarView />
+                    )}
                   </div>
                 )}
                 {activeTab === 'full_schedule' && (
@@ -474,13 +489,15 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Right Column: Tools & Widgets (Desktop Only) - Show ONLY on Dashboard */}
-            <div className="hidden lg:flex lg:col-span-3 xl:col-span-3 space-y-4 md:space-y-6 flex-col h-full overflow-y-auto custom-scrollbar pb-6">
-              <UpcomingTasks />
-              <Pomodoro />
-              <HabitTracker />
-              <AdBanner dataAdSlot="1234567890" dataAdFormat="rectangle" className="w-full" />
-            </div>
+            {/* Right Column: Tools & Widgets (Desktop Only) - Show ONLY on Dashboard and NOT in Work Mode Dashboard */}
+            {activeTab === 'calendar' && appMode !== 'work' ? (
+              <div className="hidden lg:flex lg:col-span-3 xl:col-span-3 space-y-4 md:space-y-6 flex-col h-full overflow-y-auto custom-scrollbar pb-6">
+                <UpcomingTasks />
+                <Pomodoro />
+                <HabitTracker />
+                <AdBanner dataAdSlot="1234567890" dataAdFormat="rectangle" className="w-full" />
+              </div>
+            ) : null}
           </motion.div>
         ) : (
           <motion.div

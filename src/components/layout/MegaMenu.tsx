@@ -22,11 +22,6 @@ export function MegaMenuNav({ activeCategory, activeTab, onSelect, appMode = 'li
         return (
             <div className="w-full relative z-50">
                 <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-2 max-w-7xl mx-auto">
-                    <div className="px-4 font-bold text-sm h-10 flex items-center bg-secondary/20 text-secondary-foreground rounded-full cursor-default shrink-0 border-2 border-secondary/30">
-                        <span className="mr-1">💼</span> 전체 메뉴
-                    </div>
-                    <div className="h-4 w-[1px] bg-border mx-2" />
-
                     {WORK_NAV_ITEMS.map(item => (
                         <button
                             key={item.id}
@@ -53,20 +48,6 @@ export function MegaMenuNav({ activeCategory, activeTab, onSelect, appMode = 'li
         <div className="w-full relative z-50" onMouseLeave={() => setIsOpen(false)}>
             {/* Trigger Bar */}
             <div className="flex items-center gap-1 overflow-x-auto no-scrollbar py-2">
-                <Button
-                    variant="ghost"
-                    className={cn(
-                        "rounded-full px-4 font-bold text-sm h-10 transition-all",
-                        isOpen ? "bg-gray-100 text-black" : "hover:bg-gray-50 text-muted-foreground"
-                    )}
-                    onMouseEnter={() => setIsOpen(true)}
-                    onClick={() => setIsOpen(!isOpen)}
-                >
-                    <span className="mr-1">≡</span> 전체 메뉴
-                </Button>
-
-                <div className="h-4 w-[1px] bg-gray-200 mx-2" />
-
                 {visibleCategories.map(cat => (
                     <button
                         key={cat.id}

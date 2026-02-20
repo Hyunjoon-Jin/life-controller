@@ -57,21 +57,28 @@ export function BriefingCard() {
         setLoading(true);
         setExpanded(true);
         try {
-            const todayStr = new Date().toISOString().split('T')[0];
-            // Filter Work: Type is work/meeting OR linked to a project (assuming projects are work or filtered)
-            const todaysEvents = events.filter(e =>
-                new Date(e.start).toISOString().startsWith(todayStr) &&
-                (e.type === 'work' || e.isMeeting || e.isWorkLog || !!e.connectedProjectId)
-            );
+            const now = new Date();
+            const todaysEvents = events.filter(e => {
+                const eventDate = new Date(e.start);
+                return eventDate.getFullYear() === now.getFullYear() &&
+                    eventDate.getMonth() === now.getMonth() &&
+                    eventDate.getDate() === now.getDate() &&
+                    (e.type === 'work' || e.isMeeting || e.isWorkLog || !!e.connectedProjectId);
+            });
 
-            // Filter Work: Category is work OR belongs to a project
-            const relevantTasks = tasks.filter(t =>
-                !t.completed &&
-                (t.category === 'work' || t.projectId) &&
-                (t.priority === 'high' || (t.dueDate && new Date(t.dueDate).toISOString().startsWith(todayStr)))
-            );
+            const relevantTasks = tasks.filter(t => {
+                const isWork = t.category === 'work' || t.projectId;
+                const isHighPriority = t.priority === 'high';
+                const isDueToday = t.dueDate && (() => {
+                    const due = new Date(t.dueDate);
+                    return due.getFullYear() === now.getFullYear() &&
+                        due.getMonth() === now.getMonth() &&
+                        due.getDate() === now.getDate();
+                })();
 
-            // Filter Work: Category is work
+                return !t.completed && isWork && (isHighPriority || isDueToday);
+            });
+
             const activeProjects = projects.filter(p => p.status === 'active' && p.category === 'work');
 
             const result = await generateMorningBriefing(
@@ -80,6 +87,7 @@ export function BriefingCard() {
                 activeProjects,
                 todaysEvents
             );
+            const todayStr = now.toISOString().split('T')[0];
             setBriefing(result);
             localStorage.setItem('morning_briefing_date', todayStr);
             localStorage.setItem('morning_briefing_content', result);

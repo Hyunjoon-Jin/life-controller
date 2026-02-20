@@ -92,33 +92,6 @@ export function TodayTimeline() {
                     <Clock className="w-5 h-5 text-indigo-500" />
                     오늘의 일정
                 </h3>
-                <div className="flex gap-2">
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={handleAISmartSchedule}
-                        disabled={isAIScheduling}
-                        className="text-xs text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50"
-                        title="AI가 작업 성격을 분석하여 최적의 시간 추천"
-                    >
-                        {isAIScheduling ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4 mr-1 text-purple-500" />}
-                        {isAIScheduling ? "AI 분석 중..." : "AI 지능형 배치"}
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={handleAutoSchedule}
-                        disabled={isScheduling}
-                        className="text-xs text-slate-500 hover:bg-slate-50"
-                        title="빈 시간에 할 일 단순 배치"
-                    >
-                        {isScheduling ? <Loader2 className="w-4 h-4 animate-spin" /> : <Clock className="w-4 h-4 mr-1" />}
-                        {isScheduling ? "배치 중..." : "단순 자동 채우기"}
-                    </Button>
-                    <Button variant="ghost" size="icon" className="h-8 w-8">
-                        <MoreHorizontal className="w-4 h-4 text-slate-400" />
-                    </Button>
-                </div>
             </div>
 
             <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 relative">

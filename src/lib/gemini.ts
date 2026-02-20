@@ -32,11 +32,15 @@ export async function generateMorningBriefing(
     events: CalendarEvent[]
 ): Promise<string> {
     try {
-        const today = new Date().toISOString().split('T')[0];
+        const now = new Date();
+        const today = now.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' });
+        const currentTime = now.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+
         const payload = {
             name,
             today,
-            events: events.map(e => `- ${e.title} (${new Date(e.start).toLocaleTimeString()})`),
+            currentTime,
+            events: events.map(e => `- ${e.title} (${new Date(e.start).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })})`),
             tasks: tasks.filter(t => !t.completed).map(t => `- [${t.priority}] ${t.title}`),
             projects: projects.filter(p => p.status === 'active').map(p => `- ${p.title}`)
         };
@@ -75,10 +79,16 @@ export async function summarizeMeeting(minutes: string): Promise<{ summary: stri
 
 export async function recommendSmartSchedule(tasks: Task[], events: CalendarEvent[]): Promise<{ taskId: string, start: string, end: string, reason: string }[]> {
     try {
-        const todayStr = new Date().toISOString().split('T')[0];
+        const now = new Date();
+        const todayStr = now.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' });
         const payload = {
             tasks: JSON.stringify(tasks.filter(t => !t.completed && t.estimatedTime).map(t => ({ id: t.id, title: t.title, priority: t.priority, duration: t.estimatedTime }))),
-            events: JSON.stringify(events.filter(e => new Date(e.start).toISOString().startsWith(todayStr)).map(e => ({ title: e.title, start: e.start, end: e.end }))),
+            events: JSON.stringify(events.filter(e => {
+                const eventDate = new Date(e.start);
+                return eventDate.getFullYear() === now.getFullYear() &&
+                    eventDate.getMonth() === now.getMonth() &&
+                    eventDate.getDate() === now.getDate();
+            }).map(e => ({ title: e.title, start: e.start, end: e.end }))),
             todayStr
         };
         return await callAIApi('schedule', payload);
