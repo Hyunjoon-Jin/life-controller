@@ -33,7 +33,7 @@ import { MobileBottomNav } from '@/components/layout/MobileBottomNav'; // Added
 import { MobileCategoryTabs } from '@/components/layout/MobileCategoryTabs'; // Added
 import { FloatingModule } from '@/components/layout/FloatingModule'; // Added
 import { CloudSyncStatus } from '@/components/layout/CloudSyncStatus'; // Added
-import { CATEGORIES, SUB_MENUS, CategoryType, WORK_NAV_ITEMS, TabType } from '@/constants/menu';
+import { CATEGORIES, SUB_MENUS, CategoryType, WORK_NAV_ITEMS, AMBITION_NAV_ITEMS, TabType } from '@/constants/menu';
 import { TabHeader } from '@/components/layout/TabHeader';
 
 import { CertificateManager } from '@/components/growth/CertificateManager';
