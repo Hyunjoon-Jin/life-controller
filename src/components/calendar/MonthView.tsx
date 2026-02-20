@@ -111,13 +111,13 @@ export function MonthView({ currentDate, onDateClick, showProjectTasks }: { curr
     const weekDays = ['일', '월', '화', '수', '목', '금', '토'];
 
     return (
-        <div className="flex flex-col h-full bg-white rounded-3xl border border-transparent shadow-sm overflow-hidden relative">
+        <div className="flex flex-col h-full glass-premium rounded-[32px] border border-white/10 shadow-2xl overflow-hidden relative">
             {/* Weekday Headers */}
-            <div className="grid grid-cols-7 border-b border-border/[0.05] bg-gray-50/50">
+            <div className="grid grid-cols-7 border-b border-white/5 bg-white/[0.02]">
                 {weekDays.map((day) => (
                     <div
                         key={day}
-                        className="py-3 text-center text-xs font-bold text-muted-foreground uppercase tracking-wider"
+                        className="py-4 text-center text-[10px] font-black text-white/30 uppercase tracking-[0.2em]"
                     >
                         {day}
                     </div>
@@ -125,7 +125,7 @@ export function MonthView({ currentDate, onDateClick, showProjectTasks }: { curr
             </div>
 
             {/* Days Grid */}
-            <div className="grid grid-cols-7 grid-rows-5 flex-1">
+            <div className="grid grid-cols-7 auto-rows-fr flex-1 bg-white/[0.01]">
                 {days.map((day, dayIdx) => {
                     const daysGoals = goals.filter(g => {
                         if (!g.deadline) return false;
@@ -133,17 +133,15 @@ export function MonthView({ currentDate, onDateClick, showProjectTasks }: { curr
                         return isValid(d) && isSameDay(d, day);
                     });
 
-                    // Filter Events: ONLY Meeting, Appointment, Vacation, WorkLog
                     const daysEvents = events.filter(e => {
                         const d = new Date(e.start);
                         return isValid(d) && isSameDay(d, day) &&
                             (e.isMeeting || e.isAppointment || e.type === 'vacation' || e.isWorkLog);
                     });
 
-                    // Filter Project Tasks
                     const daysProjectTasks = showProjectTasks ? tasks.filter(t => {
                         if (!t.projectId) return false;
-                        if (t.completed) return false; // Optional: Hide completed tasks
+                        if (t.completed) return false;
 
                         const targetDate = t.endDate ? new Date(t.endDate) : (t.deadline ? new Date(t.deadline) : (t.startDate ? new Date(t.startDate) : null));
                         if (!targetDate || !isValid(targetDate)) return false;
@@ -151,77 +149,72 @@ export function MonthView({ currentDate, onDateClick, showProjectTasks }: { curr
                         return isSameDay(targetDate, day);
                     }) : [];
 
+                    const isCurrentMonth = isSameMonth(day, monthStart);
+                    const isTodayDay = isToday(day);
+
                     return (
                         <div
                             key={day.toString()}
                             onClick={() => onDateClick(day)}
                             onContextMenu={(e) => handleContextMenu(e, day)}
                             className={cn(
-                                "min-h-[80px] md:min-h-[100px] p-1 md:p-2 border-r border-b border-border/[0.05] relative transition-colors hover:bg-muted/20 cursor-pointer overflow-hidden flex flex-col gap-1 select-none",
+                                "min-h-[100px] p-2 border-r border-b border-white/5 relative transition-all duration-300 hover:bg-white/[0.04] cursor-pointer group flex flex-col gap-1.5",
                                 (dayIdx + 1) % 7 === 0 && "border-r-0",
-                                !isSameMonth(day, monthStart) && "bg-gray-50/30 text-muted-foreground",
-                                isToday(day) && "bg-primary/5"
+                                !isCurrentMonth && "opacity-20",
+                                isTodayDay && "bg-emerald-500/[0.03]"
                             )}
                         >
-                            <div className="flex justify-center md:justify-between items-start mb-0">
+                            <div className="flex justify-between items-start">
                                 <span
                                     className={cn(
-                                        "text-xs md:text-sm font-medium w-6 h-6 md:w-8 md:h-8 flex items-center justify-center rounded-full transition-all",
-                                        isToday(day)
-                                            ? "bg-primary text-primary-foreground shadow-md scale-110"
-                                            : "text-foreground group-hover:bg-muted"
+                                        "text-[11px] font-black w-7 h-7 flex items-center justify-center rounded-xl transition-all duration-500",
+                                        isTodayDay
+                                            ? "bg-emerald-500 text-white shadow-[0_0_15px_rgba(16,185,129,0.4)] scale-110"
+                                            : "text-white/40 group-hover:text-white/80"
                                     )}
                                 >
                                     {format(day, 'd')}
                                 </span>
+                                {isTodayDay && (
+                                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)] mt-2 mr-1" />
+                                )}
                             </div>
 
                             <div className="space-y-1 w-full overflow-hidden flex-1">
-                                {/* Mobile View: Dots - Centered Layout */}
-                                <div className="flex md:hidden flex-wrap justify-center gap-1 content-center h-full pb-2">
-                                    {daysEvents.map(event => (
-                                        <div key={event.id} className={cn("w-1.5 h-1.5 rounded-full", event.color?.split(' ')[1] || "bg-gray-400")} />
-                                    ))}
-                                    {daysGoals.map(goal => (
-                                        <div key={goal.id} className="w-1.5 h-1.5 rounded-full bg-red-400" />
-                                    ))}
-                                    {daysProjectTasks.map(task => {
-                                        const project = projects.find(p => p.id === task.projectId);
-                                        return <div key={task.id} className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: project?.color || '#3b82f6' }} />
-                                    })}
+                                {/* Mobile View: Minimal Indicators */}
+                                <div className="flex md:hidden flex-wrap justify-center gap-1 content-start py-1">
+                                    {(daysEvents.length > 0 || daysGoals.length > 0 || daysProjectTasks.length > 0) && (
+                                        <div className="w-1 h-1 rounded-full bg-emerald-400 shadow-[0_0_5px_rgba(16,185,129,0.5)]" />
+                                    )}
                                 </div>
 
-                                {/* Desktop View: Details */}
+                                {/* Desktop View: Premium Tags */}
                                 <div className="hidden md:block space-y-1">
                                     {daysEvents.map(event => (
                                         <div
                                             key={event.id}
                                             className={cn(
-                                                "flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-md truncate font-medium border",
-                                                event.type === 'vacation' ? "bg-rose-100 text-rose-700 border-rose-200" :
-                                                    event.isWorkLog ? "bg-slate-100 text-slate-700 border-slate-200" :
-                                                        event.type === 'work' ? "bg-blue-100 text-blue-700 border-blue-200" :
-                                                            event.type === 'personal' ? "bg-green-100 text-green-700 border-green-200" :
-                                                                "bg-gray-100 text-gray-700 border-gray-200"
+                                                "flex items-center gap-1.5 text-[9px] px-2 py-1 rounded-lg truncate font-bold border transition-all hover:scale-[1.02]",
+                                                event.type === 'vacation' ? "bg-rose-500/10 text-rose-400 border-rose-500/20" :
+                                                    event.isWorkLog ? "bg-slate-500/10 text-slate-300 border-slate-500/20" :
+                                                        event.type === 'work' ? "bg-indigo-500/10 text-indigo-300 border-indigo-500/20" :
+                                                            "bg-emerald-500/10 text-emerald-300 border-emerald-500/20"
                                             )}
                                         >
-                                            {event.isMeeting && <Users className="w-3 h-3 shrink-0" />}
-                                            {event.isAppointment && <Handshake className="w-3 h-3 shrink-0" />}
-                                            {event.type === 'vacation' && <Plane className="w-3 h-3 shrink-0" />}
-                                            {event.isWorkLog && <Briefcase className="w-3 h-3 shrink-0" />}
-
-                                            <span className="truncate">
-                                                {event.isWorkLog && event.workDetails
-                                                    ? `${event.workDetails.status} (${event.workDetails.hours})`
-                                                    : event.title}
+                                            {event.isMeeting && <Users className="w-2.5 h-2.5 opacity-60" />}
+                                            {event.isAppointment && <Handshake className="w-2.5 h-2.5 opacity-60" />}
+                                            {event.type === 'vacation' && <Plane className="w-2.5 h-2.5 opacity-60" />}
+                                            {event.isWorkLog && <Briefcase className="w-2.5 h-2.5 opacity-60" />}
+                                            <span className="truncate tracking-tight uppercase">
+                                                {event.isWorkLog && event.workDetails ? event.workDetails.status : event.title}
                                             </span>
                                         </div>
                                     ))}
 
                                     {daysGoals.map(goal => (
-                                        <div key={goal.id} className="flex items-center gap-1 text-[10px] bg-red-100 text-red-700 px-1.5 py-0.5 rounded-full truncate border border-red-200/50 opacity-80">
-                                            <Target className="w-3 h-3 shrink-0" />
-                                            <span className="truncate">{goal.title}</span>
+                                        <div key={goal.id} className="flex items-center gap-1.5 text-[9px] bg-red-500/10 text-red-400 px-2 py-1 rounded-lg truncate border border-red-500/20 font-bold hover:scale-[1.02] transition-all">
+                                            <Target className="w-2.5 h-2.5 opacity-60" />
+                                            <span className="truncate uppercase">{goal.title}</span>
                                         </div>
                                     ))}
 
@@ -230,16 +223,14 @@ export function MonthView({ currentDate, onDateClick, showProjectTasks }: { curr
                                         return (
                                             <div
                                                 key={task.id}
-                                                className="flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full truncate border border-transparent opacity-90 text-white shadow-sm"
-                                                style={{ backgroundColor: project?.color || '#3b82f6' }}
+                                                className="flex items-center gap-1.5 text-[9px] px-2 py-1 rounded-lg truncate font-bold border border-white/5 hover:scale-[1.02] transition-all bg-white/5 text-white/70"
                                             >
-                                                <Briefcase className="w-3 h-3 shrink-0 text-white/80" />
-                                                <span className="truncate">{task.title}</span>
+                                                <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: project?.color || '#10b981' }} />
+                                                <span className="truncate uppercase">{task.title}</span>
                                             </div>
                                         );
                                     })}
                                 </div>
-
                             </div>
                         </div>
                     )
@@ -249,101 +240,110 @@ export function MonthView({ currentDate, onDateClick, showProjectTasks }: { curr
             {/* Custom Context Menu */}
             {contextMenu && (
                 <div
-                    className="fixed z-50 min-w-[160px] bg-popover text-popover-foreground rounded-md border shadow-md p-1 animate-in fade-in zoom-in-95 duration-100"
+                    className="fixed z-[100] min-w-[180px] glass-premium rounded-2xl border border-white/10 shadow-2xl p-1.5 animate-in fade-in zoom-in-95 duration-200"
                     style={{ top: contextMenu.y, left: contextMenu.x }}
-                    onClick={(e) => e.stopPropagation()} // Prevent close on self click
+                    onClick={(e) => e.stopPropagation()}
                 >
-                    <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground border-b mb-1">
+                    <div className="px-3 py-2 text-[10px] font-black text-white/30 border-b border-white/5 mb-1.5 uppercase tracking-widest">
                         {format(contextMenu.date, 'M월 d일')}
                     </div>
                     <button
                         onClick={handleOpenWorkDialog}
-                        className="w-full flex items-center gap-2 px-2 py-1.5 text-sm rounded-sm hover:bg-accent hover:text-accent-foreground cursor-pointer text-left"
+                        className="w-full flex items-center gap-3 px-3 py-2.5 text-xs font-bold rounded-xl text-white/70 hover:bg-emerald-500 hover:text-white transition-all group"
                     >
-                        <Briefcase className="w-4 h-4" /> 근무 기록 입력
+                        <Briefcase className="w-4 h-4 opacity-40 group-hover:opacity-100" /> 근무 기록 입력
                     </button>
                     <button
                         onClick={handleOpenVacationDialog}
-                        className="w-full flex items-center gap-2 px-2 py-1.5 text-sm rounded-sm hover:bg-accent hover:text-accent-foreground cursor-pointer text-left"
+                        className="w-full flex items-center gap-3 px-3 py-2.5 text-xs font-bold rounded-xl text-white/70 hover:bg-rose-500 hover:text-white transition-all group"
                     >
-                        <Plane className="w-4 h-4" /> 휴가 등록
+                        <Plane className="w-4 h-4 opacity-40 group-hover:opacity-100" /> 휴가 등록
                     </button>
                 </div>
             )}
 
-            {/* Work Log Dialog */}
+            {/* Dialogs Stylized for Premium */}
             <Dialog open={workDialogOpen} onOpenChange={setWorkDialogOpen}>
-                <DialogContent className="sm:max-w-[425px] max-h-[85vh] overflow-y-auto">
+                <DialogContent className="sm:max-w-[425px] glass-premium border border-white/10 text-white rounded-[32px] p-8 shadow-2xl">
                     <DialogHeader>
-                        <DialogTitle>근무 기록 입력</DialogTitle>
+                        <DialogTitle className="text-2xl font-black tracking-tight mb-4">근무 기록 입력</DialogTitle>
                     </DialogHeader>
-                    <div className="grid gap-4 py-4">
+                    <div className="grid gap-6 py-4">
                         <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="status" className="text-right">근무 상태</Label>
+                            <Label htmlFor="status" className="text-right text-xs font-bold text-white/40">상태</Label>
                             <select
                                 id="status"
-                                className="col-span-3 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                                className="col-span-3 h-12 bg-white/5 border-white/10 rounded-xl px-4 text-sm font-bold text-white focus:ring-2 ring-emerald-500/50 transition-all outline-none"
                                 value={workStatus}
                                 onChange={(e) => setWorkStatus(e.target.value)}
                             >
-                                <option value="출근">출근</option>
-                                <option value="재택">재택</option>
-                                <option value="외근">외근</option>
-                                <option value="출장">출장</option>
+                                <option value="출근" className="bg-slate-900">출근</option>
+                                <option value="재택" className="bg-slate-900">재택</option>
+                                <option value="외근" className="bg-slate-900">외근</option>
+                                <option value="출장" className="bg-slate-900">출장</option>
                             </select>
                         </div>
                         <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="startTime" className="text-right">시작</Label>
+                            <Label htmlFor="startTime" className="text-right text-xs font-bold text-white/40">시작</Label>
                             <Input
                                 id="startTime"
                                 type="time"
                                 value={workStartTime}
                                 onChange={(e) => setWorkStartTime(e.target.value)}
-                                className="col-span-3"
+                                className="col-span-3 h-12 bg-white/5 border-white/10 rounded-xl text-white font-bold"
                             />
                         </div>
                         <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="endTime" className="text-right">종료</Label>
+                            <Label htmlFor="endTime" className="text-right text-xs font-bold text-white/40">종료</Label>
                             <Input
                                 id="endTime"
                                 type="time"
                                 value={workEndTime}
                                 onChange={(e) => setWorkEndTime(e.target.value)}
-                                className="col-span-3"
+                                className="col-span-3 h-12 bg-white/5 border-white/10 rounded-xl text-white font-bold"
                             />
                         </div>
                     </div>
-                    <DialogFooter>
-                        <Button onClick={handleSaveWorkLog}>저장</Button>
+                    <DialogFooter className="mt-4">
+                        <Button
+                            onClick={handleSaveWorkLog}
+                            className="w-full h-12 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-black tracking-widest shadow-[0_10px_20px_-5px_rgba(16,185,129,0.3)] transition-all active:scale-95"
+                        >
+                            기록 저장
+                        </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
 
-            {/* Vacation Dialog */}
             <Dialog open={vacationDialogOpen} onOpenChange={setVacationDialogOpen}>
-                <DialogContent className="sm:max-w-[425px] max-h-[85vh] overflow-y-auto">
+                <DialogContent className="sm:max-w-[425px] glass-premium border border-white/10 text-white rounded-[32px] p-8 shadow-2xl">
                     <DialogHeader>
-                        <DialogTitle>휴가 등록</DialogTitle>
+                        <DialogTitle className="text-2xl font-black tracking-tight mb-4">휴가 등록</DialogTitle>
                     </DialogHeader>
-                    <div className="grid gap-4 py-4">
+                    <div className="grid gap-6 py-4">
                         <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="type" className="text-right">종류</Label>
+                            <Label htmlFor="type" className="text-right text-xs font-bold text-white/40">종류</Label>
                             <select
                                 id="type"
-                                className="col-span-3 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                                className="col-span-3 h-12 bg-white/5 border-white/10 rounded-xl px-4 text-sm font-bold text-white outline-none"
                                 value={vacationType}
                                 onChange={(e) => setVacationType(e.target.value)}
                             >
-                                <option value="연차">연차</option>
-                                <option value="반차 (오전)">반차 (오전)</option>
-                                <option value="반차 (오후)">반차 (오후)</option>
-                                <option value="병가">병가</option>
-                                <option value="특별휴가">특별휴가</option>
+                                <option value="연차" className="bg-slate-900">연차</option>
+                                <option value="반차 (오전)" className="bg-slate-900">반차 (오전)</option>
+                                <option value="반차 (오후)" className="bg-slate-900">반차 (오후)</option>
+                                <option value="병가" className="bg-slate-900">병가</option>
+                                <option value="특별휴가" className="bg-slate-900">특별휴가</option>
                             </select>
                         </div>
                     </div>
-                    <DialogFooter>
-                        <Button onClick={handleSaveVacation}>저장</Button>
+                    <DialogFooter className="mt-4">
+                        <Button
+                            onClick={handleSaveVacation}
+                            className="w-full h-12 rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-black tracking-widest shadow-[0_10px_20px_-5px_rgba(244,63,94,0.3)] transition-all active:scale-95"
+                        >
+                            휴가 저장
+                        </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

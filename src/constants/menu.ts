@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 
 export type CategoryType = 'basic' | 'health' | 'record' | 'finance';
-export type TabType = 'calendar' | 'tasks' | 'projects' | 'people' | 'goals' | 'language' | 'reading' | 'exercise' | 'diet' | 'inbody' | 'hobby' | 'learning' | 'certificate' | 'portfolio' | 'journal' | 'ideas' | 'scraps' | 'report' | 'ledger' | 'assets' | 'fund' | 'realestate' | 'investment' | 'work_time' | 'templates' | 'full_schedule';
+export type TabType = 'calendar' | 'tasks' | 'projects' | 'people' | 'goals' | 'language' | 'reading' | 'exercise' | 'diet' | 'inbody' | 'hobby' | 'learning' | 'certificate' | 'portfolio' | 'journal' | 'ideas' | 'scraps' | 'report' | 'ledger' | 'assets' | 'fund' | 'realestate' | 'investment' | 'work_time' | 'templates' | 'full_schedule' | 'ambition';
 
 import { LucideIcon } from 'lucide-react';
 
@@ -35,10 +35,14 @@ export const WORK_NAV_ITEMS = [
 
 export const STUDY_NAV_ITEMS = [
     { id: 'learning', label: '학습 플래너', icon: Target },
-    { id: 'goals', label: '목표 (OKR)', icon: Target },
     { id: 'language', label: '어학 학습', icon: Book },
     { id: 'reading', label: '독서 기록', icon: Book },
-    { id: 'certificate', label: '자격증 관리', icon: Award },
+];
+
+export const AMBITION_NAV_ITEMS = [
+    { id: 'goals', label: '전략 목표 (OKR)', icon: Target },
+    { id: 'portfolio', label: '커리어 포트폴리오', icon: Briefcase },
+    { id: 'certificate', label: '자격 및 증명', icon: Award },
 ];
 
 export const SUB_MENUS: Record<CategoryType, MenuItem[]> = {

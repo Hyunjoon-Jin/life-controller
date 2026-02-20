@@ -46,7 +46,7 @@ import { InvestmentTab } from '@/components/finance/InvestmentTab';
 import { LearningPlanner } from '@/components/growth/LearningPlanner';
 import { ReportGenerator } from '@/components/report/ReportGenerator';
 import { WeatherWidget } from '@/components/weather/WeatherWidget';
-import { HelpCircle, Calendar, Sparkles, Briefcase, Home as HomeIcon, GraduationCap } from 'lucide-react';
+import { HelpCircle, Calendar, Sparkles, Briefcase, Home as HomeIcon, GraduationCap, Target } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { Logo } from '@/components/ui/Logo';
@@ -61,10 +61,10 @@ import { AdBanner } from '@/components/ads/AdBanner';
 export default function Home() {
   const { user, isLoading } = useAuth(); // Auth Check
   useBirthdayNotifications(); // Initialize Birthday Check
-  const [appMode, setAppMode] = useState<'life' | 'work' | 'study'>('life');
-  const [mainMode, setMainMode] = useState<'home' | 'schedule' | 'work' | 'study'>('home');
+  const [appMode, setAppMode] = useState<'life' | 'work' | 'study' | 'ambition'>('life');
+  const [mainMode, setMainMode] = useState<'home' | 'schedule' | 'work' | 'study' | 'ambition'>('home');
   const [activeCategory, setActiveCategory] = useState<CategoryType>('basic');
-  const [activeTab, setActiveTab] = useState<'calendar' | 'tasks' | 'projects' | 'people' | 'goals' | 'language' | 'reading' | 'exercise' | 'diet' | 'inbody' | 'hobby' | 'learning' | 'report' | 'ideas' | 'journal' | 'scraps' | 'widgets' | 'ledger' | 'assets' | 'fund' | 'realestate' | 'investment' | 'certificate' | 'portfolio' | 'work_time' | 'templates' | 'full_schedule'>('calendar');
+  const [activeTab, setActiveTab] = useState<'calendar' | 'tasks' | 'projects' | 'people' | 'goals' | 'language' | 'reading' | 'exercise' | 'diet' | 'inbody' | 'hobby' | 'learning' | 'report' | 'ideas' | 'journal' | 'scraps' | 'widgets' | 'ledger' | 'assets' | 'fund' | 'realestate' | 'investment' | 'certificate' | 'portfolio' | 'work_time' | 'templates' | 'full_schedule' | 'ambition'>('calendar');
   const [isGuideOpen, setIsGuideOpen] = useState(false);
   const [todayDate, setTodayDate] = useState('');
 
@@ -74,7 +74,7 @@ export default function Home() {
   }, []);
 
   // When switching directly to 'Work Mode' via toggle, ensure we are in a compatible view
-  // Effect 1: Handle entering Work or Study Mode
+  // Effect 1: Handle entering Work, Study, or Ambition Mode
   useEffect(() => {
     if (appMode === 'work') {
       setActiveCategory('basic');
@@ -82,8 +82,12 @@ export default function Home() {
       setMainMode('work');
     } else if (appMode === 'study') {
       setMainMode('schedule');
-      setActiveCategory('basic'); // We'll handle this in MegaMenu to show study items
+      setActiveCategory('basic');
       setActiveTab('learning');
+    } else if (appMode === 'ambition') {
+      setMainMode('schedule');
+      setActiveCategory('basic');
+      setActiveTab('goals');
     }
   }, [appMode]);
 
@@ -96,8 +100,8 @@ export default function Home() {
     }
   }, [appMode, mainMode]);
 
-  const handleQuickLink = (mode: 'home' | 'schedule' | 'work' | 'study', category: CategoryType, tab: string) => {
-    setMainMode(mode);
+  const handleQuickLink = (mode: 'home' | 'schedule' | 'work' | 'study' | 'ambition', category: CategoryType, tab: string) => {
+    setMainMode(mode as any);
     if (mode === 'schedule') {
       setActiveCategory(category);
       setActiveTab(tab as TabType);
@@ -140,15 +144,15 @@ export default function Home() {
   // 3. Authenticated -> Dashboard
   return (
     <main className={cn(
-      "min-h-screen p-3 sm:p-4 md:p-6 lg:p-8 flex flex-col transition-all duration-500 pb-24 md:pb-6", // Added pb-24 for mobile nav
-      "bg-gray-50 text-slate-900"
+      "min-h-screen p-3 sm:p-4 md:p-6 lg:p-8 flex flex-col transition-all duration-500 pb-24 md:pb-6 relative",
+      "premium-gradient-bg text-foreground bg-noise antialiased selection:bg-primary/30"
     )}>
       {/* Mobile Bottom Navigation */}
       <MobileBottomNav
         appMode={appMode}
-        setAppMode={setAppMode}
-        mainMode={mainMode}
-        setMainMode={setMainMode}
+        setAppMode={setAppMode as any}
+        mainMode={mainMode as any}
+        setMainMode={setMainMode as any}
         activeCategory={activeCategory}
         setActiveCategory={setActiveCategory}
         activeTab={activeTab}
@@ -156,10 +160,10 @@ export default function Home() {
       />
       {/* Mobile Header (Hidden on Desktop) */}
       <MobileHeader
-        appMode={appMode}
-        setAppMode={setAppMode}
-        mainMode={mainMode}
-        setMainMode={setMainMode}
+        appMode={appMode as any}
+        setAppMode={setAppMode as any}
+        mainMode={mainMode as any}
+        setMainMode={setMainMode as any}
         activeCategory={activeCategory}
         setActiveCategory={setActiveCategory}
         onOpenGuide={() => setIsGuideOpen(true)}
@@ -181,7 +185,9 @@ export default function Home() {
           ? "bg-[#E1BEE7] border-[#CE93D8]"
           : appMode === 'study'
             ? "bg-[#C5CAE9] border-[#9FA8DA]"
-            : "bg-[#B2DFDB] border-[#80CBC4]"
+            : appMode === 'ambition'
+              ? "bg-[#FFE0B2] border-[#FFCC80]"
+              : "bg-[#B2DFDB] border-[#80CBC4]"
       )}>
         <div className="flex items-center gap-4">
           <button onClick={() => {
@@ -231,11 +237,24 @@ export default function Home() {
             >
               <Briefcase className="w-4 h-4" /> 업무
             </HoverBorderGradient>
+
+            <HoverBorderGradient
+              as="button"
+              containerClassName="rounded-full"
+              className={cn(
+                "px-4 py-2 text-sm font-bold flex items-center gap-2",
+                appMode === 'ambition' ? "bg-amber-600 text-white shadow-[0_0_15px_rgba(217,119,6,0.5)]" : "bg-white/50 text-gray-500 hover:text-gray-700"
+              )}
+              onClick={() => setAppMode('ambition')}
+              duration={1.5}
+            >
+              <Target className="w-4 h-4" /> 야망
+            </HoverBorderGradient>
           </div>
 
           <div className={cn(
             "flex items-center text-sm font-bold border-l-2 pl-4 h-5 leading-none transition-colors",
-            appMode === 'work' ? "text-[#4A148C] border-[#CE93D8]" : appMode === 'study' ? "text-[#1A237E] border-[#9FA8DA]" : "text-[#004D40] border-[#80CBC4]"
+            appMode === 'work' ? "text-[#4A148C] border-[#CE93D8]" : appMode === 'study' ? "text-[#1A237E] border-[#9FA8DA]" : appMode === 'ambition' ? "text-[#7B1FA2] border-[#FFCC80]" : "text-[#004D40] border-[#80CBC4]"
           )}>
             {todayDate}
           </div>
@@ -319,6 +338,19 @@ export default function Home() {
                         <TabHeader
                           title={item.label}
                           description="업무 효율을 높이는 공간"
+                          icon={item.icon}
+                        />
+                      );
+                    }
+                  }
+
+                  if (appMode === 'ambition') {
+                    const item = AMBITION_NAV_ITEMS.find(i => i.id === activeTab);
+                    if (item) {
+                      return (
+                        <TabHeader
+                          title={item.label}
+                          description="나의 야망과 목표를 현실로 만드는 공간"
                           icon={item.icon}
                         />
                       );

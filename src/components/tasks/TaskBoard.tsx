@@ -6,108 +6,92 @@ import { cn, generateId } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
-import { Plus, MoreHorizontal, Check, Search, ListTodo } from 'lucide-react';
+import { Plus, MoreHorizontal, Check, ListTodo, Search, Trash2, Edit3, Briefcase } from 'lucide-react';
 import { useData } from '@/context/DataProvider';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { DatePicker } from '@/components/ui/date-picker';
-
+import { motion, AnimatePresence } from 'framer-motion';
+import { format } from 'date-fns';
 
 const DEFAULT_PROJECTS: Project[] = [
-    { id: 'default-personal', title: '개인', color: 'bg-blue-400' },
-    { id: 'default-work', title: '일', color: 'bg-orange-400' },
-    { id: 'default-health', title: '운동', color: 'bg-green-400' },
+    { id: 'default-personal', title: '개인', color: '#10b981' },
+    { id: 'default-work', title: '일', color: '#3b82f6' },
+    { id: 'default-health', title: '운동', color: '#f59e0b' },
 ];
 
 interface TaskBoardProps {
-    projectId?: string; // Optional: If provided, filter by this project and hide switcher
+    projectId?: string;
     hideHeader?: boolean;
 }
 
 export function TaskBoard({ projectId, hideHeader = false }: TaskBoardProps) {
     const { tasks, addTask, updateTask, deleteTask, projects: userProjects } = useData();
-    const displayProjects = userProjects.length > 0 ? userProjects : DEFAULT_PROJECTS;
-    // If projectId is passed, lock selection to it. Otherwise default to 'all'
+    const displayProjects = userProjects.length > 0 ? userProjects.map(p => ({
+        ...p,
+        color: p.color.includes('bg-') ? '#10b981' : p.color
+    })) : DEFAULT_PROJECTS;
+
     const [selectedProjectId, setSelectedProjectId] = useState<string>(projectId || 'all');
-
-    // Update selectedProjectId if prop changes
-    if (projectId && selectedProjectId !== projectId) {
-        setSelectedProjectId(projectId);
-    }
-
-    // Create & Edit State
     const [editingTask, setEditingTask] = useState<Task | null>(null);
     const [newTaskTitle, setNewTaskTitle] = useState('');
     const [newTaskType, setNewTaskType] = useState('work');
     const [newTaskRemarks, setNewTaskRemarks] = useState('');
     const [newTaskDeadline, setNewTaskDeadline] = useState<Date | undefined>(undefined);
-
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
 
+    if (projectId && selectedProjectId !== projectId) {
+        setSelectedProjectId(projectId);
+    }
 
     const filteredTasks = tasks.filter(t => {
-        // If projectId prop provided, STRICTLY filter by it. Else use internal state.
         const targetId = projectId || selectedProjectId;
         const matchProject = targetId === 'all' || t.projectId === targetId;
         const matchSearch = t.title.toLowerCase().includes(searchQuery.toLowerCase());
-        // Separate: Exclude Timeline tasks from Daily TaskBoard
         const notTimeline = t.source !== 'timeline';
-
         return matchProject && matchSearch && notTimeline;
     });
 
     const handleSaveTask = () => {
         if (!newTaskTitle.trim()) return;
-
         if (editingTask) {
-            // Update Existing
             updateTask({
                 ...editingTask,
                 title: newTaskTitle,
                 type: newTaskType,
                 remarks: newTaskRemarks,
                 deadline: newTaskDeadline,
-                // Keep existing project ID unless explicitly moving (not implemented here)
                 projectId: editingTask.projectId
             });
-
         } else {
-            // Create New
             const newTask: Task = {
                 id: generateId(),
                 title: newTaskTitle,
                 completed: false,
                 priority: 'medium',
-                // Use the forced projectId, or selected one, or default to '1' (Personal)
                 projectId: projectId || (selectedProjectId === 'all' ? (displayProjects[0]?.id || 'default-personal') : selectedProjectId),
                 type: newTaskType,
                 remarks: newTaskRemarks,
                 deadline: newTaskDeadline,
                 source: 'daily'
             };
-
             addTask(newTask);
         }
-
-        // Reset
-        setNewTaskTitle('');
-        setNewTaskRemarks('');
-        setNewTaskDeadline(undefined);
-        setNewTaskType('work');
-        setEditingTask(null);
-
-
+        resetForm();
         setIsDialogOpen(false);
     };
 
-    const openCreateDialog = () => {
-        setEditingTask(null);
+    const resetForm = () => {
         setNewTaskTitle('');
         setNewTaskRemarks('');
         setNewTaskDeadline(undefined);
         setNewTaskType('work');
-        setIsDialogOpen(true);
+        setEditingTask(null);
+    };
 
+    const openCreateDialog = () => {
+        resetForm();
+        setIsDialogOpen(true);
     };
 
     const openEditDialog = (task: Task) => {
@@ -116,7 +100,6 @@ export function TaskBoard({ projectId, hideHeader = false }: TaskBoardProps) {
         setNewTaskRemarks(task.remarks || '');
         setNewTaskDeadline(task.deadline ? new Date(task.deadline) : undefined);
         setNewTaskType(task.type || 'work');
-
         setIsDialogOpen(true);
     };
 
@@ -126,206 +109,167 @@ export function TaskBoard({ projectId, hideHeader = false }: TaskBoardProps) {
 
     const getPriorityBadge = (p: Priority) => {
         const colors = {
-            high: 'bg-red-500/20 text-red-200',
-            medium: 'bg-yellow-500/20 text-yellow-200',
-            low: 'bg-blue-500/20 text-blue-200'
+            high: 'bg-rose-500 text-white shadow-[0_0_10px_rgba(244,63,94,0.4)]',
+            medium: 'bg-emerald-500 text-white shadow-[0_0_10px_rgba(16,185,129,0.4)]',
+            low: 'bg-blue-500 text-white shadow-[0_0_10px_rgba(59,130,246,0.4)]'
         };
         return (
-            <span className={cn("px-1.5 py-0.5 rounded text-[10px] uppercase font-bold", colors[p])}>
+            <span className={cn("px-2 py-0.5 rounded-lg text-[9px] uppercase font-black tracking-wider", colors[p])}>
                 {p}
             </span>
         );
     };
 
-    return (
-        <div className={cn("flex flex-col h-full bg-card text-card-foreground border border-transparent shadow-sm", hideHeader ? "border-none shadow-none bg-transparent" : "rounded-3xl overflow-hidden")}>
+    const TaskForm = () => (
+        <div className="grid gap-6 py-4">
+            <div className="space-y-3">
+                <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">task name</label>
+                <Input
+                    className="h-14 font-black text-xl border-white/5 bg-white/5 focus-visible:ring-emerald-500/30 rounded-2xl text-white placeholder:text-white/10"
+                    placeholder="WONDERFUL TASK..."
+                    value={newTaskTitle}
+                    onChange={e => setNewTaskTitle(e.target.value)}
+                />
+            </div>
 
-            {/* Header */}
-            {!hideHeader && (
-                <div className="p-4 pt-6 pb-2">
-                    <div className="flex items-center gap-2 mb-4">
-                        <ListTodo className="w-5 h-5 text-primary" />
-                        <h2 className="text-xl font-extrabold">작업 목록</h2>
+            <div className="grid grid-cols-2 gap-6">
+                <div className="space-y-3">
+                    <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Category</label>
+                    <select
+                        className="flex h-12 w-full rounded-2xl border border-white/5 bg-white/5 px-4 py-2 text-sm font-bold text-white outline-none focus:ring-2 focus:ring-emerald-500/20"
+                        value={newTaskType}
+                        onChange={e => setNewTaskType(e.target.value)}
+                    >
+                        <option value="work">WORK</option>
+                        <option value="study">STUDY</option>
+                        <option value="personal">PERSONAL</option>
+                        <option value="health">HEALTH</option>
+                        <option value="finance">FINANCE</option>
+                        <option value="travel">TRAVEL</option>
+                        <option value="social">SOCIAL</option>
+                        <option value="hobby">HOBBY</option>
+                        <option value="home">HOME</option>
+                        <option value="other">ETC</option>
+                    </select>
+                </div>
+                <div className="space-y-3">
+                    <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Deadline</label>
+                    <div className="rounded-2xl overflow-hidden border border-white/5 bg-black/20">
+                        <DatePicker
+                            date={newTaskDeadline}
+                            setDate={setNewTaskDeadline}
+                        />
                     </div>
+                </div>
+            </div>
 
-                    {/* Toolbar */}
-                    <div className="flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
-                            <button
-                                onClick={() => setSelectedProjectId('all')}
-                                className={cn(
-                                    "text-sm px-3 py-1.5 rounded-xl transition-colors whitespace-nowrap font-bold",
-                                    selectedProjectId === 'all' ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-muted/80"
-                                )}
-                            >
-                                모든 작업
-                            </button>
-                            {displayProjects.map(p => (
-                                <button
-                                    key={p.id}
-                                    onClick={() => setSelectedProjectId(p.id)}
-                                    className={cn(
-                                        "text-sm px-3 py-1.5 rounded-xl transition-colors whitespace-nowrap font-bold",
-                                        selectedProjectId === p.id ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-muted/80"
-                                    )}
-                                >
-                                    {p.title}
-                                </button>
-                            ))}
+            <div className="space-y-3">
+                <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Notes</label>
+                <Input
+                    className="h-12 bg-white/5 border-white/5 rounded-2xl text-white placeholder:text-white/10"
+                    placeholder="EXTRA DETAILS..."
+                    value={newTaskRemarks}
+                    onChange={e => setNewTaskRemarks(e.target.value)}
+                />
+            </div>
+        </div>
+    );
+
+    return (
+        <div className={cn("flex flex-col h-full glass-premium overflow-hidden border border-white/5 shadow-2xl relative", hideHeader ? "border-none shadow-none bg-transparent" : "rounded-[32px]")}>
+
+            <div className="absolute inset-0 bg-gradient-to-br from-white/[0.05] via-transparent to-transparent pointer-events-none" />
+
+            {!hideHeader && (
+                <div className="p-8 pb-4 relative z-10">
+                    <div className="flex items-center justify-between mb-8">
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-2xl bg-emerald-500 flex items-center justify-center shadow-[0_10px_20px_-5px_rgba(16,185,129,0.5)]">
+                                <ListTodo className="w-6 h-6 text-white" strokeWidth={3} />
+                            </div>
+                            <div>
+                                <h2 className="text-3xl font-black text-white tracking-tighter uppercase">TASK BOARD</h2>
+                                <p className="text-xs font-bold text-white/30 tracking-widest uppercase mt-0.5">MANAGE YOUR DAILY MISSIONS</p>
+                            </div>
                         </div>
 
-                        {/* Add Task Button inside Toolbar */}
                         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                             <DialogTrigger asChild>
-                                <Button variant="ghost" size="sm" onClick={openCreateDialog} className="h-8 w-8 p-0 rounded-full hover:bg-muted">
-                                    <Plus className="w-5 h-5 text-muted-foreground" />
-                                </Button>
+                                <button onClick={openCreateDialog} className="w-12 h-12 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center hover:bg-white/10 transition-all text-white/60 hover:text-white">
+                                    <Plus className="w-6 h-6" strokeWidth={3} />
+                                </button>
                             </DialogTrigger>
-                            <DialogContent className="sm:max-w-[500px]">
+                            <DialogContent className="glass-premium border border-white/10 text-white rounded-[40px] p-10 shadow-2xl sm:max-w-[550px]">
                                 <DialogHeader>
-                                    <DialogTitle className="font-extrabold text-xl">
-                                        {editingTask ? '작업 수정' : '새 작업 추가'}
+                                    <DialogTitle className="text-3xl font-black tracking-tighter uppercase">
+                                        {editingTask ? 'EDIT TASK' : 'NEW MISSION'}
                                     </DialogTitle>
                                 </DialogHeader>
-
-                                <div className="grid gap-4 py-4">
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-bold text-muted-foreground">작업 이름</label>
-                                        <Input
-                                            className="font-bold text-lg border-transparent bg-muted focus-visible:ring-primary/30"
-                                            placeholder="무엇을 해야 하나요?"
-                                            value={newTaskTitle}
-                                            onChange={e => setNewTaskTitle(e.target.value)}
-                                        />
-                                    </div>
-
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="space-y-2">
-                                            <label className="text-sm font-bold text-muted-foreground">유형</label>
-                                            <select
-                                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-medium"
-                                                value={newTaskType}
-                                                onChange={e => setNewTaskType(e.target.value)}
-                                            >
-                                                <option value="work">업무</option>
-                                                <option value="study">공부</option>
-                                                <option value="personal">개인</option>
-                                                <option value="health">건강</option>
-                                                <option value="finance">재테크</option>
-                                                <option value="travel">여행</option>
-                                                <option value="social">사교</option>
-                                                <option value="hobby">취미</option>
-                                                <option value="home">집안일</option>
-                                                <option value="other">기타</option>
-                                            </select>
-                                        </div>
-                                        <div className="space-y-2">
-                                            <label className="text-sm font-bold text-muted-foreground">마감 기한</label>
-                                            <DatePicker
-                                                date={newTaskDeadline}
-                                                setDate={setNewTaskDeadline}
-                                            />
-                                        </div>
-
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-bold text-muted-foreground">비고 사항</label>
-                                        <Input
-                                            className="bg-muted border-transparent"
-                                            placeholder="추가 세부사항..."
-                                            value={newTaskRemarks}
-                                            onChange={e => setNewTaskRemarks(e.target.value)}
-                                        />
-                                    </div>
-                                </div>
-
-                                <DialogFooter>
-                                    <Button onClick={handleSaveTask} className="w-full font-bold">
-                                        {editingTask ? '수정 완료' : '추가하기'}
+                                <TaskForm />
+                                <DialogFooter className="mt-4">
+                                    <Button
+                                        onClick={handleSaveTask}
+                                        className="w-full h-14 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-black text-lg tracking-widest shadow-[0_15px_30px_-5px_rgba(16,185,129,0.4)] transition-all active:scale-95"
+                                    >
+                                        {editingTask ? 'UPDATE NOW' : 'DEPLOY TASK'}
                                     </Button>
                                 </DialogFooter>
                             </DialogContent>
                         </Dialog>
                     </div>
 
+                    <div className="flex items-center gap-3 overflow-x-auto no-scrollbar pb-2">
+                        <button
+                            onClick={() => setSelectedProjectId('all')}
+                            className={cn(
+                                "px-6 py-2.5 rounded-2xl transition-all font-black text-[11px] tracking-widest uppercase border",
+                                selectedProjectId === 'all'
+                                    ? "bg-emerald-500 text-white border-emerald-500/50 shadow-[0_10px_20px_-5px_rgba(16,185,129,0.3)]"
+                                    : "bg-white/5 border-white/5 text-white/30 hover:text-white/60 hover:bg-white/10"
+                            )}
+                        >
+                            ALL TASKS
+                        </button>
+                        {displayProjects.map(p => (
+                            <button
+                                key={p.id}
+                                onClick={() => setSelectedProjectId(p.id)}
+                                className={cn(
+                                    "px-6 py-2.5 rounded-2xl transition-all font-black text-[11px] tracking-widest uppercase border",
+                                    selectedProjectId === p.id
+                                        ? "bg-white text-black border-white shadow-[0_10px_20px_-5px_rgba(255,255,255,0.2)]"
+                                        : "bg-white/5 border-white/5 text-white/30 hover:text-white/60"
+                                )}
+                            >
+                                <span className="flex items-center gap-2">
+                                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: p.color }} />
+                                    {p.title}
+                                </span>
+                            </button>
+                        ))}
+                    </div>
                 </div>
             )}
 
-            {/* Embedded Toolbar (Create Button) when header is hidden */}
             {hideHeader && (
-                <div className="flex justify-between items-center mb-4">
-                    <h3 className="font-bold text-lg">작업 목록</h3>
+                <div className="flex justify-between items-center mb-6 p-2">
+                    <h3 className="text-2xl font-black text-white tracking-tighter uppercase">QUICK TASKS</h3>
                     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                         <DialogTrigger asChild>
-                            <Button variant="ghost" size="sm" onClick={openCreateDialog} className="h-8 w-8 p-0 rounded-full hover:bg-muted">
-                                <Plus className="w-5 h-5 text-muted-foreground" />
-                            </Button>
-
+                            <button onClick={openCreateDialog} className="w-10 h-10 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center hover:bg-white/10 text-white/40 hover:text-white">
+                                <Plus className="w-5 h-5" strokeWidth={3} />
+                            </button>
                         </DialogTrigger>
-                        <DialogContent className="sm:max-w-[500px]">
-                            {/* ... Content duplicated below due to replace block structure ... */}
+                        <DialogContent className="glass-premium border border-white/10 text-white rounded-[40px] p-10 shadow-2xl sm:max-w-[550px]">
                             <DialogHeader>
-                                <DialogTitle className="font-extrabold text-xl">
-                                    {editingTask ? '작업 수정' : '새 작업 추가'}
+                                <DialogTitle className="text-3xl font-black tracking-tighter uppercase">
+                                    {editingTask ? 'EDIT TASK' : 'NEW MISSION'}
                                 </DialogTitle>
                             </DialogHeader>
-
-                            <div className="grid gap-4 py-4">
-                                <div className="space-y-2">
-                                    <label className="text-sm font-bold text-muted-foreground">작업 이름</label>
-                                    <Input
-                                        className="font-bold text-lg border-transparent bg-muted focus-visible:ring-primary/30"
-                                        placeholder="무엇을 해야 하나요?"
-                                        value={newTaskTitle}
-                                        onChange={e => setNewTaskTitle(e.target.value)}
-                                    />
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-bold text-muted-foreground">유형</label>
-                                        <select
-                                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-medium"
-                                            value={newTaskType}
-                                            onChange={e => setNewTaskType(e.target.value)}
-                                        >
-                                            <option value="work">업무</option>
-                                            <option value="study">공부</option>
-                                            <option value="personal">개인</option>
-                                            <option value="health">건강</option>
-                                            <option value="finance">재테크</option>
-                                            <option value="travel">여행</option>
-                                            <option value="social">사교</option>
-                                            <option value="hobby">취미</option>
-                                            <option value="home">집안일</option>
-                                            <option value="other">기타</option>
-                                        </select>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-bold text-muted-foreground">마감 기한</label>
-                                        <DatePicker
-                                            date={newTaskDeadline}
-                                            setDate={setNewTaskDeadline}
-                                        />
-                                    </div>
-
-                                </div>
-
-                                <div className="space-y-2">
-                                    <label className="text-sm font-bold text-muted-foreground">비고 사항</label>
-                                    <Input
-                                        className="bg-muted border-transparent"
-                                        placeholder="추가 세부사항..."
-                                        value={newTaskRemarks}
-                                        onChange={e => setNewTaskRemarks(e.target.value)}
-                                    />
-                                </div>
-                            </div>
-
-                            <DialogFooter>
-                                <Button onClick={handleSaveTask} className="w-full font-bold">
-                                    {editingTask ? '수정 완료' : '추가하기'}
+                            <TaskForm />
+                            <DialogFooter className="mt-4">
+                                <Button onClick={handleSaveTask} className="w-full h-14 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-black text-lg tracking-widest shadow-[0_15px_30px_-5px_rgba(16,185,129,0.4)]">
+                                    {editingTask ? 'UPDATE NOW' : 'DEPLOY TASK'}
                                 </Button>
                             </DialogFooter>
                         </DialogContent>
@@ -333,100 +277,113 @@ export function TaskBoard({ projectId, hideHeader = false }: TaskBoardProps) {
                 </div>
             )}
 
-            {/* Main Create Dialog Removed (Moved to Toolbar) */}
-
-
-            {/* List Header */}
-            <div className="grid grid-cols-[30px_1.5fr_80px_100px_1fr_80px_30px] gap-4 px-6 py-3 border-b border-border/50 text-xs font-bold text-muted-foreground bg-muted/20">
-                <div></div>
-                <div>작업 이름</div>
-                <div>유형</div>
-                <div>마감 기한</div>
-                <div>비고</div>
-                <div>우선순위</div>
-                <div></div>
+            <div className="hidden md:grid grid-cols-[60px_2fr_120px_140px_2fr_120px_80px] gap-4 px-8 py-4 border-b border-white/[0.03] text-[9px] font-black text-white/20 uppercase tracking-[0.2em] bg-white/[0.01]">
+                <div className="text-center">Done</div>
+                <div>Mission Detail</div>
+                <div>Category</div>
+                <div>Deadline</div>
+                <div>Intelligence</div>
+                <div>Priority</div>
+                <div className="text-right">Actions</div>
             </div>
 
-            {/* List Content */}
-            <div className="flex-1 overflow-y-auto custom-scrollbar">
+            <div className="flex-1 overflow-y-auto custom-scrollbar relative z-10">
                 {filteredTasks.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-16 text-center">
-                        <div className="w-16 h-16 rounded-2xl bg-blue-50 flex items-center justify-center mb-5">
-                            <ListTodo className="w-8 h-8 text-blue-400" />
-                        </div>
-                        <p className="text-lg font-bold text-slate-800 mb-2">등록된 작업이 없어요</p>
-                        <p className="text-sm text-slate-500 max-w-xs leading-relaxed">새 작업을 추가하여 할 일을 관리하세요!</p>
+                    <div className="flex flex-col items-center justify-center h-full py-20 text-center">
+                        <motion.div
+                            initial={{ scale: 0.8, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            className="w-24 h-24 rounded-[32px] bg-white/5 border border-white/5 flex items-center justify-center mb-8 relative"
+                        >
+                            <div className="absolute inset-0 bg-emerald-500/10 blur-2xl rounded-full" />
+                            <ListTodo className="w-10 h-10 text-white/10 relative z-10" />
+                        </motion.div>
+                        <p className="text-2xl font-black text-white/80 uppercase tracking-tighter">NO ACTIVE MISSIONS</p>
+                        <p className="text-xs font-bold text-white/20 tracking-widest uppercase mt-3 max-w-xs leading-relaxed">YOUR SLATE IS CLEAN. INITIALIZE A NEW TASK TO BEGIN.</p>
                     </div>
                 ) : (
-                    filteredTasks.map(task => (
-                        <div
-                            key={task.id}
-                            className="group grid grid-cols-[30px_1.5fr_80px_100px_1fr_80px_30px] gap-4 px-6 py-3 border-b border-border/40 items-center hover:bg-muted/30 transition-colors"
-                        >
-                            <div className="flex justify-center">
-                                <button
-                                    onClick={() => toggleTask(task)}
-                                    className={cn(
-                                        "w-5 h-5 rounded-md border-2 transition-all flex items-center justify-center",
-                                        task.completed
-                                            ? "bg-primary border-primary text-primary-foreground"
-                                            : "border-muted-foreground/30 hover:border-primary/50"
-                                    )}
+                    <div className="p-4 md:p-0">
+                        <AnimatePresence mode="popLayout">
+                            {filteredTasks.map(task => (
+                                <motion.div
+                                    key={task.id}
+                                    layout
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, scale: 0.95 }}
+                                    className="group grid grid-cols-1 md:grid-cols-[60px_2fr_120px_140px_2fr_120px_80px] gap-2 md:gap-4 px-4 md:px-8 py-4 md:py-5 border-b border-white/[0.03] items-center hover:bg-white/[0.02] transition-all duration-300 relative rounded-2xl md:rounded-none mb-2 md:mb-0"
                                 >
-                                    {task.completed && <Check className="w-3.5 h-3.5" strokeWidth={2.5} />}
-                                </button>
-                            </div>
-
-                            <div className={cn(
-                                "text-sm font-bold truncate transition-opacity",
-                                task.completed && "opacity-50 line-through decoration-2 decoration-muted-foreground/50"
-                            )}>
-                                {task.title}
-                            </div>
-
-                            <div className="text-xs font-medium text-muted-foreground bg-muted/50 px-2 py-1 rounded-md w-fit">
-                                {task.type === 'work' ? '업무' :
-                                    task.type === 'study' ? '공부' :
-                                        task.type === 'personal' ? '개인' :
-                                            task.type === 'health' ? '건강' :
-                                                task.type === 'finance' ? '재테크' :
-                                                    task.type === 'travel' ? '여행' :
-                                                        task.type === 'social' ? '사교' :
-                                                            task.type === 'hobby' ? '취미' :
-                                                                task.type === 'home' ? '집안일' : '기타'}
-                            </div>
-
-                            <div className="text-xs font-medium text-red-400">
-                                {task.deadline ? new Date(task.deadline).toLocaleDateString() : '-'}
-                            </div>
-
-                            <div className="text-xs text-muted-foreground truncate" title={task.remarks}>
-                                {task.remarks || '-'}
-                            </div>
-
-                            <div>
-                                {getPriorityBadge(task.priority)}
-                            </div>
-
-                            <div className="opacity-0 group-hover:opacity-100 flex justify-end">
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                        <button className="p-1.5 hover:bg-muted rounded-md text-muted-foreground transition-colors">
-                                            <MoreHorizontal className="w-4 h-4" strokeWidth={1.5} />
+                                    <div className="flex items-center md:justify-center">
+                                        <button
+                                            onClick={() => toggleTask(task)}
+                                            className={cn(
+                                                "w-7 h-7 rounded-xl border-2 transition-all flex items-center justify-center active:scale-75",
+                                                task.completed
+                                                    ? "bg-emerald-500 border-emerald-500 text-white shadow-[0_0_12px_rgba(16,185,129,0.5)]"
+                                                    : "border-white/10 hover:border-white/30 hover:bg-white/5"
+                                            )}
+                                        >
+                                            {task.completed && <Check className="w-4 h-4" strokeWidth={4} />}
                                         </button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end" className="w-[120px]">
-                                        <DropdownMenuItem onClick={() => openEditDialog(task)} className="font-medium cursor-pointer">
-                                            수정
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem onClick={() => deleteTask(task.id)} className="text-red-500 font-medium cursor-pointer focus:text-red-600 focus:bg-red-50">
-                                            삭제
-                                        </DropdownMenuItem>
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
-                            </div>
-                        </div>
-                    ))
+                                    </div>
+
+                                    <div className="flex flex-col min-w-0">
+                                        <div className={cn(
+                                            "text-sm font-black tracking-tight text-white transition-all",
+                                            task.completed && "opacity-20 line-through decoration-2"
+                                        )}>
+                                            {task.title}
+                                        </div>
+                                        <div className="md:hidden flex items-center gap-2 mt-1">
+                                            <span className="text-[9px] font-black text-white/30 uppercase tracking-widest">{task.type}</span>
+                                            <div className="w-1 h-1 rounded-full bg-white/10" />
+                                            <span className="text-[9px] font-black text-rose-500/60 uppercase">
+                                                {task.deadline ? format(new Date(task.deadline), 'MMM d') : 'NO LIMIT'}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div className="hidden md:block">
+                                        <div className="text-[9px] font-black text-white/40 bg-white/5 px-3 py-1.5 rounded-xl w-fit uppercase tracking-widest border border-white/5">
+                                            {task.type}
+                                        </div>
+                                    </div>
+
+                                    <div className="hidden md:block font-bold text-[11px] text-white/40 tracking-tighter">
+                                        {task.deadline ? format(new Date(task.deadline), 'yyyy . MM . dd') : '-'}
+                                    </div>
+
+                                    <div className="hidden md:block text-[11px] text-white/20 font-medium truncate italic" title={task.remarks}>
+                                        {task.remarks || '-'}
+                                    </div>
+
+                                    <div className="hidden md:block">
+                                        {getPriorityBadge(task.priority)}
+                                    </div>
+
+                                    <div className="opacity-100 md:opacity-0 group-hover:opacity-100 flex justify-end transition-all">
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <button className="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-white/10 text-white/20 hover:text-white transition-all">
+                                                    <MoreHorizontal className="w-5 h-5" />
+                                                </button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end" className="glass-premium border border-white/10 text-white p-2 min-w-[140px] rounded-2xl shadow-2xl">
+                                                <DropdownMenuItem onClick={() => openEditDialog(task)} className="rounded-xl flex items-center gap-3 py-2.5 px-4 font-black text-[10px] tracking-widest cursor-pointer hover:bg-white/10 transition-all">
+                                                    <Edit3 className="w-3.5 h-3.5" />
+                                                    UPDATE
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem onClick={() => deleteTask(task.id)} className="rounded-xl flex items-center gap-3 py-2.5 px-4 font-black text-[10px] tracking-widest cursor-pointer text-rose-500 hover:bg-rose-500/10 transition-all">
+                                                    <Trash2 className="w-3.5 h-3.5" />
+                                                    TERMINATE
+                                                </DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </div>
+                                </motion.div>
+                            ))}
+                        </AnimatePresence>
+                    </div>
                 )}
             </div>
         </div>

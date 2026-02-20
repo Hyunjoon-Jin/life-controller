@@ -8,8 +8,16 @@ import { ko } from 'date-fns/locale';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ChevronLeft, ChevronRight, Utensils, Flame, Pizza, Droplet, Wheat, Award, AlertCircle } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend, Line, ComposedChart } from 'recharts';
+import {
+    ChevronLeft, ChevronRight, Utensils, Flame, Pizza, Droplet,
+    Wheat, Award, AlertCircle, TrendingUp, Zap, Activity, Brain, BarChart3, PieChart as PieChartIcon
+} from 'lucide-react';
+import {
+    BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
+    ResponsiveContainer, PieChart, Pie, Cell, Legend, Line, ComposedChart, Area, AreaChart
+} from 'recharts';
+import { motion, AnimatePresence } from 'framer-motion';
+import { cn } from '@/lib/utils';
 
 interface DietAnalysisProps {
     entries: DietEntry[];
@@ -22,8 +30,8 @@ export function DietAnalysis({ entries, inBodyEntries, exerciseSessions }: DietA
     const [viewMode, setViewMode] = useState<'week' | 'month'>('week');
     const [currentDate, setCurrentDate] = useState(new Date());
 
-    const MACRO_COLORS = { carbs: '#60a5fa', protein: '#f87171', fat: '#fbbf24' }; // Blue, Red, Yellow
-    const MACRO_COLORS_ARRAY = ['#60a5fa', '#f87171', '#fbbf24'];
+    const MACRO_COLORS = { carbs: '#0ea5e9', protein: '#f43f5e', fat: '#f59e0b' };
+    const COLORS = ['#10b981', '#f43f5e', '#0ea5e9', '#f59e0b', '#8b5cf6'];
 
     // Date Range Logic
     const dateRange = useMemo(() => {
@@ -67,13 +75,10 @@ export function DietAnalysis({ entries, inBodyEntries, exerciseSessions }: DietA
 
         const uniqueDays = new Set(filteredEntries.map(e => format(new Date(e.date), 'yyyy-MM-dd'))).size;
 
-        // Top Foods
         const foodCounts: Record<string, number> = {};
         filteredEntries.forEach(entry => {
             if (entry.items) {
-                entry.items.forEach(item => {
-                    foodCounts[item.name] = (foodCounts[item.name] || 0) + 1;
-                });
+                entry.items.forEach(item => { foodCounts[item.name] = (foodCounts[item.name] || 0) + 1; });
             } else if ((entry as any).menu) {
                 foodCounts[(entry as any).menu] = (foodCounts[(entry as any).menu] || 0) + 1;
             }
@@ -94,8 +99,6 @@ export function DietAnalysis({ entries, inBodyEntries, exerciseSessions }: DietA
 
         return days.map(day => {
             const dateStr = format(day, 'yyyy-MM-dd');
-
-            // 1. Intake
             const dailyEntries = filteredEntries.filter(e => isSameDay(new Date(e.date), day));
             const calories = dailyEntries.reduce((acc, e) => acc + (e.totalCalories || (e as any).calories || 0), 0);
             const macros = dailyEntries.reduce((acc, e) => ({
@@ -104,61 +107,46 @@ export function DietAnalysis({ entries, inBodyEntries, exerciseSessions }: DietA
                 fat: acc.fat + (e.totalMacros?.fat || (e as any).macros?.fat || 0),
             }), { carbs: 0, protein: 0, fat: 0 });
 
-            // Convert macros to kcal for stacked bar
             const carbsKcal = macros.carbs * 4;
             const proteinKcal = macros.protein * 4;
             const fatKcal = macros.fat * 9;
 
-            // 2. Output (Exercise)
             const dailyExercise = exerciseSessions.filter(e => isSameDay(new Date(e.date), day));
             const exerciseBurn = dailyExercise.reduce((acc, s) => {
-                let met = 5; // Default moderate
+                let met = 5;
                 if (s.category === 'cardio') met = 8;
                 if (s.category === 'sport') met = 7;
                 return acc + (s.duration * met);
             }, 0);
 
-            // 3. BMR (Basal)
             let bmr = 0;
             const closestIdx = closestIndexTo(day, sortedInBody.map(i => new Date(i.date)));
             if (closestIdx !== undefined && sortedInBody[closestIdx]) {
                 bmr = sortedInBody[closestIdx].basalMetabolicRate || 0;
             }
-            if (bmr === 0) bmr = 1500; // Fallback
+            if (bmr === 0) bmr = 1500;
 
-            // 4. Target Calculation (BMR + Exercise + GoalAdjustment)
             let dailyGoalAdj = 0;
             if (bodyCompositionGoal && bodyCompositionGoal.targetWeight && bodyCompositionGoal.targetDate) {
-                // Find latest weight *before* this day to calc diff?
-                // Or just use the global goal calc.
-                // Let's use the start weight of the goal vs target weight.
-                // But better: Dynamic adjustment based on current status?
-                // For simplicity: Linear path from Goal Start Date to Target Date.
-                // Required Daily Deficit = Total Calorie Diff / Total Days.
-
-                const startWeight = bodyCompositionGoal.startWeight || 70; // fallback
+                const startWeight = bodyCompositionGoal.startWeight || 70;
                 const targetWeight = bodyCompositionGoal.targetWeight;
-                const weightDiff = targetWeight - startWeight; // e.g. -5kg
-                const totalCalorieDiff = weightDiff * 7700; // -38500 kcal
-
+                const weightDiff = targetWeight - startWeight;
+                const totalCalorieDiff = weightDiff * 7700;
                 const goalStartDate = new Date(bodyCompositionGoal.startDate || new Date());
                 const goalTargetDate = new Date(bodyCompositionGoal.targetDate);
                 const totalDays = differenceInDays(goalTargetDate, goalStartDate) || 1;
-
-                dailyGoalAdj = totalCalorieDiff / totalDays; // e.g. -38500/30 = -1283 kcal/day
-
-                // Cap adjustment to avoid starvation targets
+                dailyGoalAdj = totalCalorieDiff / totalDays;
                 if (dailyGoalAdj < -1000) dailyGoalAdj = -1000;
                 if (dailyGoalAdj > 1000) dailyGoalAdj = 1000;
             }
 
             let target = bmr + exerciseBurn + dailyGoalAdj;
-            if (target < 1200) target = 1200; // Minimum safety floor
+            if (target < 1200) target = 1200;
 
             return {
-                name: format(day, viewMode === 'week' ? 'EEE' : 'dd', { locale: ko }),
+                name: format(day, viewMode === 'week' ? 'EEE' : 'dd', { locale: ko }).toUpperCase(),
                 date: dateStr,
-                calories, // Total intake
+                calories,
                 carbsKcal,
                 proteinKcal,
                 fatKcal,
@@ -175,202 +163,104 @@ export function DietAnalysis({ entries, inBodyEntries, exerciseSessions }: DietA
         const total = carbs + protein + fat;
         if (total === 0) return [];
         return [
-            { name: '탄수화물', value: carbs },
-            { name: '단백질', value: protein },
-            { name: '지방', value: fat },
+            { name: 'CARBS', value: carbs, color: '#0ea5e9' },
+            { name: 'PROT', value: protein, color: '#f43f5e' },
+            { name: 'LIPID', value: fat, color: '#f59e0b' },
         ];
     }, [stats]);
 
-    // Insights
-    const insights = useMemo(() => {
-        const list = [];
-        const validDays = chartData.filter(d => d.calories > 0);
-        const avgIntake = validDays.reduce((acc, d) => acc + d.calories, 0) / (validDays.length || 1);
-        const avgTarget = chartData.reduce((acc, d) => acc + d.target, 0) / (chartData.length || 1);
-
-        if (validDays.length > 0) {
-            const ratio = avgIntake / avgTarget;
-            if (ratio > 1.1) list.push({ type: 'warning', text: '목표보다 많이 드셨어요! 운동량을 늘려보세요. 🏃‍♂️' });
-            else if (ratio < 0.8) list.push({ type: 'warning', text: '섭취량이 부족해요. 건강한 다이어트를 위해 챙겨드세요! 🥗' });
-            else list.push({ type: 'success', text: '목표 칼로리를 완벽하게 지키고 계세요! 👏' });
-        }
-
-        const { carbs, protein, fat } = stats.totalMacros;
-        const totalWeight = carbs + protein + fat;
-        if (totalWeight > 0) {
-            const pRatio = protein / totalWeight;
-            if (pRatio < 0.2) list.push({ type: 'info', text: '근육 합성을 위해 단백질 비중을 높여보세요. 🍗' });
-        }
-
-        if (bodyCompositionGoal?.targetWeight) {
-            list.push({ type: 'info', text: `목표 체중 ${bodyCompositionGoal.targetWeight}kg 달성을 위해 화이팅하세요!` });
-        }
-
-        if (stats.uniqueDays === 0) list.push({ type: 'neutral', text: '기록이 없어요. 오늘 식단을 기록해보세요!' });
-
-        return list;
-    }, [stats, chartData, bodyCompositionGoal]);
-
     return (
-        <div className="space-y-6 animate-in fade-in pb-10">
-            {/* Header Controls */}
-            <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-white p-4 rounded-xl shadow-sm border">
-                <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as any)} className="w-[200px]">
-                    <TabsList className="grid w-full grid-cols-2">
-                        <TabsTrigger value="week">주간</TabsTrigger>
-                        <TabsTrigger value="month">월간</TabsTrigger>
-                    </TabsList>
-                </Tabs>
+        <div className="h-full flex flex-col gap-10">
+            {/* Header / Navigation */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 flex items-center justify-center border border-emerald-500/30">
+                        <Activity className="w-6 h-6 text-emerald-400" />
+                    </div>
+                    <div>
+                        <h3 className="text-2xl font-black text-white tracking-widest uppercase mb-1">METABOLIC ANALYSIS</h3>
+                        <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] italic">DIGESTIVE CHRONICLE & ENERGY BALANCE</p>
+                    </div>
+                </div>
 
-                <div className="flex items-center gap-4 bg-muted/30 p-1 rounded-lg">
-                    <Button variant="ghost" size="icon" onClick={() => navigate('prev')}>
+                <div className="flex items-center gap-4 bg-white/5 p-2 rounded-2xl border border-white/5">
+                    <Button variant="ghost" size="icon" onClick={() => navigate('prev')} className="h-10 w-10 text-white/40 hover:text-white hover:bg-white/5">
                         <ChevronLeft className="w-5 h-5" />
                     </Button>
-                    <span className="font-bold min-w-[140px] text-center text-lg">
+                    <div className="px-6 text-sm font-black text-white tracking-widest uppercase">
                         {viewMode === 'week'
-                            ? `${format(dateRange.start, 'MM.dd')} - ${format(dateRange.end, 'MM.dd')}`
-                            : format(currentDate, 'yyyy년 MM월')
+                            ? `${format(dateRange.start, 'MMM dd')} - ${format(dateRange.end, 'MMM dd')}`
+                            : format(currentDate, 'MMMM yyyy').toUpperCase()
                         }
-                    </span>
-                    <Button variant="ghost" size="icon" onClick={() => navigate('next')}>
+                    </div>
+                    <Button variant="ghost" size="icon" onClick={() => navigate('next')} className="h-10 w-10 text-white/40 hover:text-white hover:bg-white/5">
                         <ChevronRight className="w-5 h-5" />
                     </Button>
+                    <div className="w-px h-6 bg-white/10 mx-2" />
+                    <Tabs value={viewMode} onValueChange={(v: any) => setViewMode(v)} className="bg-transparent border-none">
+                        <TabsList className="bg-white/5 p-1 rounded-xl">
+                            <TabsTrigger value="week" className="px-4 py-1.5 rounded-lg text-[9px] font-black tracking-widest uppercase data-[state=active]:bg-emerald-500 data-[state=active]:text-white">WEEK</TabsTrigger>
+                            <TabsTrigger value="month" className="px-4 py-1.5 rounded-lg text-[9px] font-black tracking-widest uppercase data-[state=active]:bg-emerald-500 data-[state=active]:text-white">MONTH</TabsTrigger>
+                        </TabsList>
+                    </Tabs>
                 </div>
             </div>
 
-            {/* Quick Stats Cards */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <Card className="bg-gradient-to-br from-red-50 to-white border-red-100">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium text-red-600">평균 칼로리</CardTitle>
-                        <Flame className="h-4 w-4 text-red-500" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold text-red-700">
-                            {stats.uniqueDays > 0 ? Math.round(stats.totalCalories / stats.uniqueDays).toLocaleString() : 0}
-                            <span className="text-xs font-normal text-muted-foreground ml-1">kcal</span>
+            {/* Stats Row */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                {[
+                    { label: 'AVG CALORIES', value: stats.uniqueDays > 0 ? Math.round(stats.totalCalories / stats.uniqueDays) : 0, icon: Flame, color: 'rose' },
+                    { label: 'TOTAL CARBS', value: `${Math.round(stats.totalMacros.carbs)}G`, icon: Wheat, color: 'sky' },
+                    { label: 'TOTAL PROTEIN', value: `${Math.round(stats.totalMacros.protein)}G`, icon: Pizza, color: 'rose' },
+                    { label: 'TOTAL LIPIDS', value: `${Math.round(stats.totalMacros.fat)}G`, icon: Droplet, color: 'amber' },
+                ].map((stat, i) => (
+                    <motion.div
+                        key={stat.label}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.1 }}
+                        className="glass-premium rounded-[32px] border border-white/5 p-6 hover:bg-white/[0.03] transition-all"
+                    >
+                        <div className={cn(
+                            "w-10 h-10 rounded-xl mb-4 flex items-center justify-center",
+                            stat.color === 'rose' ? "bg-rose-500/20 text-rose-400" :
+                                stat.color === 'sky' ? "bg-sky-500/20 text-sky-400" : "bg-amber-500/20 text-amber-400"
+                        )}>
+                            <stat.icon className="w-5 h-5" />
                         </div>
-                    </CardContent>
-                </Card>
-                <Card className="bg-gradient-to-br from-blue-50 to-white border-blue-100">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium text-blue-600">총 탄수화물</CardTitle>
-                        <Wheat className="h-4 w-4 text-blue-500" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold text-blue-700">
-                            {Math.round(stats.totalMacros.carbs).toLocaleString()}
-                            <span className="text-xs font-normal text-muted-foreground ml-1">g</span>
-                        </div>
-                    </CardContent>
-                </Card>
-                <Card className="bg-gradient-to-br from-red-50 to-white border-red-100">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium text-red-600">총 단백질</CardTitle>
-                        <Pizza className="h-4 w-4 text-red-500" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold text-red-700">
-                            {Math.round(stats.totalMacros.protein).toLocaleString()}
-                            <span className="text-xs font-normal text-muted-foreground ml-1">g</span>
-                        </div>
-                    </CardContent>
-                </Card>
-                <Card className="bg-gradient-to-br from-yellow-50 to-white border-yellow-100">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium text-yellow-600">총 지방</CardTitle>
-                        <Droplet className="h-4 w-4 text-yellow-500" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold text-yellow-700">
-                            {Math.round(stats.totalMacros.fat).toLocaleString()}
-                            <span className="text-xs font-normal text-muted-foreground ml-1">g</span>
-                        </div>
-                    </CardContent>
-                </Card>
+                        <div className="text-[9px] font-black text-white/20 uppercase tracking-widest mb-1">{stat.label}</div>
+                        <div className="text-3xl font-black text-white tracking-tighter">{stat.value}</div>
+                    </motion.div>
+                ))}
             </div>
 
-            {/* Main Chart Area */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* 1. Macro Ratio */}
-                <Card className="h-full">
-                    <CardHeader>
-                        <CardTitle>탄단지 비율</CardTitle>
-                        <CardDescription>섭취 영양소 비율</CardDescription>
+            {/* Charts Row */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Daily Energy Consumption Chart */}
+                <Card className="lg:col-span-2 glass-premium rounded-[40px] border border-white/5 bg-transparent overflow-hidden">
+                    <CardHeader className="p-10 pb-0">
+                        <CardTitle className="text-xl font-black text-white tracking-widest uppercase">ENERGY DYNAMICS</CardTitle>
+                        <p className="text-[9px] font-bold text-white/20 uppercase mt-1 tracking-widest">INTAKE VS METABOLIC TARGET</p>
                     </CardHeader>
-                    <CardContent className="flex flex-col items-center justify-center min-h-[250px]">
-                        {macroRatioData.length > 0 ? (
-                            <div className="w-full h-[200px] relative">
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <PieChart>
-                                        <Pie
-                                            data={macroRatioData}
-                                            cx="50%"
-                                            cy="50%"
-                                            innerRadius={50}
-                                            outerRadius={80}
-                                            paddingAngle={5}
-                                            dataKey="value"
-                                        >
-                                            {macroRatioData.map((entry, index) => (
-                                                <Cell key={`cell-${index}`} fill={MACRO_COLORS_ARRAY[index]} />
-                                            ))}
-                                        </Pie>
-                                        <Tooltip />
-                                        <Legend verticalAlign="bottom" height={36} />
-                                    </PieChart>
-                                </ResponsiveContainer>
-                            </div>
-                        ) : (
-                            <div className="text-muted-foreground text-sm">데이터 부족</div>
-                        )}
-
-                        {/* Insights List */}
-                        <div className="w-full mt-4 space-y-2">
-                            {insights.slice(0, 3).map((insight, idx) => (
-                                <div key={idx} className={`p-3 rounded-lg text-xs flex items-center gap-2 ${insight.type === 'warning' ? 'bg-orange-50 text-orange-700' :
-                                        insight.type === 'success' ? 'bg-green-50 text-green-700' :
-                                            'bg-blue-50 text-blue-700'
-                                    }`}>
-                                    <AlertCircle className="w-3 h-3 shrink-0" />
-                                    <span>{insight.text}</span>
-                                </div>
-                            ))}
-                        </div>
-                    </CardContent>
-                </Card>
-
-                {/* 2. Daily Calories Trend (The Main Feature Update) */}
-                <Card className="col-span-1 lg:col-span-2">
-                    <CardHeader>
-                        <CardTitle>일별 칼로리 및 목표 달성</CardTitle>
-                        <CardDescription>막대: 섭취 칼로리 (탄/단/지) vs 점선: 목표 칼로리</CardDescription>
-                    </CardHeader>
-                    <CardContent className="h-[400px]">
+                    <CardContent className="p-10 h-[400px]">
                         <ResponsiveContainer width="100%" height="100%">
-                            <ComposedChart data={chartData} margin={{ top: 20, right: 30, left: 10, bottom: 5 }}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                                <XAxis dataKey="name" fontSize={12} tickLine={false} axisLine={false} />
-                                <YAxis
-                                    fontSize={12}
-                                    tickLine={false}
-                                    axisLine={false}
-                                    label={{ value: 'kcal', position: 'insideLeft', angle: -90, offset: 10, fill: '#94a3b8' }}
-                                />
+                            <ComposedChart data={chartData} margin={{ top: 20, right: 10, left: -20, bottom: 0 }}>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
+                                <XAxis dataKey="name" fontSize={10} tickLine={false} axisLine={false} tick={{ fill: 'rgba(255,255,255,0.2)', fontWeight: '900' }} tickMargin={10} />
+                                <YAxis fontSize={10} tickLine={false} axisLine={false} tick={{ fill: 'rgba(255,255,255,0.2)', fontWeight: '900' }} />
                                 <Tooltip
-                                    cursor={{ fill: '#f8fafc' }}
-                                    content={({ active, payload, label }) => {
+                                    content={({ active, payload, label }: any) => {
                                         if (active && payload && payload.length) {
                                             return (
-                                                <div className="bg-white/95 backdrop-blur-sm border border-border/50 shadow-xl rounded-xl p-4 text-xs font-sans">
-                                                    <p className="font-bold text-gray-700 mb-2 border-b pb-1">{label}</p>
+                                                <div className="glass-premium border border-white/10 p-5 rounded-2xl shadow-2xl backdrop-blur-xl">
+                                                    <p className="text-[10px] font-black tracking-widest text-white/40 mb-3 uppercase border-b border-white/5 pb-2">{label}</p>
                                                     {payload.map((p: any) => (
-                                                        <div key={p.name} className="flex items-center justify-between gap-4 mb-1 last:mb-0">
+                                                        <div key={p.name} className="flex items-center justify-between gap-6 mb-2 last:mb-0">
                                                             <div className="flex items-center gap-2">
-                                                                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: p.stroke || p.fill }} />
-                                                                <span className="text-muted-foreground">{p.name}</span>
+                                                                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: p.fill || p.stroke }} />
+                                                                <span className="text-[9px] font-black text-white/40 uppercase">{p.name}</span>
                                                             </div>
-                                                            <span className="font-bold font-mono">{Math.round(p.value)} kcal</span>
+                                                            <span className="text-xs font-black text-white">{Math.round(p.value)} <small className="text-[8px] opacity-40">KCAL</small></span>
                                                         </div>
                                                     ))}
                                                 </div>
@@ -379,44 +269,91 @@ export function DietAnalysis({ entries, inBodyEntries, exerciseSessions }: DietA
                                         return null;
                                     }}
                                 />
-                                <Legend />
-
-                                {/* Stacked Bars for Intake converted to Kcal */}
-                                <Bar dataKey="carbsKcal" stackId="a" fill={MACRO_COLORS.carbs} name="탄수화물" maxBarSize={50} />
-                                <Bar dataKey="proteinKcal" stackId="a" fill={MACRO_COLORS.protein} name="단백질" maxBarSize={50} />
-                                <Bar dataKey="fatKcal" stackId="a" fill={MACRO_COLORS.fat} name="지방" radius={[4, 4, 0, 0]} maxBarSize={50} />
-
-                                {/* Target Line */}
-                                <Line type="step" dataKey="target" stroke="#10b981" strokeWidth={2} strokeDasharray="4 4" name="목표 칼로리" dot={false} />
+                                <Bar dataKey="carbsKcal" stackId="a" fill="#0ea5e9" name="CARBS" barSize={30} />
+                                <Bar dataKey="proteinKcal" stackId="a" fill="#f43f5e" name="PROT" barSize={30} />
+                                <Bar dataKey="fatKcal" stackId="a" fill="#f59e0b" name="LIPID" barSize={30} radius={[6, 6, 0, 0]} />
+                                <Line type="step" dataKey="target" stroke="#10b981" strokeWidth={4} strokeDasharray="8 8" name="TARGET" dot={false} />
                             </ComposedChart>
                         </ResponsiveContainer>
                     </CardContent>
                 </Card>
+
+                {/* Macro Ratio Breakdown */}
+                <Card className="glass-premium rounded-[40px] border border-white/5 bg-transparent overflow-hidden">
+                    <CardHeader className="p-10 pb-0 text-center">
+                        <CardTitle className="text-xl font-black text-white tracking-widest uppercase">RATIO VARIANCE</CardTitle>
+                        <p className="text-[9px] font-bold text-white/20 uppercase mt-1 tracking-widest">MACRONUTRIENT DISTRIBUTION</p>
+                    </CardHeader>
+                    <CardContent className="p-10 h-[400px] flex flex-col justify-between">
+                        {macroRatioData.length > 0 ? (
+                            <div className="flex-1">
+                                <ResponsiveContainer width="100%" height="250px">
+                                    <PieChart>
+                                        <Pie
+                                            data={macroRatioData}
+                                            cx="50%"
+                                            cy="50%"
+                                            innerRadius={60}
+                                            outerRadius={90}
+                                            paddingAngle={10}
+                                            dataKey="value"
+                                            stroke="none"
+                                        >
+                                            {macroRatioData.map((entry, index) => (
+                                                <Cell key={`cell-${index}`} fill={entry.color} />
+                                            ))}
+                                        </Pie>
+                                        <Tooltip />
+                                    </PieChart>
+                                </ResponsiveContainer>
+                                <div className="grid grid-cols-3 gap-2 mt-4">
+                                    {macroRatioData.map(item => (
+                                        <div key={item.name} className="flex flex-col items-center p-3 bg-white/5 rounded-2xl border border-white/5">
+                                            <span className="text-[8px] font-black text-white/20 uppercase tracking-widest mb-1">{item.name}</span>
+                                            <span className="text-sm font-black text-white">{Math.round((item.value / stats.totalMacros.carbs + stats.totalMacros.protein + stats.totalMacros.fat) * 100) || 0}%</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="flex flex-col items-center justify-center h-full opacity-10 gap-4">
+                                <PieChartIcon className="w-12 h-12" />
+                                <p className="text-[10px] font-black tracking-widest uppercase">DATA AWAITING CALIBRATION</p>
+                            </div>
+                        )}
+                    </CardContent>
+                </Card>
             </div>
 
-            {/* Top Foods */}
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-sm">
-                        <Award className="w-4 h-4 text-yellow-500" /> 자주 먹은 음식 Top 5
-                    </CardTitle>
+            {/* Top Entities Heatmap */}
+            <Card className="glass-premium rounded-[40px] border border-white/5 bg-transparent overflow-hidden">
+                <CardHeader className="p-10 pb-0">
+                    <div className="flex items-center gap-3">
+                        <Award className="w-5 h-5 text-amber-500" />
+                        <CardTitle className="text-xl font-black text-white tracking-widest uppercase">RECURRING ENTITIES</CardTitle>
+                    </div>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-10">
                     {stats.topFoods.length > 0 ? (
-                        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                        <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
                             {stats.topFoods.map((food, idx) => (
-                                <div key={idx} className="flex flex-col items-center justify-center p-3 bg-muted/20 rounded-xl border border-dashed hover:bg-muted/30 transition-colors">
-                                    <div className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-white text-xs mb-1 shadow-sm ${idx === 0 ? 'bg-yellow-400' : idx === 1 ? 'bg-gray-400' : idx === 2 ? 'bg-orange-400' : 'bg-slate-300'
-                                        }`}>
-                                        {idx + 1}
+                                <motion.div
+                                    initial={{ opacity: 0, scale: 0.9 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    transition={{ delay: idx * 0.1 }}
+                                    key={idx}
+                                    className="relative group p-6 glass-premium border border-white/5 rounded-[32px] overflow-hidden hover:bg-white/5 transition-all text-center"
+                                >
+                                    <div className="absolute top-0 right-0 w-12 h-12 bg-white/5 rounded-bl-3xl flex items-center justify-center font-black text-xs text-white/10 group-hover:text-amber-500/40 transition-colors">
+                                        0{idx + 1}
                                     </div>
-                                    <span className="font-bold text-center text-xs line-clamp-1">{food.name}</span>
-                                    <span className="text-[10px] text-muted-foreground">{food.count}회</span>
-                                </div>
+                                    <div className="text-sm font-black text-white uppercase tracking-tighter mb-2 truncate px-4">{food.name}</div>
+                                    <div className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">{food.count} OCCURRENCES</div>
+                                </motion.div>
                             ))}
                         </div>
                     ) : (
-                        <div className="text-center py-4 text-xs text-muted-foreground">데이터가 충분하지 않아요.</div>
+                        <div className="py-12 text-center opacity-10 font-black text-[10px] tracking-[0.3em] uppercase border-2 border-dashed border-white/5 rounded-3xl text-white">NO LOG HISTORY DETECTED</div>
                     )}
                 </CardContent>
             </Card>

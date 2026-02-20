@@ -1,12 +1,11 @@
-'use client';
-
 import { useData } from '@/context/DataProvider';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Clock, Play, Square, Coffee, History, BarChart2 } from 'lucide-react';
+import { Clock, Play, Square, Coffee, History, BarChart2, Zap, Terminal, Shield, Activity, Timer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { format, differenceInMinutes, startOfDay, endOfDay, isSameDay } from 'date-fns';
 import { generateId, cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export function WorkTimeSection() {
     const { workLogs, addWorkLog, updateWorkLog, deleteWorkLog } = useData();
@@ -43,7 +42,7 @@ export function WorkTimeSection() {
         const diff = differenceInMinutes(new Date(endTime), new Date(start));
         const hours = Math.floor(diff / 60);
         const minutes = diff % 60;
-        return `${hours}시간 ${minutes}분`;
+        return `${hours}H ${minutes}M`;
     };
 
     const todayLogs = workLogs.filter(log => isSameDay(new Date(log.date), new Date()));
@@ -53,116 +52,186 @@ export function WorkTimeSection() {
     }, 0);
 
     return (
-        <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {/* Clock-in/out Card */}
-                <Card className="md:col-span-2 border-none shadow-sm overflow-hidden bg-slate-900 text-white">
-                    <CardContent className="p-8">
-                        <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+        <div className="space-y-10">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+                {/* Main Efficiency Matrix */}
+                <div className="lg:col-span-8 flex flex-col gap-8">
+                    <div className="glass-premium rounded-[40px] border border-white/5 p-10 shadow-2xl relative overflow-hidden group">
+                        <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/[0.05] via-transparent to-sky-500/[0.05] pointer-events-none" />
+
+                        <div className="flex flex-col md:flex-row items-center justify-between gap-12 relative z-10">
                             <div className="text-center md:text-left">
-                                <div className="text-sm font-medium text-slate-400 mb-2 uppercase tracking-wider">현재 시간</div>
-                                <div className="text-5xl font-mono font-bold">{format(currentTime, 'HH:mm:ss')}</div>
-                                <div className="text-sm text-slate-500 mt-2">{format(currentTime, 'yyyy년 MM월 dd일')}</div>
+                                <div className="flex items-center gap-3 mb-4">
+                                    <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center">
+                                        <Timer className="w-5 h-5 text-indigo-400" />
+                                    </div>
+                                    <span className="text-[10px] font-black text-indigo-400 tracking-[0.3em] uppercase">OFFICIAL_TIME_UNIT</span>
+                                </div>
+                                <div className="text-7xl font-black text-white tracking-tighter tabular-nums leading-none">
+                                    {format(currentTime, 'HH:mm')}<span className="text-indigo-500/30 font-light">:</span><span className="text-indigo-400">{format(currentTime, 'ss')}</span>
+                                </div>
+                                <div className="text-[11px] font-bold text-white/20 mt-4 tracking-[0.4em] uppercase flex items-center gap-2 justify-center md:justify-start">
+                                    <Shield className="w-3 h-3 text-indigo-500/30" /> SYNCED_WITH_GLOBAL_COMMAND
+                                </div>
                             </div>
 
-                            <div className="flex flex-col items-center md:items-end gap-4">
-                                {activeLog ? (
-                                    <div className="text-right">
-                                        <div className="text-xs text-slate-400 mb-1">현재 근무 중</div>
-                                        <div className="text-2xl font-bold text-green-400">{calculateDuration(activeLog.startTime)}</div>
-                                    </div>
-                                ) : (
-                                    <div className="text-xs text-slate-400">오늘 총 근무: {Math.floor(totalTodayMinutes / 60)}시간 {totalTodayMinutes % 60}분</div>
-                                )}
+                            <div className="flex flex-col items-center md:items-end gap-6">
+                                <AnimatePresence mode="wait">
+                                    {activeLog ? (
+                                        <motion.div
+                                            key="active"
+                                            initial={{ opacity: 0, scale: 0.9 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            exit={{ opacity: 0, scale: 0.9 }}
+                                            className="text-center md:text-right"
+                                        >
+                                            <div className="flex items-center gap-2 justify-center md:justify-end mb-1">
+                                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                                <span className="text-[10px] font-black text-emerald-400 tracking-widest uppercase">OPERATIONAL_NOW</span>
+                                            </div>
+                                            <div className="text-4xl font-black text-white tracking-tighter font-mono uppercase">
+                                                {calculateDuration(activeLog.startTime)}
+                                            </div>
+                                        </motion.div>
+                                    ) : (
+                                        <motion.div
+                                            key="idle"
+                                            initial={{ opacity: 0, scale: 0.9 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            exit={{ opacity: 0, scale: 0.9 }}
+                                            className="text-center md:text-right"
+                                        >
+                                            <div className="text-[9px] font-black text-white/20 tracking-widest uppercase mb-1">CUMULATIVE_OPERATIONS</div>
+                                            <div className="text-2xl font-black text-white/60 tracking-tight uppercase">
+                                                {Math.floor(totalTodayMinutes / 60)}H {totalTodayMinutes % 60}M
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
 
-                                <div className="flex gap-3">
+                                <div className="flex gap-4">
                                     {!activeLog ? (
-                                        <Button onClick={handleClockIn} className="bg-primary hover:bg-primary/90 h-14 px-8 rounded-2xl text-lg font-bold">
-                                            <Play className="w-5 h-5 mr-2 fill-current" /> 출근하기
+                                        <Button
+                                            onClick={handleClockIn}
+                                            className="h-16 px-12 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-black text-xs tracking-[0.2em] uppercase shadow-[0_12px_24px_-8px_rgba(99,102,241,0.5)] active:scale-95 transition-all"
+                                        >
+                                            <Play className="w-4 h-4 mr-3 fill-current" /> INITIALIZE_WORK
                                         </Button>
                                     ) : (
                                         <>
-                                            <Button variant="outline" className="h-14 px-6 rounded-2xl border-slate-700 hover:bg-slate-800 text-white">
-                                                <Coffee className="w-5 h-5 mr-2" /> 휴식
+                                            <Button
+                                                variant="outline"
+                                                className="h-16 px-8 rounded-2xl border-white/5 bg-white/5 hover:bg-white/10 text-white font-black text-xs tracking-[0.2em] uppercase"
+                                            >
+                                                <Coffee className="w-4 h-4 mr-3" /> SUSPEND
                                             </Button>
-                                            <Button onClick={handleClockOut} variant="destructive" className="h-14 px-8 rounded-2xl text-lg font-bold">
-                                                <Square className="w-5 h-5 mr-2 fill-current" /> 퇴근하기
+                                            <Button
+                                                onClick={handleClockOut}
+                                                className="h-16 px-12 rounded-2xl bg-rose-600 hover:bg-rose-500 text-white font-black text-xs tracking-[0.2em] uppercase shadow-[0_12px_24px_-8px_rgba(225,29,72,0.4)] active:scale-95 transition-all"
+                                            >
+                                                <Square className="w-4 h-4 mr-3 fill-current" /> TERMINATE
                                             </Button>
                                         </>
                                     )}
                                 </div>
                             </div>
                         </div>
-                    </CardContent>
-                </Card>
+                    </div>
 
-                {/* Statistics Card */}
-                <Card className="border-none shadow-sm">
-                    <CardHeader>
-                        <CardTitle className="text-sm font-bold flex items-center gap-2">
-                            <BarChart2 className="w-4 h-4 text-primary" />
-                            주간 근무 리포트
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="flex items-end gap-1 h-24 items-end">
-                            {[40, 65, 30, 80, 50, 0, 0].map((h, i) => (
-                                <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                                    <div className="w-full bg-slate-100 rounded-t-sm relative h-full">
-                                        <div className="absolute bottom-0 w-full bg-primary/40 rounded-t-sm" style={{ height: `${h}%` }}></div>
+                    <div className="glass-premium rounded-[32px] border border-white/5 p-8 shadow-2xl overflow-hidden">
+                        <div className="flex items-center justify-between mb-8">
+                            <div className="flex items-center gap-4">
+                                <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
+                                    <History className="w-5 h-5 text-indigo-400" />
+                                </div>
+                                <h4 className="text-sm font-black text-white tracking-[0.2em] uppercase">OPERATIONAL_LOGS</h4>
+                            </div>
+                            <Button variant="ghost" className="text-[9px] font-black text-white/20 hover:text-white uppercase tracking-widest">EXPAND_ARCHIVE</Button>
+                        </div>
+                        <div className="space-y-4">
+                            {workLogs.length > 0 ? (
+                                workLogs.slice(-5).reverse().map(log => (
+                                    <div key={log.id} className="flex items-center justify-between p-5 bg-white/[0.02] border border-white/5 rounded-2xl group/log hover:bg-white/[0.05] transition-all">
+                                        <div className="flex items-center gap-10">
+                                            <div className="flex flex-col">
+                                                <span className="text-[8px] font-black text-white/20 tracking-widest uppercase mb-1">TIMESTAMP</span>
+                                                <span className="font-black text-xs text-white uppercase tracking-widest">{format(new Date(log.date), 'MM.dd.yyyy')}</span>
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <span className="text-[8px] font-black text-white/20 tracking-widest uppercase mb-1">DURATION</span>
+                                                <span className="text-xs font-bold text-white/60 tracking-wider">
+                                                    {format(new Date(log.startTime), 'HH:mm')} — {log.endTime ? format(new Date(log.endTime), 'HH:mm') : 'ACTIVE'}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-6">
+                                            <div className="text-xs font-black text-indigo-400 tracking-widest tabular-nums">
+                                                {log.endTime ? calculateDuration(log.startTime, log.endTime) : '---'}
+                                            </div>
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                className="h-8 w-8 text-white/10 hover:text-rose-500 hover:bg-rose-500/10 rounded-lg"
+                                                onClick={() => deleteWorkLog(log.id)}
+                                            >
+                                                <Terminal className="w-3.5 h-3.5" />
+                                            </Button>
+                                        </div>
                                     </div>
-                                    <span className="text-[10px] text-muted-foreground">{['월', '화', '수', '목', '금', '토', '일'][i]}</span>
+                                ))
+                            ) : (
+                                <div className="text-center py-16 border-2 border-dashed border-white/5 rounded-3xl">
+                                    <span className="text-[10px] font-black text-white/10 tracking-[0.3em] uppercase italic">NO DATA ENTRIES DETECTED</span>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Side Stats */}
+                <div className="lg:col-span-4 flex flex-col gap-8">
+                    <div className="glass-premium rounded-[32px] border border-white/5 p-8 shadow-2xl relative overflow-hidden h-full">
+                        <div className="flex items-center justify-between mb-10">
+                            <div className="flex items-center gap-4">
+                                <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
+                                    <BarChart2 className="w-5 h-5 text-indigo-400" />
+                                </div>
+                                <h4 className="text-sm font-black text-white tracking-[0.2em] uppercase text-sky-400">EFFICIENCY_METRICS</h4>
+                            </div>
+                        </div>
+
+                        <div className="flex items-end gap-3 h-48 mb-10 px-2">
+                            {[40, 65, 30, 80, 50, 20, 10].map((h, i) => (
+                                <div key={i} className="flex-1 flex flex-col items-center gap-3 h-full">
+                                    <div className="w-full bg-white/5 rounded-2xl relative h-full group/bar overflow-hidden">
+                                        <motion.div
+                                            initial={{ height: 0 }}
+                                            animate={{ height: `${h}%` }}
+                                            className="absolute bottom-0 w-full bg-gradient-to-t from-indigo-600 to-sky-400 rounded-2xl shadow-[0_0_15px_rgba(99,102,241,0.3)] transition-all group-hover/bar:brightness-125"
+                                        />
+                                    </div>
+                                    <span className="text-[9px] font-black text-white/20 tracking-tighter uppercase">{['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'][i]}</span>
                                 </div>
                             ))}
                         </div>
-                        <div className="pt-2 border-t space-y-2">
-                            <div className="flex justify-between text-xs">
-                                <span className="text-muted-foreground">이번 주 총 근무</span>
-                                <span className="font-bold">24.5시간</span>
+
+                        <div className="space-y-6 pt-6 border-t border-white/5">
+                            <div className="flex justify-between items-center group/item">
+                                <span className="text-[10px] font-black text-white/20 tracking-widest uppercase group-hover/item:text-indigo-400 transition-colors">WEEKLY_TOTAL</span>
+                                <span className="font-black text-lg text-white tabular-nums tracking-tighter">24.5H</span>
                             </div>
-                            <div className="flex justify-between text-xs">
-                                <span className="text-muted-foreground">일평균 근무</span>
-                                <span className="font-bold">4.9시간</span>
+                            <div className="flex justify-between items-center group/item">
+                                <span className="text-[10px] font-black text-white/20 tracking-widest uppercase group-hover/item:text-indigo-400 transition-colors">DAILY_AVERAGE</span>
+                                <span className="font-black text-lg text-white tabular-nums tracking-tighter">4.9H</span>
+                            </div>
+                            <div className="flex justify-between items-center group/item">
+                                <span className="text-[10px] font-black text-white/20 tracking-widest uppercase group-hover/item:text-indigo-400 transition-colors">PEAK_PROTOCOL</span>
+                                <span className="font-black text-xs text-indigo-400 tracking-widest uppercase">THURSDAY</span>
                             </div>
                         </div>
-                    </CardContent>
-                </Card>
-            </div>
-
-            {/* History Table */}
-            <Card className="border-none shadow-sm">
-                <CardHeader className="flex flex-row items-center justify-between">
-                    <CardTitle className="text-sm font-bold flex items-center gap-2">
-                        <History className="w-4 h-4 text-primary" />
-                        근무 이력
-                    </CardTitle>
-                    <Button variant="ghost" size="sm" className="text-xs">전체 보기</Button>
-                </CardHeader>
-                <CardContent>
-                    <div className="space-y-2">
-                        {workLogs.length > 0 ? (
-                            workLogs.slice().reverse().map(log => (
-                                <div key={log.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-xl text-sm">
-                                    <div className="flex items-center gap-4">
-                                        <div className="font-bold w-20">{format(new Date(log.date), 'MM-dd (eee)')}</div>
-                                        <div className="text-muted-foreground">
-                                            {format(new Date(log.startTime), 'HH:mm')} - {log.endTime ? format(new Date(log.endTime), 'HH:mm') : '진행 중'}
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-4">
-                                        <div className="font-bold">{log.endTime ? calculateDuration(log.startTime, log.endTime) : '...'}</div>
-                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-red-500" onClick={() => deleteWorkLog(log.id)}>
-                                            <History className="w-3.5 h-3.5" />
-                                        </Button>
-                                    </div>
-                                </div>
-                            ))
-                        ) : (
-                            <div className="text-center py-10 text-muted-foreground italic">아직 기록된 근무 이력이 없습니다.</div>
-                        )}
                     </div>
-                </CardContent>
-            </Card>
+                </div>
+            </div>
         </div>
     );
 }

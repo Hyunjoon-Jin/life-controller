@@ -7,14 +7,20 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
-import { Palette, Plus, Trash2, Calendar as CalendarIcon, Tag, Star, ArrowLeft, Image as ImageIcon, ExternalLink, MoreVertical } from 'lucide-react';
+import {
+    Palette, Plus, Trash2, Calendar as CalendarIcon, Tag, Star,
+    ArrowLeft, Image as ImageIcon, ExternalLink, MoreVertical,
+    Sparkles, Camera, Book, Music, Ghost, Heart, Trophy, Edit3,
+    Terminal, Zap, Fingerprint, Activity, MousePointer2, X
+} from 'lucide-react';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import Image from 'next/image';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export function HobbyLog() {
     const { hobbies, addHobby, deleteHobby, hobbyPosts, addHobbyPost, deleteHobbyPost } = useData();
@@ -45,7 +51,6 @@ export function HobbyLog() {
         .filter(p => p.hobbyId === selectedHobbyId)
         .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
-    // --- Hobby Actions ---
     const handleCreateHobby = () => {
         if (!newHobbyTitle) return;
         const id = generateId();
@@ -53,28 +58,21 @@ export function HobbyLog() {
             id,
             title: newHobbyTitle,
             description: newHobbyDesc,
-            coverImage: newHobbyCover || undefined, // Todo: Handle image upload
+            coverImage: newHobbyCover || undefined,
             startDate: new Date(),
             tags: []
         });
-        setNewHobbyTitle('');
-        setNewHobbyDesc('');
-        setNewHobbyCover('');
-        setIsHobbyDialogOpen(false);
+        setNewHobbyTitle(''); setNewHobbyDesc(''); setNewHobbyCover(''); setIsHobbyDialogOpen(false);
     };
 
     const handleDeleteHobby = (id: string, e: React.MouseEvent) => {
         e.stopPropagation();
-        if (confirm('이 취미와 모든 기록을 삭제하시겠습니까?')) {
+        if (confirm('TERMINATE THIS HOBBY ARCHIVE? ALL RECORDS WILL BE ERASED.')) {
             deleteHobby(id);
-            if (selectedHobbyId === id) {
-                setView('list');
-                setSelectedHobbyId(null);
-            }
+            if (selectedHobbyId === id) { setView('list'); setSelectedHobbyId(null); }
         }
     };
 
-    // --- Post Actions ---
     const handleCreatePost = () => {
         if (!selectedHobbyId || !postTitle) return;
         addHobbyPost({
@@ -92,359 +90,422 @@ export function HobbyLog() {
     };
 
     const handleDeletePost = (id: string) => {
-        if (confirm('이 기록을 삭제하시겠습니까?')) {
+        if (confirm('ERASE THIS LOG ENTRY?')) {
             deleteHobbyPost(id);
         }
     };
 
     const resetPostForm = () => {
-        setPostTitle('');
-        setPostContent('');
-        setPostDate(new Date());
-        setPostImages([]);
-        setPostTags('');
-        setPostLink('');
+        setPostTitle(''); setPostContent(''); setPostDate(new Date()); setPostImages([]); setPostTags(''); setPostLink('');
     };
 
-    // Helper: Image Upload (Base64)
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
         const file = e.target.files?.[0];
         if (file) {
             const reader = new FileReader();
-            reader.onloadend = () => {
-                setter(reader.result as string);
-            };
+            reader.onloadend = () => { setter(reader.result as string); };
             reader.readAsDataURL(file);
         }
     };
 
-    // Helper: Multiple Image Upload for Post
     const handlePostImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
         if (files) {
             Array.from(files).forEach(file => {
                 const reader = new FileReader();
                 reader.onloadend = () => {
-                    setPostImages(prev => [...prev, reader.result as string].slice(0, 4)); // Max 4
+                    setPostImages(prev => [...prev, reader.result as string].slice(0, 4));
                 };
                 reader.readAsDataURL(file);
             });
         }
     };
 
-    // --- Render: List View ---
     if (view === 'list') {
         return (
-            <div className="h-full flex flex-col p-6 overflow-y-auto custom-scrollbar">
-                <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center gap-2">
-                        <Palette className="w-6 h-6 text-primary" />
-                        <h2 className="text-2xl font-bold">나의 취미 생활</h2>
-                    </div>
-                    <Button onClick={() => setIsHobbyDialogOpen(true)} className="bg-primary hover:bg-primary/90">
-                        <Plus className="w-4 h-4 mr-2" /> 새 취미 만들기
-                    </Button>
-                </div>
+            <div className="h-full flex flex-col glass-premium rounded-[32px] border border-white/5 shadow-2xl overflow-hidden relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-amber-500/[0.03] via-transparent to-rose-500/[0.03] pointer-events-none" />
 
-                {hobbies.length === 0 ? (
-                    <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground opacity-50 min-h-[400px]">
-                        <div className="w-20 h-20 bg-muted/30 rounded-full flex items-center justify-center mb-4">
-                            <Palette className="w-10 h-10" />
+                <div className="p-8 pb-4 relative z-10">
+                    <div className="flex items-center justify-between mb-8">
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-2xl bg-amber-500 flex items-center justify-center shadow-[0_10px_20px_-5px_rgba(245,158,11,0.5)]">
+                                <Palette className="w-6 h-6 text-white" strokeWidth={3} />
+                            </div>
+                            <div>
+                                <h2 className="text-3xl font-black text-white tracking-tighter uppercase leading-none">CREATIVE RESERVOIR</h2>
+                                <p className="text-[10px] font-bold text-white/20 tracking-[0.3em] uppercase mt-2 italic flex items-center gap-2">
+                                    <Sparkles className="w-3 h-3 text-amber-500" /> PASSION ARCHIVE: SYNCHRONIZED
+                                </p>
+                            </div>
                         </div>
-                        <p className="text-lg font-medium">새로운 취미를 시작해보세요!</p>
-                        <p className="text-sm">상단의 버튼을 눌러 취미 공간을 만들 수 있습니다.</p>
-                    </div>
-                ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {hobbies.map(hobby => {
-                            // Get stats
-                            const count = hobbyPosts.filter(p => p.hobbyId === hobby.id).length;
-                            const lastPost = hobbyPosts.filter(p => p.hobbyId === hobby.id).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
 
-                            return (
-                                <Card
-                                    key={hobby.id}
-                                    className="group cursor-pointer hover:shadow-lg transition-all overflow-hidden border-muted/60"
-                                    onClick={() => { setSelectedHobbyId(hobby.id); setView('detail'); }}
-                                >
-                                    {/* Cover Image Area */}
-                                    <div className="h-32 bg-muted/30 relative overflow-hidden">
-                                        {hobby.coverImage ? (
-                                            <Image src={hobby.coverImage} alt={hobby.title} fill className="object-cover group-hover:scale-105 transition-transform duration-500" unoptimized />
-                                        ) : (
-                                            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-indigo-50 to-purple-50">
-                                                <Palette className="w-8 h-8 text-indigo-200" />
-                                            </div>
-                                        )}
-                                        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <Button variant="secondary" size="icon" className="h-8 w-8 bg-white/80 hover:bg-white text-red-500" onClick={(e) => handleDeleteHobby(hobby.id, e)}>
-                                                <Trash2 className="w-4 h-4" />
-                                            </Button>
-                                        </div>
-                                    </div>
-
-                                    <CardContent className="p-5">
-                                        <h3 className="font-bold text-lg mb-1 group-hover:text-primary transition-colors">{hobby.title}</h3>
-                                        <p className="text-sm text-muted-foreground line-clamp-2 mb-4 h-10">
-                                            {hobby.description || '설명이 없습니다.'}
-                                        </p>
-
-                                        <div className="flex items-center justify-between text-xs text-muted-foreground pt-4 border-t border-dashed">
-                                            <span className="flex items-center gap-1">
-                                                <CalendarIcon className="w-3 h-3" />
-                                                {format(new Date(hobby.startDate), 'yy.MM.dd')} 시작
-                                            </span>
-                                            <span className="bg-primary/5 text-primary px-2 py-0.5 rounded-full font-medium">
-                                                기록 {count}개
-                                            </span>
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            );
-                        })}
-                    </div>
-                )}
-
-                {/* Create Hobby Dialog */}
-                <Dialog open={isHobbyDialogOpen} onOpenChange={setIsHobbyDialogOpen}>
-                    <DialogContent>
-                        <DialogHeader>
-                            <DialogTitle>새로운 취미 공간 만들기</DialogTitle>
-                        </DialogHeader>
-                        <div className="grid gap-4 py-4">
-                            <div className="grid gap-2">
-                                <Label>취미 이름</Label>
-                                <Input
-                                    placeholder="예: 필름 사진, 베이킹, 독서 등"
-                                    value={newHobbyTitle}
-                                    onChange={e => setNewHobbyTitle(e.target.value)}
-                                />
-                            </div>
-                            <div className="grid gap-2">
-                                <Label>설명 (선택)</Label>
-                                <Input
-                                    placeholder="이 취미에 대한 간단한 설명"
-                                    value={newHobbyDesc}
-                                    onChange={e => setNewHobbyDesc(e.target.value)}
-                                />
-                            </div>
-                            <div className="grid gap-2">
-                                <Label>커버 이미지 (선택)</Label>
-                                <div className="flex items-center gap-4">
-                                    <div className="w-20 h-20 bg-muted rounded-md overflow-hidden flex-shrink-0 border flex items-center justify-center relative">
-                                        {newHobbyCover ? (
-                                            <Image src={newHobbyCover} alt="Cover" fill className="object-cover" unoptimized />
-                                        ) : (
-                                            <ImageIcon className="w-8 h-8 text-muted-foreground/50" />
-                                        )}
-                                        <input
-                                            type="file"
-                                            accept="image/*"
-                                            className="absolute inset-0 opacity-0 cursor-pointer"
-                                            onChange={(e) => handleImageUpload(e, setNewHobbyCover)}
+                        <Dialog open={isHobbyDialogOpen} onOpenChange={setIsHobbyDialogOpen}>
+                            <DialogTrigger asChild>
+                                <button className="w-12 h-12 rounded-2xl bg-amber-500 hover:bg-amber-600 flex items-center justify-center transition-all text-white shadow-[0_10px_20px_-5px_rgba(245,158,11,0.4)] active:scale-95 group">
+                                    <Plus className="w-6 h-6 group-hover:rotate-90 transition-transform duration-500" strokeWidth={3} />
+                                </button>
+                            </DialogTrigger>
+                            <DialogContent className="glass-premium border border-white/10 text-white rounded-[40px] p-0 shadow-2xl sm:max-w-[550px] overflow-hidden">
+                                <DialogHeader className="p-10 pb-0">
+                                    <DialogTitle className="text-3xl font-black tracking-tighter uppercase mb-2">INITIALIZE SPACE</DialogTitle>
+                                    <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] italic">ALLOCATING NEURAL BANDWIDTH FOR NEW CREATIVE OUTLET</p>
+                                </DialogHeader>
+                                <div className="p-10 pt-4 space-y-8">
+                                    <div className="space-y-3">
+                                        <label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">HOBBY IDENTITY</label>
+                                        <Input
+                                            className="h-14 font-black text-xl border-white/5 bg-white/5 focus-visible:ring-amber-500/30 rounded-2xl text-white placeholder:text-white/10"
+                                            placeholder="EX: ANALOG PHOTO, BAKING..."
+                                            value={newHobbyTitle}
+                                            onChange={e => setNewHobbyTitle(e.target.value)}
                                         />
                                     </div>
-                                    <div className="text-xs text-muted-foreground">
-                                        <p>이미지를 클릭하여 대표 사진을 설정하세요.</p>
-                                        <p>설정하지 않으면 기본 이미지가 적용됩니다.</p>
+                                    <div className="space-y-3">
+                                        <label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">MISSION PROTOCOL</label>
+                                        <Input
+                                            className="h-12 bg-white/5 border-white/5 rounded-2xl text-white placeholder:text-white/10 font-bold uppercase text-[10px] tracking-widest"
+                                            placeholder="DESCRIBE THE CORE DRIVE"
+                                            value={newHobbyDesc}
+                                            onChange={e => setNewHobbyDesc(e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="space-y-3">
+                                        <label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">VISUAL ENCODING</label>
+                                        <div className="flex items-center gap-6 p-6 rounded-3xl bg-white/[0.02] border border-white/5">
+                                            <div className="w-24 h-24 bg-white/5 rounded-2xl overflow-hidden border border-white/5 flex items-center justify-center relative hover:bg-white/10 transition-all cursor-pointer group">
+                                                {newHobbyCover ? (
+                                                    <Image src={newHobbyCover} alt="Cover" fill className="object-cover" unoptimized />
+                                                ) : (
+                                                    <Camera className="w-8 h-8 text-white/10 group-hover:scale-110 transition-all" />
+                                                )}
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    className="absolute inset-0 opacity-0 cursor-pointer"
+                                                    onChange={(e) => handleImageUpload(e, setNewHobbyCover)}
+                                                />
+                                            </div>
+                                            <div className="flex-1">
+                                                <p className="text-[10px] font-black text-amber-500 uppercase tracking-widest">TAP TO UPLOAD COVER</p>
+                                                <p className="text-[9px] font-bold text-white/20 mt-1 uppercase tracking-tighter leading-tight">ATTACH A VISUAL ANCHOR FOR THIS MEMORY SPACE.</p>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
+                                <DialogFooter className="p-10 pt-0">
+                                    <Button
+                                        onClick={handleCreateHobby}
+                                        disabled={!newHobbyTitle}
+                                        className="w-full h-14 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-black text-sm tracking-widest uppercase shadow-xl transition-all active:scale-95"
+                                    >
+                                        ACTIVATE SECTOR
+                                    </Button>
+                                </DialogFooter>
+                            </DialogContent>
+                        </Dialog>
+                    </div>
+                </div>
+
+                <div className="flex-1 overflow-y-auto custom-scrollbar p-8 relative z-10">
+                    {hobbies.length === 0 ? (
+                        <div className="h-full flex flex-col items-center justify-center text-center opacity-10 gap-6">
+                            <Palette className="w-20 h-20" />
+                            <div className="space-y-2">
+                                <h3 className="text-2xl font-black tracking-[0.2em] uppercase">VOID DETECTED</h3>
+                                <p className="text-[10px] font-bold tracking-[0.5em] uppercase">NO CREATIVE VECTORS INITIALIZED</p>
                             </div>
                         </div>
-                        <DialogFooter>
-                            <Button onClick={handleCreateHobby} disabled={!newHobbyTitle}>만들기</Button>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
+                    ) : (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 pb-12">
+                            <AnimatePresence mode="popLayout">
+                                {hobbies.map((hobby, idx) => {
+                                    const count = hobbyPosts.filter(p => p.hobbyId === hobby.id).length;
+                                    return (
+                                        <motion.div
+                                            key={hobby.id}
+                                            layout
+                                            initial={{ opacity: 0, y: 20 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{ delay: idx * 0.05 }}
+                                            className="group cursor-pointer"
+                                            onClick={() => { setSelectedHobbyId(hobby.id); setView('detail'); }}
+                                        >
+                                            <div className="relative h-[320px] rounded-[40px] overflow-hidden border border-white/5 bg-white/5 transition-all duration-500 group-hover:scale-[1.02] group-hover:-translate-y-2 shadow-2xl">
+                                                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent z-10" />
+
+                                                {hobby.coverImage ? (
+                                                    <Image src={hobby.coverImage} alt={hobby.title} fill className="object-cover grayscale-[0.2] transition-all duration-700 group-hover:scale-110 group-hover:grayscale-0" unoptimized />
+                                                ) : (
+                                                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-amber-500/10 to-transparent">
+                                                        <Palette className="w-16 h-16 text-white/5" />
+                                                    </div>
+                                                )}
+
+                                                <div className="absolute inset-x-0 bottom-0 p-8 z-20">
+                                                    <div className="flex items-center gap-3 mb-4">
+                                                        <div className="px-4 h-6 rounded-lg bg-amber-500/20 text-[9px] font-black tracking-widest text-amber-500 uppercase flex items-center border border-amber-500/20 backdrop-blur-md">
+                                                            {count} ARCHIVES
+                                                        </div>
+                                                    </div>
+                                                    <h3 className="text-2xl font-black text-white tracking-tighter uppercase leading-none mb-2 group-hover:text-amber-400 transition-colors">{hobby.title}</h3>
+                                                    <p className="text-[10px] font-bold text-white/30 uppercase tracking-widest line-clamp-1 italic">
+                                                        {hobby.description || 'SILENT PASSIVE LOG'}
+                                                    </p>
+
+                                                    <div className="mt-8 pt-6 border-t border-white/10 flex items-center justify-between opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-4 group-hover:translate-y-0">
+                                                        <div className="flex items-center gap-2">
+                                                            <CalendarIcon className="w-3 h-3 text-white/20" />
+                                                            <span className="text-[9px] font-black text-white/20 uppercase tracking-widest">EST. {format(new Date(hobby.startDate), 'yyyy')}</span>
+                                                        </div>
+                                                        <button
+                                                            className="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-500 flex items-center justify-center hover:bg-rose-500 hover:text-white transition-all shadow-xl active:scale-90"
+                                                            onClick={(e) => handleDeleteHobby(hobby.id, e)}
+                                                        >
+                                                            <Trash2 className="w-4 h-4" />
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </motion.div>
+                                    );
+                                })}
+                            </AnimatePresence>
+                        </div>
+                    )}
+                </div>
             </div>
         );
     }
 
-    // --- Render: Detail View ---
     if (!selectedHobby) return null;
 
     return (
-        <div className="h-full flex flex-col overflow-hidden">
-            {/* Header */}
-            <div className="shrink-0 relative h-48 bg-slate-900 flex items-end">
-                {selectedHobby.coverImage && (
-                    <>
-                        <div className="absolute inset-0 bg-black/40 z-10" />
-                        <Image src={selectedHobby.coverImage} fill className="object-cover" alt="cover" unoptimized />
-                    </>
+        <div className="h-full flex flex-col glass-premium rounded-[32px] border border-white/5 shadow-2xl overflow-hidden relative">
+            <div className="shrink-0 relative h-80 group overflow-hidden">
+                {selectedHobby.coverImage ? (
+                    <Image src={selectedHobby.coverImage} fill className="object-cover transition-all duration-1000 group-hover:scale-110" alt="cover" unoptimized />
+                ) : (
+                    <div className="absolute inset-0 bg-gradient-to-br from-amber-900 to-black" />
                 )}
-                <div className="relative z-20 w-full p-6 text-white flex justify-between items-end">
-                    <div>
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            className="text-white/70 hover:text-white hover:bg-white/10 mb-2 pl-0 gap-1"
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent z-10" />
+
+                <div className="relative z-20 h-full p-10 flex flex-col justify-end">
+                    <div className="flex flex-col gap-6">
+                        <button
+                            className="w-fit flex items-center gap-3 px-6 py-2.5 rounded-2xl bg-white/10 border border-white/10 text-white/60 hover:text-white hover:bg-white/20 transition-all font-black text-[10px] tracking-widest uppercase active:scale-95"
                             onClick={() => setView('list')}
                         >
-                            <ArrowLeft className="w-4 h-4" /> 목록으로
-                        </Button>
-                        <h2 className="text-3xl font-bold mb-1">{selectedHobby.title}</h2>
-                        <p className="text-white/80 text-sm max-w-xl">{selectedHobby.description}</p>
+                            <ArrowLeft className="w-4 h-4" /> RETURN TO SECTOR MAP
+                        </button>
+                        <div className="flex items-end justify-between gap-12">
+                            <div className="max-w-2xl">
+                                <h2 className="text-6xl font-black text-white tracking-tighter uppercase leading-none drop-shadow-2xl mb-4">{selectedHobby.title}</h2>
+                                <p className="text-[11px] font-bold text-white/40 tracking-[0.2em] uppercase leading-relaxed max-w-xl italic">
+                                    <Terminal className="w-3 h-3 inline mr-2 text-amber-500" /> {selectedHobby.description || 'MISSION PROTOCOL NOT SPECIFIED'}
+                                </p>
+                            </div>
+                            <Button
+                                onClick={() => setIsPostDialogOpen(true)}
+                                className="h-16 px-10 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-black text-sm tracking-widest shadow-2xl transition-all active:scale-95 shrink-0"
+                            >
+                                <Plus className="w-6 h-6 mr-4" strokeWidth={3} /> INITIALIZE LOG
+                            </Button>
+                        </div>
                     </div>
-                    <Button onClick={() => setIsPostDialogOpen(true)} className="bg-white text-slate-900 hover:bg-white/90 font-bold border-none">
-                        <Plus className="w-4 h-4 mr-2" /> 기록 남기기
-                    </Button>
                 </div>
             </div>
 
-            {/* Post Feed */}
-            <div className="flex-1 overflow-y-auto custom-scrollbar p-6 bg-slate-50/50">
-                <div className="max-w-3xl mx-auto space-y-8">
+            <div className="flex-1 overflow-y-auto custom-scrollbar relative z-10 p-10">
+                <div className="max-w-5xl mx-auto space-y-12 pb-20">
                     {currentPosts.length === 0 ? (
-                        <div className="text-center py-20 text-muted-foreground">
-                            <p className="mb-2 text-lg">아직 기록이 없습니다.</p>
-                            <p className="text-sm">첫 번째 이야기를 기록해보세요!</p>
+                        <div className="flex flex-col items-center justify-center py-32 opacity-10 gap-6">
+                            <Book className="w-20 h-20" />
+                            <div className="text-center space-y-2">
+                                <h3 className="text-2xl font-black tracking-[0.2em] uppercase">STREAMS VACANT</h3>
+                                <p className="text-[10px] font-bold tracking-[0.5em] uppercase">NO CHRONOLOGICAL LOGS RECORDED</p>
+                            </div>
                         </div>
                     ) : (
-                        currentPosts.map(post => (
-                            <div key={post.id} className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 relative group animate-in fade-in slide-in-from-bottom-4 duration-500">
-                                {/* Post Options */}
-                                <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                        currentPosts.map((post, idx) => (
+                            <motion.div
+                                key={post.id}
+                                initial={{ opacity: 0, x: -20 }}
+                                whileInView={{ opacity: 1, x: 0 }}
+                                transition={{ delay: idx * 0.05 }}
+                                viewport={{ once: true }}
+                                className="glass-premium rounded-[48px] p-10 border border-white/5 relative group/post hover:border-white/10 transition-all"
+                            >
+                                <div className="absolute top-10 right-10 flex gap-2 opacity-0 group-hover/post:opacity-100 transition-all">
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
-                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
-                                                <MoreVertical className="w-4 h-4" />
-                                            </Button>
+                                            <button className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-white/20 hover:text-white transition-all active:scale-95 shadow-xl">
+                                                <MoreVertical className="w-5 h-5" />
+                                            </button>
                                         </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end">
-                                            <DropdownMenuItem className="text-red-600 cursor-pointer" onClick={() => handleDeletePost(post.id)}>
-                                                <Trash2 className="w-4 h-4 mr-2" /> 삭제
+                                        <DropdownMenuContent align="end" className="glass-premium border border-white/10 min-w-[200px]">
+                                            <DropdownMenuItem className="text-[10px] font-black uppercase tracking-widest gap-3 py-4 text-rose-500" onClick={() => handleDeletePost(post.id)}>
+                                                <Trash2 className="w-4 h-4" /> ERASE ENTRY
                                             </DropdownMenuItem>
                                         </DropdownMenuContent>
                                     </DropdownMenu>
                                 </div>
 
-                                <div className="flex items-center gap-3 mb-4 text-sm text-muted-foreground border-b pb-4 border-dashed">
-                                    <span className="font-medium text-slate-700 bg-slate-100 px-2 py-0.5 rounded-md">
-                                        {format(new Date(post.date), 'yyyy년 MM월 dd일', { locale: ko })}
-                                    </span>
-                                    {post.link && (
-                                        <a href={post.link} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-blue-500 hover:underline">
-                                            <ExternalLink className="w-3 h-3" /> 관련 링크
-                                        </a>
-                                    )}
+                                <div className="flex items-center gap-6 mb-8">
+                                    <div className="w-20 h-20 rounded-[32px] bg-white/5 border border-white/10 flex flex-col items-center justify-center shrink-0">
+                                        <span className="text-[10px] font-black text-white/20 uppercase mb-1">{format(new Date(post.date), 'MMM')}</span>
+                                        <span className="text-2xl font-black text-white tracking-tighter leading-none">{format(new Date(post.date), 'dd')}</span>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <div className="flex items-center gap-3">
+                                            <span className="text-[9px] font-black text-amber-500 tracking-widest uppercase">STATION {idx + 1} // COMMITTED</span>
+                                            <span className="w-1 h-1 rounded-full bg-white/20" />
+                                            <span className="text-[9px] font-bold text-white/20 uppercase tracking-widest">{format(new Date(post.date), 'hh:mm a')}</span>
+                                        </div>
+                                        <h3 className="text-3xl font-black text-white tracking-tighter uppercase leading-tight">{post.title}</h3>
+                                    </div>
                                 </div>
 
-                                <h3 className="text-xl font-bold text-slate-900 mb-4">{post.title}</h3>
-
-                                <div className="prose prose-sm max-w-none text-slate-600 mb-6 whitespace-pre-wrap leading-relaxed">
+                                <div className="prose prose-invert max-w-none text-white/60 mb-10 text-base font-bold leading-relaxed tracking-tight bg-white/[0.02] p-8 rounded-[32px] border border-white/5">
                                     {post.content}
                                 </div>
 
-                                {/* Images Grid */}
                                 {post.images && post.images.length > 0 && (
-                                    <div className={cn("grid gap-2 mb-4",
+                                    <div className={cn("grid gap-6 mb-10",
                                         post.images.length === 1 ? "grid-cols-1" :
                                             post.images.length === 2 ? "grid-cols-2" :
-                                                "grid-cols-2 md:grid-cols-3"
+                                                "grid-cols-2 lg:grid-cols-4"
                                     )}>
-                                        {post.images.map((img, idx) => (
-                                            <div key={idx} className="rounded-lg overflow-hidden border bg-slate-50 relative aspect-video">
-                                                <Image src={img} alt={`post-img-${idx}`} fill className="object-cover hover:scale-105 transition-transform duration-500 cursor-zoom-in" unoptimized />
+                                        {post.images.map((img, i) => (
+                                            <div key={i} className="rounded-3xl overflow-hidden border border-white/10 bg-black/40 relative aspect-square group/img">
+                                                <Image src={img} alt="post-img" fill className="object-cover transition-all duration-700 group-hover/img:scale-110" unoptimized />
                                             </div>
                                         ))}
                                     </div>
                                 )}
 
-                                {post.tags && post.tags.length > 0 && (
-                                    <div className="flex flex-wrap gap-2 pt-2">
-                                        {post.tags.map(tag => (
-                                            <span key={tag} className="text-xs text-primary bg-primary/5 px-2 py-1 rounded-full font-medium">#{tag}</span>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
+                                <div className="flex flex-wrap gap-2">
+                                    {post.tags?.map(tag => (
+                                        <div key={tag} className="px-4 py-2 rounded-xl bg-white/5 border border-white/5 text-[9px] font-black text-white/40 uppercase tracking-[0.2em] hover:text-amber-400 hover:border-amber-400/20 transition-all">
+                                            #{tag}
+                                        </div>
+                                    ))}
+                                    {post.link && (
+                                        <a href={post.link} target="_blank" rel="noreferrer" className="ml-auto flex items-center gap-2 group/link">
+                                            <span className="text-[9px] font-black text-white/20 uppercase tracking-widest group-hover/link:text-amber-500 transition-colors">ACCESS ASSET</span>
+                                            <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/5 flex items-center justify-center group-hover/link:bg-amber-500 transition-all">
+                                                <ArrowUpRight className="w-4 h-4 text-white" />
+                                            </div>
+                                        </a>
+                                    )}
+                                </div>
+                            </motion.div>
                         ))
                     )}
                 </div>
             </div>
 
-            {/* Create Post Dialog */}
             <Dialog open={isPostDialogOpen} onOpenChange={setIsPostDialogOpen}>
-                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-                    <DialogHeader>
-                        <DialogTitle>기록 남기기</DialogTitle>
+                <DialogContent className="glass-premium border border-white/10 text-white rounded-[40px] p-0 shadow-2xl sm:max-w-3xl max-h-[90vh] overflow-hidden">
+                    <DialogHeader className="p-10 pb-0">
+                        <DialogTitle className="text-3xl font-black tracking-tighter uppercase mb-2">ADD TRANSMISSION</DialogTitle>
+                        <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] italic">SEQUENCING NEW MEMORY DATA INTO THE CURRENT SECTOR</p>
                     </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                        <div className="grid gap-2">
-                            <Label>제목</Label>
-                            <Input
-                                placeholder="제목을 입력하세요"
-                                value={postTitle}
-                                onChange={e => setPostTitle(e.target.value)}
-                            />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label>날짜</Label>
-                            <Input
-                                type="datetime-local"
-                                value={format(postDate, "yyyy-MM-dd'T'HH:mm")}
-                                onChange={e => setPostDate(new Date(e.target.value))}
-                            />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label>내용 (Markdown 지원)</Label>
-                            <Textarea
-                                placeholder="자유롭게 내용을 작성하세요..."
-                                className="min-h-[200px] resize-y font-sans text-base leading-relaxed"
-                                value={postContent}
-                                onChange={e => setPostContent(e.target.value)}
-                            />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label>사진 추가 (최대 4장)</Label>
-                            <div className="flex gap-2 flex-wrap">
-                                {postImages.map((img, idx) => (
-                                    <div key={idx} className="w-20 h-20 relative rounded-md overflow-hidden border group">
-                                        <Image src={img} alt="preview" fill className="object-cover" unoptimized />
-                                        <button
-                                            onClick={() => setPostImages(prev => prev.filter((_, i) => i !== idx))}
-                                            className="absolute top-0 right-0 bg-red-500 text-white w-5 h-5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                                        >
-                                            ×
-                                        </button>
-                                    </div>
-                                ))}
-                                {postImages.length < 4 && (
-                                    <div className="w-20 h-20 border-2 border-dashed rounded-md flex items-center justify-center relative hover:bg-muted/50 transition-colors">
-                                        <Plus className="w-6 h-6 text-muted-foreground" />
-                                        <input
-                                            type="file"
-                                            accept="image/*"
-                                            multiple
-                                            className="absolute inset-0 opacity-0 cursor-pointer"
-                                            onChange={handlePostImageUpload}
-                                        />
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="grid gap-2">
-                                <Label>태그 (쉼표로 구분)</Label>
+                    <div className="overflow-y-auto custom-scrollbar p-10 pt-4 space-y-8">
+                        <div className="grid gap-8">
+                            <div className="space-y-3">
+                                <label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">LOG IDENTITY</label>
                                 <Input
-                                    placeholder="여행, 맛집, 기록"
+                                    className="h-14 font-black text-xl border-white/5 bg-white/5 focus-visible:ring-amber-500/30 rounded-2xl text-white placeholder:text-white/10"
+                                    placeholder="ENTRY IDENTIFIER..."
+                                    value={postTitle}
+                                    onChange={e => setPostTitle(e.target.value)}
+                                />
+                            </div>
+                            <div className="grid grid-cols-2 gap-8">
+                                <div className="space-y-3">
+                                    <label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">TIMELINE SYNC</label>
+                                    <Input
+                                        type="datetime-local"
+                                        className="h-12 bg-white/5 border-white/5 rounded-2xl text-white font-mono text-[10px] uppercase tracking-widest cursor-pointer"
+                                        value={format(postDate, "yyyy-MM-dd'T'HH:mm")}
+                                        onChange={e => setPostDate(new Date(e.target.value))}
+                                    />
+                                </div>
+                                <div className="space-y-3">
+                                    <label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">SOURCE LINK</label>
+                                    <Input
+                                        className="h-12 bg-white/5 border-white/5 rounded-2xl text-white placeholder:text-white/10 text-[10px] font-mono"
+                                        placeholder="HTTPS://..."
+                                        value={postLink}
+                                        onChange={e => setPostLink(e.target.value)}
+                                    />
+                                </div>
+                            </div>
+                            <div className="space-y-3">
+                                <label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">CORE TRANSMISSION</label>
+                                <Textarea
+                                    placeholder="INPUT NARRATIVE FEEDBACK..."
+                                    className="min-h-[200px] rounded-3xl border border-white/5 bg-white/5 p-8 text-sm font-bold text-white placeholder:text-white/10 leading-relaxed resize-none focus:ring-2 focus:ring-amber-500/20"
+                                    value={postContent}
+                                    onChange={e => setPostContent(e.target.value)}
+                                />
+                            </div>
+                            <div className="space-y-3">
+                                <label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">IMAGE ARTIFACTS (MAX 4)</label>
+                                <div className="flex gap-4 flex-wrap p-6 bg-white/[0.02] rounded-3xl border border-white/5">
+                                    <AnimatePresence>
+                                        {postImages.map((img, idx) => (
+                                            <motion.div
+                                                key={idx}
+                                                initial={{ scale: 0.8, opacity: 0 }}
+                                                animate={{ scale: 1, opacity: 1 }}
+                                                exit={{ scale: 0.8, opacity: 0 }}
+                                                className="w-24 h-24 relative rounded-2xl overflow-hidden border border-white/10 group shadow-lg"
+                                            >
+                                                <Image src={img} alt="preview" fill className="object-cover" unoptimized />
+                                                <button
+                                                    onClick={() => setPostImages(prev => prev.filter((_, i) => i !== idx))}
+                                                    className="absolute top-2 right-2 bg-rose-500 text-white w-6 h-6 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all shadow-xl active:scale-75"
+                                                >
+                                                    <X className="w-3 h-3" strokeWidth={4} />
+                                                </button>
+                                            </motion.div>
+                                        ))}
+                                    </AnimatePresence>
+                                    {postImages.length < 4 && (
+                                        <div className="w-24 h-24 border-2 border-dashed border-white/5 rounded-2xl flex items-center justify-center relative hover:bg-white/5 transition-all group overflow-hidden">
+                                            <Plus className="w-8 h-8 text-white/10 group-hover:scale-125 group-hover:text-amber-500/40 transition-all" />
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                multiple
+                                                className="absolute inset-0 opacity-0 cursor-pointer"
+                                                onChange={handlePostImageUpload}
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                            <div className="space-y-3">
+                                <label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">SEARCH TAGS (CSV)</label>
+                                <Input
+                                    className="h-12 bg-white/5 border-white/5 rounded-2xl text-white placeholder:text-white/10 text-[10px] font-black uppercase tracking-widest"
+                                    placeholder="TRAVEL, ART, DAILY..."
                                     value={postTags}
                                     onChange={e => setPostTags(e.target.value)}
                                 />
                             </div>
-                            <div className="grid gap-2">
-                                <Label>관련 링크</Label>
-                                <Input
-                                    placeholder="https://..."
-                                    value={postLink}
-                                    onChange={e => setPostLink(e.target.value)}
-                                />
-                            </div>
                         </div>
                     </div>
-                    <DialogFooter>
-                        <Button onClick={handleCreatePost} disabled={!postTitle}>저장하기</Button>
+                    <DialogFooter className="p-10 pt-4 bg-white/[0.02] border-t border-white/5">
+                        <Button
+                            onClick={handleCreatePost}
+                            disabled={!postTitle}
+                            className="w-full h-16 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-black text-sm tracking-widest shadow-2xl active:scale-95 transition-all uppercase"
+                        >
+                            COMMIT TRANSMISSION
+                        </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

@@ -5,8 +5,9 @@ import { ExerciseSession } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Dumbbell, Trash2, Plus, GripVertical, Check } from 'lucide-react';
+import { Dumbbell, Trash2, Plus, GripVertical, Check, Zap, Target, Flame, ArrowRight, X } from 'lucide-react';
 import { cn, generateId } from '@/lib/utils';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface ActiveSessionCardProps {
     index: number;
@@ -16,13 +17,11 @@ interface ActiveSessionCardProps {
 }
 
 export function ActiveSessionCard({ index, session, onUpdate, onDelete }: ActiveSessionCardProps) {
-    // Local state for adding sets
     const [weight, setWeight] = useState('');
     const [reps, setReps] = useState('');
 
     const handleAddSet = () => {
         if (!weight || !reps) return;
-
         const newSet = {
             id: generateId(),
             setNumber: (session.sets?.length || 0) + 1,
@@ -30,138 +29,195 @@ export function ActiveSessionCard({ index, session, onUpdate, onDelete }: Active
             reps: parseInt(reps),
             completed: true
         };
-
-        const updatedSession = {
-            ...session,
-            sets: [...(session.sets || []), newSet]
-        };
-
+        const updatedSession = { ...session, sets: [...(session.sets || []), newSet] };
         onUpdate(updatedSession);
-        // Keep weight, maybe clear reps? Or keep both for convenience?
-        // Usually people do same weight, same reps. Keep it.
+        setReps(''); // Clear reps but keep weight for next set
     };
 
     const handleDeleteSet = (setId: string) => {
         const updatedSets = session.sets
             ?.filter(s => s.id !== setId)
-            .map((s, idx) => ({ ...s, setNumber: idx + 1 })); // Renumber
-
-        onUpdate({
-            ...session,
-            sets: updatedSets
-        });
+            .map((s, idx) => ({ ...s, setNumber: idx + 1 }));
+        onUpdate({ ...session, sets: updatedSets });
     };
 
+    const colors = {
+        weight: 'rose',
+        cardio: 'sky',
+        sport: 'amber',
+        fitness: 'emerald'
+    }[session.category as keyof typeof session.category] || 'rose';
+
+    const accentColor = {
+        rose: 'text-rose-500 bg-rose-500/10 border-rose-500/20 shadow-[0_5px_15px_rgba(244,63,94,0.3)]',
+        sky: 'text-sky-500 bg-sky-500/10 border-sky-500/20 shadow-[0_5px_15px_rgba(14,165,233,0.3)]',
+        amber: 'text-amber-500 bg-amber-500/10 border-amber-500/20 shadow-[0_5px_15px_rgba(245,158,11,0.3)]',
+        emerald: 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20 shadow-[0_5px_15px_rgba(16,185,129,0.3)]'
+    }[colors];
+
     return (
-        <div className="bg-white p-4 rounded-xl shadow-sm border animate-in slide-in-from-bottom-2 fade-in duration-300">
-            <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center gap-3">
+        <motion.div
+            layout
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="group glass-premium rounded-[32px] border border-white/5 p-8 shadow-xl transition-all hover:bg-white/[0.03]"
+        >
+            <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center gap-6">
                     <div className={cn(
-                        "w-8 h-8 rounded-full flex items-center justify-center text-white shrink-0 shadow-sm font-bold text-sm",
-                        session.category === 'weight' ? "bg-green-500" :
-                            session.category === 'cardio' ? "bg-blue-500" :
-                                session.category === 'sport' ? "bg-orange-500" : "bg-purple-500"
+                        "w-12 h-12 rounded-2xl flex items-center justify-center font-black text-lg border",
+                        accentColor
                     )}>
                         {index + 1}
                     </div>
                     <div>
-                        <h4 className="font-bold text-lg leading-none">{session.type}</h4>
-                        <span className="text-xs text-muted-foreground">
-                            {session.category === 'weight' && '웨이트 트레이닝'}
-                            {session.category === 'cardio' && '유산소'}
-                            {session.category === 'sport' && '스포츠'}
-                            {session.category === 'fitness' && '피트니스'}
-                        </span>
+                        <h4 className="text-xl font-black text-white tracking-tighter uppercase leading-none">{session.type}</h4>
+                        <div className="flex items-center gap-2 mt-1.5 opacity-40">
+                            <span className="text-[10px] font-bold uppercase tracking-widest">{session.category} SECTOR</span>
+                        </div>
                     </div>
                 </div>
-                <Button variant="ghost" size="sm" onClick={() => onDelete(session.id)} className="text-muted-foreground hover:text-red-500 h-8 w-8 p-0">
-                    <Trash2 className="w-4 h-4" />
-                </Button>
+                <button
+                    onClick={() => onDelete(session.id)}
+                    className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-white/20 hover:bg-rose-500 hover:text-white transition-all active:scale-90"
+                >
+                    <Trash2 className="w-5 h-5" />
+                </button>
             </div>
 
-            {/* Content based on Category */}
             {session.category === 'weight' && (
-                <div className="space-y-4 pl-11">
-                    {/* Input Row */}
-                    <div className="flex items-end gap-2 p-3 bg-muted/20 rounded-lg">
-                        <div className="grid gap-1 flex-1">
-                            <Label className="text-[10px] text-muted-foreground">무게 (kg)</Label>
+                <div className="space-y-8 pl-18">
+                    {/* Weight/Reps Input */}
+                    <div className="flex items-center gap-4 bg-white/5 p-6 rounded-[28px] border border-white/5">
+                        <div className="flex-1 space-y-2">
+                            <label className="text-[9px] font-black text-white/20 uppercase tracking-widest ml-2">MASS (KG)</label>
                             <Input
                                 type="number"
                                 value={weight}
                                 onChange={e => setWeight(e.target.value)}
-                                className="h-8 text-sm"
-                                placeholder="0"
+                                className="h-12 bg-transparent border-none text-2xl font-black text-white placeholder:text-white/5 focus-visible:ring-0 text-center"
+                                placeholder="00"
                             />
                         </div>
-                        <div className="grid gap-1 flex-1">
-                            <Label className="text-[10px] text-muted-foreground">횟수</Label>
+                        <div className="w-px h-10 bg-white/5 shrink-0" />
+                        <div className="flex-1 space-y-2">
+                            <label className="text-[9px] font-black text-white/20 uppercase tracking-widest ml-2">REPS</label>
                             <Input
                                 type="number"
                                 value={reps}
                                 onChange={e => setReps(e.target.value)}
-                                className="h-8 text-sm"
-                                placeholder="0"
+                                className="h-12 bg-transparent border-none text-2xl font-black text-white placeholder:text-white/5 focus-visible:ring-0 text-center"
+                                placeholder="00"
                                 onKeyDown={e => e.key === 'Enter' && handleAddSet()}
                             />
                         </div>
-                        <Button onClick={handleAddSet} size="sm" className="h-8 w-8 p-0 shrink-0 bg-green-600 hover:bg-green-700">
-                            <Plus className="w-4 h-4" />
+                        <Button
+                            onClick={handleAddSet}
+                            className="w-14 h-14 rounded-2xl bg-rose-500 hover:bg-rose-600 shadow-xl transition-all shrink-0 active:scale-90"
+                        >
+                            <Plus className="w-6 h-6 text-white" strokeWidth={3} />
                         </Button>
                     </div>
 
-                    {/* Sets List */}
+                    {/* Sets Display */}
                     {session.sets && session.sets.length > 0 && (
-                        <div className="space-y-1">
-                            {session.sets.map((set) => (
-                                <div key={set.id} className="flex justify-between items-center text-sm p-2 hover:bg-muted/10 rounded-md border border-transparent hover:border-border transition-colors group">
-                                    <div className="flex items-center gap-3">
-                                        <span className="font-mono text-xs text-muted-foreground w-6 text-center bg-muted/30 rounded py-0.5">#{set.setNumber}</span>
-                                        <span className="font-bold">{set.weight}kg</span>
-                                        <span className="text-muted-foreground">x</span>
-                                        <span>{set.reps}</span>
-                                    </div>
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity text-red-300 hover:text-red-500"
-                                        onClick={() => handleDeleteSet(set.id)}
+                        <div className="space-y-3">
+                            <AnimatePresence>
+                                {session.sets.map((set) => (
+                                    <motion.div
+                                        key={set.id}
+                                        initial={{ opacity: 0, x: -10 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        exit={{ opacity: 0, x: 10 }}
+                                        className="flex justify-between items-center p-4 rounded-2xl bg-white/5 border border-transparent hover:border-white/10 transition-all group/set"
                                     >
-                                        <Trash2 className="w-3 h-3" />
-                                    </Button>
+                                        <div className="flex items-center gap-6">
+                                            <span className="font-black text-[10px] text-white/20 w-8">PH. {set.setNumber}</span>
+                                            <div className="flex items-end gap-1">
+                                                <span className="text-xl font-black text-white tracking-tighter">{set.weight}</span>
+                                                <span className="text-[10px] font-black text-rose-500 mb-1">KG</span>
+                                            </div>
+                                            <X className="w-3 h-3 text-white/10" />
+                                            <div className="flex items-end gap-1">
+                                                <span className="text-xl font-black text-white tracking-tighter">{set.reps}</span>
+                                                <span className="text-[10px] font-black text-sky-500 mb-1">REPS</span>
+                                            </div>
+                                        </div>
+                                        <button
+                                            className="w-8 h-8 rounded-lg bg-white/5 text-white/10 opacity-0 group-hover/set:opacity-100 hover:bg-rose-500 hover:text-white transition-all transform hover:rotate-12"
+                                            onClick={() => handleDeleteSet(set.id)}
+                                        >
+                                            <Trash2 className="w-4 h-4" />
+                                        </button>
+                                    </motion.div>
+                                ))}
+                            </AnimatePresence>
+
+                            <div className="flex items-center justify-between pt-6 border-t border-white/5 mt-4">
+                                <div className="flex items-center gap-2">
+                                    <Flame className="w-4 h-4 text-rose-500" />
+                                    <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">CUMULATIVE PERFORMANCE</span>
                                 </div>
-                            ))}
-                            <div className="pt-2 text-right text-xs font-medium text-green-600 border-t mt-2">
-                                Total Volume: {session.sets.reduce((acc, curr) => acc + (curr.weight * curr.reps), 0).toLocaleString()} kg
+                                <div className="flex items-end gap-1">
+                                    <span className="text-2xl font-black text-white tracking-tighter">
+                                        {session.sets.reduce((acc, curr) => acc + (curr.weight * curr.reps), 0).toLocaleString()}
+                                    </span>
+                                    <span className="text-[11px] font-black text-rose-500 mb-1.5 uppercase">KG MASS</span>
+                                </div>
                             </div>
                         </div>
                     )}
                 </div>
             )}
 
-            {/* Non-Weight content (static info for now, maybe allow editing later) */}
             {session.category !== 'weight' && (
-                <div className="pl-11 text-sm text-muted-foreground">
-                    {session.category === 'cardio' && (
-                        <span>
-                            {session.distance ? `${session.distance} km` : ''}
-                            {session.distance && session.duration ? ' · ' : ''}
-                            {session.duration ? `${Math.floor(session.duration)}분` : ''}
-                            {session.count ? ` · ${session.count} laps` : ''}
-                        </span>
-                    )}
-                    {session.category === 'fitness' && (
-                        <span>{Math.floor(session.duration || 0)} 분 진행</span>
-                    )}
-                    {session.category === 'sport' && (
-                        <span>
-                            {Math.floor(session.duration || 0)}분
-                            {session.score && ` · ${session.score}점`}
-                            {session.result && ` · ${session.result}`}
-                        </span>
-                    )}
+                <div className="pl-18 space-y-6">
+                    <div className="bg-white/5 p-8 rounded-[32px] border border-white/5 flex flex-wrap gap-8">
+                        {session.category === 'cardio' && (
+                            <>
+                                {session.distance && (
+                                    <div className="flex flex-col gap-1">
+                                        <label className="text-[9px] font-black text-white/20 uppercase tracking-widest">DISTANCE</label>
+                                        <span className="text-3xl font-black text-white tracking-tighter">{session.distance} <small className="text-xs text-sky-500">KM</small></span>
+                                    </div>
+                                )}
+                                {session.duration && (
+                                    <div className="flex flex-col gap-1">
+                                        <label className="text-[9px] font-black text-white/20 uppercase tracking-widest">DURATION</label>
+                                        <span className="text-3xl font-black text-white tracking-tighter">{Math.floor(session.duration)} <small className="text-xs text-rose-500">MIN</small></span>
+                                    </div>
+                                )}
+                                {session.count && (
+                                    <div className="flex flex-col gap-1">
+                                        <label className="text-[9px] font-black text-white/20 uppercase tracking-widest">ROUNDS</label>
+                                        <span className="text-3xl font-black text-white tracking-tighter">{session.count} <small className="text-xs text-amber-500">LAPS</small></span>
+                                    </div>
+                                )}
+                            </>
+                        )}
+                        {session.category === 'fitness' && (
+                            <div className="flex flex-col gap-1">
+                                <label className="text-[9px] font-black text-white/20 uppercase tracking-widest">SESSION TIME</label>
+                                <span className="text-3xl font-black text-white tracking-tighter">{Math.floor(session.duration || 0)} <small className="text-xs text-emerald-500">MIN</small></span>
+                            </div>
+                        )}
+                        {session.category === 'sport' && (
+                            <>
+                                <div className="flex flex-col gap-1">
+                                    <label className="text-[9px] font-black text-white/20 uppercase tracking-widest">EFFORT</label>
+                                    <span className="text-3xl font-black text-white tracking-tighter">{Math.floor(session.duration || 0)} <small className="text-xs text-amber-500">MIN</small></span>
+                                </div>
+                                {session.score && (
+                                    <div className="flex flex-col gap-1 pl-8 border-l border-white/10">
+                                        <label className="text-[9px] font-black text-white/20 uppercase tracking-widest">RATING</label>
+                                        <span className="text-3xl font-black text-white tracking-tighter">{session.score} <small className="text-xs text-rose-500">PTS</small></span>
+                                    </div>
+                                )}
+                            </>
+                        )}
+                    </div>
                 </div>
             )}
-        </div>
+        </motion.div>
     );
 }

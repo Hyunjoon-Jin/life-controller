@@ -7,9 +7,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Plus, Trash2, Edit2, Wallet, Landmark, TrendingUp, CreditCard, Building2, Coins } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from '@/components/ui/dialog';
+import {
+    Plus, Trash2, Edit2, Wallet, Landmark, TrendingUp, CreditCard,
+    Building2, Coins, ArrowUpRight, ArrowDownRight, Activity,
+    ShieldCheck, Zap, Globe, Fingerprint, Terminal, Sparkles
+} from 'lucide-react';
 import { Asset } from '@/types';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export function AssetDashboard() {
     const { assets, addAsset, deleteAsset, updateAsset } = useData();
@@ -22,9 +27,9 @@ export function AssetDashboard() {
     const [balance, setBalance] = useState('');
     const [accountNumber, setAccountNumber] = useState('');
     const [interestRate, setInterestRate] = useState('');
-    const [limit, setLimit] = useState(''); // New
-    const [billingDate, setBillingDate] = useState(''); // New
-    const [linkedAssetId, setLinkedAssetId] = useState(''); // New: Settlement account
+    const [limit, setLimit] = useState('');
+    const [billingDate, setBillingDate] = useState('');
+    const [linkedAssetId, setLinkedAssetId] = useState('');
     const [memo, setMemo] = useState('');
 
     const totalAssets = assets
@@ -39,57 +44,31 @@ export function AssetDashboard() {
 
     const handleSave = () => {
         if (!name || !balance) return;
-
         const asset: Asset = {
             id: editingId || generateId(),
-            name,
-            type,
-            balance: parseInt(balance),
-            currency: 'KRW',
-            color: getTypeColor(type),
-            accountNumber,
-            interestRate: interestRate ? parseFloat(interestRate) : undefined,
+            name, type, balance: parseInt(balance),
+            currency: 'KRW', color: getTypeColor(type),
+            accountNumber, interestRate: interestRate ? parseFloat(interestRate) : undefined,
             limit: limit ? parseInt(limit) : undefined,
             billingDate: billingDate ? parseInt(billingDate) : undefined,
-            linkedAssetId: linkedAssetId || undefined,
-            memo
+            linkedAssetId: linkedAssetId || undefined, memo
         };
-
-        if (editingId) {
-            updateAsset(asset);
-        } else {
-            addAsset(asset);
-        }
-
-        setIsDialogOpen(false);
-        resetForm();
+        if (editingId) updateAsset(asset);
+        else addAsset(asset);
+        setIsDialogOpen(false); resetForm();
     };
 
     const handleEdit = (a: Asset) => {
-        setEditingId(a.id);
-        setName(a.name);
-        setType(a.type);
-        setBalance(a.balance.toString());
-        setAccountNumber(a.accountNumber || '');
-        setInterestRate(a.interestRate?.toString() || '');
-        setLimit(a.limit?.toString() || '');
-        setBillingDate(a.billingDate?.toString() || '');
-        setLinkedAssetId(a.linkedAssetId || '');
-        setMemo(a.memo || '');
+        setEditingId(a.id); setName(a.name); setType(a.type); setBalance(a.balance.toString());
+        setAccountNumber(a.accountNumber || ''); setInterestRate(a.interestRate?.toString() || '');
+        setLimit(a.limit?.toString() || ''); setBillingDate(a.billingDate?.toString() || '');
+        setLinkedAssetId(a.linkedAssetId || ''); setMemo(a.memo || '');
         setIsDialogOpen(true);
     };
 
     const resetForm = () => {
-        setEditingId(null);
-        setName('');
-        setType('bank');
-        setBalance('');
-        setAccountNumber('');
-        setInterestRate('');
-        setLimit('');
-        setBillingDate('');
-        setLinkedAssetId('');
-        setMemo('');
+        setEditingId(null); setName(''); setType('bank'); setBalance(''); setAccountNumber('');
+        setInterestRate(''); setLimit(''); setBillingDate(''); setLinkedAssetId(''); setMemo('');
     };
 
     const getTypeIcon = (type: Asset['type']) => {
@@ -107,280 +86,377 @@ export function AssetDashboard() {
 
     const getTypeLabel = (type: Asset['type']) => {
         switch (type) {
-            case 'bank': return '예적금';
-            case 'cash': return '현금';
-            case 'stock': return '투자/주식';
-            case 'real_estate': return '부동산';
-            case 'crypto': return '가상화폐';
-            case 'loan': return '대출';
-            case 'credit_card': return '신용카드';
-            default: return '기타';
+            case 'bank': return 'SAVINGS';
+            case 'cash': return 'LIQUID CASH';
+            case 'stock': return 'EQUITIES';
+            case 'real_estate': return 'PROPERTY';
+            case 'crypto': return 'DIGITAL ASSETS';
+            case 'loan': return 'LIABILITIES';
+            case 'credit_card': return 'CREDIT LINE';
+            default: return 'OTHER';
         }
     };
 
     const getTypeColor = (type: Asset['type']) => {
         switch (type) {
-            case 'bank': return 'bg-blue-500';
-            case 'cash': return 'bg-green-500';
-            case 'stock': return 'bg-red-500';
-            case 'real_estate': return 'bg-purple-500';
-            case 'crypto': return 'bg-yellow-500';
-            case 'loan': return 'bg-slate-700';
-            case 'credit_card': return 'bg-orange-500';
-            default: return 'bg-gray-500';
+            case 'bank': return 'text-sky-400 bg-sky-500/10 border-sky-500/20';
+            case 'cash': return 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20';
+            case 'stock': return 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20';
+            case 'real_estate': return 'text-amber-400 bg-amber-500/10 border-amber-500/20';
+            case 'crypto': return 'text-orange-400 bg-orange-500/10 border-orange-500/20';
+            case 'loan': return 'text-rose-400 bg-rose-500/10 border-rose-500/20';
+            case 'credit_card': return 'text-pink-400 bg-pink-500/10 border-pink-500/20';
+            default: return 'text-slate-400 bg-slate-500/10 border-slate-500/20';
         }
     };
 
     return (
-        <div className="h-full flex flex-col gap-6 p-6 overflow-y-auto custom-scrollbar">
-            {/* Header / Net Worth */}
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                    <Wallet className="w-6 h-6 text-primary" />
-                    <h2 className="text-2xl font-bold">자산 현황</h2>
+        <div className="h-full flex flex-col glass-premium rounded-[32px] border border-white/5 shadow-2xl overflow-hidden relative">
+            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/[0.03] via-transparent to-emerald-500/[0.03] pointer-events-none" />
+
+            {/* Header Area */}
+            <div className="p-8 pb-4 relative z-10">
+                <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-6 mb-8">
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-2xl bg-indigo-500 flex items-center justify-center shadow-[0_10px_20px_-5px_rgba(99,102,241,0.5)]">
+                            <Activity className="w-6 h-6 text-white" strokeWidth={3} />
+                        </div>
+                        <div>
+                            <h2 className="text-3xl font-black text-white tracking-tighter uppercase leading-none">CAPITAL MATRIX</h2>
+                            <p className="text-[10px] font-bold text-white/20 tracking-[0.3em] uppercase mt-2 italic flex items-center gap-2">
+                                <ShieldCheck className="w-3 h-3 text-emerald-500" /> FISCAL INTEGRITY: OPTIMAL
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="flex items-center gap-4">
+                        <div className="bg-white/5 p-1.5 rounded-2xl border border-white/5 flex gap-2">
+                            <div className="px-4 py-2 rounded-xl bg-indigo-500/10 border border-indigo-500/20">
+                                <span className="text-[10px] font-black text-indigo-400 tracking-widest uppercase">REAL-TIME SYNC: ACTIVE</span>
+                            </div>
+                        </div>
+                        <Button
+                            onClick={() => { resetForm(); setIsDialogOpen(true); }}
+                            className="h-12 px-6 rounded-2xl bg-indigo-500 hover:bg-indigo-600 text-white font-black text-[10px] tracking-widest uppercase shadow-xl transition-all active:scale-95"
+                        >
+                            <Plus className="w-4 h-4 mr-2" strokeWidth={3} /> INITIALIZE ASSET
+                        </Button>
+                    </div>
                 </div>
-                <Button onClick={() => { resetForm(); setIsDialogOpen(true); }} className="bg-primary hover:bg-primary/90">
-                    <Plus className="w-4 h-4 mr-2" /> 자산 추가
-                </Button>
+
+                {/* Net Worth Hero */}
+                <Card className="glass-premium border-white/10 bg-gradient-to-br from-white/[0.05] to-transparent overflow-hidden rounded-[40px] mb-8 relative group">
+                    <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <Globe className="w-32 h-32 text-white" strokeWidth={1} />
+                    </div>
+                    <CardContent className="p-10 flex flex-col md:flex-row items-center justify-between gap-8 relative z-10">
+                        <div className="text-center md:text-left">
+                            <h3 className="text-[10px] font-black text-white/40 tracking-[0.4em] uppercase mb-4">TOTAL NET VALUATION</h3>
+                            <div className="flex items-baseline gap-4 justify-center md:justify-start">
+                                <span className="text-5xl md:text-7xl font-black text-white tracking-tighter">{netWorth.toLocaleString()}</span>
+                                <span className="text-xl font-bold text-white/20 uppercase tracking-widest">KRW</span>
+                            </div>
+                        </div>
+
+                        <div className="flex gap-4 md:gap-12 w-full md:w-auto">
+                            <div className="flex-1 bg-white/5 p-6 rounded-3xl border border-white/5 backdrop-blur-md">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <ArrowUpRight className="w-4 h-4 text-emerald-400" />
+                                    <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">GROSS ASSETS</span>
+                                </div>
+                                <div className="text-xl font-black text-white tracking-tight">{totalAssets.toLocaleString()}원</div>
+                            </div>
+                            <div className="flex-1 bg-white/5 p-6 rounded-3xl border border-white/5 backdrop-blur-md">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <ArrowDownRight className="w-4 h-4 text-rose-400" />
+                                    <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">GROSS LIABILITIES</span>
+                                </div>
+                                <div className="text-xl font-black text-white tracking-tight">{totalLiabilities.toLocaleString()}원</div>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
             </div>
 
-            <Card className="bg-gradient-to-r from-slate-900 to-slate-800 text-white border-none shadow-lg">
-                <CardContent className="p-8 text-center">
-                    <div className="text-sm opacity-70 mb-2">순자산 (Net Worth)</div>
-                    <div className="text-4xl font-extrabold mb-6">
-                        {netWorth.toLocaleString()}원
-                    </div>
-                    <div className="flex justify-center gap-12 text-sm">
-                        <div className="text-center">
-                            <div className="opacity-70 mb-1">총 자산</div>
-                            <div className="text-blue-300 font-bold text-lg">{totalAssets.toLocaleString()}원</div>
+            {/* Assets List */}
+            <div className="flex-1 overflow-y-auto custom-scrollbar p-8 pt-0 relative z-10">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                    {/* ASSETS SECTION */}
+                    <div className="space-y-6">
+                        <div className="flex items-center gap-3 px-2">
+                            <TrendingUp className="w-5 h-5 text-emerald-500" />
+                            <h3 className="text-xl font-black text-white tracking-widest uppercase">ASSET PORTFOLIO</h3>
                         </div>
-                        <div className="w-px bg-white/20 h-10"></div>
-                        <div className="text-center">
-                            <div className="opacity-70 mb-1">총 부채</div>
-                            <div className="text-red-300 font-bold text-lg">{totalLiabilities.toLocaleString()}원</div>
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Assets Column */}
-                <div className="space-y-4">
-                    <h3 className="font-bold text-lg flex items-center gap-2">
-                        <span className="w-2 h-6 bg-blue-500 rounded-full"></span> 자산
-                    </h3>
-                    {assets.filter(a => !['loan', 'credit_card'].includes(a.type)).map(asset => {
-                        const Icon = getTypeIcon(asset.type);
-                        return (
-                            <div key={asset.id} className="flex items-center justify-between p-4 bg-white rounded-lg border hover:shadow-md transition-all group">
-                                <div className="flex items-center gap-4">
-                                    <div className={cn("w-10 h-10 rounded-full flex items-center justify-center text-white", getTypeColor(asset.type))}>
-                                        <Icon className="w-5 h-5" />
-                                    </div>
-                                    <div>
-                                        <div className="font-bold">{asset.name}</div>
-                                        <div className="text-xs text-muted-foreground">{getTypeLabel(asset.type)}</div>
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-4">
-                                    <span className="font-bold text-lg">{asset.balance.toLocaleString()}원</span>
-                                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => handleEdit(asset)}>
-                                            <Edit2 className="w-3.5 h-3.5 text-slate-400" />
-                                        </Button>
-                                        <Button size="icon" variant="ghost" className="h-8 w-8 hover:text-red-500" onClick={() => deleteAsset(asset.id)}>
-                                            <Trash2 className="w-3.5 h-3.5" />
-                                        </Button>
-                                    </div>
-                                </div>
-                            </div>
-                        );
-                    })}
-                    {assets.filter(a => !['loan', 'credit_card'].includes(a.type)).length === 0 && (
-                        <div className="text-center py-8 text-muted-foreground bg-slate-50 rounded-lg border border-dashed">
-                            등록된 자산이 없습니다.
-                        </div>
-                    )}
-                </div>
-
-                {/* Liabilities Column */}
-                <div className="space-y-4">
-                    <h3 className="font-bold text-lg flex items-center gap-2">
-                        <span className="w-2 h-6 bg-red-500 rounded-full"></span> 부채
-                    </h3>
-                    {assets.filter(a => ['loan', 'credit_card'].includes(a.type)).map(asset => {
-                        const Icon = getTypeIcon(asset.type);
-                        return (
-                            <div key={asset.id} className="flex items-center justify-between p-4 bg-white rounded-lg border hover:shadow-md transition-all group">
-                                <div className="flex-1">
-                                    <div className="flex items-center justify-between mb-1">
-                                        <div className="flex items-center gap-4">
-                                            <div className={cn("w-10 h-10 rounded-full flex items-center justify-center text-white", getTypeColor(asset.type))}>
-                                                <Icon className="w-5 h-5" />
+                        <div className="space-y-4">
+                            {assets.filter(a => !['loan', 'credit_card'].includes(a.type)).map((asset, idx) => {
+                                const Icon = getTypeIcon(asset.type);
+                                const styles = getTypeColor(asset.type);
+                                return (
+                                    <motion.div
+                                        initial={{ opacity: 0, x: -20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: idx * 0.05 }}
+                                        key={asset.id}
+                                        className="group glass-premium rounded-[32px] border border-white/5 p-6 transition-all hover:bg-white/[0.02] flex items-center justify-between"
+                                    >
+                                        <div className="flex items-center gap-6">
+                                            <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center border", styles)}>
+                                                <Icon className="w-7 h-7" strokeWidth={2.5} />
                                             </div>
                                             <div>
-                                                <div className="font-bold">{asset.name}</div>
-                                                <div className="text-xs text-muted-foreground">
-                                                    {getTypeLabel(asset.type)} {asset.interestRate ? `· ${asset.interestRate}%` : ''}
-                                                    {asset.type === 'credit_card' && asset.billingDate ? ` · 결제일 ${asset.billingDate}일` : ''}
+                                                <h4 className="text-sm font-black text-white tracking-widest uppercase mb-1">{asset.name}</h4>
+                                                <div className="flex items-center gap-3">
+                                                    <span className="text-[9px] font-bold text-white/20 uppercase tracking-widest">{getTypeLabel(asset.type)}</span>
+                                                    {asset.interestRate && <span className="text-[9px] font-black text-emerald-400">APY {asset.interestRate}%</span>}
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="flex items-center gap-4">
+                                        <div className="flex items-center gap-6">
                                             <div className="text-right">
-                                                <div className="font-bold text-lg text-red-600">{asset.balance.toLocaleString()}원</div>
-                                                {asset.type === 'credit_card' && asset.limit && (
-                                                    <div className="text-xs text-muted-foreground">한도: {asset.limit.toLocaleString()}원</div>
-                                                )}
+                                                <div className="text-lg font-black text-white tracking-tight">{asset.balance.toLocaleString()}</div>
+                                                <div className="text-[9px] font-bold text-white/10 uppercase tracking-widest">KRW VALUE</div>
                                             </div>
-                                            <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => handleEdit(asset)}>
-                                                    <Edit2 className="w-3.5 h-3.5 text-slate-400" />
-                                                </Button>
-                                                <Button size="icon" variant="ghost" className="h-8 w-8 hover:text-red-500" onClick={() => deleteAsset(asset.id)}>
-                                                    <Trash2 className="w-3.5 h-3.5" />
-                                                </Button>
+                                            <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                                                <button onClick={() => handleEdit(asset)} className="w-10 h-10 rounded-xl bg-white/5 text-white/20 hover:text-white transition-all flex items-center justify-center">
+                                                    <Edit2 className="w-4 h-4" />
+                                                </button>
+                                                <button onClick={() => deleteAsset(asset.id)} className="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white transition-all flex items-center justify-center">
+                                                    <Trash2 className="w-4 h-4" />
+                                                </button>
                                             </div>
                                         </div>
-                                    </div>
-                                    {asset.type === 'credit_card' && asset.limit && (
-                                        <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden mt-2">
-                                            <div
-                                                className="h-full bg-orange-500 rounded-full"
-                                                style={{ width: `${Math.min(100, (asset.balance / asset.limit) * 100)}%` }}
-                                            ></div>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        );
-                    })}
-                    {assets.filter(a => ['loan', 'credit_card'].includes(a.type)).length === 0 && (
-                        <div className="text-center py-8 text-muted-foreground bg-slate-50 rounded-lg border border-dashed">
-                            등록된 부채가 없습니다.
-                        </div>
-                    )}
-                </div>
-            </div>
-
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>{editingId ? '자산 수정' : '자산 추가'}</DialogTitle>
-                    </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                        <div className="grid gap-2">
-                            <Label>자산명</Label>
-                            <Input
-                                placeholder="예: 국민은행 주거래, 카카오뱅크, 신한카드"
-                                value={name}
-                                onChange={e => setName(e.target.value)}
-                            />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label>종류</Label>
-                            <select
-                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
-                                value={type}
-                                onChange={e => setType(e.target.value as any)}
-                            >
-                                <option value="bank">예적금</option>
-                                <option value="cash">현금</option>
-                                <option value="stock">투자/주식</option>
-                                <option value="real_estate">부동산</option>
-                                <option value="crypto">가상화폐</option>
-                                <option value="loan">대출 (부채)</option>
-                                <option value="credit_card">신용카드 (부채)</option>
-                            </select>
-                        </div>
-                        <div className="grid gap-2">
-                            <Label>잔액 / 금액</Label>
-                            <Input
-                                type="number"
-                                placeholder="0"
-                                value={balance}
-                                onChange={e => setBalance(e.target.value)}
-                            />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label>계좌번호 / 정보 (선택)</Label>
-                            <Input
-                                placeholder="계좌번호, 카드번호 등"
-                                value={accountNumber}
-                                onChange={e => setAccountNumber(e.target.value)}
-                            />
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="grid gap-2">
-                                <Label>이자율 (%) (선택)</Label>
-                                <Input
-                                    type="number"
-                                    placeholder="연이율"
-                                    step="0.01"
-                                    value={interestRate}
-                                    onChange={e => setInterestRate(e.target.value)}
-                                />
-                            </div>
-                            {type === 'credit_card' ? (
-                                <div className="grid gap-2">
-                                    <Label>결제일 (일)</Label>
-                                    <Input
-                                        type="number"
-                                        placeholder="1~31"
-                                        value={billingDate}
-                                        onChange={e => setBillingDate(e.target.value)}
-                                    />
-                                </div>
-                            ) : (
-                                <div className="grid gap-2">
-                                    <Label>한도/약정액 (선택)</Label>
-                                    <Input
-                                        type="number"
-                                        placeholder="한도액"
-                                        value={limit}
-                                        onChange={e => setLimit(e.target.value)}
-                                    />
+                                    </motion.div>
+                                );
+                            })}
+                            {assets.filter(a => !['loan', 'credit_card'].includes(a.type)).length === 0 && (
+                                <div className="h-40 flex flex-col items-center justify-center opacity-10 gap-4 border-2 border-dashed border-white/10 rounded-[32px]">
+                                    <Sparkles className="w-8 h-8" />
+                                    <p className="text-[10px] font-black tracking-[0.3em] uppercase">PORTFOLIO IS VACANT</p>
                                 </div>
                             )}
                         </div>
-                        {type === 'credit_card' && (
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="grid gap-2">
-                                    <Label>이용한도</Label>
-                                    <Input
-                                        type="number"
-                                        placeholder="총 한도"
-                                        value={limit}
-                                        onChange={e => setLimit(e.target.value)}
-                                    />
-                                </div>
-                                <div className="grid gap-2">
-                                    <Label>결제 계좌</Label>
-                                    <select
-                                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
-                                        value={linkedAssetId}
-                                        onChange={e => setLinkedAssetId(e.target.value)}
+                    </div>
+
+                    {/* LIABILITIES SECTION */}
+                    <div className="space-y-6">
+                        <div className="flex items-center gap-3 px-2">
+                            <TrendingDown className="w-5 h-5 text-rose-500" />
+                            <h3 className="text-xl font-black text-white tracking-widest uppercase">LIABILITY MATRIX</h3>
+                        </div>
+
+                        <div className="space-y-4">
+                            {assets.filter(a => ['loan', 'credit_card'].includes(a.type)).map((asset, idx) => {
+                                const Icon = getTypeIcon(asset.type);
+                                const styles = getTypeColor(asset.type);
+                                const progress = asset.limit ? Math.min(100, (asset.balance / asset.limit) * 100) : 0;
+                                return (
+                                    <motion.div
+                                        initial={{ opacity: 0, x: 20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: idx * 0.05 }}
+                                        key={asset.id}
+                                        className="group glass-premium rounded-[32px] border border-white/5 p-6 transition-all hover:bg-white/[0.02]"
                                     >
-                                        <option value="">선택 안 함</option>
-                                        {assets.filter(a => a.type === 'bank').map(a => (
-                                            <option key={a.id} value={a.id}>{a.name}</option>
-                                        ))}
-                                    </select>
+                                        <div className="flex items-center justify-between mb-6">
+                                            <div className="flex items-center gap-6">
+                                                <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center border", styles)}>
+                                                    <Icon className="w-7 h-7" strokeWidth={2.5} />
+                                                </div>
+                                                <div>
+                                                    <h4 className="text-sm font-black text-white tracking-widest uppercase mb-1">{asset.name}</h4>
+                                                    <div className="flex items-center gap-3">
+                                                        <span className="text-[9px] font-bold text-white/20 uppercase tracking-widest">{getTypeLabel(asset.type)}</span>
+                                                        {asset.billingDate && <span className="text-[9px] font-black text-rose-400">BILLING D-{asset.billingDate}</span>}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-6">
+                                                <div className="text-right">
+                                                    <div className="text-lg font-black text-rose-400 tracking-tight">{asset.balance.toLocaleString()}</div>
+                                                    <div className="text-[9px] font-bold text-white/10 uppercase tracking-widest text-right">EXPOSURE</div>
+                                                </div>
+                                                <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                                                    <button onClick={() => handleEdit(asset)} className="w-10 h-10 rounded-xl bg-white/5 text-white/20 hover:text-white transition-all flex items-center justify-center">
+                                                        <Edit2 className="w-4 h-4" />
+                                                    </button>
+                                                    <button onClick={() => deleteAsset(asset.id)} className="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white transition-all flex items-center justify-center">
+                                                        <Trash2 className="w-4 h-4" />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {asset.type === 'credit_card' && asset.limit && (
+                                            <div className="space-y-3 px-1">
+                                                <div className="flex justify-between text-[8px] font-black tracking-widest uppercase text-white/20">
+                                                    <span>CREDIT UTILIZATION</span>
+                                                    <span>{progress.toFixed(1)}% / LIMIT {asset.limit.toLocaleString()}</span>
+                                                </div>
+                                                <div className="h-1.5 bg-white/5 rounded-full overflow-hidden border border-white/5">
+                                                    <motion.div
+                                                        initial={{ width: 0 }}
+                                                        animate={{ width: `${progress}%` }}
+                                                        className={cn("h-full", progress > 80 ? "bg-rose-500" : "bg-orange-500")}
+                                                    />
+                                                </div>
+                                            </div>
+                                        )}
+                                    </motion.div>
+                                );
+                            })}
+                            {assets.filter(a => ['loan', 'credit_card'].includes(a.type)).length === 0 && (
+                                <div className="h-40 flex flex-col items-center justify-center opacity-10 gap-4 border-2 border-dashed border-white/10 rounded-[32px]">
+                                    <ShieldCheck className="w-8 h-8" />
+                                    <p className="text-[10px] font-black tracking-[0.3em] uppercase">DEBT-FREE CLASSIFICATION</p>
                                 </div>
-                            </div>
-                        )}
-                        <div className="grid gap-2">
-                            <Label>메모 (선택)</Label>
-                            <Input
-                                placeholder="추가 메모"
-                                value={memo}
-                                onChange={e => setMemo(e.target.value)}
-                            />
+                            )}
                         </div>
                     </div>
-                    <DialogFooter>
-                        <Button onClick={handleSave} disabled={!name || !balance}>저장</Button>
+                </div>
+            </div>
+
+            {/* Dialogs */}
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogContent className="glass-premium border border-white/10 text-white rounded-[40px] p-0 shadow-2xl sm:max-w-xl max-h-[90vh] overflow-hidden">
+                    <DialogHeader className="p-10 pb-0">
+                        <DialogTitle className="text-3xl font-black tracking-tighter uppercase mb-2">{editingId ? 'RECALIBRATE ASSET' : 'INITIALIZE ASSET'}</DialogTitle>
+                        <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] italic">SPECIFY FISCAL PARAMETERS FOR MATRIX INTEGRATION</p>
+                    </DialogHeader>
+                    <div className="overflow-y-auto custom-scrollbar p-10 pt-4 space-y-8">
+                        <div className="grid gap-6">
+                            <div className="space-y-3">
+                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">ASSET IDENTIFIER</Label>
+                                <Input
+                                    className="h-14 font-black text-xl border-white/5 bg-white/5 focus-visible:ring-indigo-500/30 rounded-2xl text-white placeholder:text-white/10"
+                                    placeholder="EX: HANA BANK, NASDAQ PORTFOLIO..."
+                                    value={name}
+                                    onChange={e => setName(e.target.value)}
+                                />
+                            </div>
+                            <div className="grid grid-cols-2 gap-6">
+                                <div className="space-y-3">
+                                    <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">CLASSIFICATION</Label>
+                                    <select
+                                        className="flex h-12 w-full rounded-2xl border border-white/5 bg-white/5 px-4 font-black uppercase text-[10px] tracking-widest text-white outline-none focus:ring-2 focus:ring-indigo-500/20"
+                                        value={type}
+                                        onChange={e => setType(e.target.value as any)}
+                                    >
+                                        <option value="bank" className="bg-slate-900">SAVINGS</option>
+                                        <option value="cash" className="bg-slate-900">LIQUID CASH</option>
+                                        <option value="stock" className="bg-slate-900">EQUITIES</option>
+                                        <option value="real_estate" className="bg-slate-900">PROPERTY</option>
+                                        <option value="crypto" className="bg-slate-900">DIGITAL ASSETS</option>
+                                        <option value="loan" className="bg-slate-900">LIABILITY (LOAN)</option>
+                                        <option value="credit_card" className="bg-slate-900">CREDIT LINE</option>
+                                    </select>
+                                </div>
+                                <div className="space-y-3">
+                                    <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">CURRENT VALUATION</Label>
+                                    <Input
+                                        type="number"
+                                        placeholder="0"
+                                        className="h-12 font-black text-sm bg-white/5 border-white/5 rounded-2xl text-white"
+                                        value={balance}
+                                        onChange={e => setBalance(e.target.value)}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="space-y-3">
+                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">ACCESS CREDENTIALS (OPTIONAL)</Label>
+                                <Input
+                                    placeholder="ACCOUNT NUMBER / SYSTEM ID"
+                                    className="h-12 bg-white/5 border-white/5 rounded-2xl text-white placeholder:text-white/10 text-[10px] font-mono tracking-widest uppercase"
+                                    value={accountNumber}
+                                    onChange={e => setAccountNumber(e.target.value)}
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-6">
+                                <div className="space-y-3">
+                                    <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">ANNUAL RATE (%)</Label>
+                                    <Input
+                                        type="number"
+                                        placeholder="0.00"
+                                        step="0.01"
+                                        className="h-12 font-black text-[10px] bg-white/5 border-white/5 rounded-2xl text-white"
+                                        value={interestRate}
+                                        onChange={e => setInterestRate(e.target.value)}
+                                    />
+                                </div>
+                                {type === 'credit_card' ? (
+                                    <div className="space-y-3">
+                                        <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">BILLING CYCLE</Label>
+                                        <Input
+                                            type="number"
+                                            placeholder="1-31"
+                                            className="h-12 font-black text-[10px] bg-white/5 border-white/5 rounded-2xl text-white"
+                                            value={billingDate}
+                                            onChange={e => setBillingDate(e.target.value)}
+                                        />
+                                    </div>
+                                ) : (
+                                    <div className="space-y-3">
+                                        <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">CREDIT THRESHOLD</Label>
+                                        <Input
+                                            type="number"
+                                            placeholder="MAX LIMIT"
+                                            className="h-12 font-black text-[10px] bg-white/5 border-white/5 rounded-2xl text-white"
+                                            value={limit}
+                                            onChange={e => setLimit(e.target.value)}
+                                        />
+                                    </div>
+                                )}
+                            </div>
+
+                            {type === 'credit_card' && (
+                                <div className="grid grid-cols-2 gap-6">
+                                    <div className="space-y-3">
+                                        <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">UTILIZATION LIMIT</Label>
+                                        <Input
+                                            type="number"
+                                            placeholder="MAX LINE"
+                                            className="h-12 font-black text-[10px] bg-white/5 border-white/5 rounded-2xl text-white"
+                                            value={limit}
+                                            onChange={e => setLimit(e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="space-y-3">
+                                        <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">SETTLEMENT ACCOUNT</Label>
+                                        <select
+                                            className="flex h-12 w-full rounded-2xl border border-white/5 bg-white/5 px-4 font-black uppercase text-[10px] tracking-widest text-white outline-none focus:ring-2 focus:ring-indigo-500/20"
+                                            value={linkedAssetId}
+                                            onChange={e => setLinkedAssetId(e.target.value)}
+                                        >
+                                            <option value="" className="bg-slate-900">NOT LINKED</option>
+                                            {assets.filter(a => a.type === 'bank').map(a => (
+                                                <option key={a.id} value={a.id} className="bg-slate-900">{a.name}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className="space-y-3">
+                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">SYSTEM NOTES</Label>
+                                <Input
+                                    placeholder="ADDITIONAL METADATA..."
+                                    className="h-12 bg-white/5 border-white/5 rounded-2xl text-white placeholder:text-white/10 text-[10px] font-black uppercase tracking-widest"
+                                    value={memo}
+                                    onChange={e => setMemo(e.target.value)}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <DialogFooter className="p-10 pt-4 bg-white/[0.02] border-t border-white/5">
+                        <Button
+                            onClick={handleSave}
+                            disabled={!name || !balance}
+                            className="w-full h-16 rounded-2xl bg-indigo-500 hover:bg-indigo-600 text-white font-black text-sm tracking-[0.2em] shadow-2xl active:scale-95 transition-all uppercase"
+                        >
+                            COMMIT TO MATRIX
+                        </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

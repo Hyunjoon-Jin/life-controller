@@ -1,11 +1,11 @@
-'use client';
-
 import { useMemo } from 'react';
 import { useData } from '@/context/DataProvider';
 import { eachDayOfInterval, subDays, format, isSameDay, getDay } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Activity, Shield, Terminal, Zap } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export function WorkloadHeatmap() {
     const { events, tasks, journals } = useData();
@@ -37,7 +37,7 @@ export function WorkloadHeatmap() {
             }
         });
 
-        // 3. Journals (count as 3 points - meaningful record)
+        // 3. Journals (count as 3 points)
         journals.forEach(j => {
             const dayKey = format(new Date(j.date), 'yyyy-MM-dd');
             map.set(dayKey, (map.get(dayKey) || 0) + 3);
@@ -47,46 +47,51 @@ export function WorkloadHeatmap() {
     }, [events, tasks, journals]);
 
     const getColor = (count: number) => {
-        if (count === 0) return 'bg-gray-100 dark:bg-gray-800';
-        if (count <= 2) return 'bg-green-200 dark:bg-green-900/40';
-        if (count <= 5) return 'bg-green-400 dark:bg-green-700/60';
-        if (count <= 8) return 'bg-green-600 dark:bg-green-600';
-        return 'bg-green-800 dark:bg-green-500';
+        if (count === 0) return 'bg-white/[0.03]';
+        if (count <= 2) return 'bg-indigo-500/20';
+        if (count <= 5) return 'bg-indigo-500/40';
+        if (count <= 8) return 'bg-indigo-500/70';
+        return 'bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.5)]';
     };
 
-    // Calculate streaks
-    // (Simple logic: approximate)
     const totalActivities = Array.from(activityMap.values()).reduce((a, b) => a + b, 0);
 
-
     return (
-        <div className="bg-white dark:bg-gray-900 p-6 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm">
-            <div className="flex items-center justify-between mb-6">
-                <div>
-                    <h3 className="text-lg font-bold">내 업무 강도 (Workload)</h3>
-                    <p className="text-sm text-muted-foreground">지난 1년간의 활동 내역입니다. {totalActivities}개의 기록이 있습니다.</p>
-                </div>
-                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <span>Less</span>
-                    <div className="flex gap-1">
-                        <div className="w-3 h-3 rounded-sm bg-gray-100 dark:bg-gray-800" />
-                        <div className="w-3 h-3 rounded-sm bg-green-200 dark:bg-green-900/40" />
-                        <div className="w-3 h-3 rounded-sm bg-green-400 dark:bg-green-700/60" />
-                        <div className="w-3 h-3 rounded-sm bg-green-600 dark:bg-green-600" />
-                        <div className="w-3 h-3 rounded-sm bg-green-800 dark:bg-green-500" />
+        <div className="glass-premium p-8 rounded-[32px] border border-white/5 shadow-2xl relative overflow-hidden group">
+            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/[0.03] to-transparent pointer-events-none" />
+
+            <div className="flex items-center justify-between mb-8 relative z-10">
+                <div className="flex items-center gap-6">
+                    <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
+                        <Activity className="w-6 h-6 text-indigo-400" />
                     </div>
-                    <span>More</span>
+                    <div>
+                        <h3 className="text-xl font-black text-white tracking-widest uppercase mb-1">OPERATIONAL INTENSITY MATRIX</h3>
+                        <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] flex items-center gap-2">
+                            <Terminal className="w-3 h-3 text-indigo-500/50" /> {totalActivities} DATA POINTS ACQUIRED // 365D WINDOW
+                        </p>
+                    </div>
+                </div>
+                <div className="flex items-center gap-3 text-[9px] font-black text-white/20 tracking-widest uppercase">
+                    <span>LOW</span>
+                    <div className="flex gap-1">
+                        <div className="w-3 h-3 rounded-[2px] bg-white/[0.03]" />
+                        <div className="w-3 h-3 rounded-[2px] bg-indigo-500/20" />
+                        <div className="w-3 h-3 rounded-[2px] bg-indigo-500/40" />
+                        <div className="w-3 h-3 rounded-[2px] bg-indigo-500/70" />
+                        <div className="w-3 h-3 rounded-[2px] bg-indigo-500" />
+                    </div>
+                    <span>MAX</span>
                 </div>
             </div>
 
-            <div className="overflow-x-auto custom-scrollbar pb-2">
-                <div className="flex gap-1 min-w-max">
-                    {/* Render grid by weeks for horizontal layout */}
+            <div className="overflow-x-auto custom-scrollbar pb-6 relative z-10">
+                <div className="flex gap-1.5 min-w-max">
                     {Array.from({ length: 53 }).map((_, weekIndex) => (
-                        <div key={weekIndex} className="flex flex-col gap-1">
+                        <div key={weekIndex} className="flex flex-col gap-1.5 pointer-events-none">
                             {Array.from({ length: 7 }).map((_, dayIndex) => {
                                 const dayDate = days[weekIndex * 7 + dayIndex];
-                                if (!dayDate || dayDate > today) return <div key={dayIndex} className="w-3 h-3" />; // Spacer
+                                if (!dayDate || dayDate > today) return <div key={dayIndex} className="w-3 h-3" />;
 
                                 const dateKey = format(dayDate, 'yyyy-MM-dd');
                                 const count = activityMap.get(dateKey) || 0;
@@ -94,20 +99,21 @@ export function WorkloadHeatmap() {
                                 return (
                                     <TooltipProvider key={dateKey}>
                                         <Tooltip>
-                                            <TooltipTrigger>
-                                                <div
+                                            <TooltipTrigger asChild>
+                                                <motion.div
+                                                    whileHover={{ scale: 1.3, zIndex: 50 }}
                                                     className={cn(
-                                                        "w-3 h-3 rounded-[2px] transition-colors hover:ring-1 hover:ring-black dark:hover:ring-white",
+                                                        "w-3 h-3 rounded-[2px] transition-all cursor-crosshair pointer-events-auto",
                                                         getColor(count)
                                                     )}
                                                 />
                                             </TooltipTrigger>
-                                            <TooltipContent>
-                                                <div className="text-xs font-bold">
-                                                    {format(dayDate, 'yyyy년 M월 d일')}
+                                            <TooltipContent className="glass-premium border-white/10 rounded-xl p-3 shadow-3xl text-white">
+                                                <div className="text-[10px] font-black tracking-widest uppercase mb-1 drop-shadow-md">
+                                                    {format(dayDate, 'MMM dd, yyyy')}
                                                 </div>
-                                                <div className="text-xs">
-                                                    활동지수: {count}
+                                                <div className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest flex items-center gap-2">
+                                                    <Zap className="w-3 h-3" /> INTENSITY_INDEX: {count}
                                                 </div>
                                             </TooltipContent>
                                         </Tooltip>

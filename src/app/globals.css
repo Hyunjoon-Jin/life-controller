@@ -62,44 +62,36 @@
   }
 
   .dark {
-    /* Life Controller Dark Mode - Deep Blue-Tinted Premium */
-    --background: 222 47% 8%;
-    /* #0A0F1A Deep Blue-Black */
-    --foreground: 210 40% 98%;
-    /* #F8FAFC Crisp White */
+    /* Ultra-Premium Design System - Season 2 */
+    --background: 225 35% 5%;
+    /* #080A0F True Deep Charcoal */
+    --foreground: 210 20% 90%;
+    /* #B4BCC7 Soft Silver */
 
-    --card: 222 47% 11%;
-    /* #0F172A Elevated Cards */
-    --card-foreground: 210 40% 98%;
+    --card: 225 35% 8%;
+    /* #0D111A Deep Surface */
+    --card-foreground: 210 20% 98%;
 
-    --popover: 222 47% 11%;
-    --popover-foreground: 210 40% 98%;
+    --primary: 161 72% 40%;
+    /* #10B981 Emerald Mist (Life) */
+    --primary-foreground: 0 0% 100%;
 
-    --primary: 217 91% 65%;
-    /* #60A5FA Brighter Blue for Dark BG */
-    --primary-foreground: 222 47% 11%;
+    --secondary: 239 84% 67%;
+    /* #6366F1 Electric Indigo (Work) */
+    --secondary-foreground: 0 0% 100%;
 
-    --secondary: 263 70% 60%;
-    /* #A78BFA Brighter Purple */
-    --secondary-foreground: 222 47% 11%;
+    --study: 231 48% 48%;
+    /* #3F51B5 Royal Indigo (Study) */
 
-    --muted: 215 25% 15%;
-    /* #1E293B Subtle Elevation */
-    --muted-foreground: 215 16% 70%;
-    /* #94A3B8 High Contrast Gray */
+    --muted: 220 30% 12%;
+    --muted-foreground: 215 16% 65%;
 
-    --accent: 215 25% 18%;
-    /* #1E293B Accent BG */
-    --accent-foreground: 217 91% 65%;
+    --accent: 220 30% 15%;
+    --accent-foreground: 161 72% 40%;
 
-    --destructive: 0 72% 51%;
-    /* #EF4444 Vibrant Red */
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 215 25% 20%;
-    /* #1E293B Subtle Border */
-    --input: 215 25% 15%;
-    --ring: 217 91% 65%;
+    --border: 225 35% 15%;
+    --input: 225 35% 12%;
+    --ring: 161 72% 40%;
   }
 
   .gray {
@@ -189,33 +181,57 @@
     background-color: hsl(var(--muted-foreground) / 0.3);
   }
 
-  .perspective-1000 {
-    perspective: 1000px;
+  /* Ultra-Premium Glassmorphism Utils */
+  .glass-premium {
+    background: rgba(255, 255, 255, 0.035);
+    backdrop-filter: blur(24px) saturate(180%) contrast(110%);
+    border-top: 1.5px solid rgba(255, 255, 255, 0.12);
+    border-left: 1px solid rgba(255, 255, 255, 0.08);
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
   }
 
-  .transform-style-3d {
-    transform-style: preserve-3d;
+  .glass-surface {
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
   }
 
-  .backface-hidden {
-    backface-visibility: hidden;
+  .btn-premium {
+    @apply transition-all duration-300 active:scale-95 hover:scale-[1.04];
+    position: relative;
+    overflow: hidden;
   }
 
-  .rotate-y-180 {
-    transform: rotateY(180deg);
+  .btn-glow-life:hover {
+    box-shadow: 0 0 25px 2px rgba(16, 185, 129, 0.35);
   }
 
-  /* Premium Gradient Utilities */
-  .gradient-primary {
-    background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+  .btn-glow-work:hover {
+    box-shadow: 0 0 25px 2px rgba(99, 102, 241, 0.35);
   }
 
-  .gradient-secondary {
-    background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
+  .btn-glow-study:hover {
+    box-shadow: 0 0 25px 2px rgba(63, 81, 181, 0.35);
   }
 
-  .gradient-accent {
-    background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+  .bg-noise {
+    position: relative;
+  }
+
+  .bg-noise::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    opacity: 0.015;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .premium-gradient-bg {
+    background: radial-gradient(circle at 20% 20%, #151921 0%, #080A0F 100%);
   }
 
   .pb-safe {

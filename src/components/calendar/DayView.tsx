@@ -447,45 +447,46 @@ export function DayView({ currentDate, showProjectTasks, onNext, onPrev }: { cur
 
 
     return (
-        <div className="flex flex-col h-full bg-white dark:bg-[#1C1C1E] rounded-3xl border border-transparent dark:border-gray-800 shadow-sm overflow-hidden relative select-none">
+        <div className="flex flex-col h-full glass-premium rounded-[32px] border border-white/5 shadow-2xl overflow-hidden relative select-none">
             {/* Header */}
-            <div className="p-4 border-b border-border/[0.05] dark:border-gray-800 flex items-center justify-between bg-gray-50/50 dark:bg-gray-900/50">
-                <div className="flex items-center gap-3">
-                    <div className="text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white">{format(currentDate, 'd')}</div>
-                    <div className="text-xl font-bold text-gray-500 dark:text-gray-400 pt-1">{format(currentDate, 'EEEE', { locale: ko })}</div>
+            <div className="p-6 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
+                <div className="flex items-center gap-6">
+                    <div className="text-6xl font-black tracking-tighter text-white drop-shadow-2xl">{format(currentDate, 'd')}</div>
+                    <div className="flex flex-col">
+                        <div className="text-xl font-black text-white/90 uppercase tracking-widest">{format(currentDate, 'EEEE', { locale: ko })}</div>
+                        <div className="text-xs font-bold text-white/30 uppercase tracking-[0.2em]">{format(currentDate, 'MMMM yyyy', { locale: ko })}</div>
+                    </div>
                 </div>
 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-6">
                     {/* Project Tasks Indicator */}
                     {dayProjectTasks.length > 0 && (
-                        <div className="flex items-center gap-1">
-                            {dayProjectTasks.map(task => {
+                        <div className="hidden md:flex items-center gap-2">
+                            {dayProjectTasks.slice(0, 3).map(task => {
                                 const project = projects.find(p => p.id === task.projectId);
                                 return (
                                     <div
                                         key={task.id}
-                                        className="text-[10px] px-2 py-1 rounded-full truncate flex items-center gap-1 text-white shadow-sm"
-                                        style={{ backgroundColor: project?.color || '#3b82f6' }}
-                                    >
-                                        <Briefcase className="w-3 h-3 shrink-0" />
-                                        <span className="truncate max-w-[100px]">{task.title}</span>
-                                    </div>
+                                        className="w-2.5 h-2.5 rounded-full shadow-[0_0_10px_rgba(16,185,129,0.5)]"
+                                        style={{ backgroundColor: project?.color || '#10b981' }}
+                                        title={task.title}
+                                    />
                                 );
                             })}
                         </div>
                     )}
 
                     {/* Font Size Control */}
-                    <div className="flex items-center gap-1 bg-white p-0.5 rounded-lg border border-border/[1.0]">
+                    <div className="flex items-center gap-1 bg-white/5 p-1 rounded-2xl border border-white/5 backdrop-blur-md">
                         {(['xs', 'sm', 'base'] as const).map(size => (
                             <button
                                 key={size}
                                 onClick={() => setFontSize(size)}
                                 className={cn(
-                                    "px-2 py-1 text-[10px] font-bold rounded transition-all",
+                                    "px-3 py-1.5 text-[10px] font-black rounded-xl transition-all duration-300 tracking-wider",
                                     fontSize === size
-                                        ? "bg-black text-white shadow-sm"
-                                        : "text-gray-400 hover:bg-gray-100 hover:text-gray-900"
+                                        ? "bg-emerald-500 text-white shadow-[0_5px_15px_rgba(16,185,129,0.4)]"
+                                        : "text-white/30 hover:text-white/60"
                                 )}
                             >
                                 {size.toUpperCase()}
@@ -497,50 +498,49 @@ export function DayView({ currentDate, showProjectTasks, onNext, onPrev }: { cur
 
             {/* Content */}
             <div
-                className="flex-1 overflow-y-auto relative custom-scrollbar touch-pan-y"
+                className="flex-1 overflow-y-auto relative custom-scrollbar touch-pan-y bg-white/[0.01]"
                 ref={timelineRef}
             >
-                {/* Scrollable Container Wrapper */}
                 <div
-                    className="relative transition-[min-height] duration-200 ease-out"
+                    className="relative transition-[min-height] duration-500 ease-out"
                     style={{ minHeight: 24 * pixelsPerHour }}
                 >
 
                     {/* Current Time Line */}
                     {isSameDay(currentDate, new Date()) && (
                         <div
-                            className="absolute left-16 right-0 border-t-2 border-red-500 z-50 pointer-events-none flex items-center transition-all duration-200"
+                            className="absolute left-20 right-0 border-t border-emerald-500/50 z-50 pointer-events-none flex items-center transition-all duration-300"
                             style={{ top: (new Date().getHours() + new Date().getMinutes() / 60) * pixelsPerHour }}
                         >
-                            <div className="absolute -left-1.5 w-3 h-3 bg-red-500 rounded-full shadow-sm" />
+                            <div className="absolute -left-1.5 w-3 h-3 bg-emerald-500 rounded-full shadow-[0_0_12px_rgba(16,185,129,0.8)]" />
+                            <div className="h-[1px] w-full bg-emerald-500/20" />
                         </div>
                     )}
 
-                    {/* Time Grid (Establish Height) */}
+                    {/* Grid */}
                     <div className="flex flex-col">
                         {hours.map((hour) => (
                             <div
                                 key={hour}
-                                className="flex w-full relative group transition-[height] duration-200 ease-out"
+                                className="flex w-full relative group transition-[height] duration-300 ease-out"
                                 style={{ height: pixelsPerHour }}
                             >
                                 {/* Time Label */}
-                                <div className="absolute -top-2 left-2 text-xs text-muted-foreground/60 font-mono w-12 text-right">
+                                <div className="absolute -top-3 left-4 text-[10px] text-white/20 font-black tracking-widest uppercase w-14 text-right">
                                     {format(new Date().setHours(hour, 0, 0, 0), 'h aa')}
                                 </div>
 
                                 {/* Padding for Time Column */}
-                                <div className="w-16 flex-shrink-0 border-r border-border/[0.03] bg-muted/10"></div>
+                                <div className="w-20 flex-shrink-0 border-r border-white/[0.03] bg-white/[0.01]"></div>
 
-                                {/* Clickable Content Area - 4 slots for 15 min intervals */}
-                                <div className="flex-1 flex flex-col h-full relative border-b border-border/[0.03]">
+                                {/* Clickable Content Area */}
+                                <div className="flex-1 flex flex-col h-full relative border-b border-white/[0.03]">
                                     {[0, 15, 30, 45].map((minute) => (
                                         <div
                                             key={minute}
-                                            className="flex-1 last:border-b-0 hover:bg-primary/5 transition-colors cursor-pointer relative md:min-h-0 min-h-[16px]"
+                                            className="flex-1 last:border-b-0 hover:bg-white/[0.03] transition-colors cursor-pointer relative md:min-h-0 min-h-[16px]"
                                             onMouseDown={(e) => handleGridMouseDown(e, hour, minute)}
                                             onClick={(e) => {
-                                                // Mobile: tap to create (only on the grid itself, not events)
                                                 if (e.target !== e.currentTarget) return;
                                                 if (window.innerWidth < 768) {
                                                     handleGridTap(hour, minute);
@@ -553,19 +553,18 @@ export function DayView({ currentDate, showProjectTasks, onNext, onPrev }: { cur
                         ))}
                     </div>
 
-                    {/* Events Layer - Fixed Positioning */}
-                    <div className="absolute top-0 bottom-0 right-0 left-16 z-10 pointer-events-none">
-                        {/* Render Temp Event (Drag Creation Preview) */}
+                    {/* Events Layer */}
+                    <div className="absolute top-0 bottom-0 right-0 left-20 z-10 pointer-events-none p-1.5">
                         {dragState?.mode === 'create' && tempEvent && (
                             <div
                                 className={cn(
-                                    "absolute left-0.5 right-2 rounded-sm p-1.5 border bg-primary/10 border-primary/30 text-primary-foreground z-50 shadow-lg backdrop-blur-[2px] flex items-center gap-1.5",
+                                    "absolute inset-x-2 rounded-xl p-3 border-l-4 bg-emerald-500/20 border-emerald-500/50 text-white z-50 shadow-2xl backdrop-blur-md flex items-center gap-3",
                                     getTextSizeClass(fontSize, 'title')
                                 )}
                                 style={getEventStyle(tempEvent, pixelsPerHour)}
                             >
-                                <div className="font-bold truncate">{tempEvent.title}</div>
-                                <div className={cn("opacity-80 font-mono shrink-0", getTextSizeClass(fontSize, 'time'))}>
+                                <div className="font-black truncate uppercase tracking-tight">{tempEvent.title}</div>
+                                <div className={cn("opacity-40 font-bold shrink-0", getTextSizeClass(fontSize, 'time'))}>
                                     {format(tempEvent.start, 'HH:mm')}
                                 </div>
                             </div>
@@ -584,21 +583,19 @@ export function DayView({ currentDate, showProjectTasks, onNext, onPrev }: { cur
                                 <div
                                     key={event.id}
                                     className={cn(
-                                        "absolute left-0.5 right-2 rounded-sm transition-all shadow-sm border group overflow-hidden flex backdrop-blur-[2px] pointer-events-auto cursor-pointer",
-                                        isDragging && "z-50 opacity-90 shadow-2xl scale-[1.02] cursor-move",
-                                        isDragging && "z-50 opacity-90 shadow-2xl scale-[1.02] cursor-move",
-                                        !isDragging && !isHabit && "hover:shadow-md hover:brightness-[1.02] active:scale-[0.98]",
-                                        !isDragging && isHabit && "hover:bg-orange-50/50", // Subtle hover for habits
-                                        isShort ? "p-1 py-0.5 items-center justify-between" : "p-2 flex-col gap-1"
+                                        "absolute left-1.5 right-3 rounded-xl transition-all shadow-xl border-l-[4px] group overflow-hidden flex backdrop-blur-md pointer-events-auto cursor-pointer",
+                                        isDragging && "z-50 opacity-90 shadow-2xl scale-[1.02] ring-2 ring-white/10",
+                                        !isDragging && !isHabit && "hover:shadow-2xl hover:brightness-110 active:scale-[0.98]",
+                                        !isDragging && isHabit && "hover:bg-orange-500/10",
+                                        isShort ? "px-3 py-1 items-center justify-between" : "p-3 flex-col gap-1.5"
                                     )}
                                     style={{
                                         ...getEventStyle(displayEvent, pixelsPerHour),
-                                        backgroundColor: colors.bg,
-                                        borderColor: colors.border,
-                                        color: colors.text,
-                                        borderLeftWidth: '3px',
+                                        backgroundColor: colors.bg.replace('0.08', '0.15'),
+                                        borderColor: colors.border.replace('0.2', '0.3'),
+                                        color: 'white',
                                         borderLeftColor: colors.accent,
-                                        transition: isDragging ? 'none' : 'all 0.2s ease-out' // Smooth transitions when zooming
+                                        transition: isDragging ? 'none' : 'all 0.3s ease-out'
                                     }}
                                     onMouseDown={(e) => startMove(e, event)}
                                     onTouchStart={(e) => startTouchMove(e, event)}
@@ -608,55 +605,55 @@ export function DayView({ currentDate, showProjectTasks, onNext, onPrev }: { cur
                                         if (!isDragging) handleOpenEdit(event);
                                     }}
                                 >
-                                    <div className={cn("flex items-center gap-1.5 font-bold tracking-tight min-w-0", isShort ? "flex-1" : "justify-between")}>
-                                        <div className="flex items-center gap-1.5 min-w-0">
-                                            {isHabit && <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: colors.accent }} />}
+                                    <div className={cn("flex items-center gap-2 font-black tracking-tight min-w-0", isShort ? "flex-1" : "justify-between")}>
+                                        <div className="flex items-center gap-2 min-w-0">
+                                            {isHabit && <div className="w-2 h-2 rounded-full shrink-0 shadow-[0_0_8px_rgba(251,146,60,0.5)]" style={{ backgroundColor: colors.accent }} />}
                                             {!isHabit && event.priority === 'high' && (
-                                                <div className="w-1 h-1 rounded-full bg-red-400 animate-pulse shrink-0 shadow-[0_0_8px_rgba(248,113,113,0.8)]" />
+                                                <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse shrink-0 shadow-[0_0_10px_rgba(244,63,94,0.6)]" />
                                             )}
-                                            {event.isMeeting && <Users className="w-3 h-3 opacity-80 shrink-0 text-blue-600 dark:text-blue-400" strokeWidth={2} />}
-                                            {event.isAppointment && <Handshake className="w-3 h-3 opacity-80 shrink-0 text-green-600 dark:text-green-400" strokeWidth={2} />}
+                                            {event.isMeeting && <Users className="w-4 h-4 opacity-60 shrink-0 text-white" strokeWidth={2.5} />}
+                                            {event.isAppointment && <Handshake className="w-4 h-4 opacity-60 shrink-0 text-white" strokeWidth={2.5} />}
 
                                             {/* Category Tag */}
                                             {!isShort && !isHabit && (
-                                                <span className="text-[9px] font-semibold opacity-70 px-1 py-0.5 rounded-sm bg-black/5 dark:bg-white/10 shrink-0">
-                                                    {event.type === 'work' ? '업무' :
-                                                        event.type === 'study' ? '학습' :
-                                                            event.type === 'hobby' ? '취미' :
-                                                                event.type === 'health' ? '운동' :
-                                                                    event.type === 'finance' ? '금융' :
-                                                                        event.type === 'social' ? '약속' :
-                                                                            event.type === 'travel' ? '여행' :
-                                                                                event.type === 'meal' ? '식사' :
-                                                                                    event.type === 'personal' ? '개인' : '기타'}
+                                                <span className="text-[10px] font-black opacity-30 px-2 py-0.5 rounded-lg bg-white/10 shrink-0 uppercase tracking-widest leading-none">
+                                                    {event.type === 'work' ? 'WORK' :
+                                                        event.type === 'study' ? 'STUDY' :
+                                                            event.type === 'hobby' ? 'HOBBY' :
+                                                                event.type === 'health' ? 'HEALTH' :
+                                                                    event.type === 'finance' ? 'FINANCE' :
+                                                                        event.type === 'social' ? 'SOCIAL' :
+                                                                            event.type === 'travel' ? 'TRAVEL' :
+                                                                                event.type === 'meal' ? 'MEAL' :
+                                                                                    event.type === 'personal' ? 'PERSONAL' : 'ETC'}
                                                 </span>
                                             )}
 
-                                            <span className={cn("truncate leading-none", getTextSizeClass(fontSize, 'title'))}>
+                                            <span className={cn("truncate leading-tight uppercase", getTextSizeClass(fontSize, 'title'))}>
                                                 {event.title}
                                             </span>
                                         </div>
 
                                         {isShort && (
-                                            <div className={cn("font-mono font-medium opacity-60 ml-auto shrink-0", getTextSizeClass(fontSize, 'time'))}>
+                                            <div className={cn("font-bold opacity-30 ml-auto shrink-0 tracking-tighter", getTextSizeClass(fontSize, 'time'))}>
                                                 {format(displayEvent.start, 'HH:mm')}
                                             </div>
                                         )}
                                     </div>
 
                                     {!isShort && (
-                                        <div className={cn("font-mono font-medium opacity-60 mt-auto", getTextSizeClass(fontSize, 'time'))}>
+                                        <div className={cn("font-bold opacity-30 mt-auto tracking-tighter", getTextSizeClass(fontSize, 'time'))}>
                                             {format(displayEvent.start, 'HH:mm')} - {format(displayEvent.end, 'HH:mm')}
                                         </div>
                                     )}
 
-                                    {/* Resize Handle - visible on mobile, hover on desktop */}
+                                    {/* Resize Handle */}
                                     <div
-                                        className="absolute bottom-0 left-0 right-0 h-4 md:h-2 cursor-ns-resize opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex items-center justify-center z-20"
+                                        className="absolute bottom-0 left-0 right-0 h-4 md:h-2 cursor-ns-resize opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex items-center justify-center z-20 hover:bg-white/5 active:bg-white/10"
                                         onMouseDown={(e) => startResize(e, event)}
                                         onTouchStart={(e) => startTouchResize(e, event)}
                                     >
-                                        <div className="w-8 md:w-4 h-1 md:h-0.5 bg-black/20 md:bg-black/10 rounded-full" />
+                                        <div className="w-10 md:w-6 h-1 bg-white/20 rounded-full" />
                                     </div>
                                 </div>
                             );
@@ -664,9 +661,9 @@ export function DayView({ currentDate, showProjectTasks, onNext, onPrev }: { cur
                     </div>
                 </div>
 
-                {/* Mobile FAB for quick event creation */}
+                {/* Mobile FAB */}
                 <button
-                    className="md:hidden fixed bottom-24 right-6 z-50 w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-xl shadow-blue-500/30 flex items-center justify-center active:scale-95 transition-transform"
+                    className="md:hidden fixed bottom-28 right-6 z-50 w-16 h-16 rounded-3xl bg-emerald-500 text-white shadow-[0_15px_30px_-5px_rgba(16,185,129,0.5)] flex items-center justify-center active:scale-90 transition-all duration-300"
                     onClick={() => {
                         const now = new Date();
                         const start = new Date(currentDate);
@@ -679,7 +676,7 @@ export function DayView({ currentDate, showProjectTasks, onNext, onPrev }: { cur
                         setIsDialogOpen(true);
                     }}
                 >
-                    <Plus className="w-7 h-7" />
+                    <Plus className="w-8 h-8" strokeWidth={3} />
                 </button>
             </div>
 
@@ -693,32 +690,50 @@ export function DayView({ currentDate, showProjectTasks, onNext, onPrev }: { cur
                 onDelete={handleDeleteEvent}
             />
 
+            {/* Dialogs Stylized for Premium */}
             <Dialog open={showDeleteHabitDialog} onOpenChange={setShowDeleteHabitDialog}>
-                <DialogContent>
+                <DialogContent className="glass-premium border border-white/10 text-white rounded-[32px] p-8 shadow-2xl">
                     <DialogHeader>
-                        <DialogTitle>습관 일정 삭제</DialogTitle>
+                        <DialogTitle className="text-2xl font-black tracking-tight">습관 일정 삭제</DialogTitle>
                     </DialogHeader>
-                    <div className="py-4 text-sm text-muted-foreground">
+                    <div className="py-6 text-sm font-bold text-white/40 leading-relaxed uppercase tracking-wide">
                         이 습관 일정을 어떻게 삭제하시겠습니까?
                     </div>
-                    <DialogFooter className="flex-col sm:flex-row gap-2">
-                        <Button variant="secondary" onClick={confirmDeleteToday}>오늘만 삭제</Button>
-                        <Button variant="destructive" onClick={confirmDeleteFuture}>모든 일정 삭제</Button>
-                        <Button variant="ghost" onClick={() => setShowDeleteHabitDialog(false)}>취소</Button>
+                    <DialogFooter className="flex-col sm:flex-row gap-3">
+                        <Button
+                            variant="secondary"
+                            onClick={confirmDeleteToday}
+                            className="h-12 rounded-xl bg-white/5 hover:bg-white/10 text-white font-black tracking-widest"
+                        >
+                            오늘만 삭제
+                        </Button>
+                        <Button
+                            variant="destructive"
+                            onClick={confirmDeleteFuture}
+                            className="h-12 rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-black tracking-widest shadow-[0_8px_16px_rgba(244,63,94,0.3)]"
+                        >
+                            모든 일정 삭제
+                        </Button>
+                        <Button
+                            variant="ghost"
+                            onClick={() => setShowDeleteHabitDialog(false)}
+                            className="h-12 rounded-xl text-white/30 hover:text-white font-black tracking-widest"
+                        >
+                            취소
+                        </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
 
-            {/* Habit Modification Choice Dialog */}
             <Dialog open={showHabitUpdateChoiceDialog} onOpenChange={setShowHabitUpdateChoiceDialog}>
-                <DialogContent>
+                <DialogContent className="glass-premium border border-white/10 text-white rounded-[32px] p-8 shadow-2xl">
                     <DialogHeader>
-                        <DialogTitle>습관 일정 변경</DialogTitle>
+                        <DialogTitle className="text-2xl font-black tracking-tight">습관 일정 변경</DialogTitle>
                     </DialogHeader>
-                    <div className="py-4 text-sm text-muted-foreground">
-                        습관 일정의 시간대가 변경되었습니다. 어떻게 반영할까요?
+                    <div className="py-6 text-sm font-bold text-white/40 leading-relaxed uppercase tracking-wide">
+                        시간대가 변경되었습니다. 어떻게 반영할까요?
                     </div>
-                    <DialogFooter className="flex-col sm:flex-row gap-2">
+                    <DialogFooter className="flex-col sm:flex-row gap-3">
                         <Button
                             variant="default"
                             onClick={() => {
@@ -735,6 +750,7 @@ export function DayView({ currentDate, showProjectTasks, onNext, onPrev }: { cur
                                 setShowHabitUpdateChoiceDialog(false);
                                 setPendingHabitUpdate(null);
                             }}
+                            className="h-12 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-black tracking-widest shadow-[0_8px_16px_rgba(16,185,129,0.3)]"
                         >
                             향후 모든 일정 변경
                         </Button>
@@ -751,11 +767,11 @@ export function DayView({ currentDate, showProjectTasks, onNext, onPrev }: { cur
                                         skippedDates: [...(habit.skippedDates || []), dateStr]
                                     });
                                 }
-                                // Create as new independent event
                                 addEvent({ ...pendingHabitUpdate, id: generateId() });
                                 setShowHabitUpdateChoiceDialog(false);
                                 setPendingHabitUpdate(null);
                             }}
+                            className="h-12 rounded-xl bg-white/5 hover:bg-white/10 text-white font-black tracking-widest"
                         >
                             이 일정만 변경
                         </Button>
@@ -765,6 +781,7 @@ export function DayView({ currentDate, showProjectTasks, onNext, onPrev }: { cur
                                 setShowHabitUpdateChoiceDialog(false);
                                 setPendingHabitUpdate(null);
                             }}
+                            className="h-12 rounded-xl text-white/30 hover:text-white font-black tracking-widest"
                         >
                             취소
                         </Button>

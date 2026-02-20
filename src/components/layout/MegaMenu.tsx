@@ -2,23 +2,23 @@
 
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { CATEGORIES, SUB_MENUS, CategoryType, WORK_NAV_ITEMS, STUDY_NAV_ITEMS } from '@/constants/menu';
+import { CATEGORIES, SUB_MENUS, CategoryType, WORK_NAV_ITEMS, STUDY_NAV_ITEMS, AMBITION_NAV_ITEMS } from '@/constants/menu';
+import { motion, AnimatePresence } from 'framer-motion';
 
 // TabType is now imported or we use string for flexibility in props as defined in interface
 interface MegaMenuNavProps {
     activeCategory: CategoryType;
     activeTab: string;
     onSelect: (category: CategoryType, tab: string) => void;
-    appMode: 'life' | 'work' | 'study';
+    appMode: 'life' | 'work' | 'study' | 'ambition';
 }
 
 export function MegaMenuNav({ activeCategory, activeTab, onSelect, appMode }: MegaMenuNavProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [hoveredCategory, setHoveredCategory] = useState<CategoryType>(activeCategory);
 
-    // If Work Mode, we use a flat list and direct navigation
     if (appMode === 'work') {
         return (
             <div className="w-full relative z-50">
@@ -28,10 +28,10 @@ export function MegaMenuNav({ activeCategory, activeTab, onSelect, appMode }: Me
                             key={item.id}
                             onClick={() => onSelect('basic', item.id)}
                             className={cn(
-                                "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap",
+                                "flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all whitespace-nowrap btn-premium",
                                 activeTab === item.id
-                                    ? "bg-[#9C27B0] text-white shadow-md shadow-purple-200"
-                                    : "text-[#4A148C]/70 hover:bg-[#CE93D8]/40 hover:text-[#4A148C]"
+                                    ? "bg-[#6366F1] text-white shadow-[0_0_20px_rgba(99,102,241,0.4)] btn-glow-work"
+                                    : "text-white/40 hover:bg-white/5 hover:text-white/80 border border-white/5"
                             )}
                         >
                             {item.label}
@@ -42,7 +42,6 @@ export function MegaMenuNav({ activeCategory, activeTab, onSelect, appMode }: Me
         );
     }
 
-    // If Study Mode, we use a flat list and direct navigation
     if (appMode === 'study') {
         return (
             <div className="w-full relative z-50">
@@ -52,10 +51,33 @@ export function MegaMenuNav({ activeCategory, activeTab, onSelect, appMode }: Me
                             key={item.id}
                             onClick={() => onSelect('basic', item.id)}
                             className={cn(
-                                "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap",
+                                "flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all whitespace-nowrap btn-premium",
                                 activeTab === item.id
-                                    ? "bg-[#3F51B5] text-white shadow-md shadow-indigo-200"
-                                    : "text-[#1A237E]/70 hover:bg-[#C5CAE9]/40 hover:text-[#1A237E]"
+                                    ? "bg-[#3F51B5] text-white shadow-[0_0_20px_rgba(63,81,181,0.4)] btn-glow-study"
+                                    : "text-white/40 hover:bg-white/5 hover:text-white/80 border border-white/5"
+                            )}
+                        >
+                            {item.label}
+                        </button>
+                    ))}
+                </div>
+            </div>
+        );
+    }
+
+    if (appMode === 'ambition') {
+        return (
+            <div className="w-full relative z-50">
+                <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-2 max-w-7xl mx-auto">
+                    {AMBITION_NAV_ITEMS.map(item => (
+                        <button
+                            key={item.id}
+                            onClick={() => onSelect('basic', item.id)}
+                            className={cn(
+                                "flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all whitespace-nowrap btn-premium",
+                                activeTab === item.id
+                                    ? "bg-amber-600 text-white shadow-[0_0_20px_rgba(217,119,6,0.4)]"
+                                    : "text-white/40 hover:bg-white/5 hover:text-white/80 border border-white/5"
                             )}
                         >
                             {item.label}
@@ -72,7 +94,7 @@ export function MegaMenuNav({ activeCategory, activeTab, onSelect, appMode }: Me
     return (
         <div className="w-full relative z-50" onMouseLeave={() => setIsOpen(false)}>
             {/* Trigger Bar */}
-            <div className="flex items-center gap-1 overflow-x-auto no-scrollbar py-2">
+            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-3 px-1">
                 {visibleCategories.map(cat => (
                     <button
                         key={cat.id}
@@ -81,94 +103,117 @@ export function MegaMenuNav({ activeCategory, activeTab, onSelect, appMode }: Me
                             setIsOpen(true);
                         }}
                         onClick={() => {
-                            // Optionally select first tab
                             const firstTab = SUB_MENUS[cat.id][0].id;
                             onSelect(cat.id, firstTab);
                             setIsOpen(false);
                         }}
                         className={cn(
-                            "px-4 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap",
+                            "px-5 py-2.5 rounded-full text-sm font-black transition-all whitespace-nowrap relative group",
                             activeCategory === cat.id
-                                ? "bg-black text-white shadow-md"
-                                : "text-muted-foreground hover:bg-gray-100 hover:text-black"
+                                ? "text-emerald-400"
+                                : "text-white/40 hover:text-white/80"
                         )}
                     >
                         {cat.label}
+                        {activeCategory === cat.id && (
+                            <motion.div
+                                layoutId="active-indicator"
+                                className="absolute inset-0 bg-emerald-500/10 rounded-full border border-emerald-500/20 -z-10"
+                            />
+                        )}
                     </button>
                 ))}
             </div>
 
             {/* Mega Menu Dropdown */}
-            {isOpen && (
-                <div className="absolute top-full left-0 w-full bg-white dark:bg-popover text-popover-foreground rounded-[32px] shadow-2xl border border-border p-2 min-h-[400px] flex overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 z-50">
+            <AnimatePresence>
+                {isOpen && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 5, scale: 0.99 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                        className="absolute top-full left-0 w-full glass-premium text-white rounded-[32px] p-2 min-h-[420px] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.6)] flex overflow-hidden z-50 border-white/10"
+                    >
 
-                    {/* Left: Categories List */}
-                    <div className="w-48 py-4 px-2 border-r border-border flex flex-col gap-1">
-                        {visibleCategories.map(cat => (
-                            <button
-                                key={cat.id}
-                                onMouseEnter={() => setHoveredCategory(cat.id)}
-                                className={cn(
-                                    "text-left px-5 py-3.5 rounded-2xl text-[15px] font-bold transition-all flex justify-between items-center group",
-                                    hoveredCategory === cat.id
-                                        ? "bg-muted text-foreground"
-                                        : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
-                                )}
-                            >
-                                {cat.label}
-                                {hoveredCategory === cat.id && <ChevronRight className="w-4 h-4 text-gray-400" />}
-                            </button>
-                        ))}
-                    </div>
-
-                    {/* Center: Sub Menus Grid */}
-                    <div className="flex-1 p-6 bg-card">
-                        <h3 className="text-lg font-bold mb-6 text-foreground px-2">
-                            {CATEGORIES.find(c => c.id === hoveredCategory)?.label} 서비스
-                        </h3>
-                        <div className="flex flex-col gap-1">
-                            {SUB_MENUS[hoveredCategory] ? SUB_MENUS[hoveredCategory]
-                                .map((item) => (
-
-                                    <button
-                                        key={item.id}
-                                        onClick={() => {
-                                            onSelect(hoveredCategory, item.id);
-                                            setIsOpen(false);
-                                        }}
-                                        className={cn(
-                                            "flex items-center gap-3 p-3 rounded-xl transition-all group hover:bg-gray-50 dark:hover:bg-gray-800 text-left w-full cursor-pointer",
-                                            activeTab === item.id && activeCategory === hoveredCategory ? "bg-blue-50 dark:bg-blue-900/10" : ""
-                                        )}
-                                    >
-                                        <div className={cn(
-                                            "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors",
-                                            activeTab === item.id && activeCategory === hoveredCategory
-                                                ? "bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300"
-                                                : "bg-gray-100 text-gray-500 group-hover:bg-white group-hover:text-blue-500 group-hover:shadow-sm"
-                                        )}>
-                                            <item.icon className="w-5 h-5" strokeWidth={2} />
-                                        </div>
-                                        <div className="flex-1 min-w-0 flex items-center gap-3">
-                                            <div className={cn(
-                                                "font-bold text-[15px] whitespace-nowrap",
-                                                activeTab === item.id && activeCategory === hoveredCategory ? "text-blue-600" : "text-gray-900 dark:text-gray-100"
-                                            )}>
-                                                {item.label}
-                                            </div>
-                                            <div className="text-xs text-gray-400 font-medium whitespace-nowrap overflow-hidden text-ellipsis">
-                                                {item.desc}
-                                            </div>
-                                        </div>
-                                        <ChevronRight className="w-4 h-4 text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
-                                    </button>
-                                )) : (
-                                <div className="text-gray-400 text-sm p-4">메뉴가 없습니다.</div>
-                            )}
+                        {/* Left: Categories List */}
+                        <div className="w-56 py-6 px-3 border-r border-white/5 flex flex-col gap-2 relative z-10">
+                            {visibleCategories.map(cat => (
+                                <button
+                                    key={cat.id}
+                                    onMouseEnter={() => setHoveredCategory(cat.id)}
+                                    className={cn(
+                                        "text-left px-5 py-4 rounded-2xl text-[15px] font-bold transition-all flex justify-between items-center group relative overflow-hidden",
+                                        hoveredCategory === cat.id
+                                            ? "bg-white/10 text-emerald-400"
+                                            : "text-white/40 hover:bg-white/5 hover:text-white/70"
+                                    )}
+                                >
+                                    {cat.label}
+                                    {hoveredCategory === cat.id && (
+                                        <motion.div layoutId="nav-glow" className="absolute left-0 w-1 h-6 bg-emerald-500 rounded-full" />
+                                    )}
+                                    <ChevronRight className={cn(
+                                        "w-4 h-4 transition-transform group-hover:translate-x-1",
+                                        hoveredCategory === cat.id ? "text-emerald-400" : "text-white/10"
+                                    )} />
+                                </button>
+                            ))}
                         </div>
-                    </div>
-                </div>
-            )}
+
+                        {/* Right Content Area */}
+                        <div className="flex-1 p-8 relative z-10">
+                            <div className="flex items-center gap-3 mb-8">
+                                <div className="w-1 h-6 bg-emerald-500 rounded-full" />
+                                <h3 className="text-xl font-bold text-white/90">
+                                    {CATEGORIES.find(c => c.id === hoveredCategory)?.label} 서비스
+                                </h3>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-3">
+                                {SUB_MENUS[hoveredCategory] ? SUB_MENUS[hoveredCategory]
+                                    .map((item) => (
+
+                                        <button
+                                            key={item.id}
+                                            onClick={() => {
+                                                onSelect(hoveredCategory, item.id);
+                                                setIsOpen(false);
+                                            }}
+                                            className={cn(
+                                                "flex items-center gap-4 p-4 rounded-2xl transition-all group hover:bg-white/5 text-left w-full cursor-pointer border border-transparent hover:border-white/5",
+                                                activeTab === item.id && activeCategory === hoveredCategory ? "bg-emerald-500/5 border-emerald-500/10" : ""
+                                            )}
+                                        >
+                                            <div className={cn(
+                                                "w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300",
+                                                activeTab === item.id && activeCategory === hoveredCategory
+                                                    ? "bg-emerald-500 text-white shadow-[0_0_15px_rgba(16,185,129,0.4)]"
+                                                    : "bg-white/5 text-white/30 group-hover:bg-white/10 group-hover:text-emerald-400 group-hover:scale-110"
+                                            )}>
+                                                <item.icon className="w-6 h-6" strokeWidth={1.5} />
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <div className={cn(
+                                                    "font-bold text-base transition-colors",
+                                                    activeTab === item.id && activeCategory === hoveredCategory ? "text-emerald-400" : "text-white/80 group-hover:text-white"
+                                                )}>
+                                                    {item.label}
+                                                </div>
+                                                <div className="text-[13px] text-white/30 font-medium truncate mt-0.5">
+                                                    {item.desc}
+                                                </div>
+                                            </div>
+                                            <ChevronRight className="w-4 h-4 text-white/10 group-hover:text-emerald-400 group-hover:translate-x-1 transition-all" />
+                                        </button>
+                                    )) : (
+                                    <div className="text-white/20 text-sm p-4 italic font-medium">메뉴가 비어있습니다.</div>
+                                )}
+                            </div>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }

@@ -6,6 +6,8 @@ import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { motion } from 'framer-motion';
+import { Activity, Shield, Terminal, Zap, ArrowUpRight } from 'lucide-react';
 
 interface PortfolioTimelineProps {
     projects: Project[];
@@ -23,9 +25,8 @@ export function PortfolioTimeline({ projects, onOpenProject }: PortfolioTimeline
         if (!start && !end) return { left: '0%', width: '0%' };
 
         const validStart = start ? new Date(start) : new Date();
-        const validEnd = end ? new Date(end) : new Date(validStart.getTime() + 86400000 * 30); // Default 30 days if no end
+        const validEnd = end ? new Date(end) : new Date(validStart.getTime() + 86400000 * 30);
 
-        // Clamp to range
         const effectiveStart = validStart < startRange ? startRange : validStart;
         const effectiveEnd = validEnd > endRange ? endRange : validEnd;
 
@@ -41,82 +42,102 @@ export function PortfolioTimeline({ projects, onOpenProject }: PortfolioTimeline
     };
 
     return (
-        <div className="border rounded-xl bg-card shadow-sm overflow-hidden flex flex-col h-[600px]">
+        <div className="glass-premium rounded-[32px] border border-white/5 shadow-2xl overflow-hidden flex flex-col h-[650px] relative group">
+            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/[0.02] to-transparent pointer-events-none" />
+
             {/* Timeline Header */}
-            <div className="flex border-b bg-muted/30">
-                <div className="w-64 p-4 font-semibold border-r shrink-0 bg-background z-10 sticky left-0">프로젝트명</div>
-                <div className="flex-1 relative h-12">
+            <div className="flex border-b border-white/5 bg-white/[0.02] relative z-10">
+                <div className="w-72 p-6 font-black text-[10px] tracking-[0.2em] uppercase border-r border-white/5 shrink-0 bg-[#0A0B10]/80 backdrop-blur-xl z-20 sticky left-0 text-white/40">
+                    <div className="flex items-center gap-2">
+                        <Terminal className="w-3 h-3 text-indigo-500" /> MISSION_PROTOCOL
+                    </div>
+                </div>
+                <div className="flex-1 relative h-16">
                     <div className="absolute inset-0 flex">
                         {months.map(month => (
-                            <div key={month.toString()} className="flex-1 border-r text-xs text-muted-foreground p-2 font-medium text-center bg-background/50">
-                                {format(month, 'yyyy년 M월', { locale: ko })}
+                            <div key={month.toString()} className="flex-1 border-r border-white/5 text-[9px] font-black text-white/20 p-5 tracking-widest uppercase text-center bg-[#0A0B10]/40">
+                                {format(month, 'MMM yyyy', { locale: ko })}
                             </div>
                         ))}
                     </div>
                 </div>
             </div>
 
-            <ScrollArea className="flex-1">
-                <div className="divide-y">
-                    {projects.map(project => {
+            <ScrollArea className="flex-1 relative z-10">
+                <div className="divide-y divide-white/5">
+                    {projects.map((project, idx) => {
                         const style = getPositionStyle(project.startDate, project.endDate);
 
                         return (
-                            <div key={project.id} className="flex group hover:bg-muted/30 transition-colors">
-                                <div className="w-64 p-3 border-r shrink-0 bg-background z-10 sticky left-0 flex items-center gap-2">
-                                    <div className={`w-1 h-8 rounded-full ${project.color ? `bg-[${project.color}]` : 'bg-gray-400'}`} style={{ backgroundColor: project.color }} />
-                                    <div>
+                            <div key={project.id} className="flex group/row hover:bg-white/[0.02] transition-colors relative">
+                                <div className="w-72 p-5 border-r border-white/5 shrink-0 bg-[#0A0B10]/80 backdrop-blur-xl z-20 sticky left-0 flex items-center gap-4">
+                                    <div className="w-1.5 h-10 rounded-full shadow-[0_0_12px_rgba(99,102,241,0.3)]" style={{ backgroundColor: project.color || '#6366f1' }} />
+                                    <div className="min-w-0">
                                         <div
-                                            className="font-medium text-sm truncate w-52 cursor-pointer hover:underline hover:text-primary"
+                                            className="font-black text-[11px] tracking-widest text-white uppercase truncate w-52 cursor-pointer hover:text-indigo-400 transition-colors"
                                             onClick={() => onOpenProject(project.id)}
                                         >
                                             {project.title}
                                         </div>
-                                        <div className="text-xs text-muted-foreground flex items-center gap-1">
-                                            {project.status === 'active' && <span className="text-blue-500">🔵 진행중</span>}
-                                            {project.status === 'completed' && <span className="text-green-500">🟢 완료</span>}
-                                            {project.status === 'hold' && <span className="text-orange-500">🟠 보류</span>}
-                                            {project.health === 'at-risk' && <span className="bg-red-100 text-red-600 px-1 rounded ml-1">주의</span>}
+                                        <div className="text-[8px] font-black text-white/20 flex items-center gap-2 mt-1 tracking-widest uppercase">
+                                            {project.status === 'active' && <span className="text-indigo-400 flex items-center gap-1"><Zap className="w-2 h-2" /> ACTIVE</span>}
+                                            {project.status === 'completed' && <span className="text-emerald-400 flex items-center gap-1"><Shield className="w-2 h-2" /> DEPLOYED</span>}
+                                            {project.health === 'at-risk' && <span className="text-rose-500 px-1 bg-rose-500/10 rounded leading-none">CAUTION</span>}
                                         </div>
                                     </div>
                                 </div>
-                                <div className="flex-1 relative h-14 bg-repeat-x" style={{ backgroundImage: 'linear-gradient(to right, transparent 0%, transparent 99%, #f1f5f9 100%)', backgroundSize: `${100 / months.length}% 100%` }}>
-                                    {/* Project Bar */}
+                                <div className="flex-1 relative h-20 bg-repeat-x" style={{ backgroundImage: 'linear-gradient(to right, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.02) 1px, transparent 1px)', backgroundSize: `${100 / (totalDays / 30)}% 100%` }}>
                                     {/* Today Marker */}
                                     <div
-                                        className="absolute top-0 bottom-0 border-l-2 border-red-500 z-0 opacity-50 pointer-events-none"
+                                        className="absolute top-0 bottom-0 w-px bg-rose-500/50 z-30 pointer-events-none before:absolute before:inset-0 before:bg-rose-500 before:blur-[4px]"
                                         style={{ left: `${(differenceInDays(today, startRange) / totalDays) * 100}%` }}
-                                    />
+                                    >
+                                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-rose-500 shadow-[0_0_8px_white]" />
+                                    </div>
 
                                     <TooltipProvider>
                                         <Tooltip>
                                             <TooltipTrigger asChild>
-                                                <div
+                                                <motion.div
+                                                    initial={{ opacity: 0, scaleX: 0 }}
+                                                    animate={{ opacity: 1, scaleX: 1 }}
+                                                    transition={{ delay: idx * 0.05, duration: 0.8, ease: "circOut" }}
                                                     className={cn(
-                                                        "absolute h-8 top-3 rounded-md shadow-sm border flex items-center px-2 text-xs font-medium text-white cursor-pointer hover:brightness-110 transition-all truncate",
-                                                        "bg-primary" // Default
+                                                        "absolute h-10 top-5 rounded-xl shadow-2xl flex items-center px-4 text-[10px] font-black text-white cursor-pointer hover:brightness-125 transition-all overflow-hidden border border-white/10 group/bar",
+                                                        "bg-gradient-to-r from-indigo-600/40 to-indigo-400/40 backdrop-blur-md"
                                                     )}
                                                     style={{
                                                         ...style,
-                                                        backgroundColor: project.color || '#64748b'
+                                                        backgroundColor: `${project.color}22` || 'rgba(99,102,241,0.1)'
                                                     }}
                                                     onClick={() => onOpenProject(project.id)}
                                                 >
+                                                    <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent pointer-events-none" />
                                                     {project.progress !== undefined && (
-                                                        <div
-                                                            className="absolute left-0 top-0 bottom-0 bg-black/10 rounded-l-md"
-                                                            style={{ width: `${project.progress}%` }}
+                                                        <motion.div
+                                                            initial={{ width: 0 }}
+                                                            animate={{ width: `${project.progress}%` }}
+                                                            className="absolute left-0 top-0 bottom-0 bg-gradient-to-r from-indigo-500 to-sky-400 opacity-40"
                                                         />
                                                     )}
-                                                    <span className="relative z-10 drop-shadow-md">{project.title}</span>
-                                                </div>
+                                                    <span className="relative z-10 tracking-[0.2em] uppercase truncate drop-shadow-lg">{project.title}</span>
+                                                    <ArrowUpRight className="w-3 h-3 ml-auto relative z-10 opacity-0 group-hover/bar:opacity-100 transition-opacity" />
+                                                </motion.div>
                                             </TooltipTrigger>
-                                            <TooltipContent>
-                                                <p className="font-bold">{project.title}</p>
-                                                <p className="text-xs">
-                                                    {format(new Date(project.startDate || new Date()), 'MM.dd')} ~ {format(new Date(project.endDate || new Date()), 'MM.dd')}
-                                                </p>
-                                                <p className="text-xs">진척도: {project.progress}%</p>
+                                            <TooltipContent className="glass-premium border-white/10 rounded-2xl p-4 shadow-3xl text-white">
+                                                <div className="flex flex-col gap-2">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-2 h-2 rounded-full bg-indigo-500" />
+                                                        <span className="font-black text-xs uppercase tracking-widest">{project.title}</span>
+                                                    </div>
+                                                    <div className="text-[10px] font-bold text-white/40 uppercase tracking-widest font-mono">
+                                                        {format(new Date(project.startDate || new Date()), 'MM.dd.yyyy')} — {format(new Date(project.endDate || new Date()), 'MM.dd.yyyy')}
+                                                    </div>
+                                                    <div className="flex items-center justify-between pt-2 border-t border-white/5">
+                                                        <span className="text-[9px] font-black text-white/20 uppercase tracking-widest">DEPLOY_READY</span>
+                                                        <span className="text-[10px] font-black text-indigo-400">{project.progress}%</span>
+                                                    </div>
+                                                </div>
                                             </TooltipContent>
                                         </Tooltip>
                                     </TooltipProvider>
@@ -125,7 +146,7 @@ export function PortfolioTimeline({ projects, onOpenProject }: PortfolioTimeline
                         );
                     })}
                 </div>
-                <ScrollBar orientation="horizontal" />
+                <ScrollBar orientation="horizontal" className="bg-white/5" />
             </ScrollArea>
         </div>
     );

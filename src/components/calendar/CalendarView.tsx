@@ -12,7 +12,7 @@ export function CalendarView() {
     const [showProjectTasks, setShowProjectTasks] = useState(true);
 
     return (
-        <div className="flex flex-col h-full space-y-4">
+        <div className="flex flex-col h-full animate-in fade-in duration-700">
             <CalendarHeader
                 currentDate={currentDate}
                 view={view}

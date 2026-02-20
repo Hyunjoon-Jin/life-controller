@@ -296,10 +296,10 @@ export function WeekView({ currentDate, showProjectTasks, onDateClick }: { curre
     };
 
     return (
-        <div className="flex flex-col h-full bg-white rounded-3xl border border-transparent shadow-sm overflow-hidden relative select-none">
+        <div className="flex flex-col h-full glass-premium rounded-[32px] border border-white/5 shadow-2xl overflow-hidden relative select-none">
             {/* Header Row (Days) */}
-            <div className="flex border-b border-border/[0.05] bg-gray-50/50">
-                <div className="w-16 flex-shrink-0 border-r border-border/[0.05] bg-transparent" />
+            <div className="flex border-b border-white/5 bg-white/[0.02]">
+                <div className="w-20 flex-shrink-0 border-r border-white/5 bg-transparent" />
                 {weekDays.map((day) => {
                     const daysGoals = goals.filter(g => {
                         if (!g.deadline) return false;
@@ -315,68 +315,46 @@ export function WeekView({ currentDate, showProjectTasks, onDateClick }: { curre
                         return isSameDay(targetDate, day);
                     }) : [];
 
+                    const isTodayDay = isToday(day);
+
                     return (
                         <div
                             key={day.toString()}
                             className={cn(
-                                "flex-1 py-3 px-1 text-center border-r border-border/[0.05] last:border-r-0 flex flex-col gap-1 min-w-[100px] cursor-pointer hover:bg-gray-50/80 transition-colors",
-                                isToday(day) ? "bg-primary/5" : "bg-transparent"
+                                "flex-1 py-4 px-1 text-center border-r border-white/5 last:border-r-0 flex flex-col gap-2 min-w-[100px] cursor-pointer hover:bg-white/[0.05] transition-all duration-300",
+                                isTodayDay ? "bg-emerald-500/[0.03]" : "bg-transparent"
                             )}
                             onClick={() => onDateClick(day)}
                         >
-                            <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">{format(day, 'EEE', { locale: ko })}</div>
+                            <div className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">{format(day, 'EEE', { locale: ko })}</div>
                             <div
                                 className={cn(
-                                    "w-8 h-8 mx-auto flex items-center justify-center rounded-full text-sm font-medium transition-all mt-1",
-                                    isToday(day)
-                                        ? "bg-primary text-primary-foreground shadow-md scale-110"
-                                        : "text-foreground"
+                                    "w-9 h-9 mx-auto flex items-center justify-center rounded-xl text-sm font-black transition-all duration-500",
+                                    isTodayDay
+                                        ? "bg-emerald-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.4)] scale-110"
+                                        : "text-white/40 group-hover:text-white/80"
                                 )}
                             >
                                 {format(day, 'd')}
                             </div>
 
-                            {/* Goal Indicators in Header */}
-                            {daysGoals.length > 0 && (
-                                <div className="mt-1 flex flex-col gap-1 w-full px-1">
-                                    {daysGoals.map(goal => (
-                                        <div key={goal.id} className="text-[9px] bg-red-50 text-red-700 px-1.5 py-0.5 rounded-full truncate flex items-center gap-1 border border-red-100 justify-center">
-                                            <Target className="w-2.5 h-2.5 shrink-0" />
-                                            <span className="truncate">{goal.title}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-
-                            {/* Project Task Indicators in Header */}
-                            {daysProjectTasks.length > 0 && (
-                                <div className="mt-1 flex flex-col gap-1 w-full px-1">
-                                    {daysProjectTasks.map(task => {
-                                        const project = projects.find(p => p.id === task.projectId);
-                                        return (
-                                            <div
-                                                key={task.id}
-                                                className="text-[9px] px-1.5 py-0.5 rounded-full truncate flex items-center gap-1 border border-transparent shadow-sm justify-center text-white opacity-90"
-                                                style={{ backgroundColor: project?.color || '#3b82f6' }}
-                                            >
-                                                <span className="truncate">{task.title}</span>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            )}
+                            {/* Indicators in Header */}
+                            <div className="flex justify-center gap-1.5 min-h-[4px] mt-1">
+                                {daysGoals.length > 0 && <div className="w-1.5 h-1.5 rounded-full bg-red-400 shadow-[0_0_8px_rgba(248,113,113,0.5)]" />}
+                                {daysProjectTasks.length > 0 && <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]" />}
+                            </div>
                         </div>
                     );
                 })}
             </div>
 
-            {/* Grid Content - Column Based Layout */}
-            <div className="flex-1 overflow-y-auto custom-scrollbar relative flex touch-pan-y">
+            {/* Grid Content */}
+            <div className="flex-1 overflow-y-auto custom-scrollbar relative flex touch-pan-y bg-white/[0.01]">
                 {/* Time Labels Column */}
-                <div className="w-16 flex-shrink-0 bg-white border-r border-border/[0.05] z-20 sticky left-0">
+                <div className="w-20 flex-shrink-0 bg-black/20 backdrop-blur-md border-r border-white/5 z-20 sticky left-0">
                     {hours.map((hour) => (
-                        <div key={hour} className="h-[60px] relative border-b last:border-b-0 border-border/[0.05]">
-                            <span className="absolute -top-2 right-2 text-[10px] text-gray-400 font-mono">
+                        <div key={hour} className="h-[60px] relative border-b last:border-b-0 border-white/[0.02]">
+                            <span className="absolute -top-2.5 right-3 text-[10px] text-white/20 font-black tracking-tight uppercase">
                                 {format(new Date().setHours(hour, 0, 0, 0), 'h aa')}
                             </span>
                         </div>
@@ -385,7 +363,6 @@ export function WeekView({ currentDate, showProjectTasks, onDateClick }: { curre
 
                 {/* Day Columns */}
                 {weekDays.map(day => {
-                    // Filter events for this day
                     const dayEvents = events.filter(e => {
                         const d = new Date(e.start);
                         return isValid(d) && isSameDay(d, day);
@@ -395,37 +372,36 @@ export function WeekView({ currentDate, showProjectTasks, onDateClick }: { curre
                         <div
                             key={day.toString()}
                             className={cn(
-                                "flex-1 border-r last:border-r-0 border-border/[0.05] relative min-w-[100px]",
-                                isToday(day) && "bg-primary/[0.01]"
+                                "flex-1 border-r last:border-r-0 border-white/5 relative min-w-[100px]",
+                                isToday(day) && "bg-emerald-500/[0.01]"
                             )}
                             onMouseUp={() => handleColumnMouseUp(day)}
                         >
-                            {/* Background Grid Lines */}
+                            {/* Grid Lines */}
                             {hours.map(hour => (
-                                <div key={hour} className="h-[60px] border-b border-border/[0.05] w-full relative">
-                                    {/* Click zones for creation */}
+                                <div key={hour} className="h-[60px] border-b border-white/[0.03] w-full relative">
                                     {[0, 15, 30, 45].map(minute => (
                                         <div
                                             key={minute}
-                                            className="absolute w-full h-[25%] hover:bg-primary/5 cursor-pointer z-0"
+                                            className="absolute w-full h-[25%] hover:bg-white/[0.03] cursor-pointer z-0 transition-colors"
                                             style={{ top: `${(minute / 60) * 100}%` }}
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 handleOpenCreate(day, hour);
                                             }}
-                                            title={`Add event at ${hour}:${minute}`}
                                         />
                                     ))}
                                 </div>
                             ))}
 
-                            {/* Current Time Line (Only for Today) */}
+                            {/* Current Time Line */}
                             {isToday(day) && (
                                 <div
-                                    className="absolute left-0 right-0 border-t-2 border-red-500 z-50 pointer-events-none flex items-center"
+                                    className="absolute left-0 right-0 border-t border-emerald-500/50 z-50 pointer-events-none flex items-center"
                                     style={{ top: `${(now.getHours() * PIXELS_PER_HOUR) + (now.getMinutes() / 60) * PIXELS_PER_HOUR}px` }}
                                 >
-                                    <div className="absolute -left-1.5 w-3 h-3 bg-red-500 rounded-full shadow-sm" />
+                                    <div className="absolute -left-1.5 w-3 h-3 bg-emerald-500 rounded-full shadow-[0_0_10px_rgba(16,185,129,0.8)]" />
+                                    <div className="h-[1px] w-full bg-emerald-500/30" />
                                 </div>
                             )}
 
@@ -439,16 +415,16 @@ export function WeekView({ currentDate, showProjectTasks, onDateClick }: { curre
                                     <div
                                         key={event.id}
                                         className={cn(
-                                            "absolute inset-x-1 rounded-lg text-[10px] cursor-pointer pointer-events-auto overflow-hidden z-10 leading-tight shadow-sm border border-l-[3px] flex flex-col group transition-all duration-200",
-                                            isDragging && "z-50 opacity-80 shadow-lg cursor-move scale-[1.02]",
-                                            !isDragging && "hover:shadow-md hover:brightness-[1.02] hover:-translate-y-[1px]"
+                                            "absolute inset-x-1.5 rounded-xl text-[10px] cursor-pointer pointer-events-auto overflow-hidden z-10 shadow-lg border-l-[4px] flex flex-col group transition-all duration-300 backdrop-blur-md",
+                                            isDragging && "z-50 opacity-90 shadow-2xl scale-[1.02] ring-2 ring-white/20",
+                                            !isDragging && "hover:shadow-2xl hover:brightness-110 hover:-translate-y-[1px]"
                                         )}
                                         style={{
                                             ...getEventStyle(displayEvent, PIXELS_PER_HOUR),
-                                            backgroundColor: colors.bg,
-                                            borderColor: colors.border,
+                                            backgroundColor: colors.bg.replace('0.08', '0.15'),
+                                            borderColor: colors.border.replace('0.2', '0.3'),
                                             borderLeftColor: colors.accent,
-                                            color: colors.text
+                                            color: 'white'
                                         }}
                                         onMouseDown={(e) => startMove(e, event)}
                                         onTouchStart={(e) => startTouchMove(e, event)}
@@ -457,19 +433,19 @@ export function WeekView({ currentDate, showProjectTasks, onDateClick }: { curre
                                             if (!isDragging) handleOpenEdit(event);
                                         }}
                                     >
-                                        <div className="flex items-center justify-between p-1 pl-1.5">
-                                            <div className="truncate font-bold tracking-tight">{event.title}</div>
-                                            <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                                                {/* Potential icon here if needed */}
+                                        <div className="p-2 flex flex-col h-full gap-0.5">
+                                            <div className="font-black truncate uppercase tracking-tight text-white/95">{event.title}</div>
+                                            <div className="text-[9px] font-bold text-white/40 group-hover:text-white/60 transition-colors">
+                                                {format(event.start, 'HH:mm')} - {format(event.end, 'HH:mm')}
                                             </div>
                                         </div>
 
-                                        {/* Resize Handle - visible on mobile, hover on desktop */}
-                                        <div className="absolute bottom-0 left-0 right-0 h-3 md:h-1.5 cursor-ns-resize md:opacity-0 md:group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                                        {/* Resize Handle */}
+                                        <div className="absolute bottom-0 left-0 right-0 h-4 md:h-2 cursor-ns-resize md:opacity-0 md:group-hover:opacity-100 transition-opacity flex items-center justify-center bg-white/5 active:bg-white/10"
                                             onMouseDown={(e) => startResize(e, event)}
                                             onTouchStart={(e) => startTouchResize(e, event)}
                                         >
-                                            <div className="w-6 md:w-4 h-0.5 bg-black/15 md:bg-black/5 rounded-full" />
+                                            <div className="w-8 md:w-6 h-1 bg-white/20 rounded-full" />
                                         </div>
                                     </div>
                                 );

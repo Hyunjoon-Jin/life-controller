@@ -7,11 +7,16 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { TrendingUp, Search, Plus, ExternalLink, BarChart3, Star, Trash2, ArrowUpRight, ArrowDownRight, Loader2, Sparkles } from 'lucide-react';
+import {
+    TrendingUp, Search, Plus, ExternalLink, BarChart3, Star,
+    Trash2, ArrowUpRight, ArrowDownRight, Loader2, Sparkles,
+    Activity, Globe, Terminal, ShieldCheck, Zap, Fingerprint,
+    MousePointer2, Target
+} from 'lucide-react';
 import { generateId, cn } from '@/lib/utils';
 import { StockAnalysis } from '@/types';
-
 import { StockWidget } from '@/components/widgets/StockWidget';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export function InvestmentTab() {
     const { stockAnalyses, addStockAnalysis, deleteStockAnalysis } = useData();
@@ -30,49 +35,36 @@ export function InvestmentTab() {
 
     const handleSave = () => {
         if (!symbol || !name) return;
-
         const analysis: StockAnalysis = {
             id: generateId(),
             symbol: symbol.toUpperCase(),
-            name,
-            rating,
+            name, rating,
             targetPrice: targetPrice ? parseFloat(targetPrice) : undefined,
-            content,
-            url,
+            content, url,
             tags: tags.split(',').map(t => t.trim()).filter(Boolean),
             analysisDate: new Date()
         };
-
         addStockAnalysis(analysis);
-        setIsDialogOpen(false);
-        resetForm();
+        setIsDialogOpen(false); resetForm();
     };
 
     const handleUrlFetch = async () => {
         if (!url) return;
-
         setIsFetching(true);
-        // Parse URL for Ticker
         setTimeout(() => {
             let extractedSymbol = '';
             let extractedName = '';
-
             try {
                 const urlObj = new URL(url);
-                // Yahoo Finance: /quote/TSLA
                 if (urlObj.hostname.includes('yahoo.com') && urlObj.pathname.includes('/quote/')) {
                     const parts = urlObj.pathname.split('/');
                     const quoteIndex = parts.indexOf('quote');
                     if (quoteIndex !== -1 && parts[quoteIndex + 1]) {
                         extractedSymbol = parts[quoteIndex + 1].split('?')[0].toUpperCase();
                     }
-                }
-                // Naver Finance: code=005930
-                else if (urlObj.hostname.includes('naver.com') && urlObj.searchParams.get('code')) {
+                } else if (urlObj.hostname.includes('naver.com') && urlObj.searchParams.get('code')) {
                     extractedSymbol = urlObj.searchParams.get('code') || '';
-                }
-                // Investing.com: /equities/tesla-motors
-                else if (urlObj.hostname.includes('investing.com')) {
+                } else if (urlObj.hostname.includes('investing.com')) {
                     const parts = urlObj.pathname.split('/');
                     if (parts.length > 0) {
                         extractedSymbol = parts[parts.length - 1].replace(/-/g, ' ').toUpperCase();
@@ -81,235 +73,284 @@ export function InvestmentTab() {
 
                 if (extractedSymbol) {
                     setSymbol(extractedSymbol);
-                    // Reset or try to guess name?
-                    setName(extractedSymbol); // Default to symbol
-
-                    if (extractedSymbol === 'NVDA') {
-                        setName("NVIDIA Corporation");
-                        setTags("AI, 반도체");
-                    } else if (extractedSymbol === 'TSLA') {
-                        setName("Tesla, Inc.");
-                        setTags("EV, 자율주행, AI");
-                    } else if (extractedSymbol === 'AAPL') {
-                        setName("Apple Inc.");
-                        setTags("IT, 하드웨어, 스마트폰");
-                    }
-
+                    setName(extractedSymbol);
+                    if (extractedSymbol === 'NVDA') { setName("NVIDIA Corp."); setTags("AI, CHIPS"); }
+                    else if (extractedSymbol === 'TSLA') { setName("Tesla, Inc."); setTags("EV, AI"); }
+                    else if (extractedSymbol === 'AAPL') { setName("Apple Inc."); setTags("TECH, HARDWARE"); }
                     setRating('hold');
-                    setContent(`[자동 추출] ${extractedSymbol}에 대한 ${urlObj.hostname} 링크입니다.`);
+                    setContent(`[TRANSMISSION CAPTURED] Analysis linked from ${urlObj.hostname}.`);
                 } else {
-                    // Fail case: do not default to anything, just alert or set name to empty
-                    setName("");
-                    alert("URL에서 종목 코드를 추출하지 못했습니다. 직접 입력해주세요.");
+                    alert("EXTRACTION FAILED. MANUAL INPUT REQUIRED.");
                 }
             } catch (e) {
-                console.error("URL Parse Error", e);
-                alert("유효하지 않은 URL입니다.");
+                alert("INVALID SOURCE URL.");
             }
             setIsFetching(false);
         }, 800);
     };
 
     const resetForm = () => {
-        setSymbol('');
-        setName('');
-        setRating('buy');
-        setTargetPrice('');
-        setContent('');
-        setUrl('');
-        setTags('');
+        setSymbol(''); setName(''); setRating('buy'); setTargetPrice(''); setContent(''); setUrl(''); setTags('');
     };
 
     const handleExternalSearch = () => {
-        if (!searchQuery) {
-            alert("검색할 티커를 입력해주세요.");
-            return;
-        }
-        const query = searchQuery;
-        window.open(`https://finance.yahoo.com/quote/${query}`, '_blank');
+        if (!searchQuery) return;
+        window.open(`https://finance.yahoo.com/quote/${searchQuery}`, '_blank');
     };
 
     return (
-        <div className="h-full flex flex-col gap-6 p-6 overflow-y-auto custom-scrollbar">
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                    <TrendingUp className="w-6 h-6 text-primary" />
-                    <h2 className="text-2xl font-bold">투자 분석</h2>
-                </div>
-                <Button onClick={() => setIsDialogOpen(true)} className="bg-primary hover:bg-primary/90">
-                    <Plus className="w-4 h-4 mr-2" /> 새 분석 작성
-                </Button>
-            </div>
+        <div className="h-full flex flex-col glass-premium rounded-[32px] border border-white/5 shadow-2xl overflow-hidden relative">
+            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/[0.03] via-transparent to-amber-500/[0.03] pointer-events-none" />
 
-            {/* Stock Search Bar */}
-            <Card className="bg-slate-900 border-none text-white">
-                <CardContent className="p-6">
-                    <div className="flex flex-col gap-4">
-                        <div className="flex items-center justify-between mb-2">
-                            <h3 className="font-bold">실시간 종목 검색</h3>
-                            <span className="text-xs opacity-50">Powered by Alpha Vantage / Yahoo Finance</span>
+            {/* Header / Search */}
+            <div className="p-8 pb-4 relative z-10">
+                <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-6 mb-8">
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-2xl bg-indigo-500 flex items-center justify-center shadow-[0_10px_20px_-5px_rgba(99,102,241,0.5)]">
+                            <TrendingUp className="w-6 h-6 text-white" strokeWidth={3} />
                         </div>
-                        <div className="flex gap-4">
-                            <div className="relative flex-1">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                                <Input
-                                    placeholder="티커(Ticker) 검색 (예: TSLA, AAPL, NVDA)"
-                                    className="pl-10 bg-slate-800 border-slate-700 text-white placeholder:text-slate-500"
-                                    value={searchQuery}
-                                    onChange={e => setSearchQuery(e.target.value)}
-                                    onKeyDown={e => e.key === 'Enter' && handleExternalSearch()}
-                                />
-                            </div>
-                            <Button onClick={handleExternalSearch} variant="secondary" className="bg-white text-slate-900 hover:bg-slate-200">
-                                시세/재무 조회
-                            </Button>
+                        <div>
+                            <h2 className="text-3xl font-black text-white tracking-tighter uppercase leading-none">SPECULATIVE INTEL</h2>
+                            <p className="text-[10px] font-bold text-white/20 tracking-[0.3em] uppercase mt-2 italic flex items-center gap-2">
+                                <Zap className="w-3 h-3 text-amber-500" /> MARKET VOLATILITY: MONITORED
+                            </p>
                         </div>
                     </div>
-                </CardContent>
-            </Card>
 
-            {/* My Stock Assets (Live Charts) */}
-            {stockAnalyses.length > 0 && (
-                <div className="space-y-4">
-                    <h3 className="font-bold text-lg flex items-center gap-2">
-                        <TrendingUp className="w-5 h-5 text-red-500" />
-                        내 관심 종목 시세
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {Array.from(new Set(stockAnalyses.map(a => a.symbol))).filter(Boolean).map(symbol => (
-                            <StockWidget key={symbol} symbol={symbol} height="200px" />
+                    <div className="flex items-center gap-4">
+                        <div className="group relative w-[300px]">
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within:text-indigo-500 transition-colors" />
+                            <Input
+                                placeholder="GLOBAL TICKER SEARCH..."
+                                className="h-12 pl-12 bg-white/5 border-white/5 rounded-2xl text-white font-black text-[10px] tracking-widest uppercase placeholder:text-white/10 focus-visible:ring-indigo-500/30"
+                                value={searchQuery}
+                                onChange={e => setSearchQuery(e.target.value)}
+                                onKeyDown={e => e.key === 'Enter' && handleExternalSearch()}
+                            />
+                        </div>
+                        <Button
+                            onClick={() => setIsDialogOpen(true)}
+                            className="h-12 px-6 rounded-2xl bg-indigo-500 hover:bg-indigo-600 text-white font-black text-[10px] tracking-widest uppercase shadow-xl transition-all active:scale-95"
+                        >
+                            <Plus className="w-4 h-4 mr-2" strokeWidth={3} /> NEW ANALYSIS
+                        </Button>
+                    </div>
+                </div>
+
+                {/* Watchlist Widgets */}
+                {stockAnalyses.length > 0 && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                        {Array.from(new Set(stockAnalyses.map(a => a.symbol))).slice(0, 3).map((symbol, idx) => (
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ delay: idx * 0.1 }}
+                                key={symbol}
+                                className="glass-premium rounded-[32px] border border-white/10 p-2 overflow-hidden bg-gradient-to-br from-white/[0.03] to-transparent shadow-xl"
+                            >
+                                <StockWidget symbol={symbol} height="180px" />
+                            </motion.div>
                         ))}
-                    </div>
-                </div>
-            )}
-
-            {/* Analysis List */}
-            <div className="space-y-4 pb-10">
-                <h3 className="font-bold text-lg flex items-center gap-2">
-                    <BarChart3 className="w-5 h-5 text-primary" />
-                    내 투자 인사이트
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {stockAnalyses.map(analysis => (
-                        <Card key={analysis.id} className="hover:shadow-md transition-shadow">
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-xl font-bold">
-                                    {analysis.name} <span className="text-sm font-normal text-muted-foreground ml-2">({analysis.symbol})</span>
-                                </CardTitle>
-                                <div className={cn(
-                                    "px-2 py-1 rounded text-xs font-bold uppercase",
-                                    analysis.rating === 'buy' ? "bg-red-100 text-red-600" :
-                                        analysis.rating === 'sell' ? "bg-blue-100 text-blue-600" : "bg-slate-100 text-slate-600"
-                                )}>
-                                    {analysis.rating}
-                                </div>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="space-y-4">
-                                    <div className="flex justify-between items-end">
-                                        <div className="text-sm text-muted-foreground">목표가: <span className="text-slate-900 font-bold">{analysis.targetPrice?.toLocaleString()} USD</span></div>
-                                        <div className="text-xs text-muted-foreground">{new Date(analysis.analysisDate).toLocaleDateString()}</div>
-                                    </div>
-                                    <p className="text-sm line-clamp-3 bg-slate-50 p-3 rounded-lg border border-slate-100 italic">
-                                        {analysis.content}
-                                    </p>
-                                    <div className="flex flex-wrap gap-2">
-                                        {analysis.tags?.map(tag => (
-                                            <span key={tag} className="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">#{tag}</span>
-                                        ))}
-                                    </div>
-                                    <div className="flex gap-2 pt-2">
-                                        <Button variant="outline" className="flex-1 h-9" onClick={() => window.open(`https://finance.yahoo.com/quote/${analysis.symbol}`, '_blank')}>
-                                            <ExternalLink className="w-3 h-3 mr-2" /> 상세 조회
-                                        </Button>
-                                        <Button variant="ghost" size="icon" className="h-9 w-9 text-slate-400 hover:text-red-600" onClick={() => deleteStockAnalysis(analysis.id)}>
-                                            <Trash2 className="w-4 h-4" />
-                                        </Button>
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    ))}
-                </div>
-
-                {stockAnalyses.length === 0 && (
-                    <div className="text-center py-20 text-muted-foreground bg-slate-50 rounded-2xl border-2 border-dashed">
-                        <TrendingUp className="w-12 h-12 mx-auto mb-4 opacity-20" />
-                        <p>작성된 투자 분석이 없습니다. 첫 번째 인사이트를 기록해 보세요.</p>
                     </div>
                 )}
             </div>
 
+            {/* Analysis Feed */}
+            <div className="flex-1 overflow-y-auto custom-scrollbar p-8 pt-0 relative z-10">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <AnimatePresence mode="popLayout">
+                        {stockAnalyses.map((analysis, idx) => (
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: idx * 0.05 }}
+                                key={analysis.id}
+                                className="group glass-premium rounded-[40px] border border-white/5 p-8 transition-all hover:bg-white/[0.02] relative overflow-hidden flex flex-col gap-6"
+                            >
+                                <div className="absolute top-0 right-0 p-8 opacity-5">
+                                    <BarChart3 className="w-24 h-24 text-white" strokeWidth={1} />
+                                </div>
+
+                                <div className="flex items-center justify-between relative z-10">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
+                                            <span className="text-xl font-black text-white tracking-widest">{analysis.symbol.slice(0, 1)}</span>
+                                        </div>
+                                        <div>
+                                            <h3 className="text-xl font-black text-white tracking-tight uppercase leading-none mb-1">{analysis.name}</h3>
+                                            <div className="flex items-center gap-3">
+                                                <span className="text-[9px] font-black text-white/40 tracking-widest uppercase">{analysis.symbol}</span>
+                                                <div className={cn(
+                                                    "px-2 py-0.5 rounded-lg text-[8px] font-black tracking-widest uppercase",
+                                                    analysis.rating === 'buy' ? "bg-emerald-500/20 text-emerald-400" :
+                                                        analysis.rating === 'sell' ? "bg-rose-500/20 text-rose-400" : "bg-white/10 text-white/40"
+                                                )}>
+                                                    {analysis.rating}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={() => deleteStockAnalysis(analysis.id)}
+                                        className="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-500 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center hover:bg-rose-500 hover:text-white"
+                                    >
+                                        <Trash2 className="w-4 h-4" />
+                                    </button>
+                                </div>
+
+                                <div className="space-y-4 relative z-10">
+                                    <div className="flex justify-between items-center px-2">
+                                        <div className="flex flex-col">
+                                            <span className="text-[8px] font-black text-white/20 tracking-widest uppercase mb-1">TARGET QUOTA</span>
+                                            <span className="text-lg font-black text-white">{analysis.targetPrice ? `${analysis.targetPrice.toLocaleString()} USD` : 'NOT SET'}</span>
+                                        </div>
+                                        <div className="flex flex-col text-right">
+                                            <span className="text-[8px] font-black text-white/20 tracking-widest uppercase mb-1">STAMPED</span>
+                                            <span className="text-[10px] font-bold text-white/40 uppercase">{new Date(analysis.analysisDate).toLocaleDateString()}</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="bg-white/5 p-6 rounded-[32px] border border-white/5 relative group/content">
+                                        <div className="absolute top-4 right-4 group-hover/content:text-indigo-400 transition-colors">
+                                            <Terminal className="w-3 h-3 opacity-20" />
+                                        </div>
+                                        <p className="text-xs font-bold text-white/60 leading-relaxed italic line-clamp-3">
+                                            &quot;{analysis.content}&quot;
+                                        </p>
+                                    </div>
+
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex gap-2">
+                                            {analysis.tags?.map(tag => (
+                                                <span key={tag} className="text-[8px] font-black text-indigo-400/60 uppercase tracking-widest">#{tag}</span>
+                                            ))}
+                                        </div>
+                                        <Button
+                                            variant="ghost"
+                                            className="h-10 px-4 rounded-xl hover:bg-white/5 text-[9px] font-black text-white/20 hover:text-white tracking-widest uppercase gap-2 transition-all"
+                                            onClick={() => window.open(analysis.url || `https://finance.yahoo.com/quote/${analysis.symbol}`, '_blank')}
+                                        >
+                                            BROWSE SOURCE <ExternalLink className="w-3 h-3" />
+                                        </Button>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </AnimatePresence>
+
+                    {stockAnalyses.length === 0 && (
+                        <div className="col-span-full h-80 flex flex-col items-center justify-center opacity-10 gap-6 border-2 border-dashed border-white/10 rounded-[48px]">
+                            <BarChart3 className="w-20 h-20" />
+                            <div className="text-center space-y-1">
+                                <h3 className="text-2xl font-black tracking-[0.2em] uppercase">VOID DETECTED</h3>
+                                <p className="text-[10px] font-bold tracking-[0.5em] uppercase">NO STRATEGIC INSIGHTS RECORDED</p>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* Dialog */}
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogContent className="max-w-2xl">
-                    <DialogHeader>
-                        <DialogTitle>새 투자 분석</DialogTitle>
+                <DialogContent className="glass-premium border border-white/10 text-white rounded-[40px] p-0 shadow-2xl sm:max-w-3xl max-h-[90vh] overflow-hidden">
+                    <DialogHeader className="p-10 pb-0">
+                        <DialogTitle className="text-3xl font-black tracking-tighter uppercase mb-2">INITIALIZE INTEL</DialogTitle>
+                        <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] italic">ENCRYPTING MARKET DATA FOR STRATEGIC ANALYSIS</p>
                     </DialogHeader>
-                    <div className="grid gap-6 py-4">
-                        <div className="grid gap-2">
-                            <Label>참조 URL</Label>
-                            <div className="flex gap-2">
-                                <Input
-                                    placeholder="야후 파이낸스, 네이버 증권 등 뉴스/분석 주소"
-                                    value={url}
-                                    onChange={e => setUrl(e.target.value)}
+                    <div className="overflow-y-auto custom-scrollbar p-10 pt-4 space-y-8">
+                        <div className="grid gap-6">
+                            <div className="space-y-3">
+                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">SOURCE FEED (URL)</Label>
+                                <div className="flex gap-4">
+                                    <Input
+                                        placeholder="YAHOO, NAVER, INVESTING URL..."
+                                        className="h-14 font-black text-[10px] tracking-widest uppercase bg-white/5 border-white/5 rounded-2xl text-white placeholder:text-white/10"
+                                        value={url}
+                                        onChange={e => setUrl(e.target.value)}
+                                    />
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        className="h-14 w-14 rounded-2xl border-white/5 bg-white/5 hover:bg-indigo-500/20 transition-all shadow-xl"
+                                        onClick={handleUrlFetch}
+                                        disabled={isFetching || !url}
+                                    >
+                                        {isFetching ? <Loader2 className="w-6 h-6 animate-spin" /> : <Sparkles className="w-6 h-6 text-amber-500" />}
+                                    </Button>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-6">
+                                <div className="space-y-3">
+                                    <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">SYSTEM TICKER</Label>
+                                    <Input
+                                        placeholder="EX: NVDA"
+                                        className="h-12 font-black text-sm tracking-widest uppercase bg-white/5 border-white/5 rounded-2xl text-white"
+                                        value={symbol} onChange={e => setSymbol(e.target.value)}
+                                    />
+                                </div>
+                                <div className="space-y-3">
+                                    <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">ENTITY IDENTITY</Label>
+                                    <Input
+                                        placeholder="EX: NVIDIA CORP"
+                                        className="h-12 font-black text-sm tracking-widest uppercase bg-white/5 border-white/5 rounded-2xl text-white"
+                                        value={name} onChange={e => setName(e.target.value)}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-6">
+                                <div className="space-y-3">
+                                    <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">STRATEGIC RATING</Label>
+                                    <select
+                                        className="flex h-12 w-full rounded-2xl border border-white/5 bg-white/5 px-4 font-black uppercase text-[10px] tracking-widest text-white outline-none focus:ring-2 focus:ring-indigo-500/20"
+                                        value={rating}
+                                        onChange={e => setRating(e.target.value as any)}
+                                    >
+                                        <option value="buy" className="bg-slate-900">BUY (ACCUMULATE)</option>
+                                        <option value="hold" className="bg-slate-900">HOLD (RETAIN)</option>
+                                        <option value="sell" className="bg-slate-900">SELL (LIQUIDATE)</option>
+                                    </select>
+                                </div>
+                                <div className="space-y-3">
+                                    <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">TARGET QUOTA (USD)</Label>
+                                    <Input
+                                        type="number"
+                                        placeholder="0.00"
+                                        className="h-12 font-black text-sm tracking-widest bg-white/5 border-white/5 rounded-2xl text-white"
+                                        value={targetPrice} onChange={e => setTargetPrice(e.target.value)}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="space-y-3">
+                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">INTEL NARRATIVE (MARKDOWN)</Label>
+                                <textarea
+                                    className="min-h-[200px] w-full rounded-3xl border border-white/5 bg-white/5 p-6 text-xs font-bold text-white placeholder:text-white/10 leading-relaxed resize-none focus:ring-2 focus:ring-indigo-500/20"
+                                    placeholder="INPUT MARKET SENSORS, RISKS, AND CATALYSTS..."
+                                    value={content}
+                                    onChange={e => setContent(e.target.value)}
                                 />
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="icon"
-                                    title="정보 가져오기"
-                                    onClick={handleUrlFetch}
-                                    disabled={isFetching || !url}
-                                >
-                                    {isFetching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4 text-amber-500" />}
-                                </Button>
                             </div>
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="grid gap-2">
-                                <Label>티커 (Symbol)</Label>
-                                <Input placeholder="예: TSLA" value={symbol} onChange={e => setSymbol(e.target.value)} />
+
+                            <div className="space-y-3">
+                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">METADATA TAGS</Label>
+                                <Input
+                                    placeholder="#AI, #GROWTH, #RISK"
+                                    className="h-12 bg-white/5 border-white/5 rounded-2xl text-white placeholder:text-white/10 text-[10px] font-black uppercase tracking-widest"
+                                    value={tags} onChange={e => setTags(e.target.value)}
+                                />
                             </div>
-                            <div className="grid gap-2">
-                                <Label>종목명</Label>
-                                <Input placeholder="예: 테슬라" value={name} onChange={e => setName(e.target.value)} />
-                            </div>
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="grid gap-2">
-                                <Label>의견 (Rating)</Label>
-                                <select
-                                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
-                                    value={rating}
-                                    onChange={e => setRating(e.target.value as any)}
-                                >
-                                    <option value="buy">BUY (매수)</option>
-                                    <option value="hold">HOLD (보유)</option>
-                                    <option value="sell">SELL (매도)</option>
-                                </select>
-                            </div>
-                            <div className="grid gap-2">
-                                <Label>목표가</Label>
-                                <Input type="number" placeholder="예: 300" value={targetPrice} onChange={e => setTargetPrice(e.target.value)} />
-                            </div>
-                        </div>
-                        <div className="grid gap-2">
-                            <Label>분석 내용 (Markdown 지원)</Label>
-                            <textarea
-                                className="flex min-h-[200px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                                placeholder="재무 상태, 뉴스, 차트 분석 내용 등을 기록하세요."
-                                value={content}
-                                onChange={e => setContent(e.target.value)}
-                            />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label>태그 (쉼표 구분)</Label>
-                            <Input placeholder="#빅테크 #AI #성장주" value={tags} onChange={e => setTags(e.target.value)} />
                         </div>
                     </div>
-                    <DialogFooter>
-                        <Button onClick={handleSave} disabled={!symbol || !name}>분석 저장</Button>
+                    <DialogFooter className="p-10 pt-4 bg-white/[0.02] border-t border-white/5">
+                        <Button
+                            onClick={handleSave}
+                            disabled={!symbol || !name}
+                            className="w-full h-16 rounded-2xl bg-indigo-500 hover:bg-indigo-600 text-white font-black text-sm tracking-[0.2em] shadow-2xl active:scale-95 transition-all uppercase"
+                        >
+                            COMMIT TO INTEL FEED
+                        </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

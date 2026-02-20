@@ -12,16 +12,21 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Progress } from "@/components/ui/progress";
 import { format, isSameMonth, parseISO } from 'date-fns';
 import { ko } from 'date-fns/locale';
-import { Plus, Trash2, Edit2, TrendingUp, TrendingDown, DollarSign, CheckSquare, ChevronLeft, ChevronRight, Target, PieChart, Settings2 } from 'lucide-react';
+import {
+    Plus, Trash2, Edit2, TrendingUp, TrendingDown, DollarSign,
+    CheckSquare, ChevronLeft, ChevronRight, Target, PieChart,
+    Settings2, ArrowUpRight, ArrowDownRight, Activity, Terminal,
+    ShieldCheck, Calendar, Wallet, Zap, Fingerprint
+} from 'lucide-react';
 import { Transaction, MonthlyBudget } from '@/types';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export function LedgerView() {
     const { transactions, assets, addTransaction, deleteTransaction, updateTransaction, monthlyBudgets, updateMonthlyBudget } = useData();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [isBudgetDialogOpen, setIsBudgetDialogOpen] = useState(false); // New Dialog State
+    const [isBudgetDialogOpen, setIsBudgetDialogOpen] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
 
-    // Filter by month
     const [currentDate, setCurrentDate] = useState(new Date());
 
     // Form State
@@ -32,7 +37,7 @@ export function LedgerView() {
     const [description, setDescription] = useState('');
     const [assetId, setAssetId] = useState<string>('');
     const [targetAssetId, setTargetAssetId] = useState<string>('');
-    const [cardId, setCardId] = useState<string>(''); // New: For Credit Card expense
+    const [cardId, setCardId] = useState<string>('');
     const [tags, setTags] = useState('');
 
     // Budget Form State
@@ -53,7 +58,6 @@ export function LedgerView() {
 
     const balance = totalIncome - totalExpense;
 
-    // Budget Calculation
     const currentYear = currentDate.getFullYear();
     const currentMonth = currentDate.getMonth() + 1;
     const currentBudgetId = `${currentYear}-${currentMonth.toString().padStart(2, '0')}`;
@@ -65,15 +69,10 @@ export function LedgerView() {
 
     const handleSaveBudget = () => {
         if (!budgetAmount) return;
-
         const newBudget: MonthlyBudget = {
-            id: currentBudgetId,
-            year: currentYear,
-            month: currentMonth,
-            amount: parseInt(budgetAmount),
-            goal: budgetGoal
+            id: currentBudgetId, year: currentYear, month: currentMonth,
+            amount: parseInt(budgetAmount), goal: budgetGoal
         };
-
         updateMonthlyBudget(newBudget);
         setIsBudgetDialogOpen(false);
     };
@@ -86,395 +85,371 @@ export function LedgerView() {
 
     const handleSave = () => {
         if (!category || !amount) return;
-
         const transaction: Transaction = {
             id: editingId || generateId(),
-            date: date,
-            type: type as any,
-            category,
-            amount: parseInt(amount),
-            description,
-            assetId: assetId || undefined,
-            targetAssetId: targetAssetId || undefined,
-            cardId: cardId || undefined, // New
+            date: date, type: type as any, category,
+            amount: parseInt(amount), description,
+            assetId: assetId || undefined, targetAssetId: targetAssetId || undefined,
+            cardId: cardId || undefined,
             tags: tags.split(',').map(t => t.trim()).filter(Boolean)
         };
-
-        if (editingId) {
-            updateTransaction(transaction);
-        } else {
-            addTransaction(transaction);
-        }
-
-        setIsDialogOpen(false);
-        resetForm();
+        if (editingId) updateTransaction(transaction);
+        else addTransaction(transaction);
+        setIsDialogOpen(false); resetForm();
     };
 
     const handleEdit = (t: Transaction) => {
-        setEditingId(t.id);
-        setDate(new Date(t.date));
-        setType(t.type as any);
-        setCategory(t.category);
-        setAmount(t.amount.toString());
-        setDescription(t.description);
-        setAssetId(t.assetId || '');
-        setTargetAssetId(t.targetAssetId || '');
-        setCardId(t.cardId || ''); // New
-        setTags(t.tags?.join(', ') || '');
+        setEditingId(t.id); setDate(new Date(t.date)); setType(t.type as any);
+        setCategory(t.category); setAmount(t.amount.toString()); setDescription(t.description);
+        setAssetId(t.assetId || ''); setTargetAssetId(t.targetAssetId || '');
+        setCardId(t.cardId || ''); setTags(t.tags?.join(', ') || '');
         setIsDialogOpen(true);
     };
 
     const resetForm = () => {
-        setEditingId(null);
-        setDate(new Date());
-        setType('expense');
-        setCategory('');
-        setAmount('');
-        setDescription('');
-        setAssetId('');
-        setTargetAssetId('');
-        setCardId(''); // New
-        setTags('');
+        setEditingId(null); setDate(new Date()); setType('expense'); setCategory('');
+        setAmount(''); setDescription(''); setAssetId(''); setTargetAssetId('');
+        setCardId(''); setTags('');
     };
 
-    // ... (Group by Date remains same)
-
     return (
-        <div className="h-full flex flex-col gap-6 p-6 overflow-y-auto custom-scrollbar">
-            {/* Header */}
-            <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-                <div>
-                    <h2 className="text-2xl font-bold flex items-center gap-2">
-                        <CheckSquare className="w-6 h-6 text-primary" /> 가계부
-                    </h2>
-                    <p className="text-muted-foreground text-sm">이번 달 수입과 지출을 관리하세요.</p>
+        <div className="h-full flex flex-col glass-premium rounded-[32px] border border-white/5 shadow-2xl overflow-hidden relative">
+            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/[0.03] via-transparent to-rose-500/[0.03] pointer-events-none" />
+
+            {/* Header / Month Switcher */}
+            <div className="p-8 pb-4 relative z-10">
+                <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-6 mb-8">
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-2xl bg-indigo-500 flex items-center justify-center shadow-[0_10px_20px_-5px_rgba(99,102,241,0.5)]">
+                            <Fingerprint className="w-6 h-6 text-white" strokeWidth={3} />
+                        </div>
+                        <div>
+                            <h2 className="text-3xl font-black text-white tracking-tighter uppercase leading-none">NEURAL LEDGER</h2>
+                            <p className="text-[10px] font-bold text-white/20 tracking-[0.3em] uppercase mt-2 italic flex items-center gap-2">
+                                <Terminal className="w-3 h-3 text-indigo-500" /> TRANSACTION FEED: REAL-TIME SECURE
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="flex items-center gap-4">
+                        <div className="bg-white/5 p-1.5 rounded-2xl border border-white/5 flex items-center gap-4">
+                            <button
+                                onClick={() => setCurrentDate(new Date(currentDate.setMonth(currentDate.getMonth() - 1)))}
+                                className="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center text-white/40 hover:text-white transition-all"
+                            >
+                                <ChevronLeft className="w-5 h-5" />
+                            </button>
+                            <span className="font-black text-white tracking-widest text-[11px] uppercase min-w-[120px] text-center">
+                                {format(currentDate, 'MMMM yyyy', { locale: ko })}
+                            </span>
+                            <button
+                                onClick={() => setCurrentDate(new Date(currentDate.setMonth(currentDate.getMonth() + 1)))}
+                                className="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center text-white/40 hover:text-white transition-all"
+                            >
+                                <ChevronRight className="w-5 h-5" />
+                            </button>
+                        </div>
+                        <Button
+                            onClick={() => { resetForm(); setIsDialogOpen(true); }}
+                            className="h-12 px-6 rounded-2xl bg-indigo-500 hover:bg-indigo-600 text-white font-black text-[10px] tracking-widest uppercase shadow-xl transition-all active:scale-95"
+                        >
+                            <Plus className="w-4 h-4 mr-2" strokeWidth={3} /> NEW TRANSACTION
+                        </Button>
+                    </div>
                 </div>
 
-                <div className="flex items-center gap-4 bg-white p-1 rounded-xl border shadow-sm">
-                    <Button variant="ghost" size="icon" onClick={() => setCurrentDate(new Date(currentDate.setMonth(currentDate.getMonth() - 1)))}>
-                        <ChevronLeft className="w-4 h-4" />
-                    </Button>
-                    <span className="font-bold text-lg min-w-[100px] text-center">
-                        {format(currentDate, 'yyyy년 M월')}
-                    </span>
-                    <Button variant="ghost" size="icon" onClick={() => setCurrentDate(new Date(currentDate.setMonth(currentDate.getMonth() + 1)))}>
-                        <ChevronRight className="w-4 h-4" />
-                    </Button>
-                </div>
-
-                <Button onClick={() => { resetForm(); setIsDialogOpen(true); }} className="bg-primary hover:bg-primary/90">
-                    <Plus className="w-4 h-4 mr-2" /> 내역 추가
-                </Button>
-            </div>
-
-            {/* Summary Cards - Mobile Horizontal Scroll */}
-            <div className="flex overflow-x-auto pb-4 gap-4 md:grid md:grid-cols-4 md:gap-4 md:overflow-visible -mx-6 px-6 md:mx-0 md:px-0 snap-x snap-mandatory">
-                {/* Monthly Goal & Budget Card */}
-                <Card className="min-w-[300px] md:min-w-0 md:col-span-4 bg-gradient-to-r from-slate-50 to-white border-l-4 border-l-primary snap-center">
-                    <CardContent className="p-4 md:p-6 flex flex-col md:flex-row gap-6 items-center justify-between h-full">
-                        <div className="flex-1 space-y-2 w-full">
+                {/* Summary Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <Card className="glass-premium border-white/10 bg-gradient-to-br from-indigo-500/[0.05] to-transparent overflow-hidden rounded-[32px] md:col-span-1">
+                        <CardContent className="p-6 flex flex-col justify-between h-full gap-4">
                             <div className="flex items-center justify-between">
-                                <h3 className="text-lg font-bold flex items-center gap-2 text-slate-800">
-                                    <Target className="w-5 h-5 text-primary" />
-                                    {currentMonth}월의 목표
-                                </h3>
-                                <Button variant="ghost" size="sm" onClick={openBudgetDialog} className="h-8 text-muted-foreground hover:text-primary">
-                                    <Settings2 className="w-4 h-4 mr-1" /> 설정
-                                </Button>
+                                <span className="text-[9px] font-black text-white/20 tracking-widest uppercase">NET DELTA</span>
+                                <Activity className="w-4 h-4 text-indigo-500" />
                             </div>
+                            <div className="flex flex-col">
+                                <span className={cn("text-2xl font-black tracking-tighter", balance >= 0 ? "text-emerald-400" : "text-rose-400")}>
+                                    {balance >= 0 ? '+' : ''}{balance.toLocaleString()}
+                                </span>
+                                <span className="text-[8px] font-bold text-white/10 uppercase tracking-widest">CURRENT CYCLE STATUS</span>
+                            </div>
+                        </CardContent>
+                    </Card>
 
-                            {currentBudget ? (
-                                <div className="space-y-4">
-                                    {currentBudget.goal && <p className="text-lg text-slate-700 font-medium">&quot;{currentBudget.goal}&quot;</p>}
-                                    <div className="space-y-1">
-                                        <div className="flex justify-between text-sm">
-                                            <span className="text-muted-foreground">예산 소진율 ({Math.round(budgetProgress)}%)</span>
-                                            <span className="font-bold">
-                                                {totalExpense.toLocaleString()} / {currentBudget.amount.toLocaleString()}원
-                                            </span>
-                                        </div>
-                                        <Progress value={budgetProgress} className={cn("h-3", budgetProgress >= 100 ? "bg-red-100 [&>div]:bg-red-500" : budgetProgress >= 80 ? "bg-orange-100 [&>div]:bg-orange-500" : "[&>div]:bg-primary")} />
-                                        {currentBudget.amount - totalExpense < 0 ? (
-                                            <p className="text-xs text-red-500 text-right font-medium">예산 {Math.abs(currentBudget.amount - totalExpense).toLocaleString()}원 초과!</p>
-                                        ) : (
-                                            <p className="text-xs text-muted-foreground text-right">남은 예산: {(currentBudget.amount - totalExpense).toLocaleString()}원</p>
-                                        )}
-                                    </div>
-                                </div>
-                            ) : (
-                                <div className="text-center py-2 text-muted-foreground">
-                                    <p className="mb-2">아직 이번 달 목표와 예산이 설정되지 않았습니다.</p>
-                                    <Button variant="outline" size="sm" onClick={openBudgetDialog}>목표 설정하기</Button>
-                                </div>
-                            )}
-                        </div>
-                    </CardContent>
-                </Card>
+                    <Card className="glass-premium border-white/10 bg-gradient-to-br from-emerald-500/[0.05] to-transparent overflow-hidden rounded-[32px] md:col-span-1">
+                        <CardContent className="p-6 flex flex-col justify-between h-full gap-4">
+                            <div className="flex items-center justify-between">
+                                <span className="text-[9px] font-black text-white/20 tracking-widest uppercase">GROSS REVENUE</span>
+                                <TrendingUp className="w-4 h-4 text-emerald-500" />
+                            </div>
+                            <div className="flex flex-col">
+                                <span className="text-2xl font-black text-white tracking-tighter">+{totalIncome.toLocaleString()}</span>
+                                <span className="text-[8px] font-bold text-white/10 uppercase tracking-widest">INCOMING STREAM</span>
+                            </div>
+                        </CardContent>
+                    </Card>
 
-                <Card className="min-w-[160px] md:min-w-0 snap-center">
-                    <CardContent className="p-4 md:p-6 flex flex-col md:flex-row md:items-center justify-between h-full gap-2 md:gap-0">
-                        <div>
-                            <p className="text-xs md:text-sm font-medium text-muted-foreground">이번 달 수입</p>
-                            <h3 className="text-xl md:text-2xl font-bold text-blue-600">+{totalIncome.toLocaleString()}원</h3>
-                        </div>
-                        <div className="p-2 md:p-3 bg-blue-50 rounded-full w-fit">
-                            <TrendingUp className="w-5 h-5 md:w-6 md:h-6 text-blue-600" />
-                        </div>
-                    </CardContent>
-                </Card>
-                <Card className="min-w-[160px] md:min-w-0 snap-center">
-                    <CardContent className="p-4 md:p-6 flex flex-col md:flex-row md:items-center justify-between h-full gap-2 md:gap-0">
-                        <div>
-                            <p className="text-xs md:text-sm font-medium text-muted-foreground">이번 달 지출</p>
-                            <h3 className="text-xl md:text-2xl font-bold text-red-600">-{totalExpense.toLocaleString()}원</h3>
-                        </div>
-                        <div className="p-2 md:p-3 bg-red-50 rounded-full w-fit">
-                            <TrendingDown className="w-5 h-5 md:w-6 md:h-6 text-red-600" />
-                        </div>
-                    </CardContent>
-                </Card>
-                <Card className="min-w-[160px] md:min-w-0 snap-center">
-                    <CardContent className="p-4 md:p-6 flex flex-col md:flex-row md:items-center justify-between h-full gap-2 md:gap-0">
-                        <div>
-                            <p className="text-xs md:text-sm font-medium text-muted-foreground">남은 금액</p>
-                            <h3 className={cn("text-xl md:text-2xl font-bold", balance >= 0 ? "text-green-600" : "text-red-600")}>
-                                {balance.toLocaleString()}원
-                            </h3>
-                        </div>
-                        <div className="p-2 md:p-3 bg-green-50 rounded-full w-fit">
-                            <DollarSign className="w-5 h-5 md:w-6 md:h-6 text-green-600" />
-                        </div>
-                    </CardContent>
-                </Card>
+                    <Card className="glass-premium border-white/10 bg-gradient-to-br from-rose-500/[0.05] to-transparent overflow-hidden rounded-[32px] md:col-span-1">
+                        <CardContent className="p-6 flex flex-col justify-between h-full gap-4">
+                            <div className="flex items-center justify-between">
+                                <span className="text-[9px] font-black text-white/20 tracking-widest uppercase">GROSS DEBIT</span>
+                                <TrendingDown className="w-4 h-4 text-rose-400" />
+                            </div>
+                            <div className="flex flex-col">
+                                <span className="text-2xl font-black text-white tracking-tighter">-{totalExpense.toLocaleString()}</span>
+                                <span className="text-[8px] font-bold text-white/10 uppercase tracking-widest">OUTGOING FLOW</span>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="glass-premium border-white/10 bg-indigo-500/10 overflow-hidden rounded-[32px] md:col-span-1 cursor-pointer hover:bg-indigo-500/20 transition-all border-dashed" onClick={openBudgetDialog}>
+                        <CardContent className="p-6 flex flex-col justify-between h-full gap-2">
+                            <div className="flex items-center justify-between">
+                                <span className="text-[9px] font-black text-indigo-400 tracking-widest uppercase">BUDGET QUOTA</span>
+                                <Target className="w-4 h-4 text-indigo-400" />
+                            </div>
+                            <div className="space-y-1">
+                                <div className="flex justify-between text-[8px] font-black tracking-widest uppercase text-white/40">
+                                    <span>CONSTRAINED</span>
+                                    <span>{Math.round(budgetProgress)}%</span>
+                                </div>
+                                <div className="h-1.5 bg-white/5 rounded-full overflow-hidden border border-white/5">
+                                    <motion.div
+                                        initial={{ width: 0 }}
+                                        animate={{ width: `${budgetProgress}%` }}
+                                        className={cn("h-full", budgetProgress > 90 ? "bg-rose-500" : budgetProgress > 70 ? "bg-amber-500" : "bg-indigo-500")}
+                                    />
+                                </div>
+                                <p className="text-[8px] font-bold text-white/10 uppercase tracking-tighter text-right">TAP TO RECONFIGURE</p>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
             </div>
 
             {/* Transaction List */}
-            <Card className="flex-1 overflow-hidden flex flex-col">
-                <CardContent className="flex-1 overflow-y-auto p-0">
-                    {monthlyTransactions.length === 0 ? (
-                        <div className="h-64 flex flex-col items-center justify-center text-muted-foreground">
-                            <CheckSquare className="w-12 h-12 mb-4 opacity-20" />
-                            <p>이 달의 거래 내역이 없습니다.</p>
-                        </div>
-                    ) : (
-                        <div className="divide-y">
-                            {monthlyTransactions.map(t => (
-                                <div key={t.id} className="p-4 hover:bg-slate-50 transition-colors flex items-center justify-between group">
-                                    <div className="flex items-center gap-4">
-                                        <div className={cn(
-                                            "w-10 h-10 rounded-full flex items-center justify-center text-white font-bold",
-                                            t.type === 'income' ? "bg-blue-500" :
-                                                t.type === 'expense' ? "bg-red-500" : "bg-purple-500"
-                                        )}>
-                                            {t.date ? format(new Date(t.date), 'dd') : ''}
-                                        </div>
-                                        <div>
-                                            <p className="font-bold text-slate-800">{t.category} <span className="text-xs font-normal text-muted-foreground block md:inline md:ml-2">{t.description}</span></p>
-                                            <p className="text-xs text-muted-foreground">
-                                                {format(new Date(t.date), 'HH:mm')} • {t.type === 'income' ? '수입' : t.type === 'expense' ? '지출' : '이체/기타'}
-                                                {t.tags && t.tags.length > 0 && <span className="ml-2 text-blue-500">#{t.tags.join(' #')}</span>}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-4">
-                                        <span className={cn(
-                                            "font-bold text-lg",
-                                            t.type === 'income' ? "text-blue-600" :
-                                                t.type === 'expense' ? "text-red-600" : "text-purple-600"
-                                        )}>
-                                            {t.type === 'income' ? '+' : t.type === 'expense' ? '-' : ''}{t.amount.toLocaleString()}원
-                                        </span>
-                                        <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
-                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-blue-600" onClick={() => handleEdit(t)}>
-                                                <Edit2 className="w-4 h-4" />
-                                            </Button>
-                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-red-600" onClick={() => deleteTransaction(t.id)}>
-                                                <Trash2 className="w-4 h-4" />
-                                            </Button>
-                                        </div>
-                                    </div>
+            <div className="flex-1 overflow-y-auto custom-scrollbar p-8 pt-0 relative z-10">
+                <div className="max-w-6xl mx-auto space-y-4">
+                    <AnimatePresence mode="popLayout">
+                        {monthlyTransactions.length === 0 ? (
+                            <div className="h-64 flex flex-col items-center justify-center opacity-10 gap-6 border-2 border-dashed border-white/10 rounded-[48px]">
+                                <CheckSquare className="w-16 h-16" />
+                                <div className="text-center space-y-1">
+                                    <h3 className="text-xl font-black tracking-[0.2em] uppercase">STREAMS VACANT</h3>
+                                    <p className="text-[10px] font-bold tracking-[0.5em] uppercase">NO FISCAL EVENTS RECORDED</p>
                                 </div>
-                            ))}
-                        </div>
-                    )}
-                </CardContent>
-            </Card>
-
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>{editingId ? '내역 수정' : '내역 추가'}</DialogTitle>
-                    </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                        <div className="grid gap-2">
-                            <Label>날짜</Label>
-                            <DateTimePicker date={date} setDate={setDate} />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label>구분</Label>
-                            <div className="flex gap-2 flex-wrap">
-                                <Button
-                                    type="button"
-                                    variant={type === 'income' ? 'default' : 'outline'}
-                                    className={cn("flex-1", type === 'income' && "bg-blue-600 hover:bg-blue-700")}
-                                    onClick={() => setType('income')}
-                                >
-                                    수입
-                                </Button>
-                                <Button
-                                    type="button"
-                                    variant={type === 'expense' ? 'default' : 'outline'}
-                                    className={cn("flex-1", type === 'expense' && "bg-red-600 hover:bg-red-700")}
-                                    onClick={() => setType('expense')}
-                                >
-                                    지출
-                                </Button>
-                                <Button
-                                    type="button"
-                                    variant={['transfer', 'investment', 'saving', 'repayment', 'card_bill'].includes(type) ? 'default' : 'outline'}
-                                    className={cn("flex-1", ['transfer', 'investment', 'saving', 'repayment', 'card_bill'].includes(type) && "bg-purple-600 hover:bg-purple-700")}
-                                    onClick={() => setType('transfer')}
-                                >
-                                    기타(이체/카드/대출)
-                                </Button>
                             </div>
-                            {['transfer', 'investment', 'saving', 'repayment', 'card_bill'].includes(type) && (
-                                <div className="flex gap-2 mt-1 flex-wrap">
-                                    <Button size="sm" variant={type === 'transfer' ? 'secondary' : 'ghost'} onClick={() => setType('transfer')}>이체</Button>
-                                    <Button size="sm" variant={type === 'investment' ? 'secondary' : 'ghost'} onClick={() => setType('investment')}>투자</Button>
-                                    <Button size="sm" variant={type === 'saving' ? 'secondary' : 'ghost'} onClick={() => setType('saving')}>저축</Button>
-                                    <Button size="sm" variant={type === 'repayment' ? 'secondary' : 'ghost'} onClick={() => setType('repayment')}>대출상환</Button>
-                                    <Button size="sm" variant={type === 'card_bill' ? 'secondary' : 'ghost'} onClick={() => setType('card_bill')}>카드대금</Button>
-                                </div>
-                            )}
-                        </div>
-                        <div className="grid gap-2">
-                            <Label>카테고리</Label>
-                            <Input
-                                placeholder={type === 'income' ? "예: 월급, 용돈" : (type === 'expense' ? "예: 식비, 쇼핑" : "예: 적금불입, 주식매수")}
-                                value={category}
-                                onChange={e => setCategory(e.target.value)}
-                            />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label>금액</Label>
-                            <Input
-                                type="number"
-                                placeholder="0"
-                                value={amount}
-                                onChange={e => setAmount(e.target.value)}
-                            />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label>
-                                {type === 'expense' ? '결제 수단' :
-                                    (['transfer', 'investment', 'saving', 'repayment', 'card_bill'].includes(type) ? '출금 자산 (From)' : '연동 자산 (선택)')}
-                            </Label>
-                            <select
-                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
-                                value={type === 'expense' && cardId ? cardId : assetId}
-                                onChange={e => {
-                                    const val = e.target.value;
-                                    const selectedAsset = assets.find(a => a.id === val);
-                                    if (type === 'expense') {
-                                        if (selectedAsset?.type === 'credit_card') {
-                                            setCardId(val);
-                                            setAssetId('');
-                                        } else {
-                                            setAssetId(val);
-                                            setCardId('');
-                                        }
-                                    } else {
-                                        setAssetId(val);
-                                    }
-                                }}
-                            >
-                                <option value="">{['transfer', 'investment', 'saving', 'repayment', 'card_bill'].includes(type) ? '선택 필수' : '선택 안 함'}</option>
-                                <optgroup label="계좌 / 현금">
-                                    {assets.filter(a => a.type !== 'credit_card' && a.type !== 'loan').map(a => (
-                                        <option key={a.id} value={a.id}>
-                                            {a.name} ({a.balance.toLocaleString()}원)
-                                        </option>
+                        ) : (
+                            monthlyTransactions.map((t, idx) => (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: idx * 0.03 }}
+                                    key={t.id}
+                                    className="group glass-premium rounded-[32px] border border-white/5 p-6 transition-all hover:bg-white/[0.02] flex items-center justify-between relative overflow-hidden"
+                                >
+                                    <div className="absolute left-0 top-0 bottom-0 w-1 opacity-0 group-hover:opacity-100 transition-opacity bg-indigo-500" />
+
+                                    <div className="flex items-center gap-8">
+                                        <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex flex-col items-center justify-center shrink-0">
+                                            <span className="text-[9px] font-black text-white/20 uppercase leading-none mb-1">{format(new Date(t.date), 'MMM')}</span>
+                                            <span className="text-xl font-black text-white tracking-tighter leading-none">{format(new Date(t.date), 'dd')}</span>
+                                        </div>
+
+                                        <div className="space-y-1.5">
+                                            <div className="flex items-center gap-3">
+                                                <div className={cn(
+                                                    "px-3 py-1 rounded-lg text-[8px] font-black tracking-widest uppercase border",
+                                                    t.type === 'income' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" :
+                                                        t.type === 'expense' ? "bg-rose-500/10 text-rose-400 border-rose-500/20" :
+                                                            "bg-indigo-500/10 text-indigo-400 border-indigo-500/20"
+                                                )}>
+                                                    {t.category}
+                                                </div>
+                                                <span className="text-[8px] font-bold text-white/10 uppercase tracking-widest">{format(new Date(t.date), 'HH:mm')}</span>
+                                            </div>
+                                            <h4 className="text-lg font-black text-white tracking-tight uppercase">{t.description || 'SILENT LOG'}</h4>
+                                            {t.tags && t.tags.length > 0 && (
+                                                <div className="flex gap-2">
+                                                    {t.tags.map(tag => (
+                                                        <span key={tag} className="text-[8px] font-bold text-indigo-400/60 uppercase">#{tag}</span>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center gap-8">
+                                        <div className="text-right">
+                                            <div className={cn(
+                                                "text-2xl font-black tracking-tighter",
+                                                t.type === 'income' ? "text-emerald-400" :
+                                                    t.type === 'expense' ? "text-rose-400" : "text-white"
+                                            )}>
+                                                {t.type === 'income' ? '+' : t.type === 'expense' ? '-' : ''}{t.amount.toLocaleString()}
+                                            </div>
+                                            <div className="text-[8px] font-bold text-white/10 uppercase tracking-widest">UNIT: KRW</div>
+                                        </div>
+
+                                        <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                                            <button onClick={() => handleEdit(t)} className="w-10 h-10 rounded-xl bg-white/5 text-white/20 hover:text-white transition-all flex items-center justify-center shadow-xl">
+                                                <Edit2 className="w-4 h-4" />
+                                            </button>
+                                            <button onClick={() => deleteTransaction(t.id)} className="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white transition-all flex items-center justify-center shadow-xl">
+                                                <Trash2 className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            ))
+                        )}
+                    </AnimatePresence>
+                </div>
+            </div>
+
+            {/* Dialogs */}
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogContent className="glass-premium border border-white/10 text-white rounded-[40px] p-0 shadow-2xl sm:max-w-2xl max-h-[90vh] overflow-hidden">
+                    <DialogHeader className="p-10 pb-0">
+                        <DialogTitle className="text-3xl font-black tracking-tighter uppercase mb-2">{editingId ? 'RECALIBRATE LOG' : 'INITIALIZE LOG'}</DialogTitle>
+                        <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] italic">INPUT FISCAL DATA CONTEXT FOR NEURAL FEED INTEGRATION</p>
+                    </DialogHeader>
+                    <div className="overflow-y-auto custom-scrollbar p-10 pt-4 space-y-8">
+                        <div className="grid gap-6">
+                            <div className="space-y-3">
+                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">CHRONO-STAMP</Label>
+                                <DateTimePicker date={date} setDate={setDate} />
+                            </div>
+
+                            <div className="space-y-3">
+                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">FLOW VECTOR</Label>
+                                <div className="grid grid-cols-3 gap-3">
+                                    {[
+                                        { id: 'income', label: 'INCOME', color: 'border-emerald-500/20 text-emerald-400 bg-emerald-500/5' },
+                                        { id: 'expense', label: 'EXPENSE', color: 'border-rose-500/20 text-rose-400 bg-rose-500/5' },
+                                        { id: 'transfer', label: 'DIVERSION', color: 'border-indigo-500/20 text-indigo-400 bg-indigo-500/5' }
+                                    ].map(item => (
+                                        <button
+                                            key={item.id}
+                                            onClick={() => setType(item.id as any)}
+                                            className={cn(
+                                                "h-14 rounded-2xl border font-black text-[10px] tracking-widest transition-all active:scale-95",
+                                                type === item.id ? item.color : "border-white/5 text-white/20 hover:border-white/20"
+                                            )}
+                                        >
+                                            {item.label}
+                                        </button>
                                     ))}
-                                </optgroup>
-                                {type === 'expense' && (
-                                    <optgroup label="신용카드">
-                                        {assets.filter(a => a.type === 'credit_card').map(a => (
-                                            <option key={a.id} value={a.id}>
-                                                {a.name} (누적 {a.balance.toLocaleString()}원)
-                                            </option>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-6">
+                                <div className="space-y-3">
+                                    <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">CLASSIFICATION</Label>
+                                    <Input
+                                        placeholder="EX: FOOD, SALARY, RENT"
+                                        className="h-12 font-black text-[10px] tracking-widest uppercase bg-white/5 border-white/5 rounded-2xl text-white"
+                                        value={category}
+                                        onChange={e => setCategory(e.target.value)}
+                                    />
+                                </div>
+                                <div className="space-y-3">
+                                    <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">MAGNITUDE (KRW)</Label>
+                                    <Input
+                                        type="number"
+                                        placeholder="0"
+                                        className="h-12 font-black text-[10px] tracking-widest bg-white/5 border-white/5 rounded-2xl text-white"
+                                        value={amount}
+                                        onChange={e => setAmount(e.target.value)}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="space-y-3">
+                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">SOURCE / DESTINATION</Label>
+                                <select
+                                    className="flex h-12 w-full rounded-2xl border border-white/5 bg-white/5 px-4 font-black uppercase text-[10px] tracking-widest text-white outline-none"
+                                    value={type === 'expense' && cardId ? cardId : assetId}
+                                    onChange={e => {
+                                        const val = e.target.value;
+                                        const selectedAsset = assets.find(a => a.id === val);
+                                        if (type === 'expense' && selectedAsset?.type === 'credit_card') {
+                                            setCardId(val); setAssetId('');
+                                        } else {
+                                            setAssetId(val); setCardId('');
+                                        }
+                                    }}
+                                >
+                                    <option value="" className="bg-slate-900">SYSTEM DEFAULT</option>
+                                    <optgroup label="MATRIX NODES" className="bg-slate-900">
+                                        {assets.filter(a => a.type !== 'credit_card' && a.type !== 'loan').map(a => (
+                                            <option key={a.id} value={a.id} className="bg-slate-900">{a.name} ({a.balance.toLocaleString()})</option>
                                         ))}
                                     </optgroup>
-                                )}
-                            </select>
-                        </div>
-                        {['transfer', 'investment', 'saving', 'repayment'].includes(type) && (
-                            <div className="grid gap-2">
-                                <Label>{type === 'repayment' ? '상환할 대출 자산' : '입금 자산 (To)'}</Label>
-                                <select
-                                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
-                                    value={targetAssetId}
-                                    onChange={e => setTargetAssetId(e.target.value)}
-                                >
-                                    <option value="">선택 필수</option>
-                                    {assets.filter(a => a.id !== assetId && (type === 'repayment' ? a.type === 'loan' : a.type !== 'loan' && a.type !== 'credit_card')).map(a => (
-                                        <option key={a.id} value={a.id}>
-                                            {a.name} ({a.balance.toLocaleString()}원)
-                                        </option>
-                                    ))}
+                                    {type === 'expense' && (
+                                        <optgroup label="CREDIT LINES" className="bg-slate-900">
+                                            {assets.filter(a => a.type === 'credit_card').map(a => (
+                                                <option key={a.id} value={a.id} className="bg-slate-900">{a.name} (EXP: {a.balance.toLocaleString()})</option>
+                                            ))}
+                                        </optgroup>
+                                    )}
                                 </select>
                             </div>
-                        )}
-                        <div className="grid gap-2">
-                            <Label>내용 (선택)</Label>
-                            <Input
-                                placeholder="상세 내용 메모"
-                                value={description}
-                                onChange={e => setDescription(e.target.value)}
-                            />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label>태그</Label>
-                            <Input
-                                placeholder="#식비 #데이트 (콤마로 구분)"
-                                value={tags}
-                                onChange={e => setTags(e.target.value)}
-                            />
+
+                            <div className="space-y-3">
+                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">LOG NARRATIVE</Label>
+                                <Input
+                                    placeholder="DETAILS OF TRANSACTION..."
+                                    className="h-12 bg-white/5 border-white/5 rounded-2xl text-white placeholder:text-white/10 text-[10px] font-black uppercase tracking-widest"
+                                    value={description}
+                                    onChange={e => setDescription(e.target.value)}
+                                />
+                            </div>
                         </div>
                     </div>
-                    <DialogFooter>
-                        <Button onClick={handleSave} disabled={!amount || !category}>저장</Button>
+                    <DialogFooter className="p-10 pt-4 bg-white/[0.02] border-t border-white/5">
+                        <Button
+                            onClick={handleSave}
+                            disabled={!amount || !category}
+                            className="w-full h-16 rounded-2xl bg-indigo-500 hover:bg-indigo-600 text-white font-black text-sm tracking-[0.2em] shadow-2xl active:scale-95 transition-all uppercase"
+                        >
+                            COMMIT TO LEDGER
+                        </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
 
-            {/* Budget Setting Dialog */}
+            {/* Budget Dialog */}
             <Dialog open={isBudgetDialogOpen} onOpenChange={setIsBudgetDialogOpen}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>{currentMonth}월 목표 및 예산 설정</DialogTitle>
+                <DialogContent className="glass-premium border border-white/10 text-white rounded-[40px] p-0 shadow-2xl sm:max-w-md overflow-hidden">
+                    <DialogHeader className="p-10 pb-0">
+                        <DialogTitle className="text-3xl font-black tracking-tighter uppercase mb-2">QUOTA CONFIG</DialogTitle>
+                        <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] italic">SET FISCAL BOUNDARIES FOR THE CURRENT CYCLE</p>
                     </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                        <div className="grid gap-2">
-                            <Label>이번 달 목표 (다짐)</Label>
+                    <div className="p-10 pt-4 space-y-8">
+                        <div className="space-y-3">
+                            <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">PRIMARY OBJECTIVE</Label>
                             <Input
-                                placeholder="예: 배달 음식 줄이기, 100만원 저축하기"
+                                placeholder="EX: REDUCE CALORIC DEBT, INCREASE SAVINGS..."
+                                className="h-14 font-black text-sm border-white/5 bg-white/5 rounded-2xl text-white placeholder:text-white/10 uppercase"
                                 value={budgetGoal}
                                 onChange={e => setBudgetGoal(e.target.value)}
                             />
                         </div>
-                        <div className="grid gap-2">
-                            <Label>월 예산 (목표 지출액)</Label>
+                        <div className="space-y-3">
+                            <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">MAXIMUM EXPOSURE (KRW)</Label>
                             <Input
                                 type="number"
-                                placeholder="금액 입력 (원)"
+                                placeholder="0"
+                                className="h-14 font-black text-xl border-white/5 bg-white/5 rounded-2xl text-white"
                                 value={budgetAmount}
                                 onChange={e => setBudgetAmount(e.target.value)}
                             />
                         </div>
                     </div>
-                    <DialogFooter>
-                        <Button onClick={handleSaveBudget} disabled={!budgetAmount}>저장</Button>
+                    <DialogFooter className="p-10 pt-0">
+                        <Button onClick={handleSaveBudget} disabled={!budgetAmount} className="w-full h-14 rounded-2xl bg-indigo-500 hover:bg-indigo-600 text-white font-black text-sm tracking-widest uppercase shadow-xl transition-all active:scale-95">
+                            ACTIVATE QUOTA
+                        </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

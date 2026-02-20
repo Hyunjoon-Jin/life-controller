@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Logo } from '@/components/ui/Logo';
 import { Button } from '@/components/ui/button';
-import { Menu, Home, Briefcase, Sparkles, HelpCircle, X, ChevronRight, LayoutGrid } from 'lucide-react';
+import { Menu, Home, Briefcase, Sparkles, HelpCircle, X, ChevronRight, LayoutGrid, Target } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from '@/components/ui/sheet';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { UserMenu } from '@/components/auth/UserMenu';
@@ -12,10 +12,10 @@ import { CATEGORIES, CategoryType } from '@/constants/menu';
 import { AdBanner } from '@/components/ads/AdBanner';
 
 interface MobileHeaderProps {
-    appMode: 'life' | 'work' | 'study';
-    setAppMode: (mode: 'life' | 'work' | 'study') => void;
-    mainMode: 'home' | 'schedule' | 'work' | 'study';
-    setMainMode: (mode: 'home' | 'schedule' | 'work' | 'study') => void;
+    appMode: 'life' | 'work' | 'study' | 'ambition';
+    setAppMode: (mode: 'life' | 'work' | 'study' | 'ambition') => void;
+    mainMode: 'home' | 'schedule' | 'work' | 'study' | 'ambition';
+    setMainMode: (mode: 'home' | 'schedule' | 'work' | 'study' | 'ambition') => void;
     activeCategory: CategoryType;
     setActiveCategory: (cat: CategoryType) => void;
     onOpenGuide: () => void;
@@ -34,84 +34,100 @@ export function MobileHeader({
 
     return (
         <header className={cn(
-            "md:hidden flex items-center justify-between p-4 sticky top-0 z-50 transition-colors duration-500 shadow-md",
+            "md:hidden flex items-center justify-between px-5 py-4 sticky top-0 z-50 transition-all duration-500 glass-premium border-b border-white/5",
             appMode === 'work'
-                ? "bg-[#9C27B0] text-white"
+                ? "shadow-[0_4px_20px_rgba(99,102,241,0.1)]"
                 : appMode === 'study'
-                    ? "bg-[#3F51B5] text-white"
-                    : "bg-[#009688] text-white"
+                    ? "shadow-[0_4px_20px_rgba(63,81,181,0.1)]"
+                    : "shadow-[0_4px_20px_rgba(16,185,129,0.1)]"
         )}>
             {/* Left: Logo */}
-            <div onClick={() => setMainMode('home')} className="cursor-pointer">
-                <Logo variant="icon" className="w-8 h-8 brightness-0 invert" />
+            <div onClick={() => setMainMode('home')} className="cursor-pointer group flex items-center gap-2">
+                <div className="p-1 rounded-xl bg-gradient-to-br from-white/10 to-white/5 border border-white/10 group-hover:scale-105 transition-transform">
+                    <Logo variant="icon" className="w-7 h-7 brightness-0 invert" />
+                </div>
+                <span className="text-lg font-black tracking-tight text-white/90">LIFE <span className="text-emerald-400">PLANNER</span></span>
             </div>
 
             {/* Right: Hamburger Menu */}
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
                 <SheetTrigger asChild>
-                    <Button variant="ghost" size="icon" className="text-white hover:bg-white/10" onClick={() => setIsOpen(true)}>
+                    <Button variant="ghost" size="icon" className="text-white/70 hover:bg-white/10 hover:text-white rounded-xl" onClick={() => setIsOpen(true)}>
                         <Menu className="w-6 h-6" />
                     </Button>
                 </SheetTrigger>
-                <SheetContent side="right" className="w-[300px] flex flex-col p-6">
-                    <SheetHeader className="mb-6 text-left">
-                        <div className="flex items-center justify-between">
-                            <SheetTitle className="text-lg font-bold">Menu</SheetTitle>
-                            {/* Theme Toggle in Header */}
-                            <ThemeToggle />
-                        </div>
-                    </SheetHeader>
+                <SheetContent side="right" className="w-[310px] flex flex-col p-0 glass-premium border-l border-white/10 text-white overflow-hidden">
+                    {/* Header with Title and Toggle */}
+                    <div className="p-6 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
+                        <SheetTitle className="text-xl font-black text-white/90 tracking-widest">MENU</SheetTitle>
+                        <ThemeToggle />
+                    </div>
 
-                    {/* Content */}
-                    <div className="flex-1 overflow-y-auto -mx-6 px-6 custom-scrollbar">
-                        <div className="bg-muted rounded-xl p-1 flex mb-8">
+                    <div className="flex-1 overflow-y-auto px-6 py-8 custom-scrollbar space-y-10">
+                        {/* Mode Switcher */}
+                        <div className="bg-white/[0.03] border border-white/5 rounded-2xl p-1.5 flex shadow-inner">
                             <button
                                 onClick={() => { setAppMode('life'); setIsOpen(false); }}
                                 className={cn(
-                                    "flex-1 py-3 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-all",
-                                    appMode === 'life' ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
+                                    "flex-1 py-3.5 rounded-xl text-[10px] font-black flex flex-col items-center justify-center gap-2 transition-all relative overflow-hidden",
+                                    appMode === 'life' ? "bg-emerald-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.3)]" : "text-white/30 hover:text-white/50"
                                 )}
                             >
-                                <Sparkles className={cn("w-4 h-4", appMode === 'life' && "text-yellow-500")} />
-                                일상
+                                <Sparkles className="w-4 h-4" />
+                                LIFE
                             </button>
                             <button
                                 onClick={() => { setAppMode('study'); setIsOpen(false); }}
                                 className={cn(
-                                    "flex-1 py-3 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-all",
-                                    appMode === 'study' ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
+                                    "flex-1 py-3.5 rounded-xl text-[10px] font-black flex flex-col items-center justify-center gap-2 transition-all relative overflow-hidden",
+                                    appMode === 'study' ? "bg-indigo-500 text-white shadow-[0_0_20px_rgba(99,102,241,0.3)]" : "text-white/30 hover:text-white/50"
                                 )}
                             >
-                                <LayoutGrid className={cn("w-4 h-4", appMode === 'study' && "text-indigo-500")} />
-                                학습
+                                <LayoutGrid className="w-4 h-4" />
+                                STUDY
+                            </button>
+                            <button
+                                onClick={() => { setAppMode('ambition'); setIsOpen(false); }}
+                                className={cn(
+                                    "flex-1 py-3.5 rounded-xl text-[10px] font-black flex flex-col items-center justify-center gap-2 transition-all relative overflow-hidden",
+                                    appMode === 'ambition' ? "bg-amber-600 text-white shadow-[0_0_20px_rgba(217,119,6,0.3)]" : "text-white/30 hover:text-white/50"
+                                )}
+                            >
+                                <Target className="w-4 h-4" />
+                                AMBITION
                             </button>
                             <button
                                 onClick={() => { setAppMode('work'); setIsOpen(false); }}
                                 className={cn(
-                                    "flex-1 py-3 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-all",
-                                    appMode === 'work' ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
+                                    "flex-1 py-3.5 rounded-xl text-[10px] font-black flex flex-col items-center justify-center gap-2 transition-all relative overflow-hidden",
+                                    appMode === 'work' ? "bg-purple-500 text-white shadow-[0_0_20px_rgba(168,85,247,0.3)]" : "text-white/30 hover:text-white/50"
                                 )}
                             >
-                                <Briefcase className={cn("w-4 h-4", appMode === 'work' && "text-purple-500")} />
-                                업무
+                                <Briefcase className="w-4 h-4" />
+                                WORK
                             </button>
                         </div>
 
-                        {/* 2. Main Navigation items */}
-                        <div className="space-y-2 mb-8">
+                        {/* Navigation */}
+                        <div className="space-y-4">
                             <button
                                 onClick={() => { setMainMode('home'); setIsOpen(false); }}
                                 className={cn(
-                                    "w-full flex items-center gap-4 p-3 rounded-xl transition-colors text-left font-medium",
-                                    mainMode === 'home' ? "bg-primary/10 text-primary" : "hover:bg-muted"
+                                    "w-full flex items-center gap-4 p-5 rounded-2xl transition-all text-sm font-black border",
+                                    mainMode === 'home'
+                                        ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
+                                        : "bg-white/[0.03] border-transparent text-white/50 hover:bg-white/[0.06] hover:text-white"
                                 )}
                             >
-                                <Home className="w-5 h-5" /> 홈 대시보드
+                                <Home className="w-5 h-5" /> HOME DASHBOARD
                             </button>
 
-                            <div className="p-3">
-                                <h4 className="text-xs font-bold text-muted-foreground mb-3 uppercase tracking-wider">Categories</h4>
-                                <div className="space-y-1">
+                            <div className="pt-6 border-t border-white/5">
+                                <h4 className="text-[10px] font-black text-white/10 mb-5 uppercase tracking-[0.3em] px-2 flex items-center gap-2">
+                                    <div className="w-1 h-3 bg-white/10 rounded-full" />
+                                    Categories
+                                </h4>
+                                <div className="space-y-2">
                                     {CATEGORIES.map(cat => (
                                         <button
                                             key={cat.id}
@@ -121,45 +137,49 @@ export function MobileHeader({
                                                 setIsOpen(false);
                                             }}
                                             className={cn(
-                                                "w-full flex items-center justify-between p-2.5 rounded-lg text-sm transition-colors",
-                                                mainMode === 'schedule' && activeCategory === cat.id ? "bg-muted font-bold text-foreground" : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                                                "w-full flex items-center justify-between p-4 rounded-xl text-sm font-bold transition-all border",
+                                                mainMode === 'schedule' && activeCategory === cat.id
+                                                    ? "bg-white/10 border-white/10 text-white"
+                                                    : "bg-transparent border-transparent text-white/40 hover:bg-white/5 hover:text-white/70"
                                             )}
                                         >
-                                            <span className="flex items-center gap-3">
-                                                <LayoutGrid className="w-4 h-4 opacity-50" />
+                                            <span className="flex items-center gap-4">
+                                                <div className={cn(
+                                                    "w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-300",
+                                                    mainMode === 'schedule' && activeCategory === cat.id ? "bg-emerald-500 text-white shadow-lg" : "bg-white/5 text-white/20"
+                                                )}>
+                                                    <LayoutGrid className="w-4 h-4" />
+                                                </div>
                                                 {cat.label}
                                             </span>
                                             {mainMode === 'schedule' && activeCategory === cat.id && (
-                                                <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                                                <ChevronRight className="w-4 h-4 text-emerald-400" />
                                             )}
                                         </button>
                                     ))}
                                 </div>
                             </div>
+                        </div>
 
-                            {appMode === 'work' && (
-                                <div className="p-3 bg-blue-50 text-blue-700 rounded-lg text-sm text-center">
-                                    전체 메뉴 활성화됨 (기본 메뉴에서 '프로젝트 관리' 선택 가능)
-                                </div>
-                            )}
+                        {appMode === 'work' && (
+                            <div className="p-4 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl text-[11px] text-indigo-300 font-bold text-center leading-relaxed">
+                                Professional Workspace Active: <br /> Advanced tools accessible in categories.
+                            </div>
+                        )}
+
+                        <div className="pb-4">
+                            <AdBanner dataAdSlot="1234567890" dataAdFormat="rectangle" className="w-full opacity-60 grayscale hover:grayscale-0 transition-all rounded-2xl overflow-hidden" />
                         </div>
                     </div>
 
-                    {/* AdBanner in Menu */}
-                    <div className="mb-4">
-                        <AdBanner dataAdSlot="1234567890" dataAdFormat="rectangle" className="w-full" />
-                    </div>
-
-                    {/* Footer: User & Help */}
-                    <div className="border-t border-border pt-6 mt-auto">
-                        <div className="mb-4">
-                            <Button asChild className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white border-0">
-                                <a href="/pricing">Upgrade to Pro 💎</a>
-                            </Button>
-                        </div>
-                        <div className="flex items-center justify-between mb-4">
+                    {/* Footer Area */}
+                    <div className="p-6 bg-white/[0.02] border-t border-white/5 space-y-6">
+                        <Button asChild className="w-full h-12 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-black text-[10px] tracking-widest border-0 shadow-[0_10px_20px_-5px_rgba(16,185,129,0.3)]">
+                            <a href="/pricing" className="flex items-center justify-center uppercase">UPGRADE TO PRO <Sparkles className="w-3 h-3 ml-2" /></a>
+                        </Button>
+                        <div className="flex items-center justify-between">
                             <UserMenu />
-                            <Button variant="ghost" size="sm" onClick={onOpenGuide} className="text-muted-foreground">
+                            <Button variant="ghost" size="icon" onClick={onOpenGuide} className="text-white/20 hover:text-white/60 transition-colors">
                                 <HelpCircle className="w-5 h-5" />
                             </Button>
                         </div>
