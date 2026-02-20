@@ -7,6 +7,7 @@ import {
     Clock,
     Flame,
     StickyNote,
+    HelpCircle,
     X,
     LayoutGrid,
     Zap,
@@ -25,6 +26,16 @@ export function FloatingModule({ onOpenGuide }: { onOpenGuide?: () => void }) {
     const { globalMemo, setGlobalMemo } = useData();
 
     const menuItems = [
+        {
+            id: 'guide',
+            icon: HelpCircle,
+            label: '사용법',
+            color: 'from-blue-500 to-indigo-600',
+            onClick: () => {
+                onOpenGuide?.();
+                setIsOpen(false);
+            }
+        },
         {
             id: 'memo',
             icon: StickyNote,

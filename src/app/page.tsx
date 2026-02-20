@@ -271,12 +271,6 @@ export default function Home() {
           )}>
             <HomeIcon className="w-5 h-5" />
           </Button>
-          <Button variant="ghost" size="icon" onClick={() => setIsGuideOpen(true)} className={cn(
-            "rounded-full transition-all",
-            appMode === 'work' ? "text-[#4A148C]/70 hover:bg-[#CE93D8]/30" : appMode === 'study' ? "text-[#1A237E]/70 hover:bg-[#9FA8DA]/30" : "text-[#004D40]/70 hover:bg-[#80CBC4]/30"
-          )}>
-            <HelpCircle className="w-5 h-5" />
-          </Button>
           <CloudSyncStatus />
           <DataExportButton />
           <ThemeToggle />
