@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import {
     Book as BookIcon, Plus, Library, List as ListIcon,
     Sparkles, Bookmark, Search, GraduationCap, Archive,
-    Compass, Feather, ScrollText
+    Compass, Feather, ScrollText, BookOpen
 } from 'lucide-react';
 import { Book } from '@/types';
 import { BookShelf } from './BookShelf';
