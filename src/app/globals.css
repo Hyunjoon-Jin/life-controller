@@ -89,6 +89,12 @@
     --accent: 220 30% 15%;
     --accent-foreground: 161 72% 40%;
 
+    --popover: 225 35% 8%;
+    --popover-foreground: 210 20% 98%;
+
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 0 0% 100%;
+
     --border: 225 35% 15%;
     --input: 225 35% 12%;
     --ring: 161 72% 40%;

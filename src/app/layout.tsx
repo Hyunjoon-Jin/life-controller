@@ -86,7 +86,7 @@ export default function RootLayout({
               <SessionReset />
               <ThemeProvider
                 attribute="class"
-                defaultTheme="system"
+                defaultTheme="dark"
                 enableSystem
                 themes={['light', 'dark', 'gray']}
                 disableTransitionOnChange
