@@ -367,7 +367,7 @@ export default function Home() {
                 })()}
 
                 {activeTab === 'calendar' && (
-                  <div className="space-y-6 animate-in fade-in zoom-in-95 duration-200 h-full">
+                  <div className="space-y-6 animate-in fade-in zoom-in-95 duration-200 h-full bg-slate-950 rounded-3xl p-4">
                     {appMode === 'work' ? (
                       <WorkMainDashboard
                         viewMode="schedule"
@@ -386,7 +386,7 @@ export default function Home() {
                   </div>
                 )}
                 {activeTab === 'full_schedule' && (
-                  <div className="h-full animate-in fade-in zoom-in-95 duration-200">
+                  <div className="h-full animate-in fade-in zoom-in-95 duration-200 bg-slate-950 rounded-3xl p-4">
                     <CalendarView />
                   </div>
                 )}
