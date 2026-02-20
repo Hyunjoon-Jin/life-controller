@@ -8,16 +8,16 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose 
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { UserMenu } from '@/components/auth/UserMenu';
 import { cn } from '@/lib/utils';
-import { CATEGORIES } from '@/constants/menu';
+import { CATEGORIES, CategoryType } from '@/constants/menu';
 import { AdBanner } from '@/components/ads/AdBanner';
 
 interface MobileHeaderProps {
-    appMode: 'life' | 'work';
-    setAppMode: (mode: 'life' | 'work') => void;
-    mainMode: 'home' | 'schedule' | 'work';
-    setMainMode: (mode: 'home' | 'schedule' | 'work') => void;
-    activeCategory: string;
-    setActiveCategory: (cat: any) => void;
+    appMode: 'life' | 'work' | 'study';
+    setAppMode: (mode: 'life' | 'work' | 'study') => void;
+    mainMode: 'home' | 'schedule' | 'work' | 'study';
+    setMainMode: (mode: 'home' | 'schedule' | 'work' | 'study') => void;
+    activeCategory: CategoryType;
+    setActiveCategory: (cat: CategoryType) => void;
     onOpenGuide: () => void;
 }
 
@@ -33,16 +33,25 @@ export function MobileHeader({
     const [isOpen, setIsOpen] = useState(false);
 
     return (
-        <header className="md:hidden flex items-center justify-between p-4 bg-background border-b border-border sticky top-0 z-50">
+        <header className={cn(
+            "md:hidden flex items-center justify-between p-4 sticky top-0 z-50 transition-colors duration-500 shadow-md",
+            appMode === 'work'
+                ? "bg-[#9C27B0] text-white"
+                : appMode === 'study'
+                    ? "bg-[#3F51B5] text-white"
+                    : "bg-[#009688] text-white"
+        )}>
             {/* Left: Logo */}
             <div onClick={() => setMainMode('home')} className="cursor-pointer">
-                <Logo variant="icon" className="w-8 h-8" />
+                <Logo variant="icon" className="w-8 h-8 brightness-0 invert" />
             </div>
 
             {/* Right: Hamburger Menu */}
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
                 <SheetTrigger asChild>
-                    <div />
+                    <Button variant="ghost" size="icon" className="text-white hover:bg-white/10" onClick={() => setIsOpen(true)}>
+                        <Menu className="w-6 h-6" />
+                    </Button>
                 </SheetTrigger>
                 <SheetContent side="right" className="w-[300px] flex flex-col p-6">
                     <SheetHeader className="mb-6 text-left">
@@ -55,7 +64,6 @@ export function MobileHeader({
 
                     {/* Content */}
                     <div className="flex-1 overflow-y-auto -mx-6 px-6 custom-scrollbar">
-                        {/* 1. Mode Switcher (Large) */}
                         <div className="bg-muted rounded-xl p-1 flex mb-8">
                             <button
                                 onClick={() => { setAppMode('life'); setIsOpen(false); }}
@@ -68,13 +76,23 @@ export function MobileHeader({
                                 일상
                             </button>
                             <button
+                                onClick={() => { setAppMode('study'); setIsOpen(false); }}
+                                className={cn(
+                                    "flex-1 py-3 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-all",
+                                    appMode === 'study' ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
+                                )}
+                            >
+                                <LayoutGrid className={cn("w-4 h-4", appMode === 'study' && "text-indigo-500")} />
+                                학습
+                            </button>
+                            <button
                                 onClick={() => { setAppMode('work'); setIsOpen(false); }}
                                 className={cn(
                                     "flex-1 py-3 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-all",
                                     appMode === 'work' ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
                                 )}
                             >
-                                <Briefcase className={cn("w-4 h-4", appMode === 'work' && "text-blue-500")} />
+                                <Briefcase className={cn("w-4 h-4", appMode === 'work' && "text-purple-500")} />
                                 업무
                             </button>
                         </div>

@@ -5,7 +5,7 @@ import {
     Clock, LayoutTemplate
 } from 'lucide-react';
 
-export type CategoryType = 'basic' | 'health' | 'growth' | 'record' | 'finance';
+export type CategoryType = 'basic' | 'health' | 'record' | 'finance';
 export type TabType = 'calendar' | 'tasks' | 'projects' | 'people' | 'goals' | 'language' | 'reading' | 'exercise' | 'diet' | 'inbody' | 'hobby' | 'learning' | 'certificate' | 'portfolio' | 'journal' | 'ideas' | 'scraps' | 'report' | 'ledger' | 'assets' | 'fund' | 'realestate' | 'investment' | 'work_time' | 'templates' | 'full_schedule';
 
 import { LucideIcon } from 'lucide-react';
@@ -18,20 +18,27 @@ export interface MenuItem {
 }
 
 export const CATEGORIES: { id: CategoryType; label: string }[] = [
-    { id: 'basic', label: '기본 관리' },
-    { id: 'health', label: '건강 관리' },
-    { id: 'growth', label: '자기 성장' },
-    { id: 'record', label: '기록 보관' },
-    { id: 'finance', label: '자산 관리' },
+    { id: 'basic', label: '기본' },
+    { id: 'health', label: '건강' },
+    { id: 'record', label: '기록' },
+    { id: 'finance', label: '경제' },
 ];
 
 export const WORK_NAV_ITEMS = [
     { id: 'calendar', label: '메인 대시보드', icon: Calendar },
     { id: 'full_schedule', label: '일정 관리', icon: Calendar },
-    { id: 'projects', label: '프로젝트별 관리', icon: Briefcase },
+    { id: 'projects', label: '프로젝트 관리', icon: Briefcase },
     { id: 'people', label: '인력 관리', icon: UsersRound },
-    { id: 'work_time', label: '근무시간 관리', icon: Clock },
-    { id: 'templates', label: '각종 템플릿', icon: LayoutTemplate },
+    { id: 'work_time', label: '근무 관리', icon: Clock },
+    { id: 'templates', label: '템플릿', icon: LayoutTemplate },
+];
+
+export const STUDY_NAV_ITEMS = [
+    { id: 'learning', label: '학습 플래너', icon: Target },
+    { id: 'goals', label: '목표 (OKR)', icon: Target },
+    { id: 'language', label: '어학 학습', icon: Book },
+    { id: 'reading', label: '독서 기록', icon: Book },
+    { id: 'certificate', label: '자격증 관리', icon: Award },
 ];
 
 export const SUB_MENUS: Record<CategoryType, MenuItem[]> = {
@@ -39,32 +46,24 @@ export const SUB_MENUS: Record<CategoryType, MenuItem[]> = {
         { id: 'calendar', label: '일정', icon: Calendar, desc: '나의 하루를 계획하세요' },
         { id: 'tasks', label: '할일', icon: ListTodo, desc: '중요한 작업을 체크하세요' },
         { id: 'people', label: '인맥', icon: UsersRound, desc: '소중한 관계를 관리하세요' },
+        { id: 'hobby', label: '취미', icon: Sparkles, desc: '즐거운 여가 생활' },
     ],
     health: [
         { id: 'exercise', label: '운동', icon: Dumbbell, desc: '오늘의 운동을 기록하세요' },
         { id: 'diet', label: '식단', icon: Utensils, desc: '건강한 식습관 만들기' },
         { id: 'inbody', label: '신체 변화', icon: Scale, desc: '나의 변화를 확인하세요' },
     ],
-    growth: [
-        { id: 'goals', label: '목표', icon: Target, desc: '꿈을 향해 나아가세요' },
-        { id: 'language', label: '어학', icon: Book, desc: '새로운 언어 배우기' },
-        { id: 'reading', label: '독서', icon: Book, desc: '마음의 양식 쌓기' },
-        { id: 'learning', label: '학습 플래너', icon: Target, desc: '자격증 및 공부 계획' }, // Added Learning
-        { id: 'hobby', label: '취미', icon: Sparkles, desc: '즐거운 여가 생활' },
-        { id: 'certificate', label: '자격증', icon: Award, desc: '나의 스펙 업그레이드' },
-        { id: 'portfolio', label: '포트폴리오', icon: Briefcase, desc: '나의 커리어 정리' },
-    ],
     record: [
         { id: 'journal', label: '일기장', icon: NotebookPen, desc: '오늘의 감정을 기록하세요' },
         { id: 'ideas', label: '아이디어', icon: Lightbulb, desc: '번뜩이는 영감 메모' },
         { id: 'scraps', label: '스크랩', icon: Bookmark, desc: '유용한 정보 저장' },
-        { id: 'report', label: '활동 리포트', icon: FileText, desc: '성과 요약 및 데이터 추출' }, // Added Report
+        { id: 'portfolio', label: '포트폴리오', icon: Briefcase, desc: '나의 커리어 정리' },
     ],
     finance: [
         { id: 'ledger', label: '가계부', icon: CheckSquare, desc: '수입과 지출 관리' },
         { id: 'assets', label: '자산 현황', icon: Wallet, desc: '나의 부를 한눈에' },
-        { id: 'fund', label: '자금 관리', icon: PieChart, desc: '중장기 자격 관리 계획' },
-        { id: 'realestate', label: '부동산', icon: Building, desc: '내 집 마련 및 투자' },
         { id: 'investment', label: '투자 분석', icon: TrendingUpIcon, desc: '주식 및 금융상품 분석' },
+        { id: 'realestate', label: '부동산', icon: Building, desc: '내 집 마련 및 투자' },
+        { id: 'report', label: '활동 리포트', icon: FileText, desc: '성과 요약 및 데이터 추출' },
     ],
 };

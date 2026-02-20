@@ -51,10 +51,11 @@ import { useWeather } from '@/hooks/useWeather';
 import { GlowingGrid, GlowingEffectItem } from '@/components/ui/glowing-effect';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SetupChecklist } from './SetupChecklist';
+import { CategoryType } from '@/constants/menu';
 
 interface HomeDashboardProps {
-    onNavigate: (mode: 'home' | 'schedule' | 'work') => void;
-    onQuickLink: (mode: 'home' | 'schedule' | 'work', category: 'basic' | 'growth' | 'record', tab: string) => void;
+    onNavigate: (mode: 'home' | 'schedule' | 'work' | 'study') => void;
+    onQuickLink: (mode: 'home' | 'schedule' | 'work' | 'study', category: CategoryType, tab: string) => void;
 }
 
 // Define all available shortcuts
@@ -521,7 +522,7 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
                                 <Button
                                     variant="ghost"
                                     className="w-full mt-2 h-6 text-xs text-slate-500 hover:bg-gray-100 hover:text-slate-900"
-                                    onClick={() => onQuickLink('schedule', 'growth', 'goals')}
+                                    onClick={() => onQuickLink('schedule', 'basic', 'goals')}
                                 >
                                     전체 보기 <ArrowRight className="w-3 h-3 ml-1" />
                                 </Button>

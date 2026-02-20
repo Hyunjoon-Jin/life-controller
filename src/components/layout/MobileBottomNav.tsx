@@ -9,10 +9,10 @@ import { CategoryType, SUB_MENUS } from '@/constants/menu';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface MobileBottomNavProps {
-    appMode: 'life' | 'work';
-    setAppMode: (mode: 'life' | 'work') => void;
-    mainMode: 'home' | 'schedule' | 'work';
-    setMainMode: (mode: 'home' | 'schedule' | 'work') => void;
+    appMode: 'life' | 'work' | 'study';
+    setAppMode: (mode: 'life' | 'work' | 'study') => void;
+    mainMode: 'home' | 'schedule' | 'work' | 'study';
+    setMainMode: (mode: 'home' | 'schedule' | 'work' | 'study') => void;
     activeCategory: CategoryType;
     setActiveCategory: (cat: CategoryType) => void;
     activeTab?: string;
@@ -164,18 +164,6 @@ export function MobileBottomNav({
                         <span className={cn("text-[10px] font-bold", isActive('basic') ? "text-primary" : "text-gray-400")}>일정</span>
                     </motion.button>
 
-                    {/* Quick Add FAB */}
-                    <div className="relative -top-6">
-                        <Button
-                            size="icon"
-                            className="h-14 w-14 rounded-full shadow-lg bg-primary hover:bg-primary/90 text-primary-foreground border-4 border-background active:scale-90 transition-transform"
-                            onClick={() => {
-                                // For now, we can trigger a generic add or use standard logic
-                            }}
-                        >
-                            <Plus className="h-8 w-8" />
-                        </Button>
-                    </div>
 
                     <motion.button onClick={() => handleNavTap('health')} whileTap={{ scale: 0.9 }} className="flex flex-col items-center justify-center w-full h-full gap-1">
                         <Activity className={cn("w-6 h-6", isActive('health') ? "text-primary fill-primary" : "text-gray-400")} />
@@ -194,12 +182,6 @@ export function MobileBottomNav({
                                 <SheetTitle>전체 메뉴</SheetTitle>
                             </SheetHeader>
                             <div className="grid grid-cols-4 gap-4">
-                                <button onClick={() => { setMainMode('schedule'); setActiveCategory('growth'); setExpandedCategory(null); }} className="flex flex-col items-center gap-2 p-4 bg-gray-50 rounded-2xl">
-                                    <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center">
-                                        <BookOpen className="w-6 h-6" />
-                                    </div>
-                                    <span className="text-xs font-bold text-gray-700">자기계발</span>
-                                </button>
                                 <button onClick={() => { setMainMode('schedule'); setActiveCategory('finance'); setExpandedCategory(null); }} className="flex flex-col items-center gap-2 p-4 bg-gray-50 rounded-2xl">
                                     <div className="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center">
                                         <DollarSign className="w-6 h-6" />

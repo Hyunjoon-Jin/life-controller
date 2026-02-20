@@ -109,7 +109,8 @@ export function IdeaBoard() {
                 color: selectedColor.value,
                 connectedProjectId,
                 connectedGoalId,
-                isFavorite
+                isFavorite,
+                createdAt: new Date()
             });
         } else {
             addMemo({

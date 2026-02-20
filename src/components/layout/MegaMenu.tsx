@@ -4,16 +4,17 @@ import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { CATEGORIES, SUB_MENUS, CategoryType, WORK_NAV_ITEMS } from '@/constants/menu';
+import { CATEGORIES, SUB_MENUS, CategoryType, WORK_NAV_ITEMS, STUDY_NAV_ITEMS } from '@/constants/menu';
 
 // TabType is now imported or we use string for flexibility in props as defined in interface
 interface MegaMenuNavProps {
     activeCategory: CategoryType;
     activeTab: string;
     onSelect: (category: CategoryType, tab: string) => void;
+    appMode: 'life' | 'work' | 'study';
 }
 
-export function MegaMenuNav({ activeCategory, activeTab, onSelect, appMode = 'life' }: MegaMenuNavProps & { appMode?: 'life' | 'work' }) {
+export function MegaMenuNav({ activeCategory, activeTab, onSelect, appMode }: MegaMenuNavProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [hoveredCategory, setHoveredCategory] = useState<CategoryType>(activeCategory);
 
@@ -29,8 +30,32 @@ export function MegaMenuNav({ activeCategory, activeTab, onSelect, appMode = 'li
                             className={cn(
                                 "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap",
                                 activeTab === item.id
-                                    ? "bg-secondary text-secondary-foreground shadow-md"
-                                    : "text-muted-foreground hover:bg-secondary/10 hover:text-secondary"
+                                    ? "bg-[#9C27B0] text-white shadow-md shadow-purple-200"
+                                    : "text-[#4A148C]/70 hover:bg-[#CE93D8]/40 hover:text-[#4A148C]"
+                            )}
+                        >
+                            {item.label}
+                        </button>
+                    ))}
+                </div>
+            </div>
+        );
+    }
+
+    // If Study Mode, we use a flat list and direct navigation
+    if (appMode === 'study') {
+        return (
+            <div className="w-full relative z-50">
+                <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-2 max-w-7xl mx-auto">
+                    {STUDY_NAV_ITEMS.map(item => (
+                        <button
+                            key={item.id}
+                            onClick={() => onSelect('basic', item.id)}
+                            className={cn(
+                                "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap",
+                                activeTab === item.id
+                                    ? "bg-[#3F51B5] text-white shadow-md shadow-indigo-200"
+                                    : "text-[#1A237E]/70 hover:bg-[#C5CAE9]/40 hover:text-[#1A237E]"
                             )}
                         >
                             {item.label}
