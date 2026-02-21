@@ -111,7 +111,7 @@ export default function Home() {
   // 1. Loading State
   if (isLoading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-gray-50 to-white gap-6">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-[#080A0F] to-[#0D111A] gap-6">
         <div className="relative animate-pulse">
           <div className="absolute inset-0 bg-primary/10 rounded-2xl blur-xl scale-150" />
           <div className="relative w-16 h-16 bg-primary rounded-2xl shadow-lg flex items-center justify-center">
@@ -123,7 +123,7 @@ export default function Home() {
           </div>
         </div>
         <div className="flex flex-col items-center gap-2">
-          <span className="font-extrabold text-xl tracking-tighter text-slate-900">
+          <span className="font-extrabold text-xl tracking-tighter text-white">
             LIFE <span className="text-primary">Controller</span>
           </span>
           <div className="flex items-center gap-1.5">
@@ -179,16 +179,7 @@ export default function Home() {
       )} */}
 
       {/* Desktop Header (Hidden on Mobile) */}
-      <header className={cn(
-        "hidden md:flex mb-4 justify-between items-center w-full max-w-7xl mx-auto px-6 py-4 rounded-3xl transition-all duration-500 shadow-md border-2",
-        appMode === 'work'
-          ? "bg-[#E1BEE7] border-[#CE93D8]"
-          : appMode === 'study'
-            ? "bg-[#C5CAE9] border-[#9FA8DA]"
-            : appMode === 'ambition'
-              ? "bg-[#FFE0B2] border-[#FFCC80]"
-              : "bg-[#B2DFDB] border-[#80CBC4]"
-      )}>
+      <header className="hidden md:flex mb-4 justify-between items-center w-full max-w-7xl mx-auto px-6 py-4 rounded-3xl transition-all duration-500 shadow-md border bg-white/5 backdrop-blur-xl border-white/10">
         <div className="flex items-center gap-4">
           <button onClick={() => {
             setAppMode('life');
@@ -204,7 +195,7 @@ export default function Home() {
               containerClassName="rounded-full"
               className={cn(
                 "px-4 py-2 text-sm font-bold flex items-center gap-2",
-                appMode === 'life' ? "bg-[#009688] text-white" : "bg-white/50 text-gray-500 hover:text-gray-700"
+                appMode === 'life' ? "bg-emerald-500/20 text-emerald-400" : "bg-white/5 text-white/40 hover:text-white"
               )}
               onClick={() => setAppMode('life')}
               duration={1.5}
@@ -217,7 +208,7 @@ export default function Home() {
               containerClassName="rounded-full"
               className={cn(
                 "px-4 py-2 text-sm font-bold flex items-center gap-2",
-                appMode === 'study' ? "bg-[#3F51B5] text-white" : "bg-white/50 text-gray-500 hover:text-gray-700"
+                appMode === 'study' ? "bg-indigo-500/20 text-indigo-400" : "bg-white/5 text-white/40 hover:text-white"
               )}
               onClick={() => setAppMode('study')}
               duration={1.5}
@@ -230,7 +221,7 @@ export default function Home() {
               containerClassName="rounded-full"
               className={cn(
                 "px-4 py-2 text-sm font-bold flex items-center gap-2",
-                appMode === 'work' ? "bg-[#9C27B0] text-white" : "bg-white/50 text-gray-500 hover:text-gray-700"
+                appMode === 'work' ? "bg-purple-500/20 text-purple-400" : "bg-white/5 text-white/40 hover:text-white"
               )}
               onClick={() => setAppMode('work')}
               duration={1.5}
@@ -243,7 +234,7 @@ export default function Home() {
               containerClassName="rounded-full"
               className={cn(
                 "px-4 py-2 text-sm font-bold flex items-center gap-2",
-                appMode === 'ambition' ? "bg-amber-600 text-white shadow-[0_0_15px_rgba(217,119,6,0.5)]" : "bg-white/50 text-gray-500 hover:text-gray-700"
+                appMode === 'ambition' ? "bg-amber-500/20 text-amber-400 shadow-[0_0_15px_rgba(217,119,6,0.3)]" : "bg-white/5 text-white/40 hover:text-white"
               )}
               onClick={() => setAppMode('ambition')}
               duration={1.5}
@@ -252,22 +243,14 @@ export default function Home() {
             </HoverBorderGradient>
           </div>
 
-          <div className={cn(
-            "flex items-center text-sm font-bold border-l-2 pl-4 h-5 leading-none transition-colors",
-            appMode === 'work' ? "text-[#4A148C] border-[#CE93D8]" : appMode === 'study' ? "text-[#1A237E] border-[#9FA8DA]" : appMode === 'ambition' ? "text-[#7B1FA2] border-[#FFCC80]" : "text-[#004D40] border-[#80CBC4]"
-          )}>
+          <div className="flex items-center text-sm font-bold border-l border-white/10 pl-4 h-5 leading-none text-white/40">
             {todayDate}
           </div>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon" onClick={() => setMainMode('home')} className={cn(
-            "rounded-full font-bold transition-all",
-            appMode === 'work'
-              ? "text-[#4A148C] hover:bg-[#CE93D8]/30"
-              : appMode === 'study'
-                ? "text-[#1A237E] hover:bg-[#9FA8DA]/30"
-                : "text-[#004D40] hover:bg-[#80CBC4]/30",
-            mainMode === 'home' && (appMode === 'work' ? "bg-[#CE93D8]/40" : appMode === 'study' ? "bg-[#9FA8DA]/40" : "bg-[#80CBC4]/40")
+            "rounded-full font-bold transition-all text-white/60 hover:text-white hover:bg-white/10",
+            mainMode === 'home' && "bg-white/10 text-white"
           )}>
             <HomeIcon className="w-5 h-5" />
           </Button>

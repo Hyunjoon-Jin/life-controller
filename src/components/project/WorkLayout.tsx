@@ -85,7 +85,7 @@ export function WorkLayout({ viewMode: propViewMode }: { viewMode?: ViewMode }) 
                     "flex-1 min-w-0 transition-all duration-500 overflow-hidden",
                     isFocusMode
                         ? "rounded-none bg-[#0f172a] text-gray-100 fixed inset-0 z-[100]" // Full screen override
-                        : "bg-white rounded-xl shadow-sm border border-gray-100 h-full"
+                        : "bg-card/50 backdrop-blur-xl rounded-xl border border-white/10 h-full"
                 )}>
                     <AnimatePresence mode="wait">
                         {isFocusMode ? (
@@ -114,13 +114,13 @@ export function WorkLayout({ viewMode: propViewMode }: { viewMode?: ViewMode }) 
                                     */}
                                         <div className={cn(
                                             "flex items-center gap-4 p-4 border-b shrink-0 transition-colors",
-                                            "bg-white border-gray-100"
+                                            "bg-card/80 border-white/10"
                                         )}>
                                             <div className="flex items-center gap-2">
                                                 <div className="w-3 h-3 rounded-full" style={{ backgroundColor: selectedProject.color }} />
                                                 <h2 className="text-xl font-bold">{selectedProject.title}</h2>
                                                 {selectedProject.connectedGoalId && (
-                                                    <div className="flex items-center gap-1.5 px-2 py-1 bg-indigo-50 text-indigo-700 rounded-md text-xs font-medium border border-indigo-100 ml-2">
+                                                    <div className="flex items-center gap-1.5 px-2 py-1 bg-indigo-500/20 text-indigo-400 rounded-md text-xs font-medium border border-indigo-500/30 ml-2">
                                                         <Target className="w-3 h-3" />
                                                         {goals.find(g => g.id === selectedProject.connectedGoalId)?.title || 'Unknown Goal'}
                                                     </div>

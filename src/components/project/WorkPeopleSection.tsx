@@ -112,7 +112,7 @@ export function WorkPeopleSection({ project }: WorkPeopleSectionProps) {
                     </div>
                 ) : (
                     filteredPeople.map(person => (
-                        <div key={person.id} className="group bg-white p-5 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-all flex flex-col">
+                        <div key={person.id} className="group bg-card/50 backdrop-blur-sm p-5 rounded-xl border border-white/10 shadow-sm hover:shadow-md hover:border-white/20 transition-all flex flex-col">
                             <div className="flex justify-between items-start mb-4">
                                 <div className="flex items-center gap-3">
                                     <Avatar className="h-12 w-12 border border-slate-100">
