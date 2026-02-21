@@ -124,7 +124,7 @@ export default function Home() {
         </div>
         <div className="flex flex-col items-center gap-2">
           <span className="font-extrabold text-xl tracking-tighter text-white">
-            LIFE <span className="text-primary">Controller</span>
+            J들의 <span className="text-primary">놀이터</span>
           </span>
           <div className="flex items-center gap-1.5">
             <div className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce" style={{ animationDelay: '0ms' }} />

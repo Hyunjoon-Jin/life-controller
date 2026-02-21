@@ -51,8 +51,8 @@ const nanum = localFont({
 });
 
 export const metadata: Metadata = {
-  title: 'LIFE Controller',
-  description: 'Comprehensive productivity platform',
+  title: 'J들의 놀이터',
+  description: 'J들만의 종합 생산성 플랫폼',
   other: {
     'google-adsense-account': 'ca-pub-8704292092201678',
   },

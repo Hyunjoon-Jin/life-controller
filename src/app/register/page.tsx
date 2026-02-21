@@ -171,7 +171,7 @@ export default function RegisterPage() {
                     <Link href="/">
                         <div className="flex items-center gap-2 text-white/90 hover:text-white transition-colors cursor-pointer">
                             <Sparkles className="w-5 h-5" />
-                            <span className="font-bold tracking-tight">Life Controller</span>
+                            <span className="font-bold tracking-tight">J들의 놀이터</span>
                         </div>
                     </Link>
                 </div>
@@ -206,7 +206,7 @@ export default function RegisterPage() {
                 </div>
 
                 <div className="relative z-10 text-xs text-blue-200/60">
-                    © 2026 Life Controller. Join the elite productivity club.
+                    © 2026 J들의 놀이터. Join the elite productivity club.
                 </div>
             </div>
 

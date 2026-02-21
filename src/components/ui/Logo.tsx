@@ -19,7 +19,7 @@ export function Logo({ className, variant = 'full' }: { className?: string, vari
             {variant === 'full' && (
                 <div className="flex flex-col justify-center translate-y-[1px]">
                     <span className="font-extrabold text-xl tracking-tighter leading-none text-[#191F28] dark:text-white">
-                        LIFE <span className="text-primary">Controller</span>
+                        J들의 <span className="text-primary">놀이터</span>
                     </span>
                 </div>
             )}

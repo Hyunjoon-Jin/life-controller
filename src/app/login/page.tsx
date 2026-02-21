@@ -169,7 +169,7 @@ export default function LoginPage() {
                     <Link href="/">
                         <div className="flex items-center gap-2 text-white/90 hover:text-white transition-colors cursor-pointer">
                             <Sparkles className="w-5 h-5 text-blue-400" />
-                            <span className="font-bold tracking-tight">Life Controller</span>
+                            <span className="font-bold tracking-tight">J들의 놀이터</span>
                         </div>
                     </Link>
                 </div>
@@ -204,7 +204,7 @@ export default function LoginPage() {
                 </div>
 
                 <div className="relative z-10 text-xs text-slate-500">
-                    © 2026 Life Controller. All rights reserved.
+                    © 2026 J들의 놀이터. All rights reserved.
                 </div>
             </div>
 

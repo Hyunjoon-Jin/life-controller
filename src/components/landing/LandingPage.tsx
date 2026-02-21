@@ -22,7 +22,7 @@ import { cn } from '@/lib/utils';
 const jsonLd = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
-    "name": "Life Controller",
+    "name": "J들의 놀이터",
     "applicationCategory": "ProductivityApplication",
     "operatingSystem": "Web",
     "offers": {
@@ -47,13 +47,13 @@ export function LandingPage() {
 
     useEffect(() => {
         document.title = landingMode === 'life'
-            ? "Life Controller | 당신의 하루를 작품처럼"
-            : "Life Controller | 업무 생산성의 한계를 넘다";
+            ? "J들의 놀이터 | 당신의 하루를 작품처럼"
+            : "J들의 놀이터 | 업무 생산성의 한계를 넘다";
 
         const metaDesc = document.querySelector('meta[name="description"]');
         if (metaDesc) {
             metaDesc.setAttribute('content', landingMode === 'life'
-                ? "목표, 일정, 습관, 자산 관리를 한 곳에서. Life Controller로 당신의 일상을 체계적으로 설계하세요."
+                ? "목표, 일정, 습관, 자산 관리를 한 곳에서. J들의 놀이터로 당신의 일상을 체계적으로 설계하세요."
                 : "팀 협업, 프로젝트 관리, 성과 분석까지. 업무 효율을 극대화하는 올인원 비즈니스 솔루션.");
         }
     }, [landingMode]);
@@ -407,7 +407,7 @@ export function LandingPage() {
                         </div>
                     </div>
                     <div className="container mx-auto text-center pt-6 border-t border-slate-100 dark:border-white/5 opacity-40 text-xs flex flex-col md:flex-row justify-between items-center gap-4">
-                        <p>© {new Date().getFullYear()} Life Controller.</p>
+                        <p>© {new Date().getFullYear()} J들의 놀이터.</p>
                         <div className="flex gap-6">
                             <Link href="/privacy" className="hover:underline hover:opacity-100 transition-opacity">Privacy Policy</Link>
                             <Link href="/terms" className="hover:underline hover:opacity-100 transition-opacity">Terms of Service</Link>
