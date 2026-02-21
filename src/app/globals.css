@@ -18,51 +18,7 @@
   }
 
   :root {
-    /* Life Controller Premium Theme - Sophisticated Blue-Purple Palette */
-    --background: 210 20% 98%;
-    /* #F8F9FB Ultra Clean White-Blue */
-    --foreground: 222 47% 11%;
-    /* #0F172A Deep Slate for Strong Contrast */
-
-    --card: 0 0% 100%;
-    /* Pure White Cards */
-    --card-foreground: 222 47% 11%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
-
-    --primary: 217 91% 60%;
-    /* #3B82F6 Premium Blue - Trust & Professionalism */
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 263 70% 50%;
-    /* #8B5CF6 Royal Purple - Creativity & Premium */
-    --secondary-foreground: 0 0% 100%;
-
-    --muted: 210 20% 96%;
-    /* #F1F3F5 Subtle Gray */
-    --muted-foreground: 215 16% 47%;
-    /* #697586 Medium Gray for Readability */
-
-    --accent: 263 70% 95%;
-    /* Light Purple Tint */
-    --accent-foreground: 263 70% 50%;
-
-    --destructive: 0 84% 60%;
-    /* #EF4444 Standard Red */
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 214 32% 91%;
-    /* #E2E8F0 Clean Border */
-    --input: 214 32% 91%;
-    --ring: 217 91% 60%;
-
-    --radius: 1rem;
-    /* 16px - Modern & Clean */
-  }
-
-  .dark {
-    /* Ultra-Premium Design System - Season 2 */
+    /* Ultra-Premium Design System - Dark is Default */
     --background: 225 35% 5%;
     /* #080A0F True Deep Charcoal */
     --foreground: 210 20% 90%;
@@ -71,6 +27,9 @@
     --card: 225 35% 8%;
     /* #0D111A Deep Surface */
     --card-foreground: 210 20% 98%;
+
+    --popover: 225 35% 8%;
+    --popover-foreground: 210 20% 98%;
 
     --primary: 161 72% 40%;
     /* #10B981 Emerald Mist (Life) */
@@ -89,44 +48,81 @@
     --accent: 220 30% 15%;
     --accent-foreground: 161 72% 40%;
 
-    --popover: 225 35% 8%;
-    --popover-foreground: 210 20% 98%;
-
     --destructive: 0 63% 31%;
     --destructive-foreground: 0 0% 100%;
 
     --border: 225 35% 15%;
     --input: 225 35% 12%;
     --ring: 161 72% 40%;
+
+    --radius: 1rem;
+    /* 16px - Modern & Clean */
+  }
+
+  .dark {
+    /* Redundant - same as :root since dark is default */
+    --background: 225 35% 5%;
+    --foreground: 210 20% 90%;
+    --card: 225 35% 8%;
+    --card-foreground: 210 20% 98%;
+    --popover: 225 35% 8%;
+    --popover-foreground: 210 20% 98%;
+    --primary: 161 72% 40%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 239 84% 67%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 220 30% 12%;
+    --muted-foreground: 215 16% 65%;
+    --accent: 220 30% 15%;
+    --accent-foreground: 161 72% 40%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 225 35% 15%;
+    --input: 225 35% 12%;
+    --ring: 161 72% 40%;
+  }
+
+  .light {
+    /* Light theme for users who prefer it */
+    --background: 210 20% 98%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 263 70% 50%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 210 20% 96%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 263 70% 95%;
+    --accent-foreground: 263 70% 50%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 217 91% 60%;
   }
 
   .gray {
     /* Comfort Gray Mode (Softer than high-contrast dark) */
     --background: 220 15% 20%;
     --foreground: 220 15% 90%;
-
     --card: 220 15% 25%;
     --card-foreground: 220 15% 90%;
-
     --popover: 220 15% 25%;
     --popover-foreground: 220 15% 90%;
-
     --primary: 220 15% 80%;
     --primary-foreground: 220 15% 20%;
-
     --secondary: 220 10% 30%;
     --secondary-foreground: 220 15% 90%;
-
     --muted: 220 10% 30%;
     --muted-foreground: 220 10% 70%;
-
     --accent: 220 10% 35%;
     --accent-foreground: 220 15% 90%;
-
     --destructive: 0 50% 50%;
     --destructive-foreground: 220 15% 90%;
-
-    /* Light enough borders to be visible but not black */
     --border: 220 10% 40%;
     --input: 220 10% 40%;
     --ring: 220 15% 60%;

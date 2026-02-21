@@ -154,33 +154,37 @@ export function WeekView({ currentDate, showProjectTasks, onDateClick }: { curre
         if (!dragState || !tempEvent) return;
 
         const handleMouseMove = (e: MouseEvent) => {
-            const deltaY = e.clientY - dragState.initialY;
+            const cur = tempEventRef.current;
+            const drag = dragStateRef.current;
+            if (!cur || !drag) return;
+            const deltaY = e.clientY - drag.initialY;
             const deltaMinutes = Math.round((deltaY / PIXELS_PER_HOUR) * 60 / SNAP_MINUTES) * SNAP_MINUTES;
 
-            if (dragState.mode === 'move') {
-                const newStart = new Date(dragState.originalStart);
+            if (drag.mode === 'move') {
+                const newStart = new Date(drag.originalStart);
                 newStart.setMinutes(newStart.getMinutes() + deltaMinutes);
 
-                const newEnd = new Date(dragState.originalEnd);
+                const newEnd = new Date(drag.originalEnd);
                 newEnd.setMinutes(newEnd.getMinutes() + deltaMinutes);
 
-                setTempEvent({ ...tempEvent, start: newStart, end: newEnd });
+                setTempEvent({ ...cur, start: newStart, end: newEnd });
             } else {
                 // Resize
-                const newEnd = new Date(dragState.originalEnd);
+                const newEnd = new Date(drag.originalEnd);
                 newEnd.setMinutes(newEnd.getMinutes() + deltaMinutes);
 
                 // Minimum duration check (e.g. 15 mins)
-                const start = new Date(dragState.originalStart);
+                const start = new Date(drag.originalStart);
                 if (newEnd.getTime() - start.getTime() >= 15 * 60 * 1000) {
-                    setTempEvent({ ...tempEvent, end: newEnd });
+                    setTempEvent({ ...cur, end: newEnd });
                 }
             }
         };
 
         const handleMouseUp = () => {
-            if (dragState && tempEvent) {
-                updateEvent(tempEvent);
+            const cur = tempEventRef.current;
+            if (dragStateRef.current && cur) {
+                updateEvent(cur);
                 setDragState(null);
                 setTempEvent(null);
             }
@@ -210,7 +214,8 @@ export function WeekView({ currentDate, showProjectTasks, onDateClick }: { curre
             window.removeEventListener('touchmove', handleTouchMove);
             window.removeEventListener('touchend', handleTouchEnd);
         };
-    }, [dragState, tempEvent, updateEvent, PIXELS_PER_HOUR]);
+        // Only re-run when drag starts or stops (not on every tempEvent change)
+    }, [dragState, updateEvent, PIXELS_PER_HOUR]);
 
 
     const getEventColors = (event: CalendarEvent) => {
@@ -295,6 +300,62 @@ export function WeekView({ currentDate, showProjectTasks, onDateClick }: { curre
         }
     };
 
+    // Compute non-overlapping layout for events in a day
+    const computeLayout = (evts: CalendarEvent[]) => {
+        // Sort by start time
+        const sorted = [...evts].sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
+        const result: Map<string, { col: number; totalCols: number }> = new Map();
+
+        // Group overlapping events
+        const groups: CalendarEvent[][] = [];
+        let currentGroup: CalendarEvent[] = [];
+        let groupEnd: Date | null = null;
+
+        for (const evt of sorted) {
+            const evtStart = new Date(evt.start);
+            const evtEnd = new Date(evt.end);
+            if (groupEnd === null || evtStart >= groupEnd) {
+                // Start a new group
+                if (currentGroup.length > 0) groups.push(currentGroup);
+                currentGroup = [evt];
+                groupEnd = evtEnd;
+            } else {
+                currentGroup.push(evt);
+                if (evtEnd > groupEnd) groupEnd = evtEnd;
+            }
+        }
+        if (currentGroup.length > 0) groups.push(currentGroup);
+
+        // Assign columns within each group using greedy algorithm
+        for (const group of groups) {
+            const cols: Date[] = []; // tracks end time of last event per column
+            const assignments: number[] = [];
+            for (const evt of group) {
+                const evtStart = new Date(evt.start);
+                let placed = false;
+                for (let c = 0; c < cols.length; c++) {
+                    if (evtStart >= cols[c]) {
+                        assignments.push(c);
+                        cols[c] = new Date(evt.end);
+                        placed = true;
+                        break;
+                    }
+                }
+                if (!placed) {
+                    assignments.push(cols.length);
+                    cols.push(new Date(evt.end));
+                }
+            }
+            const totalCols = cols.length;
+            group.forEach((evt, i) => {
+                result.set(evt.id, { col: assignments[i], totalCols });
+            });
+        }
+
+        return result;
+    };
+
+
     return (
         <div className="flex flex-col h-full glass-premium rounded-[32px] border border-white/5 shadow-2xl overflow-hidden relative select-none">
             {/* Header Row (Days) */}
@@ -368,6 +429,8 @@ export function WeekView({ currentDate, showProjectTasks, onDateClick }: { curre
                         return isValid(d) && isSameDay(d, day);
                     });
 
+                    const layout = computeLayout(dayEvents);
+
                     return (
                         <div
                             key={day.toString()}
@@ -410,17 +473,23 @@ export function WeekView({ currentDate, showProjectTasks, onDateClick }: { curre
                                 const displayEvent = (dragState?.id === event.id && tempEvent) ? tempEvent : event;
                                 const isDragging = dragState?.id === event.id;
                                 const colors = getEventColors(event);
+                                const { col, totalCols } = layout.get(event.id) ?? { col: 0, totalCols: 1 };
+                                const widthPct = 100 / totalCols;
+                                const leftPct = col * widthPct;
+                                const GAP = 2; // px gap between columns
 
                                 return (
                                     <div
                                         key={event.id}
                                         className={cn(
-                                            "absolute inset-x-1.5 rounded-xl text-[10px] cursor-pointer pointer-events-auto overflow-hidden z-10 shadow-lg border-l-[4px] flex flex-col group transition-all duration-300 backdrop-blur-md",
+                                            "absolute rounded-xl text-[10px] cursor-pointer pointer-events-auto overflow-hidden z-10 shadow-lg border-l-[4px] flex flex-col group transition-all duration-300 backdrop-blur-md",
                                             isDragging && "z-50 opacity-90 shadow-2xl scale-[1.02] ring-2 ring-white/20",
                                             !isDragging && "hover:shadow-2xl hover:brightness-110 hover:-translate-y-[1px]"
                                         )}
                                         style={{
                                             ...getEventStyle(displayEvent, PIXELS_PER_HOUR),
+                                            left: `calc(${leftPct}% + ${GAP}px)`,
+                                            width: `calc(${widthPct}% - ${GAP * 2}px)`,
                                             backgroundColor: colors.bg.replace('0.08', '0.15'),
                                             borderColor: colors.border.replace('0.2', '0.3'),
                                             borderLeftColor: colors.accent,
