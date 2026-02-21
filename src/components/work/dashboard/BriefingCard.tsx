@@ -20,24 +20,24 @@ export function BriefingCard() {
     const today = new Date();
     const hour = today.getHours();
 
-    let greeting = "SYSTEM IDLE";
-    let statusLabel = "READY FOR INPUT";
+    let greeting = "시스템 대기 중";
+    let statusLabel = "입력 준비 완료";
     let Icon = Sun;
     let accentColor = "text-amber-400";
 
     if (hour < 12) {
-        greeting = "MORNING DIRECTIVE";
-        statusLabel = "PRIME OPERATIONAL HOURS";
+        greeting = "오전 지령";
+        statusLabel = "최상의 컨디션으로 시작하자";
         Icon = Sun;
         accentColor = "text-amber-400";
     } else if (hour < 18) {
-        greeting = "MID-DAY PROTOCOL";
-        statusLabel = "PEAK PERFORMANCE REACHED";
+        greeting = "오후 루틴";
+        statusLabel = "절정의 퍼포먼스 중";
         Icon = Cloud;
         accentColor = "text-sky-400";
     } else {
-        greeting = "NIGHTLY ARCHIVE";
-        statusLabel = "DEBRIEFING IN PROGRESS";
+        greeting = "야간 정리";
+        statusLabel = "오늘 하루 마무리 중";
         Icon = Moon;
         accentColor = "text-indigo-400";
     }
@@ -123,7 +123,7 @@ export function BriefingCard() {
                     <div>
                         <div className="flex items-center gap-2 mb-1">
                             <span className="px-2 py-0.5 rounded-md bg-indigo-500/10 text-indigo-400 text-[8px] font-black tracking-widest uppercase">
-                                COMMAND LEVEL: ALPHA
+                                레벨: ALPHA
                             </span>
                             <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">
                                 • {statusLabel}
@@ -135,11 +135,11 @@ export function BriefingCard() {
                         <div className="flex items-center gap-4 mt-2">
                             <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/5">
                                 <Target className="w-3 h-3 text-rose-500" />
-                                <span className="text-[10px] font-bold text-white/60 tracking-widest uppercase">{incompleteTasks} PENDING TASKS</span>
+                                <span className="text-[10px] font-bold text-white/60 tracking-widest uppercase">{incompleteTasks} 개 미완료 할일</span>
                             </div>
                             <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/5">
                                 <CalendarIcon className="w-3 h-3 text-sky-500" />
-                                <span className="text-[10px] font-bold text-white/60 tracking-widest uppercase">{todayEventsCount} SCHEDULED EVENTS</span>
+                                <span className="text-[10px] font-bold text-white/60 tracking-widest uppercase">{todayEventsCount} 개 오늘 일정</span>
                             </div>
                         </div>
                     </div>
@@ -147,7 +147,7 @@ export function BriefingCard() {
 
                 <div className="flex items-center gap-4 w-full xl:w-auto">
                     <div className="hidden xl:flex flex-col items-end gap-1 px-4 border-r border-white/5">
-                        <span className="text-[8px] font-black text-white/20 tracking-widest uppercase">TIMESTAMP</span>
+                        <span className="text-[8px] font-black text-white/20 tracking-widest uppercase">날짜</span>
                         <span className="text-sm font-black text-white">{format(today, 'EEEE, MMM dd', { locale: ko })}</span>
                     </div>
 
@@ -165,7 +165,7 @@ export function BriefingCard() {
                         ) : (
                             <Sparkles className="w-4 h-4 mr-3 text-indigo-400 group-hover/btn:rotate-12 transition-transform" />
                         )}
-                        {briefing ? (expanded ? "CLOSE BRIEFING" : "OPEN BRIEFING") : "INITIALIZE AI BRIEF"}
+                        {briefing ? (expanded ? "브리핑 닫기" : "브리핑 열기") : "AI 브리핑 시작"}
                         {briefing && (expanded ? <ChevronUp className="w-4 h-4 ml-2 opacity-40" /> : <ChevronDown className="w-4 h-4 ml-2 opacity-40" />)}
 
                         {!briefing && !loading && (
@@ -192,8 +192,8 @@ export function BriefingCard() {
                                         <Activity className="w-6 h-6 text-indigo-500 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-pulse" />
                                     </div>
                                     <div className="text-center">
-                                        <p className="text-[10px] font-black text-white/40 tracking-[0.3em] uppercase mb-2">SYNTACTIC ANALYSIS IN PROGRESS</p>
-                                        <p className="text-sm font-bold text-white animate-pulse">OPTIMIZING MISSION PARAMETERS...</p>
+                                        <p className="text-[10px] font-black text-white/40 tracking-[0.3em] uppercase mb-2">AI 분석 진행 중</p>
+                                        <p className="text-sm font-bold text-white animate-pulse">브리핑 생성 중...</p>
                                     </div>
                                 </div>
                             ) : (
@@ -223,7 +223,7 @@ export function BriefingCard() {
                                             <div className="flex gap-4">
                                                 <div className="flex items-center gap-2 grayscale brightness-200 opacity-20">
                                                     <Zap className="w-4 h-4" />
-                                                    <span className="text-[8px] font-bold tracking-widest">NEURAL CORE</span>
+                                                    <span className="text-[8px] font-bold tracking-widest">신경망 코어</span>
                                                 </div>
                                             </div>
                                             <Button
@@ -235,7 +235,7 @@ export function BriefingCard() {
                                                 }}
                                                 className="text-[9px] font-black tracking-widest text-indigo-400/60 hover:text-indigo-400 hover:bg-indigo-500/10 h-8 uppercase"
                                             >
-                                                <RefreshCw className="w-3 h-3 mr-2" /> RECALIBRATE BRIEFING
+                                                <RefreshCw className="w-3 h-3 mr-2" /> 브리핑 재생성
                                             </Button>
                                         </div>
                                     </div>

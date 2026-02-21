@@ -29,9 +29,9 @@ export function WorkDashboard({ onNavigate, onOpenProject }: WorkDashboardProps)
                         <Activity className="w-5 h-5 text-white" strokeWidth={2.5} />
                     </div>
                     <div>
-                        <h2 className="text-2xl font-black text-white tracking-tighter uppercase leading-none">STRATEGIC COMMAND</h2>
+                        <h2 className="text-2xl font-black text-white tracking-tighter uppercase leading-none">전략 지휘 센터</h2>
                         <p className="text-[10px] font-bold text-white/20 tracking-[0.3em] uppercase mt-1 flex items-center gap-2">
-                            <Terminal className="w-3 h-3 text-indigo-500" /> OPERATIONAL NERVE CENTER: ONLINE
+                            <Terminal className="w-3 h-3 text-indigo-500" /> 운영 신경 센터: 온라인
                         </p>
                     </div>
                 </div>
@@ -69,12 +69,12 @@ export function WorkDashboard({ onNavigate, onOpenProject }: WorkDashboardProps)
             {/* Footer Decorative Status */}
             <div className="flex items-center justify-between px-2 pt-4 border-t border-white/5 opacity-30 mt-auto">
                 <div className="flex items-center gap-4">
-                    <span className="text-[8px] font-bold text-white tracking-[0.2em] uppercase">SYSTEM.STATUS: OPTIMAL</span>
-                    <span className="text-[8px] font-bold text-white tracking-[0.2em] uppercase">ENCRYPTION: AES-256</span>
+                    <span className="text-[8px] font-bold text-white tracking-[0.2em] uppercase">시스템 상태: 정상</span>
+                    <span className="text-[8px] font-bold text-white tracking-[0.2em] uppercase">암호화: AES-256</span>
                 </div>
                 <div className="flex items-center gap-2">
                     <Zap className="w-3 h-3 text-indigo-500" />
-                    <span className="text-[8px] font-bold text-white tracking-[0.2em] uppercase">SYNCING REAL-TIME DATA</span>
+                    <span className="text-[8px] font-bold text-white tracking-[0.2em] uppercase">실시간 데이터 동기화 중</span>
                 </div>
             </div>
         </div>

@@ -179,7 +179,7 @@ export default function Home() {
       )} */}
 
       {/* Desktop Header (Hidden on Mobile) */}
-      <header className="hidden md:flex mb-4 justify-between items-center w-full max-w-7xl mx-auto px-6 py-4 rounded-3xl transition-all duration-500 shadow-md border bg-white/5 backdrop-blur-xl border-white/10">
+      <header className="hidden md:flex mb-4 justify-between items-center w-full max-w-7xl mx-auto px-6 py-3 rounded-2xl transition-all duration-500 shadow-lg border bg-[#111827] border-white/10">
         <div className="flex items-center gap-4">
           <button onClick={() => {
             setAppMode('life');
@@ -188,69 +188,67 @@ export default function Home() {
             <Logo variant="full" className="scale-100" />
           </button>
 
-
-          <div className="flex items-center gap-2">
-            <HoverBorderGradient
-              as="button"
-              containerClassName="rounded-full"
+          {/* Mode Buttons */}
+          <div className="flex items-center gap-1 ml-2 bg-white/5 rounded-xl p-1">
+            <button
               className={cn(
-                "px-4 py-2 text-sm font-bold flex items-center gap-2",
-                appMode === 'life' ? "bg-emerald-500/20 text-emerald-400" : "bg-white/5 text-white/40 hover:text-white"
+                "px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-all duration-200",
+                appMode === 'life'
+                  ? "bg-emerald-500 text-white shadow-[0_0_12px_rgba(16,185,129,0.4)]"
+                  : "text-white/70 hover:text-white hover:bg-white/10"
               )}
               onClick={() => setAppMode('life')}
-              duration={1.5}
             >
               <Sparkles className="w-4 h-4" /> 일상
-            </HoverBorderGradient>
+            </button>
 
-            <HoverBorderGradient
-              as="button"
-              containerClassName="rounded-full"
+            <button
               className={cn(
-                "px-4 py-2 text-sm font-bold flex items-center gap-2",
-                appMode === 'study' ? "bg-indigo-500/20 text-indigo-400" : "bg-white/5 text-white/40 hover:text-white"
+                "px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-all duration-200",
+                appMode === 'study'
+                  ? "bg-indigo-500 text-white shadow-[0_0_12px_rgba(99,102,241,0.4)]"
+                  : "text-white/70 hover:text-white hover:bg-white/10"
               )}
               onClick={() => setAppMode('study')}
-              duration={1.5}
             >
               <GraduationCap className="w-4 h-4" /> 학습
-            </HoverBorderGradient>
+            </button>
 
-            <HoverBorderGradient
-              as="button"
-              containerClassName="rounded-full"
+            <button
               className={cn(
-                "px-4 py-2 text-sm font-bold flex items-center gap-2",
-                appMode === 'work' ? "bg-purple-500/20 text-purple-400" : "bg-white/5 text-white/40 hover:text-white"
+                "px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-all duration-200",
+                appMode === 'work'
+                  ? "bg-purple-500 text-white shadow-[0_0_12px_rgba(168,85,247,0.4)]"
+                  : "text-white/70 hover:text-white hover:bg-white/10"
               )}
               onClick={() => setAppMode('work')}
-              duration={1.5}
             >
               <Briefcase className="w-4 h-4" /> 업무
-            </HoverBorderGradient>
+            </button>
 
-            <HoverBorderGradient
-              as="button"
-              containerClassName="rounded-full"
+            <button
               className={cn(
-                "px-4 py-2 text-sm font-bold flex items-center gap-2",
-                appMode === 'ambition' ? "bg-amber-500/20 text-amber-400 shadow-[0_0_15px_rgba(217,119,6,0.3)]" : "bg-white/5 text-white/40 hover:text-white"
+                "px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-all duration-200",
+                appMode === 'ambition'
+                  ? "bg-amber-500 text-white shadow-[0_0_12px_rgba(245,158,11,0.4)]"
+                  : "text-white/70 hover:text-white hover:bg-white/10"
               )}
               onClick={() => setAppMode('ambition')}
-              duration={1.5}
             >
               <Target className="w-4 h-4" /> 야망
-            </HoverBorderGradient>
+            </button>
           </div>
 
-          <div className="flex items-center text-sm font-bold border-l border-white/10 pl-4 h-5 leading-none text-white/40">
+          <div className="flex items-center text-sm font-semibold border-l border-white/15 pl-4 h-5 leading-none text-white/70">
             {todayDate}
           </div>
         </div>
-        <div className="flex items-center gap-2">
+
+        {/* Right Icons */}
+        <div className="flex items-center gap-1">
           <Button variant="ghost" size="icon" onClick={() => setMainMode('home')} className={cn(
-            "rounded-full font-bold transition-all text-white/60 hover:text-white hover:bg-white/10",
-            mainMode === 'home' && "bg-white/10 text-white"
+            "rounded-xl font-bold transition-all text-white/70 hover:text-white hover:bg-white/10",
+            mainMode === 'home' && "bg-white/15 text-white"
           )}>
             <HomeIcon className="w-5 h-5" />
           </Button>

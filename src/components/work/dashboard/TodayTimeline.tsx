@@ -63,8 +63,8 @@ export function TodayTimeline() {
                         <Activity className="w-5 h-5 text-indigo-400" />
                     </div>
                     <div>
-                        <h3 className="text-lg font-black text-white tracking-widest uppercase mb-0.5">TIMELINE ORCHESTRATOR</h3>
-                        <p className="text-[8px] font-bold text-white/20 tracking-[0.2em] uppercase">SEQUENTIAL OPS MAP</p>
+                        <h3 className="text-lg font-black text-white tracking-widest uppercase mb-0.5">오늘의 일정</h3>
+                        <p className="text-[8px] font-bold text-white/20 tracking-[0.2em] uppercase">시간순 업무 현황</p>
                     </div>
                 </div>
             </div>
@@ -104,7 +104,7 @@ export function TodayTimeline() {
                                             </span>
                                             {isCurrent && (
                                                 <span className="px-2 py-0.5 rounded bg-sky-500/10 text-sky-400 text-[8px] font-black tracking-widest uppercase animate-pulse">
-                                                    IN PROGRESS
+                                                    진행 중
                                                 </span>
                                             )}
                                         </div>
@@ -129,7 +129,7 @@ export function TodayTimeline() {
                 ) : (
                     <div className="h-full flex flex-col items-center justify-center opacity-10 py-16 gap-4 border-2 border-dashed border-white/10 rounded-[40px]">
                         <Clock className="w-12 h-12" />
-                        <p className="text-[9px] font-black tracking-[0.3em] uppercase text-center leading-relaxed">NO OPERATIONAL<br />TIMELINE DETECTED</p>
+                        <p className="text-[9px] font-black tracking-[0.3em] uppercase text-center leading-relaxed">오늘 등록된<br />일정이 없습니다</p>
                     </div>
                 )}
             </div>
@@ -141,7 +141,7 @@ export function TodayTimeline() {
                     className="w-full h-14 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 hover:bg-indigo-500 hover:text-white font-black text-[11px] tracking-[0.2em] uppercase transition-all active:scale-95"
                 >
                     {isAIScheduling ? <Loader2 className="w-4 h-4 animate-spin mr-3" /> : <Zap className="w-4 h-4 mr-3" />}
-                    INITIATE AI SMART SYNC
+                    AI 스마트 일정 자동 배치
                 </Button>
             </div>
         </div>

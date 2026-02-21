@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Search, Youtube, Globe, BookOpen } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -31,49 +30,62 @@ export function SearchHub() {
     };
 
     return (
-        <form onSubmit={handleSearch} className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col gap-3">
-            <div className="flex gap-2 p-1 bg-muted/30 rounded-lg w-fit">
+        <form onSubmit={handleSearch} className="glass-premium rounded-2xl border border-white/10 p-4 flex flex-col gap-3 shadow-lg">
+            {/* Engine Tabs */}
+            <div className="flex gap-1 p-1 bg-white/5 rounded-xl w-fit">
                 <button
                     type="button"
                     onClick={() => setEngine('google')}
                     className={cn(
-                        "p-2 rounded-md transition-all flex items-center gap-2 text-xs font-bold",
-                        engine === 'google' ? "bg-white shadow text-blue-600" : "text-muted-foreground hover:bg-white/50"
+                        "px-3 py-1.5 rounded-lg transition-all flex items-center gap-2 text-xs font-bold",
+                        engine === 'google'
+                            ? "bg-blue-500 text-white shadow-md shadow-blue-500/20"
+                            : "text-white/50 hover:text-white hover:bg-white/10"
                     )}
                 >
-                    <Globe className="w-4 h-4" /> Google
+                    <Globe className="w-3.5 h-3.5" /> Google
                 </button>
                 <button
                     type="button"
                     onClick={() => setEngine('naver')}
                     className={cn(
-                        "p-2 rounded-md transition-all flex items-center gap-2 text-xs font-bold",
-                        engine === 'naver' ? "bg-white shadow text-green-600" : "text-muted-foreground hover:bg-white/50"
+                        "px-3 py-1.5 rounded-lg transition-all flex items-center gap-2 text-xs font-bold",
+                        engine === 'naver'
+                            ? "bg-green-500 text-white shadow-md shadow-green-500/20"
+                            : "text-white/50 hover:text-white hover:bg-white/10"
                     )}
                 >
-                    <BookOpen className="w-4 h-4" /> Naver
+                    <BookOpen className="w-3.5 h-3.5" /> Naver
                 </button>
                 <button
                     type="button"
                     onClick={() => setEngine('youtube')}
                     className={cn(
-                        "p-2 rounded-md transition-all flex items-center gap-2 text-xs font-bold",
-                        engine === 'youtube' ? "bg-white shadow text-red-600" : "text-muted-foreground hover:bg-white/50"
+                        "px-3 py-1.5 rounded-lg transition-all flex items-center gap-2 text-xs font-bold",
+                        engine === 'youtube'
+                            ? "bg-red-500 text-white shadow-md shadow-red-500/20"
+                            : "text-white/50 hover:text-white hover:bg-white/10"
                     )}
                 >
-                    <Youtube className="w-4 h-4" /> Youtube
+                    <Youtube className="w-3.5 h-3.5" /> Youtube
                 </button>
             </div>
 
+            {/* Search Input */}
             <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                <Input
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 pointer-events-none" />
+                <input
+                    type="text"
                     placeholder={`${engine === 'google' ? '구글' : engine === 'naver' ? '네이버' : '유튜브'} 검색어를 입력하세요...`}
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    className="pl-10 h-12 text-lg bg-muted/20 border-border/50 focus-visible:ring-primary/20"
+                    className="w-full h-12 pl-11 pr-14 rounded-xl bg-white/[0.06] border border-white/10 text-white text-sm font-medium placeholder:text-white/30 focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all"
                 />
-                <Button type="submit" size="icon" className="absolute right-1 top-1 h-10 w-10 bg-primary/90 hover:bg-primary">
+                <Button
+                    type="submit"
+                    size="icon"
+                    className="absolute right-1.5 top-1/2 -translate-y-1/2 h-9 w-9 rounded-lg bg-primary hover:bg-primary/90 shadow-md"
+                >
                     <Search className="w-4 h-4" />
                 </Button>
             </div>

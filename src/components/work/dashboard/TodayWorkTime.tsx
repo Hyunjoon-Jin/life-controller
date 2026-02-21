@@ -28,8 +28,8 @@ export function TodayWorkTime({ onNavigateToWorkTime }: TodayWorkTimeProps) {
                         <Timer className="w-5 h-5 text-sky-400" />
                     </div>
                     <div>
-                        <h3 className="text-lg font-black text-white tracking-widest uppercase mb-0.5">EFFICIENCY MATRIX</h3>
-                        <p className="text-[8px] font-bold text-white/20 tracking-[0.2em] uppercase">OPERATIONAL TIMELINE</p>
+                        <h3 className="text-lg font-black text-white tracking-widest uppercase mb-0.5">업무 시간</h3>
+                        <p className="text-[8px] font-bold text-white/20 tracking-[0.2em] uppercase">오늘의 근무 일정</p>
                     </div>
                 </div>
             </div>
@@ -44,7 +44,7 @@ export function TodayWorkTime({ onNavigateToWorkTime }: TodayWorkTimeProps) {
                     <div className="flex flex-col items-center gap-8 relative z-10">
                         <div className="flex items-center gap-12">
                             <div className="text-center">
-                                <span className="text-[10px] font-black text-indigo-400/60 block mb-2 tracking-[0.2em] uppercase">DEPLOY</span>
+                                <span className="text-[10px] font-black text-indigo-400/60 block mb-2 tracking-[0.2em] uppercase">출근</span>
                                 <span className="text-3xl font-black text-white tracking-tighter">{workStartTime}</span>
                             </div>
                             <div className="flex flex-col items-center gap-1">
@@ -53,7 +53,7 @@ export function TodayWorkTime({ onNavigateToWorkTime }: TodayWorkTimeProps) {
                                 <div className="w-1.5 h-1.5 rounded-full bg-indigo-500/30 shadow-[0_0_8px_rgba(99,102,241,0.5)]" />
                             </div>
                             <div className="text-center">
-                                <span className="text-[10px] font-black text-indigo-400/60 block mb-2 tracking-[0.2em] uppercase">EXTRACT</span>
+                                <span className="text-[10px] font-black text-indigo-400/60 block mb-2 tracking-[0.2em] uppercase">퇴근</span>
                                 <span className="text-3xl font-black text-white tracking-tighter">{workEndTime}</span>
                             </div>
                         </div>
@@ -62,11 +62,11 @@ export function TodayWorkTime({ onNavigateToWorkTime }: TodayWorkTimeProps) {
                             <div className="flex items-center gap-3">
                                 <Activity className="w-4 h-4 text-indigo-500" />
                                 <span className="text-[10px] font-black text-white/60 tracking-widest uppercase">
-                                    {isVacation ? 'VACATION MODE ACTIVE' : 'STANDARD PROTOCOL'}
+                                    {isVacation ? '휴가 모드' : '기본 근무 설정'}
                                 </span>
                             </div>
                             <div className="flex items-center gap-2 group-hover:gap-3 transition-all">
-                                <span className="text-[9px] font-black text-indigo-400 tracking-widest uppercase">RECALIBRATE</span>
+                                <span className="text-[9px] font-black text-indigo-400 tracking-widest uppercase">수정하기</span>
                                 <Zap className="w-3 h-3 text-indigo-400" />
                             </div>
                         </div>
@@ -76,7 +76,7 @@ export function TodayWorkTime({ onNavigateToWorkTime }: TodayWorkTimeProps) {
                 <div className="mt-8 p-4 rounded-2xl bg-white/[0.02] border border-white/5 flex items-start gap-4">
                     <AlertCircle className="w-4 h-4 text-white/20 shrink-0 mt-0.5" />
                     <p className="text-[10px] font-bold text-white/30 tracking-wide leading-relaxed uppercase">
-                        OPERATIONAL PERIODS CAN BE ADJUSTED WITHIN THE MANAGEMENT MODULE FOR OPTIMAL RESOURCE ALLOCATION.
+                        근무 시간은 근무 관리 탭에서 수정할 수 있습니다.
                     </p>
                 </div>
             </div>

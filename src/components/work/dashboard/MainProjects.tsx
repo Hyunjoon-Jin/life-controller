@@ -26,8 +26,8 @@ export function MainProjects({ onOpenProject }: MainProjectsProps) {
                         <Layers className="w-5 h-5 text-indigo-400" />
                     </div>
                     <div>
-                        <h3 className="text-lg font-black text-white tracking-widest uppercase mb-0.5">STRATEGIC OBJECTIVES</h3>
-                        <p className="text-[8px] font-bold text-white/20 tracking-[0.2em] uppercase">ACTIVE MISSION PARAMETERS</p>
+                        <h3 className="text-lg font-black text-white tracking-widest uppercase mb-0.5">주요 프로젝트</h3>
+                        <p className="text-[8px] font-bold text-white/20 tracking-[0.2em] uppercase">진행 중인 미션</p>
                     </div>
                 </div>
             </div>
@@ -58,7 +58,7 @@ export function MainProjects({ onOpenProject }: MainProjectsProps) {
                                                 {project.title}
                                             </h4>
                                             <p className="text-[10px] font-bold text-white/40 line-clamp-1 uppercase tracking-wider">
-                                                {project.description || 'NO ADDITIONAL DATA'}
+                                                {project.description || '추가 정보 없음'}
                                             </p>
                                         </div>
                                     </div>
@@ -69,14 +69,14 @@ export function MainProjects({ onOpenProject }: MainProjectsProps) {
                                             <span className="text-[9px] font-black text-white/40 tracking-widest uppercase">
                                                 {project.startDate && project.endDate ? (
                                                     `${format(new Date(project.startDate), 'MM.dd')} - ${format(new Date(project.endDate), 'MM.dd')}`
-                                                ) : 'PERIOD UNDEFINED'}
+                                                ) : '기간 미정'}
                                             </span>
                                         </div>
                                         {nextTask && (
                                             <div className="flex items-center gap-2 text-indigo-400">
                                                 <Target className="w-3 h-3 animate-pulse" />
                                                 <span className="text-[9px] font-black tracking-widest uppercase truncate max-w-[120px]">
-                                                    NEXT: {nextTask.title}
+                                                    다음: {nextTask.title}
                                                 </span>
                                             </div>
                                         )}
@@ -88,7 +88,7 @@ export function MainProjects({ onOpenProject }: MainProjectsProps) {
                 ) : (
                     <div className="h-full flex flex-col items-center justify-center opacity-10 py-12 gap-4 border-2 border-dashed border-white/10 rounded-2xl">
                         <Briefcase className="w-12 h-12" />
-                        <p className="text-[9px] font-black tracking-[0.3em] uppercase text-center">NO STRATEGIC TARGETS<br />ASSIGNED</p>
+                        <p className="text-[9px] font-black tracking-[0.3em] uppercase text-center">진행 중인 프로젝트가<br />없습니다</p>
                     </div>
                 )}
             </div>
