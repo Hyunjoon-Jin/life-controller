@@ -251,6 +251,28 @@
   .touch-manipulation {
     touch-action: manipulation;
   }
+
+  /* ============================================================
+     GLASS MORPHISM SYSTEM — used by 40+ components throughout
+     the app. Must be defined here for the dark UI to render.
+  ============================================================ */
+  .glass-premium {
+    background: rgba(13, 17, 26, 0.75);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+  }
+
+  .glass-muted {
+    background: rgba(13, 17, 26, 0.5);
+    backdrop-filter: blur(16px) saturate(150%);
+    -webkit-backdrop-filter: blur(16px) saturate(150%);
+  }
+
+  .glass-subtle {
+    background: rgba(13, 17, 26, 0.3);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
 }
 
 @media screen and (max-width: 640px) {
