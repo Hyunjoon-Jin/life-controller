@@ -93,11 +93,11 @@ export function SettingsModal({ children }: { children: React.ReactNode }) {
                     {/* Data Management */}
                     <div className="space-y-3">
                         <Label className="text-base">데이터 관리</Label>
-                        <div className="bg-red-50 dark:bg-red-900/10 p-4 rounded-lg border border-red-100 dark:border-red-900/20">
-                            <h4 className="font-bold text-red-700 dark:text-red-400 text-sm mb-1 flex items-center gap-2">
+                        <div className="bg-red-500/10 p-4 rounded-lg border border-red-500/20">
+                            <h4 className="font-bold text-red-400 text-sm mb-1 flex items-center gap-2">
                                 <Trash2 className="w-4 h-4" /> 모든 데이터 초기화
                             </h4>
-                            <p className="text-xs text-red-600/80 dark:text-red-400/80 mb-3">
+                            <p className="text-xs text-red-400/80 mb-3">
                                 로컬 캐시를 삭제하고 새로고침합니다. (서버 데이터는 유지됨)
                             </p>
                             <Button
@@ -172,7 +172,7 @@ export function SettingsModal({ children }: { children: React.ReactNode }) {
                                         variant="outline"
                                         size="sm"
                                         disabled
-                                        className="text-xs bg-green-50 text-green-600 border-green-200"
+                                        className="text-xs bg-green-500/10 text-green-400 border-green-500/20"
                                     >
                                         연동됨
                                     </Button>
@@ -189,7 +189,7 @@ export function SettingsModal({ children }: { children: React.ReactNode }) {
                                             });
                                             if (error) toast.error(error.message);
                                         }}
-                                        className="text-xs hover:bg-slate-100"
+                                        className="text-xs hover:bg-muted"
                                     >
                                         연동하기
                                     </Button>

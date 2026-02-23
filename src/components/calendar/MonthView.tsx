@@ -80,7 +80,7 @@ export function MonthView({ currentDate, onDateClick, showProjectTasks }: { curr
                 status: workStatus,
                 hours: `${workStartTime} - ${workEndTime}`
             },
-            color: 'bg-slate-100 text-slate-700 border-slate-200'
+            color: 'bg-slate-500/10 text-slate-300 border-slate-500/20'
         };
         addEvent(newLog);
         setWorkDialogOpen(false);
@@ -97,7 +97,7 @@ export function MonthView({ currentDate, onDateClick, showProjectTasks }: { curr
             start,
             end,
             type: 'vacation',
-            color: 'bg-rose-100 text-rose-700 border-rose-200'
+            color: 'bg-rose-500/10 text-rose-400 border-rose-500/20'
         };
         addEvent(newVacation);
         setVacationDialogOpen(false);

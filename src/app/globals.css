@@ -54,6 +54,7 @@
     --border: 225 35% 15%;
     --input: 225 35% 12%;
     --ring: 161 72% 40%;
+    --modal: 225 35% 13%;
 
     --radius: 1rem;
     /* 16px - Modern & Clean */
@@ -80,6 +81,7 @@
     --border: 225 35% 15%;
     --input: 225 35% 12%;
     --ring: 161 72% 40%;
+    --modal: 225 35% 13%;
   }
 
   .light {
@@ -103,6 +105,7 @@
     --border: 214 32% 91%;
     --input: 214 32% 91%;
     --ring: 217 91% 60%;
+    --modal: 0 0% 100%;
   }
 
   .gray {
@@ -126,6 +129,7 @@
     --border: 220 10% 40%;
     --input: 220 10% 40%;
     --ring: 220 15% 60%;
+    --modal: 220 15% 30%;
   }
 }
 
@@ -272,6 +276,19 @@
     background: rgba(13, 17, 26, 0.3);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
+  }
+
+  /* Light mode: keep glass dark so text-white stays readable */
+  .light .glass-premium {
+    background: rgba(15, 22, 42, 0.80);
+    border-top-color: rgba(255, 255, 255, 0.15);
+  }
+  .light .glass-muted  { background: rgba(15, 22, 42, 0.55); }
+  .light .glass-subtle { background: rgba(15, 22, 42, 0.35); }
+
+  /* Light mode page gradient */
+  .light .premium-gradient-bg {
+    background: radial-gradient(circle at 20% 20%, #eef2ff 0%, #dde8ff 100%);
   }
 }
 

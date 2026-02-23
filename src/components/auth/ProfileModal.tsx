@@ -184,14 +184,14 @@ export function ProfileModal({ children }: { children: React.ReactNode }) {
                                             placeholder="https://"
                                             className="flex-1"
                                         />
-                                        <Button type="button" variant="ghost" size="icon" onClick={() => removeSocialLink(index)} className="text-red-500 hover:text-red-600 hover:bg-red-50">
+                                        <Button type="button" variant="ghost" size="icon" onClick={() => removeSocialLink(index)} className="text-red-500 hover:text-red-400 hover:bg-red-500/10">
                                             <Trash2 className="w-4 h-4" />
                                         </Button>
                                     </div>
                                 ))}
                             </div>
                         ) : (
-                            <div className="text-center py-4 text-sm text-muted-foreground bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-dashed">
+                            <div className="text-center py-4 text-sm text-muted-foreground bg-muted/50 rounded-lg border border-dashed">
                                 추가된 링크가 없습니다.
                             </div>
                         )}

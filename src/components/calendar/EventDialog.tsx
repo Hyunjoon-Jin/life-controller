@@ -217,17 +217,17 @@ export function EventDialog({ isOpen, onOpenChange, event, initialDate, initialE
 
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[480px] p-0 gap-0 overflow-hidden bg-card border-0 shadow-xl rounded-2xl flex flex-col max-h-[90vh]">
-                <DialogHeader className="px-6 py-5 border-b border-border flex flex-row items-center justify-between shrink-0">
+            <DialogContent className="sm:max-w-[480px] p-0 gap-0 overflow-hidden bg-modal border border-border shadow-2xl rounded-2xl flex flex-col max-h-[90vh] text-foreground">
+                <DialogHeader className="px-6 py-5 border-b border-white/8 flex flex-row items-center justify-between shrink-0">
                     <div>
-                        <DialogTitle className="text-xl font-bold flex items-center gap-2 text-gray-800">
+                        <DialogTitle className="text-xl font-bold flex items-center gap-2 text-foreground">
                             {event ? '일정 수정' : '새 일정 등록'}
                         </DialogTitle>
                     </div>
                     <div className={cn(
                         "px-2.5 py-1 rounded-full text-xs font-bold",
-                        priority === 'high' ? "bg-red-50 text-red-600" :
-                            priority === 'medium' ? "bg-blue-50 text-blue-600" : "bg-muted text-muted-foreground"
+                        priority === 'high' ? "bg-red-500/15 text-red-400" :
+                            priority === 'medium' ? "bg-blue-500/15 text-blue-400" : "bg-muted text-muted-foreground"
                     )}>
                         {priority === 'high' ? '높음' : priority === 'medium' ? '보통' : '낮음'}
                     </div>
@@ -478,7 +478,7 @@ export function EventDialog({ isOpen, onOpenChange, event, initialDate, initialE
                             variant="ghost"
                             onClick={handleDelete}
                             disabled={isLoading}
-                            className="mr-auto text-red-500 hover:text-red-600 hover:bg-red-50 h-12 px-6"
+                            className="mr-auto text-red-500 hover:text-red-400 hover:bg-red-500/10 h-12 px-6"
                         >
                             <Trash2 className="w-5 h-5 mr-2" />
                             삭제
