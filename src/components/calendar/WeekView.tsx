@@ -4,17 +4,18 @@ import { format, startOfWeek, endOfWeek, eachDayOfInterval, isToday, isSameDay, 
 import { ko } from 'date-fns/locale';
 import { cn, generateId } from '@/lib/utils';
 import { Plus, Target, CheckCircle } from 'lucide-react';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useData } from '@/context/DataProvider';
 import { CalendarEvent } from '@/types';
 import { EventDialog } from './EventDialog';
 import { getEventStyle, getEventColors } from '@/lib/calendar';
 
 export function WeekView({ currentDate, showProjectTasks, onDateClick }: { currentDate: Date; showProjectTasks: boolean; onDateClick: (date: Date) => void }) {
-    const weekStart = startOfWeek(currentDate, { weekStartsOn: 0 }); // Sunday start
-    const weekEnd = endOfWeek(currentDate, { weekStartsOn: 0 });
-    const weekDays = eachDayOfInterval({ start: weekStart, end: weekEnd });
-    const hours = Array.from({ length: 24 }, (_, i) => i);
+    // currentDate 기반 값들을 메모이즈 — 드래그 중 재계산 방지
+    const weekStart = useMemo(() => startOfWeek(currentDate, { weekStartsOn: 0 }), [currentDate]);
+    const weekEnd = useMemo(() => endOfWeek(currentDate, { weekStartsOn: 0 }), [currentDate]);
+    const weekDays = useMemo(() => eachDayOfInterval({ start: weekStart, end: weekEnd }), [weekStart, weekEnd]);
+    const hours = useMemo(() => Array.from({ length: 24 }, (_, i) => i), []);
 
     const { events, addEvent, updateEvent, deleteEvent, goals, tasks, projects } = useData();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -36,6 +37,11 @@ export function WeekView({ currentDate, showProjectTasks, onDateClick }: { curre
     const [tempEvent, setTempEvent] = useState<CalendarEvent | null>(null);
     const tempEventRef = useRef(tempEvent);
     const [now, setNow] = useState(new Date());
+
+    // updateEvent를 ref로 유지 — DataProvider의 상태 변화(타이머 등)로
+    // updateEvent가 매 초마다 새 참조를 가져도 useEffect가 재실행되지 않도록 함
+    const updateEventRef = useRef(updateEvent);
+    useEffect(() => { updateEventRef.current = updateEvent; }, [updateEvent]);
 
     useEffect(() => { dragStateRef.current = dragState; }, [dragState]);
     useEffect(() => { tempEventRef.current = tempEvent; }, [tempEvent]);
@@ -134,21 +140,19 @@ export function WeekView({ currentDate, showProjectTasks, onDateClick }: { curre
     };
 
     // Handle drop on a different day column
-    const handleColumnMouseUp = (day: Date) => {
-        if (dragState && dragState.mode === 'move' && tempEvent) {
-            // Calculate time difference to preserve hour/minute
-            const duration = tempEvent.end.getTime() - tempEvent.start.getTime();
-
+    const handleColumnMouseUp = useCallback((day: Date) => {
+        const drag = dragStateRef.current;
+        const cur = tempEventRef.current;
+        if (drag && drag.mode === 'move' && cur) {
+            const duration = cur.end.getTime() - cur.start.getTime();
             const newStart = new Date(day);
-            newStart.setHours(tempEvent.start.getHours(), tempEvent.start.getMinutes(), 0, 0);
-
+            newStart.setHours(cur.start.getHours(), cur.start.getMinutes(), 0, 0);
             const newEnd = new Date(newStart.getTime() + duration);
-
-            updateEvent({ ...tempEvent, start: newStart, end: newEnd });
+            updateEventRef.current({ ...cur, start: newStart, end: newEnd });
             setDragState(null);
             setTempEvent(null);
         }
-    };
+    }, []);
 
     useEffect(() => {
         if (!dragState || !tempEvent) return;
@@ -184,7 +188,7 @@ export function WeekView({ currentDate, showProjectTasks, onDateClick }: { curre
         const handleMouseUp = () => {
             const cur = tempEventRef.current;
             if (dragStateRef.current && cur) {
-                updateEvent(cur);
+                updateEventRef.current(cur);
                 setDragState(null);
                 setTempEvent(null);
             }
@@ -214,8 +218,9 @@ export function WeekView({ currentDate, showProjectTasks, onDateClick }: { curre
             window.removeEventListener('touchmove', handleTouchMove);
             window.removeEventListener('touchend', handleTouchEnd);
         };
-        // Only re-run when drag starts or stops (not on every tempEvent change)
-    }, [dragState, updateEvent, PIXELS_PER_HOUR]);
+        // dragState가 변할 때만 재실행 — updateEvent는 ref로 관리하므로 deps 제외
+        // PIXELS_PER_HOUR는 상수(60)이므로 deps 불필요
+    }, [dragState]);
 
 
     const getEventColors = (event: CalendarEvent) => {
@@ -300,8 +305,8 @@ export function WeekView({ currentDate, showProjectTasks, onDateClick }: { curre
         }
     };
 
-    // Compute non-overlapping layout for events in a day
-    const computeLayout = (evts: CalendarEvent[]) => {
+    // Compute non-overlapping layout for events in a day (안정화된 함수)
+    const computeLayout = useCallback((evts: CalendarEvent[]) => {
         // Sort by start time
         const sorted = [...evts].sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
         const result: Map<string, { col: number; totalCols: number }> = new Map();
@@ -353,8 +358,22 @@ export function WeekView({ currentDate, showProjectTasks, onDateClick }: { curre
         }
 
         return result;
-    };
+    }, []);
 
+    // 7개 날짜 전체의 레이아웃을 한 번에 계산하여 캐싱
+    // events나 weekDays가 바뀔 때만 재계산 (드래그 중 tempEvent 변화에는 반응하지 않음)
+    const dayLayouts = useMemo(() => {
+        const layouts: Record<string, Map<string, { col: number; totalCols: number }>> = {};
+        weekDays.forEach(day => {
+            const dayKey = format(day, 'yyyy-MM-dd');
+            const dayEvts = events.filter(e => {
+                const d = new Date(e.start);
+                return isValid(d) && isSameDay(d, day);
+            });
+            layouts[dayKey] = computeLayout(dayEvts);
+        });
+        return layouts;
+    }, [events, weekDays, computeLayout]);
 
     return (
         <div className="flex flex-col h-full glass-premium rounded-[32px] border border-white/5 shadow-2xl overflow-hidden relative select-none">
@@ -424,12 +443,12 @@ export function WeekView({ currentDate, showProjectTasks, onDateClick }: { curre
 
                 {/* Day Columns */}
                 {weekDays.map(day => {
+                    const dayKey = format(day, 'yyyy-MM-dd');
                     const dayEvents = events.filter(e => {
                         const d = new Date(e.start);
                         return isValid(d) && isSameDay(d, day);
                     });
-
-                    const layout = computeLayout(dayEvents);
+                    const layout = dayLayouts[dayKey] ?? new Map();
 
                     return (
                         <div
@@ -482,9 +501,10 @@ export function WeekView({ currentDate, showProjectTasks, onDateClick }: { curre
                                     <div
                                         key={event.id}
                                         className={cn(
-                                            "absolute rounded-xl text-[10px] cursor-pointer pointer-events-auto overflow-hidden z-10 shadow-lg border-l-[4px] flex flex-col group transition-all duration-300 backdrop-blur-md",
-                                            isDragging && "z-50 opacity-90 shadow-2xl scale-[1.02] ring-2 ring-white/20",
-                                            !isDragging && "hover:shadow-2xl hover:brightness-110 hover:-translate-y-[1px]"
+                                            "absolute rounded-xl text-[10px] cursor-pointer pointer-events-auto overflow-hidden z-10 shadow-lg border-l-[4px] flex flex-col group",
+                                            // 드래그 중이 아닐 때만 transition 적용 (드래그 중 transition은 jank 원인)
+                                            !isDragging && "transition-shadow duration-150 hover:shadow-2xl hover:brightness-110 hover:-translate-y-[1px]",
+                                            isDragging && "z-50 opacity-90 shadow-2xl scale-[1.02] ring-2 ring-white/20"
                                         )}
                                         style={{
                                             ...getEventStyle(displayEvent, PIXELS_PER_HOUR),

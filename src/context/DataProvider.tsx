@@ -713,10 +713,10 @@ export function DataProvider({ children }: { children: ReactNode }) {
         setEvents(prev => prev.filter(e => e.habitId !== id));
     };
 
-    // Events
-    const addEvent = (event: CalendarEvent) => { setEvents(prev => [...prev, event]); bg(() => insertRow('calendar_events', event)); };
-    const updateEvent = (e: CalendarEvent) => { setEvents(prev => prev.map(x => x.id === e.id ? e : x)); bg(() => dbUpdate('calendar_events', e.id, e)); };
-    const deleteEvent = (id: string) => { setEvents(prev => prev.filter(x => x.id !== id)); bg(() => dbDelete('calendar_events', id)); };
+    // Events (useCallback으로 안정된 함수 참조 유지 — 타이머 등 다른 state 변화에 영향 안 받음)
+    const addEvent = useCallback((event: CalendarEvent) => { setEvents(prev => [...prev, event]); bg(() => insertRow('calendar_events', event)); }, [bg]);
+    const updateEvent = useCallback((e: CalendarEvent) => { setEvents(prev => prev.map(x => x.id === e.id ? e : x)); bg(() => dbUpdate('calendar_events', e.id, e)); }, [bg]);
+    const deleteEvent = useCallback((id: string) => { setEvents(prev => prev.filter(x => x.id !== id)); bg(() => dbDelete('calendar_events', id)); }, [bg]);
 
     // Journals
     const addJournal = (j: JournalEntry) => { setJournals(prev => [...prev, j]); bg(() => insertRow('journals', j)); };

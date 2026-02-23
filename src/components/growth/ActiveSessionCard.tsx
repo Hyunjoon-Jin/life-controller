@@ -73,7 +73,9 @@ export function ActiveSessionCard({ index, session, onUpdate, onDelete }: Active
                     <div>
                         <h4 className="text-xl font-black text-white tracking-tighter uppercase leading-none">{session.type}</h4>
                         <div className="flex items-center gap-2 mt-1.5 opacity-40">
-                            <span className="text-[10px] font-bold uppercase tracking-widest">{session.category} SECTOR</span>
+                            <span className="text-[10px] font-bold uppercase tracking-widest">
+                                {({'weight': '웨이트', 'cardio': '유산소', 'sport': '스포츠', 'fitness': '피트니스'} as Record<string, string>)[session.category as string] || session.category} 구분
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -90,7 +92,7 @@ export function ActiveSessionCard({ index, session, onUpdate, onDelete }: Active
                     {/* Weight/Reps Input */}
                     <div className="flex items-center gap-4 bg-white/5 p-6 rounded-[28px] border border-white/5">
                         <div className="flex-1 space-y-2">
-                            <label className="text-[9px] font-black text-white/20 uppercase tracking-widest ml-2">MASS (KG)</label>
+                            <label className="text-[9px] font-black text-white/20 uppercase tracking-widest ml-2">무게 (KG)</label>
                             <Input
                                 type="number"
                                 value={weight}
@@ -101,7 +103,7 @@ export function ActiveSessionCard({ index, session, onUpdate, onDelete }: Active
                         </div>
                         <div className="w-px h-10 bg-white/5 shrink-0" />
                         <div className="flex-1 space-y-2">
-                            <label className="text-[9px] font-black text-white/20 uppercase tracking-widest ml-2">REPS</label>
+                            <label className="text-[9px] font-black text-white/20 uppercase tracking-widest ml-2">횟수</label>
                             <Input
                                 type="number"
                                 value={reps}
@@ -132,7 +134,7 @@ export function ActiveSessionCard({ index, session, onUpdate, onDelete }: Active
                                         className="flex justify-between items-center p-4 rounded-2xl bg-white/5 border border-transparent hover:border-white/10 transition-all group/set"
                                     >
                                         <div className="flex items-center gap-6">
-                                            <span className="font-black text-[10px] text-white/20 w-8">PH. {set.setNumber}</span>
+                                            <span className="font-black text-[10px] text-white/20 w-8">{set.setNumber}세트</span>
                                             <div className="flex items-end gap-1">
                                                 <span className="text-xl font-black text-white tracking-tighter">{set.weight}</span>
                                                 <span className="text-[10px] font-black text-rose-500 mb-1">KG</span>
@@ -140,7 +142,7 @@ export function ActiveSessionCard({ index, session, onUpdate, onDelete }: Active
                                             <X className="w-3 h-3 text-white/10" />
                                             <div className="flex items-end gap-1">
                                                 <span className="text-xl font-black text-white tracking-tighter">{set.reps}</span>
-                                                <span className="text-[10px] font-black text-sky-500 mb-1">REPS</span>
+                                                <span className="text-[10px] font-black text-sky-500 mb-1">회</span>
                                             </div>
                                         </div>
                                         <button
@@ -156,13 +158,13 @@ export function ActiveSessionCard({ index, session, onUpdate, onDelete }: Active
                             <div className="flex items-center justify-between pt-6 border-t border-white/5 mt-4">
                                 <div className="flex items-center gap-2">
                                     <Flame className="w-4 h-4 text-rose-500" />
-                                    <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">CUMULATIVE PERFORMANCE</span>
+                                    <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">누적 볼륨</span>
                                 </div>
                                 <div className="flex items-end gap-1">
                                     <span className="text-2xl font-black text-white tracking-tighter">
                                         {session.sets.reduce((acc, curr) => acc + (curr.weight * curr.reps), 0).toLocaleString()}
                                     </span>
-                                    <span className="text-[11px] font-black text-rose-500 mb-1.5 uppercase">KG MASS</span>
+                                    <span className="text-[11px] font-black text-rose-500 mb-1.5 uppercase">KG</span>
                                 </div>
                             </div>
                         </div>
@@ -177,40 +179,40 @@ export function ActiveSessionCard({ index, session, onUpdate, onDelete }: Active
                             <>
                                 {session.distance && (
                                     <div className="flex flex-col gap-1">
-                                        <label className="text-[9px] font-black text-white/20 uppercase tracking-widest">DISTANCE</label>
+                                        <label className="text-[9px] font-black text-white/20 uppercase tracking-widest">거리</label>
                                         <span className="text-3xl font-black text-white tracking-tighter">{session.distance} <small className="text-xs text-sky-500">KM</small></span>
                                     </div>
                                 )}
                                 {session.duration && (
                                     <div className="flex flex-col gap-1">
-                                        <label className="text-[9px] font-black text-white/20 uppercase tracking-widest">DURATION</label>
-                                        <span className="text-3xl font-black text-white tracking-tighter">{Math.floor(session.duration)} <small className="text-xs text-rose-500">MIN</small></span>
+                                        <label className="text-[9px] font-black text-white/20 uppercase tracking-widest">시간</label>
+                                        <span className="text-3xl font-black text-white tracking-tighter">{Math.floor(session.duration)} <small className="text-xs text-rose-500">분</small></span>
                                     </div>
                                 )}
                                 {session.count && (
                                     <div className="flex flex-col gap-1">
-                                        <label className="text-[9px] font-black text-white/20 uppercase tracking-widest">ROUNDS</label>
-                                        <span className="text-3xl font-black text-white tracking-tighter">{session.count} <small className="text-xs text-amber-500">LAPS</small></span>
+                                        <label className="text-[9px] font-black text-white/20 uppercase tracking-widest">횟수</label>
+                                        <span className="text-3xl font-black text-white tracking-tighter">{session.count} <small className="text-xs text-amber-500">바퀴</small></span>
                                     </div>
                                 )}
                             </>
                         )}
                         {session.category === 'fitness' && (
                             <div className="flex flex-col gap-1">
-                                <label className="text-[9px] font-black text-white/20 uppercase tracking-widest">SESSION TIME</label>
-                                <span className="text-3xl font-black text-white tracking-tighter">{Math.floor(session.duration || 0)} <small className="text-xs text-emerald-500">MIN</small></span>
+                                <label className="text-[9px] font-black text-white/20 uppercase tracking-widest">운동 시간</label>
+                                <span className="text-3xl font-black text-white tracking-tighter">{Math.floor(session.duration || 0)} <small className="text-xs text-emerald-500">분</small></span>
                             </div>
                         )}
                         {session.category === 'sport' && (
                             <>
                                 <div className="flex flex-col gap-1">
-                                    <label className="text-[9px] font-black text-white/20 uppercase tracking-widest">EFFORT</label>
-                                    <span className="text-3xl font-black text-white tracking-tighter">{Math.floor(session.duration || 0)} <small className="text-xs text-amber-500">MIN</small></span>
+                                    <label className="text-[9px] font-black text-white/20 uppercase tracking-widest">시간</label>
+                                    <span className="text-3xl font-black text-white tracking-tighter">{Math.floor(session.duration || 0)} <small className="text-xs text-amber-500">분</small></span>
                                 </div>
                                 {session.score && (
                                     <div className="flex flex-col gap-1 pl-8 border-l border-white/10">
-                                        <label className="text-[9px] font-black text-white/20 uppercase tracking-widest">RATING</label>
-                                        <span className="text-3xl font-black text-white tracking-tighter">{session.score} <small className="text-xs text-rose-500">PTS</small></span>
+                                        <label className="text-[9px] font-black text-white/20 uppercase tracking-widest">점수</label>
+                                        <span className="text-3xl font-black text-white tracking-tighter">{session.score} <small className="text-xs text-rose-500">점</small></span>
                                     </div>
                                 )}
                             </>

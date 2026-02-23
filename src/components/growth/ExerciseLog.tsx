@@ -305,9 +305,9 @@ export function ExerciseLog() {
                             <Flame className="w-6 h-6 text-white" strokeWidth={3} />
                         </div>
                         <div>
-                            <h2 className="text-3xl font-black text-white tracking-tighter uppercase leading-none">PULSE & PEAK</h2>
+                            <h2 className="text-3xl font-black text-white tracking-tighter uppercase leading-none">운동 기록</h2>
                             <p className="text-[10px] font-bold text-white/20 tracking-[0.3em] uppercase mt-2 italic flex items-center gap-2">
-                                <Activity className="w-3 h-3" /> SYSTEM STATUS: OPTIMAL PERFOMANCE
+                                <Activity className="w-3 h-3" /> 시스템 상태: 최적 성능
                             </p>
                         </div>
                     </div>
@@ -320,7 +320,7 @@ export function ExerciseLog() {
                                     value={tab}
                                     className="px-6 py-2.5 rounded-xl font-black text-[10px] tracking-widest uppercase transition-all data-[state=active]:bg-rose-500 data-[state=active]:text-white data-[state=active]:shadow-lg"
                                 >
-                                    {tab === 'log' ? 'CHRONICLES' : tab === 'routines' ? 'ALGORITHMS' : 'COGNITION'}
+                                    {tab === 'log' ? '기록' : tab === 'routines' ? '루틴' : '분석'}
                                 </TabsTrigger>
                             ))}
                         </TabsList>
@@ -347,17 +347,17 @@ export function ExerciseLog() {
                                     <div className="p-10 flex flex-col items-center justify-center bg-gradient-to-b from-rose-500/10 to-transparent">
                                         <div className="flex items-center gap-3 mb-6">
                                             <div className="w-2 h-2 rounded-full bg-rose-500 animate-ping" />
-                                            <span className="text-[10px] font-black text-rose-400 tracking-[0.4em] uppercase">NEURAL WORKOUT ACTIVE</span>
+                                            <span className="text-[10px] font-black text-rose-400 tracking-[0.4em] uppercase">운동 진행 중</span>
                                         </div>
                                         <div className="text-7xl font-black text-white tracking-tighter tabular-nums mb-10 drop-shadow-[0_0_30px_rgba(255,255,255,0.2)]">
                                             {formatElapsedTime(elapsedTime)}
                                         </div>
                                         <div className="flex gap-4 w-full max-w-lg">
                                             <Button onClick={openAddDialog} className="flex-1 h-16 rounded-[24px] bg-rose-500 hover:bg-rose-600 text-white font-black text-lg tracking-widest shadow-[0_20px_40px_-10px_rgba(244,63,94,0.4)] transition-all active:scale-95">
-                                                <Plus className="w-6 h-6 mr-3" strokeWidth={3} /> ADD PHASE
+                                                <Plus className="w-6 h-6 mr-3" strokeWidth={3} /> 운동 추가
                                             </Button>
                                             <Button onClick={finishWorkout} variant="outline" className="flex-1 h-16 rounded-[24px] border-white/10 bg-white/5 text-white font-black text-lg tracking-widest hover:bg-rose-500/20 hover:border-rose-500/40 transition-all active:scale-95">
-                                                FINALIZE
+                                                완료
                                             </Button>
                                         </div>
                                     </div>
@@ -367,7 +367,7 @@ export function ExerciseLog() {
                                             {pendingSessions.length === 0 ? (
                                                 <div className="text-center py-20 opacity-20 flex flex-col items-center gap-4">
                                                     <Zap className="w-12 h-12" />
-                                                    <p className="font-black text-[10px] tracking-[0.2em] uppercase">AWAITING PERFORMANCE DATA...</p>
+                                                    <p className="font-black text-[10px] tracking-[0.2em] uppercase">운동 데이터 대기 중...</p>
                                                 </div>
                                             ) : (
                                                 <div className="space-y-6">
@@ -396,14 +396,14 @@ export function ExerciseLog() {
                                         <div className="absolute -right-20 -top-20 w-80 h-80 bg-white/10 blur-[100px] rounded-full group-hover:bg-white/20 transition-all duration-1000" />
 
                                         <div className="relative z-10 text-center md:text-left">
-                                            <h2 className="text-4xl md:text-5xl font-black mb-4 tracking-tighter uppercase leading-none">LIMIT BREAKER</h2>
-                                            <p className="text-white/80 font-bold uppercase tracking-widest text-xs italic">EXCEED YOUR PREVIOUS HIGHS. TODAY IS THE DAY.</p>
+                                            <h2 className="text-4xl md:text-5xl font-black mb-4 tracking-tighter uppercase leading-none">한계 돌파</h2>
+                                            <p className="text-white/80 font-bold uppercase tracking-widest text-xs italic">이전 기록을 뛰어넘어라. 오늘이 그날이다.</p>
                                         </div>
                                         <Button
                                             onClick={startWorkout}
                                             className="relative z-10 h-20 px-12 rounded-[28px] bg-white text-rose-500 hover:bg-white/90 font-black text-xl tracking-[0.1em] shadow-2xl transition-all hover:scale-105 active:scale-95"
                                         >
-                                            <Timer className="w-8 h-8 mr-4" strokeWidth={3} /> START PROTOCOL
+                                            <Timer className="w-8 h-8 mr-4" strokeWidth={3} /> 운동 시작
                                         </Button>
                                     </motion.div>
 
@@ -415,7 +415,7 @@ export function ExerciseLog() {
                                                     <div className="w-10 h-10 rounded-xl bg-sky-500/20 flex items-center justify-center border border-sky-500/30">
                                                         <TrendingUp className="w-5 h-5 text-sky-400" />
                                                     </div>
-                                                    <h3 className="text-xl font-black text-white tracking-widest uppercase">KINETIC TRENDS</h3>
+                                                    <h3 className="text-xl font-black text-white tracking-widest uppercase">성장 추이</h3>
                                                 </div>
                                                 <Select value={trendType} onValueChange={setTrendType}>
                                                     <SelectTrigger className="w-[200px] h-12 rounded-2xl bg-white/5 border-white/10 font-black text-[10px] tracking-widest uppercase text-white hover:bg-white/10 transition-all">
@@ -424,7 +424,7 @@ export function ExerciseLog() {
                                                     <SelectContent className="glass-premium border-white/10 text-white p-2 rounded-2xl">
                                                         {availableTypes.length > 0 ? availableTypes.map(t => (
                                                             <SelectItem key={t} value={t} className="rounded-xl font-black text-[10px] tracking-widest uppercase py-3 hover:bg-white/10">{t}</SelectItem>
-                                                        )) : <SelectItem value="bench" className="rounded-xl font-black text-xs uppercase">No Data</SelectItem>}
+                                                        )) : <SelectItem value="bench" className="rounded-xl font-black text-xs uppercase">데이터 없음</SelectItem>}
                                                     </SelectContent>
                                                 </Select>
                                             </div>
@@ -452,7 +452,7 @@ export function ExerciseLog() {
                                                 ) : (
                                                     <div className="h-full flex flex-col items-center justify-center opacity-10 gap-4">
                                                         <Activity className="w-12 h-12" />
-                                                        <p className="text-[10px] font-black tracking-widest uppercase text-center leading-loose">INSUFFICIENT DATA POINTS<br />REQUIRE AT LEAST 2 ENTRIES FOR ANALYSIS</p>
+                                                        <p className="text-[10px] font-black tracking-widest uppercase text-center leading-loose">데이터 부족<br />분석을 위해 최소 2개의 기록이 필요합니다</p>
                                                     </div>
                                                 )}
                                             </div>
@@ -464,12 +464,12 @@ export function ExerciseLog() {
                                                 <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center border border-emerald-500/30">
                                                     <Activity className="w-5 h-5 text-emerald-400" />
                                                 </div>
-                                                <h3 className="text-xl font-black text-white tracking-widest uppercase">RECENT MISSIONS</h3>
+                                                <h3 className="text-xl font-black text-white tracking-widest uppercase">최근 운동</h3>
                                             </div>
 
                                             <div className="space-y-4 overflow-y-auto custom-scrollbar pr-2">
                                                 {sortedSessions.length === 0 ? (
-                                                    <div className="py-20 text-center opacity-10 font-black text-[10px] tracking-widest uppercase">THE CHRONICLES ARE VACANT</div>
+                                                    <div className="py-20 text-center opacity-10 font-black text-[10px] tracking-widest uppercase">운동 기록이 없습니다</div>
                                                 ) : (
                                                     sortedSessions.slice(0, 6).map(session => (
                                                         <div key={session.id} className="group/item flex items-center justify-between p-6 rounded-[28px] bg-white/5 border border-white/5 hover:bg-white/10 transition-all">
@@ -516,7 +516,7 @@ export function ExerciseLog() {
                                     <div className="w-10 h-10 rounded-xl bg-purple-500/20 flex items-center justify-center border border-purple-500/30">
                                         <Zap className="w-5 h-5 text-purple-400" />
                                     </div>
-                                    <h3 className="text-2xl font-black text-white tracking-widest uppercase">TRAINING ALGORITHMS</h3>
+                                    <h3 className="text-2xl font-black text-white tracking-widest uppercase">운동 루틴</h3>
                                 </div>
                                 <Button
                                     onClick={() => {
@@ -527,7 +527,7 @@ export function ExerciseLog() {
                                     }}
                                     className="h-12 px-6 rounded-2xl bg-purple-500 hover:bg-purple-600 text-white font-black text-[10px] tracking-widest shadow-xl transition-all"
                                 >
-                                    <Plus className="w-4 h-4 mr-2" strokeWidth={3} /> INITIALIZE ROUTINE
+                                    <Plus className="w-4 h-4 mr-2" strokeWidth={3} /> 루틴 추가
                                 </Button>
                             </div>
 
@@ -551,17 +551,17 @@ export function ExerciseLog() {
                                         </div>
                                         <h4 className="text-xl font-black text-white tracking-tighter uppercase mb-2">{routine.name}</h4>
                                         <div className="text-[10px] font-black text-white/30 tracking-widest uppercase mb-6 flex items-center gap-2">
-                                            <Flame className="w-3 h-3 text-rose-500" /> {routine.items.length} PHASES LOADED
+                                            <Flame className="w-3 h-3 text-rose-500" /> {routine.items.length}가지 운동
                                         </div>
 
                                         <div className="space-y-3 mb-10 flex-1">
                                             {routine.items.slice(0, 3).map((item, i) => (
                                                 <div key={i} className="flex items-center gap-3 text-[10px] font-bold text-white/50 uppercase">
                                                     <div className="w-1 h-1 rounded-full bg-purple-500" />
-                                                    {item.type} {item.sets ? `(${item.sets.length} SETS)` : ''}
+                                                    {item.type} {item.sets ? `(${item.sets.length}세트)` : ''}
                                                 </div>
                                             ))}
-                                            {routine.items.length > 3 && <div className="text-[9px] font-black text-white/20 pl-4">+{routine.items.length - 3} MORE ENTITIES...</div>}
+                                            {routine.items.length > 3 && <div className="text-[9px] font-black text-white/20 pl-4">+{routine.items.length - 3}개 더...</div>}
                                         </div>
 
                                         <Button
@@ -588,7 +588,7 @@ export function ExerciseLog() {
                                                 setActiveTab('log');
                                             }}
                                         >
-                                            <Play className="w-4 h-4 mr-2" /> EXECUTE ROUTINE
+                                            <Play className="w-4 h-4 mr-2" /> 루틴 시작
                                         </Button>
                                     </motion.div>
                                 ))}
@@ -596,7 +596,7 @@ export function ExerciseLog() {
                                 {exerciseRoutines.length === 0 && (
                                     <div className="col-span-full py-32 flex flex-col items-center justify-center text-center opacity-10 gap-6">
                                         <Sparkles className="w-16 h-16" />
-                                        <p className="text-[10px] font-black tracking-[0.4em] uppercase">SYSTEM AWAITING TRAINING DATA</p>
+                                        <p className="text-[10px] font-black tracking-[0.4em] uppercase">루틴이 없습니다</p>
                                     </div>
                                 )}
                             </div>
@@ -622,10 +622,10 @@ export function ExerciseLog() {
                 <DialogContent className="glass-premium border border-white/10 text-white rounded-[40px] p-0 shadow-2xl sm:max-w-[550px] overflow-hidden">
                     <DialogHeader className="p-10 pb-0">
                         <DialogTitle className="text-3xl font-black tracking-tighter uppercase mb-2">
-                            {addStep === 'category' ? 'SELECT SECTOR' : addStep === 'type' ? 'IDENTIFY ENTITY' : type.toUpperCase()}
+                            {addStep === 'category' ? '카테고리 선택' : addStep === 'type' ? '운동 선택' : type}
                         </DialogTitle>
                         <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] italic">
-                            {addStep === 'category' ? 'IDENTIFY THE CATEGORY OF PHYSICAL ACTIVITY' : 'SPECIFY THE EXACT COMPONENT'}
+                            {addStep === 'category' ? '운동 카테고리를 선택하세요' : '정확한 운동 종목을 선택하세요'}
                         </p>
                     </DialogHeader>
 
@@ -633,10 +633,10 @@ export function ExerciseLog() {
                         {addStep === 'category' && (
                             <div className="grid grid-cols-2 gap-6 pb-2">
                                 {[
-                                    { id: 'weight', label: 'WEIGHTS', icon: Dumbbell, color: 'hover:bg-rose-500/20 border-rose-500/10 text-rose-400' },
-                                    { id: 'cardio', label: 'CARDIO', icon: Footprints, color: 'hover:bg-sky-500/20 border-sky-500/10 text-sky-400' },
-                                    { id: 'sport', label: 'SPORT', icon: Trophy, color: 'hover:bg-amber-500/20 border-amber-500/10 text-amber-400' },
-                                    { id: 'fitness', label: 'FITNESS', icon: Activity, color: 'hover:bg-emerald-500/20 border-emerald-500/10 text-emerald-400' },
+                                    { id: 'weight', label: '웨이트', icon: Dumbbell, color: 'hover:bg-rose-500/20 border-rose-500/10 text-rose-400' },
+                                    { id: 'cardio', label: '유산소', icon: Footprints, color: 'hover:bg-sky-500/20 border-sky-500/10 text-sky-400' },
+                                    { id: 'sport', label: '스포츠', icon: Trophy, color: 'hover:bg-amber-500/20 border-amber-500/10 text-amber-400' },
+                                    { id: 'fitness', label: '피트니스', icon: Activity, color: 'hover:bg-emerald-500/20 border-emerald-500/10 text-emerald-400' },
                                 ].map((item) => (
                                     <button
                                         key={item.id}
@@ -656,10 +656,10 @@ export function ExerciseLog() {
                         {addStep === 'type' && (
                             <div className="space-y-8 max-h-[450px] overflow-y-auto custom-scrollbar pr-4">
                                 <div className="space-y-3">
-                                    <label className="text-[9px] font-black text-white/20 uppercase tracking-widest">IDENTIFY NEW ENTITY</label>
+                                    <label className="text-[9px] font-black text-white/20 uppercase tracking-widest">새로운 운동 추가</label>
                                     <div className="flex gap-3">
                                         <Input
-                                            placeholder="ENTER SESSION NAME..."
+                                            placeholder="운동 이름 입력..."
                                             value={searchQuery}
                                             onChange={(e) => setSearchQuery(e.target.value)}
                                             className="h-14 font-black text-sm border-white/5 bg-white/5 focus-visible:ring-rose-500/30 rounded-2xl text-white placeholder:text-white/10"
@@ -693,7 +693,7 @@ export function ExerciseLog() {
                                     ))}
                                 </div>
                                 <Button variant="ghost" className="w-full h-12 font-black text-[10px] text-white/20 tracking-widest uppercase hover:text-white transition-all" onClick={() => setAddStep('category')}>
-                                    <ArrowLeft className="mr-3 w-4 h-4" /> REVERT TO CATEGORY
+                                    <ArrowLeft className="mr-3 w-4 h-4" /> 카테고리로 돌아가기
                                 </Button>
                             </div>
                         )}
@@ -703,7 +703,7 @@ export function ExerciseLog() {
                                 {category === 'weight' && (
                                     <div className="space-y-8">
                                         <div className="space-y-4">
-                                            <label className="text-[9px] font-black text-white/20 uppercase tracking-widest">TARGET SECTOR</label>
+                                            <label className="text-[9px] font-black text-white/20 uppercase tracking-widest">목표 부위</label>
                                             <div className="flex flex-wrap gap-2">
                                                 {TARGET_PARTS.map(part => (
                                                     <button
@@ -721,16 +721,16 @@ export function ExerciseLog() {
                                         </div>
 
                                         <div className="space-y-4">
-                                            <label className="text-[9px] font-black text-white/20 uppercase tracking-widest">METRICS INPUT</label>
+                                            <label className="text-[9px] font-black text-white/20 uppercase tracking-widest">세트 입력</label>
                                             <div className="flex items-center gap-4">
                                                 <div className="flex-1 space-y-2">
                                                     <Input type="number" value={tempWeight} onChange={e => setTempWeight(e.target.value)} placeholder="00" className="h-16 text-2xl font-black text-center bg-white/5 border-white/5 rounded-2xl focus:ring-rose-500/30" />
-                                                    <div className="text-[8px] text-center font-black text-white/20 uppercase tracking-widest">KG MASS</div>
+                                                    <div className="text-[8px] text-center font-black text-white/20 uppercase tracking-widest">무게 (KG)</div>
                                                 </div>
                                                 <X className="w-5 h-5 text-white/10 mt-[-20px]" />
                                                 <div className="flex-1 space-y-2">
                                                     <Input type="number" value={tempReps} onChange={e => setTempReps(e.target.value)} placeholder="00" className="h-16 text-2xl font-black text-center bg-white/5 border-white/5 rounded-2xl focus:ring-rose-500/30" />
-                                                    <div className="text-[8px] text-center font-black text-white/20 uppercase tracking-widest">REPETITIONS</div>
+                                                    <div className="text-[8px] text-center font-black text-white/20 uppercase tracking-widest">횟수</div>
                                                 </div>
                                                 <Button onClick={handleAddSet} className="w-16 h-16 rounded-2xl bg-rose-500 hover:bg-rose-600 shadow-xl transition-all self-start">
                                                     <Plus className="w-6 h-6" strokeWidth={3} />
@@ -744,7 +744,7 @@ export function ExerciseLog() {
                                                     <div key={s.id} className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5 shadow-inner group/set">
                                                         <span className="font-black text-white/20 text-[10px] w-8">#{idx + 1}</span>
                                                         <div className="flex-1 text-center font-black tracking-widest text-white uppercase text-[11px]">
-                                                            {s.weight} KG <span className="text-rose-500 mx-3">|</span> {s.reps} REPS
+                                                            {s.weight} KG <span className="text-rose-500 mx-3">|</span> {s.reps}회
                                                         </div>
                                                         <button onClick={() => handleDeleteSet(s.id)} className="text-white/10 hover:text-rose-500 transition-colors">
                                                             <Trash2 className="w-4 h-4" />
@@ -760,33 +760,33 @@ export function ExerciseLog() {
                                     <div className="space-y-8">
                                         <div className="grid grid-cols-2 gap-8">
                                             <div className="space-y-3">
-                                                <label className="text-[9px] font-black text-white/20 uppercase tracking-widest">MINUTES</label>
+                                                <label className="text-[9px] font-black text-white/20 uppercase tracking-widest">분</label>
                                                 <Input type="number" value={durationMin} onChange={e => setDurationMin(e.target.value)} placeholder="0" className="h-14 font-black text-xl text-center bg-white/5 border-white/5 rounded-2xl" />
                                             </div>
                                             <div className="space-y-3">
-                                                <label className="text-[9px] font-black text-white/20 uppercase tracking-widest">SECONDS</label>
+                                                <label className="text-[9px] font-black text-white/20 uppercase tracking-widest">초</label>
                                                 <Input type="number" value={durationSec} onChange={e => setDurationSec(e.target.value)} placeholder="0" className="h-14 font-black text-xl text-center bg-white/5 border-white/5 rounded-2xl" />
                                             </div>
                                         </div>
                                         {category === 'cardio' && (
                                             <div className="space-y-3">
-                                                <label className="text-[9px] font-black text-white/20 uppercase tracking-widest">DISTANCE (KM)</label>
+                                                <label className="text-[9px] font-black text-white/20 uppercase tracking-widest">거리 (KM)</label>
                                                 <Input type="number" value={distance} onChange={e => setDistance(e.target.value)} placeholder="0.00" className="h-14 font-black text-xl text-center bg-white/5 border-white/5 rounded-2xl" />
                                             </div>
                                         )}
                                         {category === 'sport' && (
                                             <div className="space-y-3">
-                                                <label className="text-[9px] font-black text-white/20 uppercase tracking-widest">PERFORMANCE RESULT</label>
-                                                <Input value={result} onChange={e => setResult(e.target.value)} placeholder="SCORE / OUTCOME..." className="h-14 font-black text-lg bg-white/5 border-white/5 rounded-2xl" />
+                                                <label className="text-[9px] font-black text-white/20 uppercase tracking-widest">결과</label>
+                                                <Input value={result} onChange={e => setResult(e.target.value)} placeholder="점수 / 결과..." className="h-14 font-black text-lg bg-white/5 border-white/5 rounded-2xl" />
                                             </div>
                                         )}
                                     </div>
                                 )}
 
                                 <div className="flex gap-4 pt-10 border-t border-white/5">
-                                    <Button variant="outline" className="flex-1 h-14 rounded-2xl border-white/10 bg-white/5 text-white/40 font-black text-[10px] tracking-widest uppercase hover:text-white" onClick={() => setAddStep('type')}>REVERT</Button>
+                                    <Button variant="outline" className="flex-1 h-14 rounded-2xl border-white/10 bg-white/5 text-white/40 font-black text-[10px] tracking-widest uppercase hover:text-white" onClick={() => setAddStep('type')}>이전</Button>
                                     <Button onClick={handleQuickAdd} className="flex-2 h-14 rounded-2xl bg-rose-500 hover:bg-rose-600 text-white font-black text-xs tracking-widest uppercase shadow-xl">
-                                        COMMIT PHASE
+                                        운동 저장
                                     </Button>
                                 </div>
                             </div>
@@ -799,27 +799,27 @@ export function ExerciseLog() {
             <Dialog open={isRoutineDialogOpen} onOpenChange={setIsRoutineDialogOpen}>
                 <DialogContent className="glass-premium border border-white/10 text-white rounded-[40px] p-0 shadow-2xl sm:max-w-[650px] max-h-[90vh] overflow-hidden">
                     <DialogHeader className="p-10 pb-0">
-                        <DialogTitle className="text-3xl font-black tracking-tighter uppercase mb-4">ENGINEER ALGORITHM</DialogTitle>
+                        <DialogTitle className="text-3xl font-black tracking-tighter uppercase mb-4">루틴 만들기</DialogTitle>
                     </DialogHeader>
                     {/* Routine content would go here, omitting for brevity in this massive edit, 
                         but it should follow the same visual language - glass-premium, rose/purple focus */}
                     <div className="p-10 pt-4 bg-muted/5">
-                        <p className="text-xs font-bold text-white/30 uppercase tracking-[0.2em] italic mb-10">ROUTINE CONSTRUCTION INTERFACE ACTIVE...</p>
+                        <p className="text-xs font-bold text-white/30 uppercase tracking-[0.2em] italic mb-10">루틴 구성 인터페이스 활성화 중...</p>
                         {/* Placeholder for routine builder UI */}
                         <div className="space-y-6">
                             <div className="space-y-3">
-                                <label className="text-[9px] font-black text-white/20 uppercase tracking-widest">ALGORITHM NAME</label>
-                                <Input value={routineName} onChange={e => setRoutineName(e.target.value)} placeholder="ENTER ROUTINE IDENTITY..." className="h-14 font-black text-sm border-white/5 bg-white/5 rounded-2xl" />
+                                <label className="text-[9px] font-black text-white/20 uppercase tracking-widest">루틴 이름</label>
+                                <Input value={routineName} onChange={e => setRoutineName(e.target.value)} placeholder="루틴 이름 입력..." className="h-14 font-black text-sm border-white/5 bg-white/5 rounded-2xl" />
                             </div>
                             {/* ... other routine builder fields ... */}
                             <div className="py-20 text-center border-2 border-dashed border-white/5 rounded-[32px] opacity-10 font-bold uppercase text-[9px] tracking-widest leading-loose">
-                                ROUTINE BUILDER COMPONENT STUCK IN VOID.<br />PLEASE USE INDIVIDIAL MANUAL ENTRIES TEMPORARILY.
+                                루틴 빌더를 준비 중입니다.<br />현재는 개별 수동 입력을 사용해주세요.
                             </div>
                         </div>
                     </div>
                     <DialogFooter className="p-10 pt-6">
                         <Button className="w-full h-14 rounded-2xl bg-purple-500 hover:bg-purple-600 text-white font-black text-lg tracking-widest shadow-xl" onClick={() => setIsRoutineDialogOpen(false)}>
-                            SAVE ALGORITHM
+                            루틴 저장
                         </Button>
                     </DialogFooter>
                 </DialogContent>

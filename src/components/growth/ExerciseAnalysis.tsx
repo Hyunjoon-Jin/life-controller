@@ -102,9 +102,9 @@ export function ExerciseAnalysis({ sessions, inBodyEntries = [] }: ExerciseAnaly
     const categoryData = useMemo(() => {
         const counts: Record<string, number> = {};
         filteredSessions.forEach(s => {
-            const cat = s.category === 'weight' ? 'WEIGHTS' :
-                s.category === 'cardio' ? 'CARDIO' :
-                    s.category === 'fitness' ? 'FITNESS' : 'SPORT';
+            const cat = s.category === 'weight' ? '웨이트' :
+                s.category === 'cardio' ? '유산소' :
+                    s.category === 'fitness' ? '피트니스' : '스포츠';
             counts[cat] = (counts[cat] || 0) + 1;
         });
         return Object.entries(counts).map(([name, value]) => ({ name, value }));
@@ -131,7 +131,7 @@ export function ExerciseAnalysis({ sessions, inBodyEntries = [] }: ExerciseAnaly
                     <p className="text-lg font-black text-white uppercase tracking-tighter">
                         {payload[0].value.toLocaleString()}
                         <small className="text-[9px] ml-1 opacity-40">
-                            {dailyChartMetric === 'duration' ? 'MIN' : dailyChartMetric === 'volume' ? 'KG' : 'SETS'}
+                            {dailyChartMetric === 'duration' ? '분' : dailyChartMetric === 'volume' ? 'KG' : '세트'}
                         </small>
                     </p>
                 </div>
@@ -149,8 +149,8 @@ export function ExerciseAnalysis({ sessions, inBodyEntries = [] }: ExerciseAnaly
                         <Brain className="w-6 h-6 text-sky-400" />
                     </div>
                     <div>
-                        <h3 className="text-2xl font-black text-white tracking-widest uppercase mb-1">COGNITIVE ANALYSIS</h3>
-                        <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] italic">DEEP NEURAL INSIGHTS INTO PHYSICAL PERFORMANCE</p>
+                        <h3 className="text-2xl font-black text-white tracking-widest uppercase mb-1">운동 분석</h3>
+                        <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] italic">운동 성과에 대한 심층 분석</p>
                     </div>
                 </div>
 
@@ -170,8 +170,8 @@ export function ExerciseAnalysis({ sessions, inBodyEntries = [] }: ExerciseAnaly
                     <div className="w-px h-6 bg-white/10 mx-2" />
                     <Tabs value={viewMode} onValueChange={(v: any) => setViewMode(v)} className="bg-transparent border-none">
                         <TabsList className="bg-white/5 p-1 rounded-xl">
-                            <TabsTrigger value="week" className="px-4 py-1.5 rounded-lg text-[9px] font-black tracking-widest uppercase data-[state=active]:bg-rose-500 data-[state=active]:text-white">WEEK</TabsTrigger>
-                            <TabsTrigger value="month" className="px-4 py-1.5 rounded-lg text-[9px] font-black tracking-widest uppercase data-[state=active]:bg-rose-500 data-[state=active]:text-white">MONTH</TabsTrigger>
+                            <TabsTrigger value="week" className="px-4 py-1.5 rounded-lg text-[9px] font-black tracking-widest uppercase data-[state=active]:bg-rose-500 data-[state=active]:text-white">주간</TabsTrigger>
+                            <TabsTrigger value="month" className="px-4 py-1.5 rounded-lg text-[9px] font-black tracking-widest uppercase data-[state=active]:bg-rose-500 data-[state=active]:text-white">월간</TabsTrigger>
                         </TabsList>
                     </Tabs>
                 </div>
@@ -180,10 +180,10 @@ export function ExerciseAnalysis({ sessions, inBodyEntries = [] }: ExerciseAnaly
             {/* Quick Stats Grid */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                 {[
-                    { label: 'SESSIONS', value: stats.totalCount, icon: Zap, color: 'rose' },
-                    { label: 'ACTIVE DAYS', value: stats.uniqueDays, icon: Activity, color: 'emerald' },
-                    { label: 'ENGINE TIME', value: `${Math.floor(stats.totalDuration)}M`, icon: Timer, color: 'sky' },
-                    { label: 'TOTAL LOAD', value: `${(stats.totalVolume / 1000).toFixed(1)}T`, icon: Flame, color: 'amber' },
+                    { label: '운동 횟수', value: stats.totalCount, icon: Zap, color: 'rose' },
+                    { label: '활동 일수', value: stats.uniqueDays, icon: Activity, color: 'emerald' },
+                    { label: '총 운동 시간', value: `${Math.floor(stats.totalDuration)}분`, icon: Timer, color: 'sky' },
+                    { label: '총 중량', value: `${(stats.totalVolume / 1000).toFixed(1)}T`, icon: Flame, color: 'amber' },
                 ].map((stat, i) => (
                     <motion.div
                         key={stat.label}
@@ -212,14 +212,14 @@ export function ExerciseAnalysis({ sessions, inBodyEntries = [] }: ExerciseAnaly
                 <Card className="lg:col-span-2 glass-premium rounded-[40px] border border-white/5 bg-transparent overflow-hidden">
                     <CardHeader className="p-10 pb-0 flex flex-row items-center justify-between">
                         <div>
-                            <CardTitle className="text-xl font-black text-white tracking-widest uppercase">TEMPORAL DYNAMICS</CardTitle>
-                            <p className="text-[9px] font-bold text-white/20 uppercase mt-1 tracking-widest">KINETIC PERFORMANCE LOG</p>
+                            <CardTitle className="text-xl font-black text-white tracking-widest uppercase">일별 운동 기록</CardTitle>
+                            <p className="text-[9px] font-bold text-white/20 uppercase mt-1 tracking-widest">운동 성과 로그</p>
                         </div>
                         <Tabs value={dailyChartMetric} onValueChange={(v: any) => setDailyChartMetric(v)} className="bg-white/5 p-1 rounded-xl border border-white/5">
                             <TabsList className="bg-transparent border-none p-0 flex h-auto">
-                                <TabsTrigger value="duration" className="px-3 py-1.5 rounded-lg text-[8px] font-black tracking-widest uppercase data-[state=active]:bg-sky-500 data-[state=active]:text-white">TIME</TabsTrigger>
-                                <TabsTrigger value="volume" className="px-3 py-1.5 rounded-lg text-[8px] font-black tracking-widest uppercase data-[state=active]:bg-rose-500 data-[state=active]:text-white">LOAD</TabsTrigger>
-                                <TabsTrigger value="sets" className="px-3 py-1.5 rounded-lg text-[8px] font-black tracking-widest uppercase data-[state=active]:bg-amber-500 data-[state=active]:text-white">SETS</TabsTrigger>
+                                <TabsTrigger value="duration" className="px-3 py-1.5 rounded-lg text-[8px] font-black tracking-widest uppercase data-[state=active]:bg-sky-500 data-[state=active]:text-white">시간</TabsTrigger>
+                                <TabsTrigger value="volume" className="px-3 py-1.5 rounded-lg text-[8px] font-black tracking-widest uppercase data-[state=active]:bg-rose-500 data-[state=active]:text-white">중량</TabsTrigger>
+                                <TabsTrigger value="sets" className="px-3 py-1.5 rounded-lg text-[8px] font-black tracking-widest uppercase data-[state=active]:bg-amber-500 data-[state=active]:text-white">세트</TabsTrigger>
                             </TabsList>
                         </Tabs>
                     </CardHeader>
@@ -244,8 +244,8 @@ export function ExerciseAnalysis({ sessions, inBodyEntries = [] }: ExerciseAnaly
                 {/* Distribution Pie Chart */}
                 <Card className="glass-premium rounded-[40px] border border-white/5 bg-transparent overflow-hidden">
                     <CardHeader className="p-10 pb-0">
-                        <CardTitle className="text-xl font-black text-white tracking-widest uppercase text-center">SECTOR VARIANCE</CardTitle>
-                        <p className="text-[9px] font-bold text-white/20 uppercase mt-1 tracking-widest text-center">ACTIVITY CATEGORY DISTRIBUTION</p>
+                        <CardTitle className="text-xl font-black text-white tracking-widest uppercase text-center">카테고리 분포</CardTitle>
+                        <p className="text-[9px] font-bold text-white/20 uppercase mt-1 tracking-widest text-center">운동 카테고리 분포</p>
                     </CardHeader>
                     <CardContent className="p-10 h-[350px]">
                         {categoryData.length > 0 ? (
@@ -270,7 +270,7 @@ export function ExerciseAnalysis({ sessions, inBodyEntries = [] }: ExerciseAnaly
                                             return (
                                                 <div className="glass-premium border border-white/10 p-4 rounded-2xl shadow-2xl">
                                                     <p className="text-[10px] font-black tracking-widest text-white uppercase">{payload[0].name}</p>
-                                                    <p className="text-lg font-black text-white">{payload[0].value} <small className="text-[9px] opacity-40">SESSIONS</small></p>
+                                                    <p className="text-lg font-black text-white">{payload[0].value} <small className="text-[9px] opacity-40">회</small></p>
                                                 </div>
                                             );
                                         }
@@ -287,7 +287,7 @@ export function ExerciseAnalysis({ sessions, inBodyEntries = [] }: ExerciseAnaly
                         ) : (
                             <div className="flex flex-col items-center justify-center h-full opacity-10 gap-4">
                                 <PieChartIcon className="w-12 h-12" />
-                                <p className="text-[10px] font-black tracking-widest uppercase">AWAITING PERFORMANCE DATA</p>
+                                <p className="text-[10px] font-black tracking-widest uppercase">데이터가 없습니다</p>
                             </div>
                         )}
                     </CardContent>
@@ -296,8 +296,8 @@ export function ExerciseAnalysis({ sessions, inBodyEntries = [] }: ExerciseAnaly
                 {/* Body Part Heatmap (Simulated via Bar Chart for clarity) */}
                 <Card className="glass-premium rounded-[40px] border border-white/5 bg-transparent overflow-hidden">
                     <CardHeader className="p-10 pb-0">
-                        <CardTitle className="text-xl font-black text-white tracking-widest uppercase">PHYSIOLOGICAL TARGETS</CardTitle>
-                        <p className="text-[9px] font-bold text-white/20 uppercase mt-1 tracking-widest">MUSCLE GROUP INTENSITY (SETS)</p>
+                        <CardTitle className="text-xl font-black text-white tracking-widest uppercase">부위별 운동량</CardTitle>
+                        <p className="text-[9px] font-bold text-white/20 uppercase mt-1 tracking-widest">근육 그룹 강도 (세트)</p>
                     </CardHeader>
                     <CardContent className="p-10 h-[350px]">
                         {partData.length > 0 ? (
@@ -318,7 +318,7 @@ export function ExerciseAnalysis({ sessions, inBodyEntries = [] }: ExerciseAnaly
                                             return (
                                                 <div className="glass-premium border border-white/10 p-4 rounded-xl shadow-2xl">
                                                     <p className="text-[10px] font-black tracking-widest text-white/40 uppercase mb-1">{payload[0].payload.name}</p>
-                                                    <p className="text-lg font-black text-white">{payload[0].value} <small className="text-[9px] opacity-40">SETS</small></p>
+                                                    <p className="text-lg font-black text-white">{payload[0].value} <small className="text-[9px] opacity-40">세트</small></p>
                                                 </div>
                                             );
                                         }
@@ -334,7 +334,7 @@ export function ExerciseAnalysis({ sessions, inBodyEntries = [] }: ExerciseAnaly
                         ) : (
                             <div className="flex flex-col items-center justify-center h-full opacity-10 gap-4">
                                 <Dumbbell className="w-12 h-12" />
-                                <p className="text-[10px] font-black tracking-widest uppercase">NO WEIGHTS RECORDED</p>
+                                <p className="text-[10px] font-black tracking-widest uppercase">웨이트 기록 없음</p>
                             </div>
                         )}
                     </CardContent>
@@ -345,8 +345,8 @@ export function ExerciseAnalysis({ sessions, inBodyEntries = [] }: ExerciseAnaly
                     <Card className="lg:col-span-2 glass-premium rounded-[40px] border border-white/5 bg-transparent overflow-hidden">
                         <CardHeader className="p-10 pb-0">
                             <div>
-                                <CardTitle className="text-xl font-black text-white tracking-widest uppercase">BIOMETRIC EVOLUTION</CardTitle>
-                                <p className="text-[9px] font-bold text-white/20 uppercase mt-1 tracking-widest">BODY COMPOSITION CHRONICLE</p>
+                                <CardTitle className="text-xl font-black text-white tracking-widest uppercase">체성분 변화</CardTitle>
+                                <p className="text-[9px] font-bold text-white/20 uppercase mt-1 tracking-widest">체성분 기록</p>
                             </div>
                         </CardHeader>
                         <CardContent className="p-10 h-[350px]">
@@ -384,9 +384,9 @@ export function ExerciseAnalysis({ sessions, inBodyEntries = [] }: ExerciseAnaly
                                         iconType="circle"
                                         formatter={(value) => <span className="text-[10px] font-black tracking-widest text-white/40 uppercase ml-2">{value}</span>}
                                     />
-                                    <Area yAxisId="left" type="monotone" dataKey="weight" name="MASS (KG)" stroke="#0ea5e9" strokeWidth={4} fillOpacity={1} fill="url(#colorWeight)" dot={{ r: 4, fill: '#0ea5e9', stroke: '#000', strokeWidth: 2 }} />
-                                    <Area yAxisId="left" type="monotone" dataKey="skeletalMuscleMass" name="MUSCLE (KG)" stroke="#8b5cf6" strokeWidth={4} fillOpacity={1} fill="url(#colorMuscle)" dot={{ r: 4, fill: '#8b5cf6', stroke: '#000', strokeWidth: 2 }} />
-                                    <Line yAxisId="right" type="monotone" dataKey="bodyFatPercent" name="FAT (%)" stroke="#f43f5e" strokeWidth={4} dot={{ r: 4, fill: '#f43f5e', stroke: '#000', strokeWidth: 2 }} strokeDasharray="5 5" />
+                                    <Area yAxisId="left" type="monotone" dataKey="weight" name="체중 (KG)" stroke="#0ea5e9" strokeWidth={4} fillOpacity={1} fill="url(#colorWeight)" dot={{ r: 4, fill: '#0ea5e9', stroke: '#000', strokeWidth: 2 }} />
+                                    <Area yAxisId="left" type="monotone" dataKey="skeletalMuscleMass" name="근육량 (KG)" stroke="#8b5cf6" strokeWidth={4} fillOpacity={1} fill="url(#colorMuscle)" dot={{ r: 4, fill: '#8b5cf6', stroke: '#000', strokeWidth: 2 }} />
+                                    <Line yAxisId="right" type="monotone" dataKey="bodyFatPercent" name="체지방 (%)" stroke="#f43f5e" strokeWidth={4} dot={{ r: 4, fill: '#f43f5e', stroke: '#000', strokeWidth: 2 }} strokeDasharray="5 5" />
                                 </AreaChart>
                             </ResponsiveContainer>
                         </CardContent>
