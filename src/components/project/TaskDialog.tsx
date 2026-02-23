@@ -222,7 +222,7 @@ export function TaskDialog({ isOpen, onOpenChange, projectId, taskToEdit, defaul
                                 <Button
                                     variant="ghost"
                                     size="sm"
-                                    className="text-xs text-indigo-600 h-6 px-2 hover:bg-indigo-50"
+                                    className="text-xs text-indigo-400 h-6 px-2 hover:bg-indigo-500/10"
                                     onClick={handleAIAnalyze}
                                     disabled={!title || isAnalyzing}
                                 >
@@ -257,8 +257,8 @@ export function TaskDialog({ isOpen, onOpenChange, projectId, taskToEdit, defaul
                                             className={cn(
                                                 "px-4 py-2 rounded-md text-sm font-medium transition-colors border",
                                                 priority === p
-                                                    ? (p === 'high' ? "bg-red-100 border-red-500 text-red-700" : p === 'medium' ? "bg-yellow-100 border-yellow-500 text-yellow-700" : "bg-blue-100 border-blue-500 text-blue-700")
-                                                    : "bg-white hover:bg-gray-50 text-gray-600"
+                                                    ? (p === 'high' ? "bg-red-500/15 border-red-500 text-red-400" : p === 'medium' ? "bg-yellow-500/15 border-yellow-500 text-yellow-400" : "bg-blue-500/15 border-blue-500 text-blue-400")
+                                                    : "bg-card hover:bg-muted text-muted-foreground"
                                             )}
                                         >
                                             {p === 'high' ? '높음' : p === 'medium' ? '중간' : '낮음'}
@@ -303,7 +303,7 @@ export function TaskDialog({ isOpen, onOpenChange, projectId, taskToEdit, defaul
                                 <div className="col-span-3">
                                     <div className="flex flex-wrap gap-2 mb-2">
                                         {tags.map(tag => (
-                                            <div key={tag} className="bg-indigo-50 text-indigo-700 text-xs px-2 py-1 rounded-md flex items-center gap-1">
+                                            <div key={tag} className="bg-indigo-500/10 text-indigo-400 text-xs px-2 py-1 rounded-md flex items-center gap-1">
                                                 <span>#{tag}</span>
                                                 <button onClick={() => setTags(tags.filter(t => t !== tag))} className="hover:bg-indigo-200 rounded-full p-0.5"><X className="w-3 h-3" /></button>
                                             </div>
@@ -327,7 +327,7 @@ export function TaskDialog({ isOpen, onOpenChange, projectId, taskToEdit, defaul
                             </div>
                         </div>
 
-                        <div className="border-t border-gray-100 my-2"></div>
+                        <div className="border-t border-border my-2"></div>
 
                         {/* Recurrence & Custom Fields */}
                         <div className="space-y-6">
@@ -336,7 +336,7 @@ export function TaskDialog({ isOpen, onOpenChange, projectId, taskToEdit, defaul
                                 onChange={setRecurrence}
                             />
 
-                            <div className="border-t border-gray-100"></div>
+                            <div className="border-t border-border"></div>
 
                             <TaskCustomFields
                                 taskFields={customFields}
@@ -345,7 +345,7 @@ export function TaskDialog({ isOpen, onOpenChange, projectId, taskToEdit, defaul
                             />
                         </div>
 
-                        <div className="border-t border-gray-100 my-2"></div>
+                        <div className="border-t border-border my-2"></div>
 
                         {/* Dependencies */}
                         <div className="space-y-4">
@@ -389,7 +389,7 @@ export function TaskDialog({ isOpen, onOpenChange, projectId, taskToEdit, defaul
                                                                     className="cursor-pointer"
                                                                 >
                                                                     <div className="flex items-center gap-2">
-                                                                        <div className={cn("w-2 h-2 rounded-full", task.completed ? "bg-green-500" : "bg-gray-300")} />
+                                                                        <div className={cn("w-2 h-2 rounded-full", task.completed ? "bg-green-500" : "bg-muted-foreground/30")} />
                                                                         <span>{task.title}</span>
                                                                         {dependencies.includes(task.id) && <Check className="ml-auto w-4 h-4" />}
                                                                     </div>
@@ -458,7 +458,7 @@ export function TaskDialog({ isOpen, onOpenChange, projectId, taskToEdit, defaul
                             <Button
                                 variant="ghost"
                                 size="sm"
-                                className="text-red-500 hover:text-red-700 hover:bg-red-50 flex items-center gap-2"
+                                className="text-red-500 hover:text-red-400 hover:bg-red-500/10 flex items-center gap-2"
                                 onClick={handleDelete}
                             >
                                 <Trash2 className="w-4 h-4" /> 삭제

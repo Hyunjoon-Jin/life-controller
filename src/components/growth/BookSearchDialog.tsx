@@ -205,7 +205,7 @@ ${actionItems.map(a => `- ${a}`).join('\n')}
                                                         onClick={() => setSelectedStore(s)}
                                                         className={cn(
                                                             "px-3 py-1 text-xs font-bold rounded-md transition-all",
-                                                            selectedStore === s ? "bg-white shadow text-primary" : "text-muted-foreground hover:text-foreground"
+                                                            selectedStore === s ? "bg-card shadow text-primary" : "text-muted-foreground hover:text-foreground"
                                                         )}
                                                     >
                                                         {s === 'yes24' ? 'Yes24' : s === 'kyobo' ? '교보문고' : '알라딘'}
@@ -231,10 +231,10 @@ ${actionItems.map(a => `- ${a}`).join('\n')}
                                         </div>
                                     </div>
 
-                                    <div className="text-xs text-muted-foreground bg-blue-50 p-3 rounded-lg flex gap-2 items-start mt-2">
-                                        <div className="w-5 h-5 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center flex-shrink-0 text-[10px] font-bold mt-0.5">?</div>
+                                    <div className="text-xs text-muted-foreground bg-blue-500/10 p-3 rounded-lg flex gap-2 items-start mt-2">
+                                        <div className="w-5 h-5 bg-blue-500/20 text-blue-400 rounded-full flex items-center justify-center flex-shrink-0 text-[10px] font-bold mt-0.5">?</div>
                                         <div>
-                                            <p className="font-bold text-blue-700 mb-1">사용 방법</p>
+                                            <p className="font-bold text-blue-400 mb-1">사용 방법</p>
                                             <ol className="list-decimal pl-4 space-y-1">
                                                 <li>위 검색창에 책 제목을 입력하고 <strong>검색</strong>을 누르세요.</li>
                                                 <li>새 창에 뜨는 서점 사이트에서 원하는 책을 찾으세요.</li>
@@ -310,7 +310,7 @@ ${actionItems.map(a => `- ${a}`).join('\n')}
                                                     key={star}
                                                     className={cn(
                                                         "w-6 h-6 cursor-pointer transition-colors",
-                                                        star <= rating ? "fill-yellow-400 text-yellow-400" : "text-gray-200 hover:text-yellow-200"
+                                                        star <= rating ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground/30 hover:text-yellow-200"
                                                     )}
                                                     onClick={() => setRating(star)}
                                                 />
@@ -374,7 +374,7 @@ ${actionItems.map(a => `- ${a}`).join('\n')}
                                                 size="sm"
                                                 onClick={handleAIAnalyze}
                                                 disabled={!review.trim() || isAnalyzing}
-                                                className="h-6 text-xs text-purple-600 hover:text-purple-700 hover:bg-purple-50 px-2"
+                                                className="h-6 text-xs text-purple-400 hover:text-purple-300 hover:bg-purple-500/10 px-2"
                                             >
                                                 {isAnalyzing ? (
                                                     <>

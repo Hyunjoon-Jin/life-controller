@@ -125,7 +125,7 @@ export function InteractiveDemo() {
                                 "flex flex-col items-center gap-2 p-4 rounded-3xl transition-all border-2 w-32",
                                 activePersona === p.id
                                     ? "bg-blue-600 border-blue-600 text-white shadow-2xl scale-110"
-                                    : "bg-white border-slate-100 text-slate-400 hover:border-blue-200"
+                                    : "bg-card border-border text-muted-foreground hover:border-blue-500/30"
                             )}
                         >
                             <p.icon className="w-6 h-6" />
@@ -144,8 +144,8 @@ export function InteractiveDemo() {
                         className={cn(
                             "flex items-center gap-2 px-6 py-3 rounded-2xl text-sm font-black transition-all border-2",
                             activeTab === tab.id
-                                ? "bg-white border-blue-600/20 text-blue-600 shadow-xl shadow-blue-500/10"
-                                : "bg-slate-50 border-transparent text-slate-400 hover:text-slate-600"
+                                ? "bg-card border-blue-600/20 text-blue-600 shadow-xl shadow-blue-500/10"
+                                : "bg-muted border-transparent text-muted-foreground hover:text-foreground"
                         )}
                     >
                         <tab.icon className="w-4 h-4" />
@@ -156,12 +156,12 @@ export function InteractiveDemo() {
 
             {/* Control Bar */}
             <div className="flex justify-end gap-2 mb-4 px-4">
-                <div className="bg-slate-100 dark:bg-white/5 p-1 rounded-xl flex">
+                <div className="bg-muted p-1 rounded-xl flex">
                     <button
                         onClick={() => setFrameMode('mobile')}
                         className={cn(
                             "p-2 rounded-lg transition-all",
-                            frameMode === 'mobile' ? "bg-white text-slate-900 shadow-sm" : "text-slate-400 hover:text-slate-600"
+                            frameMode === 'mobile' ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
                         )}
                     >
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
@@ -170,7 +170,7 @@ export function InteractiveDemo() {
                         onClick={() => setFrameMode('tablet')}
                         className={cn(
                             "p-2 rounded-lg transition-all",
-                            frameMode === 'tablet' ? "bg-white text-slate-900 shadow-sm" : "text-slate-400 hover:text-slate-600"
+                            frameMode === 'tablet' ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
                         )}
                     >
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
@@ -191,7 +191,7 @@ export function InteractiveDemo() {
                             { id: '3', title: '사용자 인터뷰 결과 정리', time: '14:30', done: false },
                         ]);
                     }}
-                    className="absolute top-6 right-6 text-xs font-bold text-slate-300 hover:text-blue-500 transition-colors z-10"
+                    className="absolute top-6 right-6 text-xs font-bold text-muted-foreground hover:text-blue-500 transition-colors z-10"
                 >
                     Reset Demo
                 </button>

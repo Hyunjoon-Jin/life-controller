@@ -95,15 +95,15 @@ export function ResourceLibrary({ project }: ResourceLibraryProps) {
                                 <div className="flex justify-between items-start">
                                     <div className={cn(
                                         "p-2 rounded-md",
-                                        resource.type === 'link' && "bg-blue-50 text-blue-600",
-                                        resource.type === 'file' && "bg-orange-50 text-orange-600",
-                                        resource.type === 'credential' && "bg-red-50 text-red-600",
-                                        resource.type === 'design' && "bg-purple-50 text-purple-600",
-                                        resource.type === 'figma' && "bg-purple-50 text-purple-600",
-                                        resource.type === 'github' && "bg-zinc-100 text-zinc-900",
-                                        resource.type === 'drive' && "bg-green-50 text-green-600",
-                                        resource.type === 'notion' && "bg-gray-50 text-gray-700",
-                                        resource.type === 'image' && "bg-sky-50 text-sky-600"
+                                        resource.type === 'link' && "bg-blue-500/10 text-blue-400",
+                                        resource.type === 'file' && "bg-orange-500/10 text-orange-400",
+                                        resource.type === 'credential' && "bg-red-500/10 text-red-400",
+                                        resource.type === 'design' && "bg-purple-500/10 text-purple-400",
+                                        resource.type === 'figma' && "bg-purple-500/10 text-purple-400",
+                                        resource.type === 'github' && "bg-zinc-500/10 text-zinc-300",
+                                        resource.type === 'drive' && "bg-green-500/10 text-green-400",
+                                        resource.type === 'notion' && "bg-gray-500/10 text-muted-foreground",
+                                        resource.type === 'image' && "bg-sky-500/10 text-sky-400"
                                     )}>
                                         <Icon className="w-5 h-5" />
                                     </div>
@@ -128,7 +128,7 @@ export function ResourceLibrary({ project }: ResourceLibraryProps) {
                                     </p>
                                 </div>
 
-                                <div className="mt-auto pt-2 flex items-center justify-between border-t border-gray-100">
+                                <div className="mt-auto pt-2 flex items-center justify-between border-t border-border">
                                     <span className="text-[10px] text-muted-foreground">
                                         {format(new Date(resource.addedAt), 'MM.dd')}
                                     </span>

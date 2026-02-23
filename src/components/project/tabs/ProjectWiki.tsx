@@ -110,8 +110,8 @@ export function ProjectWiki({ project }: ProjectWikiProps) {
                                     setIsEditing(false);
                                 }}
                                 className={`p-3 rounded-lg cursor-pointer transition-colors border ${selectedPageId === page.id
-                                        ? 'bg-indigo-50 border-indigo-200 text-indigo-900'
-                                        : 'bg-white hover:bg-gray-50 border-transparent hover:border-gray-200'
+                                        ? 'bg-indigo-500/10 border-indigo-500/30 text-indigo-400'
+                                        : 'bg-card hover:bg-muted/50 border-transparent hover:border-border'
                                     }`}
                             >
                                 <div className="font-medium truncate">{page.title}</div>
@@ -125,7 +125,7 @@ export function ProjectWiki({ project }: ProjectWikiProps) {
             </div>
 
             {/* Content Area */}
-            <div className="flex-1 min-w-0 bg-white rounded-xl border border-gray-100 shadow-sm flex flex-col h-full overflow-hidden">
+            <div className="flex-1 min-w-0 bg-card rounded-xl border border-border shadow-sm flex flex-col h-full overflow-hidden">
                 {selectedPage ? (
                     isEditing ? (
                         <div className="flex flex-col h-full p-6 gap-4">
@@ -152,9 +152,9 @@ export function ProjectWiki({ project }: ProjectWikiProps) {
                         </div>
                     ) : (
                         <div className="flex flex-col h-full">
-                            <div className="p-6 border-b flex justify-between items-start bg-gray-50/50">
+                            <div className="p-6 border-b flex justify-between items-start bg-muted/30">
                                 <div>
-                                    <h2 className="text-2xl font-bold text-slate-800">{selectedPage.title}</h2>
+                                    <h2 className="text-2xl font-bold text-foreground">{selectedPage.title}</h2>
                                     <div className="text-sm text-muted-foreground mt-2">
                                         최종 수정: {format(new Date(selectedPage.updatedAt), 'yyyy.MM.dd HH:mm')}
                                     </div>
@@ -163,7 +163,7 @@ export function ProjectWiki({ project }: ProjectWikiProps) {
                                     <Button variant="ghost" size="sm" onClick={handleEdit}>
                                         <Edit2 className="w-4 h-4 mr-2" /> 편집
                                     </Button>
-                                    <Button variant="ghost" size="sm" className="text-red-500 hover:text-red-600 hover:bg-red-50" onClick={() => handleDelete(selectedPage.id)}>
+                                    <Button variant="ghost" size="sm" className="text-red-500 hover:text-red-400 hover:bg-red-500/10" onClick={() => handleDelete(selectedPage.id)}>
                                         <Trash2 className="w-4 h-4" />
                                     </Button>
                                 </div>

@@ -158,7 +158,7 @@ export function FoodSearchDialog({ open, onOpenChange, onSelect }: FoodSearchDia
                                     value={query}
                                     onChange={(e) => setQuery(e.target.value)}
                                     onKeyDown={handleKeyDown}
-                                    className="bg-white"
+                                    className="bg-background"
                                     autoFocus
                                 />
                                 <Button onClick={handleSearch} disabled={isLoading}>
@@ -167,7 +167,7 @@ export function FoodSearchDialog({ open, onOpenChange, onSelect }: FoodSearchDia
                             </div>
                         </div>
 
-                        <div className="flex-1 overflow-y-auto p-4 bg-slate-50">
+                        <div className="flex-1 overflow-y-auto p-4 bg-muted/30">
                             {results.length === 0 && searched && !isLoading ? (
                                 <div className="h-full flex flex-col items-center justify-center text-muted-foreground opacity-60">
                                     <Utensils className="w-12 h-12 mb-3" />
@@ -181,24 +181,24 @@ export function FoodSearchDialog({ open, onOpenChange, onSelect }: FoodSearchDia
                                         {(searched ? results : POPULAR_FOODS).map((item, idx) => (
                                             <div
                                                 key={item.id || idx}
-                                                className="flex items-center gap-3 p-3 bg-white rounded-lg border hover:border-primary/50 hover:shadow-sm transition-all cursor-pointer group"
+                                                className="flex items-center gap-3 p-3 bg-card rounded-lg border hover:border-primary/50 hover:shadow-sm transition-all cursor-pointer group"
                                                 onClick={() => onSelect(item)}
                                             >
                                                 <div className={cn(
                                                     "w-12 h-12 shrink-0 rounded-md flex items-center justify-center font-bold text-xs border",
-                                                    item.isCustom ? "bg-blue-50 text-blue-500 border-blue-100" : "bg-orange-50 text-orange-400 border-orange-100"
+                                                    item.isCustom ? "bg-blue-500/10 text-blue-400 border-blue-500/20" : "bg-orange-500/10 text-orange-400 border-orange-500/20"
                                                 )}>
                                                     {item.isCustom ? 'User' : item.name[0]}
                                                 </div>
                                                 <div className="flex-1 min-w-0">
                                                     <div className="flex items-center gap-2">
                                                         <h4 className="font-bold text-sm truncate">{item.name}</h4>
-                                                        {item.brand && <span className="text-xs text-muted-foreground bg-slate-100 px-1.5 rounded">{item.brand}</span>}
+                                                        {item.brand && <span className="text-xs text-muted-foreground bg-muted px-1.5 rounded">{item.brand}</span>}
                                                     </div>
-                                                    <div className="flex gap-3 mt-1 text-[11px] text-slate-500">
-                                                        <span className="font-bold text-slate-700">{Math.round(item.calories)} kcal</span>
+                                                    <div className="flex gap-3 mt-1 text-[11px] text-muted-foreground">
+                                                        <span className="font-bold text-foreground">{Math.round(item.calories)} kcal</span>
                                                         <span>/ {item.servingSize}</span>
-                                                        <span className="w-px h-2 bg-slate-200 my-auto" />
+                                                        <span className="w-px h-2 bg-border my-auto" />
                                                         <span>C {Math.round(item.macros.carbs)}</span>
                                                         <span>P {Math.round(item.macros.protein)}</span>
                                                         <span>F {Math.round(item.macros.fat)}</span>
@@ -219,16 +219,16 @@ export function FoodSearchDialog({ open, onOpenChange, onSelect }: FoodSearchDia
                                                     {customFoods.map((item) => (
                                                         <div
                                                             key={item.id}
-                                                            className="flex items-center gap-3 p-3 bg-white rounded-lg border hover:border-primary/50 hover:shadow-sm transition-all cursor-pointer group"
+                                                            className="flex items-center gap-3 p-3 bg-card rounded-lg border hover:border-primary/50 hover:shadow-sm transition-all cursor-pointer group"
                                                             onClick={() => onSelect(item)}
                                                         >
-                                                            <div className="w-12 h-12 shrink-0 bg-blue-50 rounded-md flex items-center justify-center text-blue-500 font-bold text-xs border border-blue-100">
+                                                            <div className="w-12 h-12 shrink-0 bg-blue-500/10 rounded-md flex items-center justify-center text-blue-400 font-bold text-xs border border-blue-500/20">
                                                                 User
                                                             </div>
                                                             <div className="flex-1 min-w-0">
                                                                 <h4 className="font-bold text-sm truncate">{item.name}</h4>
-                                                                <div className="flex gap-3 mt-1 text-[11px] text-slate-500">
-                                                                    <span className="font-bold text-slate-700">{Math.round(item.calories)} kcal</span>
+                                                                <div className="flex gap-3 mt-1 text-[11px] text-muted-foreground">
+                                                                    <span className="font-bold text-foreground">{Math.round(item.calories)} kcal</span>
                                                                     <span>C {Math.round(item.macros.carbs)}</span>
                                                                     <span>P {Math.round(item.macros.protein)}</span>
                                                                     <span>F {Math.round(item.macros.fat)}</span>
@@ -247,8 +247,8 @@ export function FoodSearchDialog({ open, onOpenChange, onSelect }: FoodSearchDia
                         </div>
                     </>
                 ) : (
-                    <div className="flex-1 p-6 overflow-y-auto bg-slate-50">
-                        <div className="bg-white p-6 rounded-lg border shadow-sm space-y-4 max-w-md mx-auto">
+                    <div className="flex-1 p-6 overflow-y-auto bg-muted/20">
+                        <div className="bg-card p-6 rounded-lg border shadow-sm space-y-4 max-w-md mx-auto">
                             <div className="space-y-2">
                                 <Label>음식 이름 <span className="text-red-500">*</span></Label>
                                 <Input

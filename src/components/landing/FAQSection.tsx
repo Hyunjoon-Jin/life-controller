@@ -19,21 +19,21 @@ function FAQItem({ question, answer, isOpen, onClick, mode }: FAQItemProps) {
             onClick={onClick}
             className={cn(
                 "border-b transition-colors cursor-pointer group",
-                mode === 'life' ? "border-slate-200" : "border-white/10"
+                mode === 'life' ? "border-border" : "border-white/10"
             )}
         >
             <div className="py-6 flex items-center justify-between gap-4">
                 <h4 className={cn(
                     "text-lg font-bold transition-colors",
-                    mode === 'life' ? "text-slate-800 group-hover:text-blue-600" : "text-slate-200 group-hover:text-blue-400"
+                    mode === 'life' ? "text-foreground group-hover:text-blue-500" : "text-slate-200 group-hover:text-blue-400"
                 )}>
                     {question}
                 </h4>
                 <div className={cn(
                     "w-8 h-8 rounded-full flex items-center justify-center transition-all",
                     isOpen
-                        ? (mode === 'life' ? "bg-blue-100 text-blue-600 rotate-180" : "bg-blue-900/30 text-blue-400 rotate-180")
-                        : (mode === 'life' ? "bg-slate-100 text-slate-500" : "bg-white/5 text-slate-400")
+                        ? (mode === 'life' ? "bg-blue-500/10 text-blue-500 rotate-180" : "bg-blue-900/30 text-blue-400 rotate-180")
+                        : (mode === 'life' ? "bg-muted text-muted-foreground" : "bg-white/5 text-slate-400")
                 )}>
                     {isOpen ? <Minus className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
                 </div>
@@ -49,7 +49,7 @@ function FAQItem({ question, answer, isOpen, onClick, mode }: FAQItemProps) {
                     >
                         <p className={cn(
                             "pb-6 text-base leading-relaxed whitespace-pre-line",
-                            mode === 'life' ? "text-slate-500" : "text-slate-400"
+                            mode === 'life' ? "text-muted-foreground" : "text-slate-400"
                         )}>
                             {answer}
                         </p>
@@ -85,11 +85,11 @@ export function FAQSection({ mode }: { mode: 'life' | 'work' }) {
     return (
         <section className={cn(
             "py-0 px-6 transition-colors duration-1000",
-            mode === 'life' ? "bg-white" : "bg-slate-950"
+            mode === 'life' ? "bg-background" : "bg-slate-950"
         )}>
             <div className="container mx-auto max-w-3xl">
                 <div className="text-center mb-8">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 text-[10px] font-black uppercase tracking-widest mb-4">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-muted text-muted-foreground text-[10px] font-black uppercase tracking-widest mb-4">
                         <HelpCircle className="w-3 h-3" /> FAQ
                     </div>
                     <h2 className="text-2xl md:text-4xl font-black tracking-tight mb-4">
@@ -97,7 +97,7 @@ export function FAQSection({ mode }: { mode: 'life' | 'work' }) {
                     </h2>
                     <p className={cn(
                         "text-lg",
-                        mode === 'life' ? "text-slate-500" : "text-slate-400"
+                        mode === 'life' ? "text-muted-foreground" : "text-slate-400"
                     )}>
                         궁금한 점이 있으신가요? 가장 많이 접수된 질문들을 모았습니다.
                     </p>

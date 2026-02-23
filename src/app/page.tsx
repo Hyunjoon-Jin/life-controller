@@ -111,7 +111,7 @@ export default function Home() {
   // 1. Loading State
   if (isLoading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-[#080A0F] to-[#0D111A] gap-6">
+      <div className="min-h-screen flex flex-col items-center justify-center premium-gradient-bg gap-6">
         <div className="relative animate-pulse">
           <div className="absolute inset-0 bg-primary/10 rounded-2xl blur-xl scale-150" />
           <div className="relative w-16 h-16 bg-primary rounded-2xl shadow-lg flex items-center justify-center">
@@ -179,7 +179,7 @@ export default function Home() {
       )} */}
 
       {/* Desktop Header (Hidden on Mobile) */}
-      <header className="hidden md:flex mb-4 justify-between items-center w-full max-w-7xl mx-auto px-6 py-3 rounded-2xl transition-all duration-500 shadow-lg border bg-[#111827] border-white/10">
+      <header className="hidden md:flex mb-4 justify-between items-center w-full max-w-7xl mx-auto px-6 py-3 rounded-2xl transition-all duration-500 shadow-lg border glass-premium border-white/10">
         <div className="flex items-center gap-4">
           <button onClick={() => {
             setAppMode('life');
