@@ -65,9 +65,9 @@ export function VocabQuiz({ language }: VocabQuizProps) {
         return (
             <div className="h-[500px] flex flex-col items-center justify-center border-2 border-dashed border-white/10 rounded-[48px] bg-white/[0.01] p-12 text-center opacity-30">
                 <BrainCircuit className="w-16 h-16 text-indigo-500 mb-6" strokeWidth={1} />
-                <h3 className="text-xl font-black text-white tracking-[0.3em] uppercase mb-4">LEXICAL DATABASE VACANT</h3>
+                <h3 className="text-xl font-black text-white tracking-[0.3em] uppercase mb-4">어휘 데이터베이스가 비어있습니다</h3>
                 <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest leading-loose italic">
-                    COMMIT LINGUISTIC ARTIFACTS IN THE INPUT LOG<br />TO INITIALIZE SYNAPTIC RECALL PROTOCOLS.
+                    학습 로그에 어휘 항목을 기록하여<br />기억 소환 프로토콜을 초기화하세요.
                 </p>
             </div>
         );
@@ -81,10 +81,10 @@ export function VocabQuiz({ language }: VocabQuizProps) {
             <div className="flex items-center justify-between w-full px-8 relative z-10">
                 <div className="space-y-1">
                     <div className="text-[10px] font-black text-indigo-400 tracking-[0.4em] uppercase italic flex items-center gap-2">
-                        <ScanLine className="w-3 h-3" /> SYNAPTIC SCAN: ACTIVE
+                        <ScanLine className="w-3 h-3" /> 시냅스 스캔: 활성
                     </div>
                     <div className="text-sm font-black text-white/20 tracking-widest uppercase">
-                        INDEX: <span className="text-white">{currentIndex + 1}</span> / {quizList.length}
+                        색인: <span className="text-white">{currentIndex + 1}</span> / {quizList.length}
                     </div>
                 </div>
                 <Button
@@ -92,7 +92,7 @@ export function VocabQuiz({ language }: VocabQuizProps) {
                     onClick={handleShuffle}
                     className="h-10 px-5 rounded-xl bg-white/5 border border-white/5 text-[9px] font-black tracking-[0.2em] uppercase text-white/40 hover:text-white hover:bg-white/10 transition-all"
                 >
-                    <Shuffle className="w-3 h-3 mr-2 text-indigo-400" /> REORDER MATRIX
+                    <Shuffle className="w-3 h-3 mr-2 text-indigo-400" /> 매트릭스 재정렬
                 </Button>
             </div>
 
@@ -122,13 +122,13 @@ export function VocabQuiz({ language }: VocabQuizProps) {
                                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] border border-white/10 rounded-full animate-pulse delay-150" />
                                 </div>
                                 <div className="z-10 text-center space-y-6">
-                                    <span className="text-[10px] font-black text-indigo-400/50 uppercase tracking-[0.6em] mb-4 block">IDENTIFIER</span>
+                                    <span className="text-[10px] font-black text-indigo-400/50 uppercase tracking-[0.6em] mb-4 block">식별자</span>
                                     <h2 className="text-5xl md:text-6xl font-black text-white text-center break-words leading-tight tracking-tighter drop-shadow-[0_0_20px_rgba(255,255,255,0.2)]">
                                         {currentCard.word}
                                     </h2>
                                 </div>
                                 <div className="absolute bottom-10 flex items-center gap-3 text-[9px] font-black text-white/10 uppercase tracking-[0.4em] italic group-hover/card:text-indigo-400 transition-colors">
-                                    <Sparkles className="w-3 h-3" /> INITIALIZE RECALL
+                                    <Sparkles className="w-3 h-3" /> 기억 소환 초기화
                                 </div>
                             </Card>
 
@@ -136,13 +136,13 @@ export function VocabQuiz({ language }: VocabQuizProps) {
                             <Card className="absolute inset-0 backface-hidden w-full h-full flex flex-col items-center justify-center p-12 glass-premium border-2 border-indigo-500/40 bg-gradient-to-br from-indigo-500/20 to-transparent shadow-[0_0_50px_rgba(99,102,241,0.2)] rounded-[48px] rotate-y-180">
                                 <div className="absolute inset-0 bg-indigo-500/10 pointer-events-none" />
                                 <div className="z-10 text-center space-y-6">
-                                    <span className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.6em] mb-4 block underline underline-offset-8">SEMANTIC VALUE</span>
+                                    <span className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.6em] mb-4 block underline underline-offset-8">의미 값</span>
                                     <h2 className="text-3xl md:text-4xl font-black text-white text-center break-words leading-tight tracking-tight px-4">
                                         {currentCard.meaning}
                                     </h2>
                                 </div>
                                 <div className="absolute bottom-10 flex items-center gap-3 text-[9px] font-black text-white/20 uppercase tracking-[0.4em] italic">
-                                    <EyeOff className="w-3 h-3 text-indigo-500" /> SECURE DATA
+                                    <EyeOff className="w-3 h-3 text-indigo-500" /> 데이터 보호됨
                                 </div>
                             </Card>
                         </div>
@@ -164,7 +164,7 @@ export function VocabQuiz({ language }: VocabQuizProps) {
 
                     <div className="flex flex-col items-center gap-2">
                         <div className="text-[10px] font-black text-indigo-400 tracking-[0.3em] uppercase">
-                            {isFlipped ? 'SEMANTIC VERIFIED' : 'PENDING RECALL'}
+                            {isFlipped ? '의미 확인됨' : '소환 대기 중'}
                         </div>
                         <div className="flex gap-1.5">
                             {Array.from({ length: Math.min(quizList.length, 10) }).map((_, i) => (

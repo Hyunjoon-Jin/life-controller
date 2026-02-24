@@ -188,7 +188,7 @@ export function FoodSearchDialog({ open, onOpenChange, onSelect }: FoodSearchDia
                                                     "w-12 h-12 shrink-0 rounded-md flex items-center justify-center font-bold text-xs border",
                                                     item.isCustom ? "bg-blue-500/10 text-blue-400 border-blue-500/20" : "bg-orange-500/10 text-orange-400 border-orange-500/20"
                                                 )}>
-                                                    {item.isCustom ? 'User' : item.name[0]}
+                                                    {item.isCustom ? '사용자' : item.name[0]}
                                                 </div>
                                                 <div className="flex-1 min-w-0">
                                                     <div className="flex items-center gap-2">
@@ -223,7 +223,7 @@ export function FoodSearchDialog({ open, onOpenChange, onSelect }: FoodSearchDia
                                                             onClick={() => onSelect(item)}
                                                         >
                                                             <div className="w-12 h-12 shrink-0 bg-blue-500/10 rounded-md flex items-center justify-center text-blue-400 font-bold text-xs border border-blue-500/20">
-                                                                User
+                                                                사용자
                                                             </div>
                                                             <div className="flex-1 min-w-0">
                                                                 <h4 className="font-bold text-sm truncate">{item.name}</h4>

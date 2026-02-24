@@ -137,10 +137,10 @@ export function DietLog() {
     };
 
     const mealMeta = {
-        breakfast: { label: 'SUNRISE FUEL', icon: Coffee, color: 'text-amber-400', bg: 'bg-amber-500/10 border-amber-500/20' },
-        lunch: { label: 'CORE INTAKE', icon: Sun, color: 'text-emerald-400', bg: 'bg-emerald-500/10 border-emerald-500/20' },
-        dinner: { label: 'NOCTURNAL RESTORE', icon: Moon, color: 'text-indigo-400', bg: 'bg-indigo-500/10 border-indigo-500/20' },
-        snack: { label: 'SUPPLEMENTAL', icon: Sparkles, color: 'text-rose-400', bg: 'bg-rose-500/10 border-rose-500/20' }
+        breakfast: { label: '아침 식사', icon: Coffee, color: 'text-amber-400', bg: 'bg-amber-500/10 border-amber-500/20' },
+        lunch: { label: '점심 식사', icon: Sun, color: 'text-emerald-400', bg: 'bg-emerald-500/10 border-emerald-500/20' },
+        dinner: { label: '저녁 식사', icon: Moon, color: 'text-indigo-400', bg: 'bg-indigo-500/10 border-indigo-500/20' },
+        snack: { label: '간식/기타', icon: Sparkles, color: 'text-rose-400', bg: 'bg-rose-500/10 border-rose-500/20' }
     };
 
     const [activeTab, setActiveTab] = useState("log");
@@ -167,9 +167,9 @@ export function DietLog() {
                             <Utensils className="w-6 h-6 text-white" strokeWidth={3} />
                         </div>
                         <div>
-                            <h2 className="text-3xl font-black text-white tracking-tighter uppercase leading-none">NUTRITIONAL CORE</h2>
+                            <h2 className="text-3xl font-black text-white tracking-tighter uppercase leading-none">영양 관리 센터</h2>
                             <p className="text-[10px] font-bold text-white/60 tracking-[0.3em] uppercase mt-2 italic flex items-center gap-2">
-                                <Scale className="w-3 h-3" /> METABOLIC STATUS: SYNCHRONIZED
+                                <Scale className="w-3 h-3" /> 대사 상태: 동기화됨
                             </p>
                         </div>
                     </div>
@@ -177,15 +177,15 @@ export function DietLog() {
                     <div className="flex items-center gap-4">
                         <Tabs value={activeTab} onValueChange={setActiveTab} className="bg-white/5 p-1 rounded-2xl border border-white/5 backdrop-blur-md">
                             <TabsList className="bg-transparent border-none p-0 flex h-auto">
-                                <TabsTrigger value="log" className="px-6 py-2.5 rounded-xl font-black text-[10px] tracking-widest uppercase transition-all data-[state=active]:bg-emerald-500 data-[state=active]:text-white">JOURNAL</TabsTrigger>
-                                <TabsTrigger value="analysis" className="px-6 py-2.5 rounded-xl font-black text-[10px] tracking-widest uppercase transition-all data-[state=active]:bg-emerald-500 data-[state=active]:text-white">ANALYSIS</TabsTrigger>
+                                <TabsTrigger value="log" className="px-6 py-2.5 rounded-xl font-black text-[10px] tracking-widest uppercase transition-all data-[state=active]:bg-emerald-500 data-[state=active]:text-white">식단 로그</TabsTrigger>
+                                <TabsTrigger value="analysis" className="px-6 py-2.5 rounded-xl font-black text-[10px] tracking-widest uppercase transition-all data-[state=active]:bg-emerald-500 data-[state=active]:text-white">영양 분석</TabsTrigger>
                             </TabsList>
                         </Tabs>
                         <Button
                             onClick={() => { resetForm(); setIsDialogOpen(true); }}
                             className="h-12 px-6 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-black text-[10px] tracking-widest uppercase shadow-xl transition-all active:scale-95"
                         >
-                            <Plus className="w-4 h-4 mr-2" strokeWidth={3} /> INITIALIZE LOG
+                            <Plus className="w-4 h-4 mr-2" strokeWidth={3} /> 식단 추가
                         </Button>
                     </div>
                 </div>
@@ -204,7 +204,7 @@ export function DietLog() {
                             {groupedEntries.length === 0 ? (
                                 <div className="h-full flex flex-col items-center justify-center opacity-10 gap-6 py-32">
                                     <Utensils className="w-20 h-20" />
-                                    <p className="text-[10px] font-black tracking-[0.4em] uppercase">SYSTEM AWAITING NUTRITIONAL DATA</p>
+                                    <p className="text-[10px] font-black tracking-[0.4em] uppercase">영양 데이터 입력 대기 중</p>
                                 </div>
                             ) : (
                                 groupedEntries.map(([dateKey, entries]) => {
@@ -220,8 +220,8 @@ export function DietLog() {
                                                     <div className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">{format(parseISO(dateKey), 'EEEE', { locale: ko })}</div>
                                                 </div>
                                                 <div className="flex items-end gap-2">
-                                                    <span className="text-[9px] font-black text-white/60 uppercase tracking-widest mb-1">AGGREGATE</span>
-                                                    <span className="text-2xl font-black text-rose-500 tracking-tighter">{Math.round(dayCalories)} <small className="text-[10px] opacity-40">KCAL</small></span>
+                                                    <span className="text-[9px] font-black text-white/60 uppercase tracking-widest mb-1">일일 합계</span>
+                                                    <span className="text-2xl font-black text-rose-500 tracking-tighter">{Math.round(dayCalories)} <small className="text-[10px] opacity-40">kcal</small></span>
                                                 </div>
                                             </div>
 
@@ -253,14 +253,14 @@ export function DietLog() {
                                                                         </div>
                                                                         <span className="text-[10px] font-black text-white/40 tracking-widest uppercase">{meta.label}</span>
                                                                     </div>
-                                                                    <div className="text-xl font-black text-rose-500 tracking-tighter">{Math.round(entry.totalCalories || 0)} <small className="text-[9px]">KCAL</small></div>
+                                                                    <div className="text-xl font-black text-rose-500 tracking-tighter">{Math.round(entry.totalCalories || 0)} <small className="text-[9px]">kcal</small></div>
                                                                 </div>
                                                             )}
 
                                                             <div className="p-8 flex-1 flex flex-col">
                                                                 <div className="flex justify-between items-start mb-6">
                                                                     <div className="flex flex-col">
-                                                                        <span className="text-[9px] font-black text-white/60 uppercase tracking-widest leading-none mb-1">{format(new Date(entry.date), 'HH:mm')} PROTOCOL</span>
+                                                                        <span className="text-[9px] font-black text-white/60 uppercase tracking-widest leading-none mb-1">{format(new Date(entry.date), 'HH:mm')} 기록</span>
                                                                         {entry.items?.map((item, idx) => (
                                                                             <div key={idx} className="text-lg font-black text-white tracking-tighter uppercase">{item.name}</div>
                                                                         ))}
@@ -275,20 +275,20 @@ export function DietLog() {
                                                                     <div className="mt-auto pt-6 border-t border-white/5 flex items-center justify-between">
                                                                         <div className="flex gap-4">
                                                                             <div className="flex flex-col">
-                                                                                <span className="text-[8px] font-black text-white/40 uppercase mb-0.5">CARBS</span>
-                                                                                <span className="text-xs font-black text-sky-400">{Math.round(entry.totalMacros.carbs)}G</span>
+                                                                                <span className="text-[8px] font-black text-white/40 uppercase mb-0.5">탄수화물</span>
+                                                                                <span className="text-xs font-black text-sky-400">{Math.round(entry.totalMacros.carbs)}g</span>
                                                                             </div>
                                                                             <div className="flex flex-col">
-                                                                                <span className="text-[8px] font-black text-white/40 uppercase mb-0.5">PROT</span>
-                                                                                <span className="text-xs font-black text-rose-400">{Math.round(entry.totalMacros.protein)}G</span>
+                                                                                <span className="text-[8px] font-black text-white/40 uppercase mb-0.5">단백질</span>
+                                                                                <span className="text-xs font-black text-rose-400">{Math.round(entry.totalMacros.protein)}g</span>
                                                                             </div>
                                                                             <div className="flex flex-col">
-                                                                                <span className="text-[8px] font-black text-white/40 uppercase mb-0.5">LIPID</span>
-                                                                                <span className="text-xs font-black text-amber-400">{Math.round(entry.totalMacros.fat)}G</span>
+                                                                                <span className="text-[8px] font-black text-white/40 uppercase mb-0.5">지방</span>
+                                                                                <span className="text-xs font-black text-amber-400">{Math.round(entry.totalMacros.fat)}g</span>
                                                                             </div>
                                                                         </div>
                                                                         {entry.image && (
-                                                                            <div className="text-2xl font-black text-rose-500 tracking-tighter">{Math.round(entry.totalCalories || 0)} <small className="text-[9px]">KCAL</small></div>
+                                                                            <div className="text-2xl font-black text-rose-500 tracking-tighter">{Math.round(entry.totalCalories || 0)} <small className="text-[9px]">kcal</small></div>
                                                                         )}
                                                                     </div>
                                                                 )}
@@ -327,15 +327,15 @@ export function DietLog() {
                 <DialogContent className="glass-premium border border-white/10 text-white rounded-[40px] p-0 shadow-2xl sm:max-w-[600px] overflow-hidden">
                     <DialogHeader className="p-10 pb-0">
                         <DialogTitle className="text-3xl font-black tracking-tighter uppercase mb-2">
-                            {editingId ? 'RECONSTRUCT LOG' : 'INITIALIZE INTAKE'}
+                            {editingId ? '식단 정보 수정' : '새로운 식단 기록'}
                         </DialogTitle>
-                        <p className="text-[10px] font-bold text-white/60 uppercase tracking-[0.2em] italic">SPECIFY INPUT PARAMETERS FOR NUTRITIONAL ANALYSIS</p>
+                        <p className="text-[10px] font-bold text-white/60 uppercase tracking-[0.2em] italic">영양 분석을 위한 입력 파라미터를 지정하세요</p>
                     </DialogHeader>
 
                     <div className="p-10 space-y-10">
                         <div className="grid grid-cols-2 gap-8">
                             <div className="space-y-3">
-                                <Label className="text-[9px] font-black text-white/60 uppercase tracking-widest">TEMPORAL TIMESTAMP</Label>
+                                <Label className="text-[9px] font-black text-white/60 uppercase tracking-widest">기록 일시</Label>
                                 <Input
                                     type="datetime-local"
                                     value={date ? format(date, "yyyy-MM-dd'T'HH:mm") : ''}
@@ -344,7 +344,7 @@ export function DietLog() {
                                 />
                             </div>
                             <div className="space-y-3">
-                                <Label className="text-[9px] font-black text-white/60 uppercase tracking-widest">PHASE CLASSIFICATION</Label>
+                                <Label className="text-[9px] font-black text-white/60 uppercase tracking-widest">식사 구분</Label>
                                 <Select value={mealType} onValueChange={(v) => setMealType(v as any)}>
                                     <SelectTrigger className="h-14 font-black text-[10px] tracking-widest uppercase bg-white/5 border-white/5 rounded-2xl text-white">
                                         <SelectValue />
@@ -366,13 +366,13 @@ export function DietLog() {
                         {/* Items Section */}
                         <div className="bg-white/5 rounded-[32px] border border-white/5 p-8 space-y-8">
                             <div className="flex justify-between items-center">
-                                <Label className="text-[9px] font-black text-white/60 uppercase tracking-widest">NUTRITIONAL ENTITIES ({items.length})</Label>
+                                <Label className="text-[9px] font-black text-white/60 uppercase tracking-widest">영양 성분 목록 ({items.length})</Label>
                                 <Button
                                     variant="outline"
                                     onClick={() => setIsSearchOpen(true)}
                                     className="h-9 px-4 rounded-xl border-emerald-500/30 bg-emerald-500/10 text-emerald-400 font-black text-[9px] tracking-widest uppercase hover:bg-emerald-500/20"
                                 >
-                                    <Sparkles className="w-3.5 h-3.5 mr-2" /> SCAN DATABASE
+                                    <Sparkles className="w-3.5 h-3.5 mr-2" /> 음식 데이터 검색
                                 </Button>
                             </div>
 
@@ -387,11 +387,11 @@ export function DietLog() {
                                         <div className="flex-1 min-w-0">
                                             <div className="text-sm font-black text-white uppercase tracking-tighter truncate">{item.name}</div>
                                             <div className="flex items-center gap-4 mt-1">
-                                                <span className="text-[9px] font-black text-rose-500 uppercase">{Math.round(item.calories)} KCAL</span>
+                                                <span className="text-[9px] font-black text-rose-500 uppercase">{Math.round(item.calories)} kcal</span>
                                                 <div className="flex gap-2 text-[8px] font-black text-white/60 uppercase">
-                                                    <span>C:{Math.round(item.macros.carbs)}G</span>
-                                                    <span>P:{Math.round(item.macros.protein)}G</span>
-                                                    <span>F:{Math.round(item.macros.fat)}G</span>
+                                                    <span>탄:{Math.round(item.macros.carbs)}g</span>
+                                                    <span>단:{Math.round(item.macros.protein)}g</span>
+                                                    <span>지:{Math.round(item.macros.fat)}g</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -401,7 +401,7 @@ export function DietLog() {
                                     </motion.div>
                                 ))}
                                 {items.length === 0 && (
-                                    <div className="py-12 text-center opacity-10 font-black text-[9px] tracking-[0.3em] uppercase border-2 border-dashed border-white/5 rounded-2xl">AWAITING INPUT...</div>
+                                    <div className="py-12 text-center opacity-10 font-black text-[9px] tracking-[0.3em] uppercase border-2 border-dashed border-white/5 rounded-2xl">입력 대기 중...</div>
                                 )}
                             </div>
 
@@ -410,7 +410,7 @@ export function DietLog() {
                                 <div className="flex gap-3 relative">
                                     <div className="flex-[3] relative">
                                         <Input
-                                            placeholder="ENTITY NAME"
+                                            placeholder="음식명 입력"
                                             value={tempName}
                                             onChange={e => setTempName(e.target.value)}
                                             className="h-12 bg-white/5 border-white/5 rounded-xl font-black text-xs uppercase"
@@ -446,15 +446,15 @@ export function DietLog() {
                                 </div>
                                 <div className="grid grid-cols-3 gap-3">
                                     <div className="space-y-1">
-                                        <Label className="text-[7px] font-black text-white/60 uppercase tracking-widest ml-2">CARBS (G)</Label>
+                                        <Label className="text-[7px] font-black text-white/60 uppercase tracking-widest ml-2">탄수화물 (G)</Label>
                                         <Input type="number" placeholder="0" className="h-10 bg-white/5 border-white/5 rounded-xl text-center font-black text-xs" value={tempCarbs} onChange={e => setTempCarbs(e.target.value)} />
                                     </div>
                                     <div className="space-y-1">
-                                        <Label className="text-[7px] font-black text-white/60 uppercase tracking-widest ml-2">PROT (G)</Label>
+                                        <Label className="text-[7px] font-black text-white/60 uppercase tracking-widest ml-2">단백질 (G)</Label>
                                         <Input type="number" placeholder="0" className="h-10 bg-white/5 border-white/5 rounded-xl text-center font-black text-xs" value={tempProtein} onChange={e => setTempProtein(e.target.value)} />
                                     </div>
                                     <div className="space-y-1">
-                                        <Label className="text-[7px] font-black text-white/60 uppercase tracking-widest ml-2">LIPID (G)</Label>
+                                        <Label className="text-[7px] font-black text-white/60 uppercase tracking-widest ml-2">지방 (G)</Label>
                                         <Input type="number" placeholder="0" className="h-10 bg-white/5 border-white/5 rounded-xl text-center font-black text-xs" value={tempFat} onChange={e => setTempFat(e.target.value)} />
                                     </div>
                                 </div>
@@ -463,22 +463,22 @@ export function DietLog() {
 
                         <div className="grid grid-cols-2 gap-8">
                             <div className="space-y-3">
-                                <Label className="text-[9px] font-black text-white/60 uppercase tracking-widest">VISUAL RECORD (URL)</Label>
+                                <Label className="text-[9px] font-black text-white/60 uppercase tracking-widest">식단 사진 (URL)</Label>
                                 <div className="relative">
                                     <Camera className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
                                     <Input
                                         className="pl-12 h-14 bg-white/5 border-white/5 rounded-2xl font-bold text-xs"
-                                        placeholder="COPY IMAGE ENDPOINT..."
+                                        placeholder="이미지 주소 붙여넣기..."
                                         value={imageUrl}
                                         onChange={e => setImageUrl(e.target.value)}
                                     />
                                 </div>
                             </div>
                             <div className="space-y-3">
-                                <Label className="text-[9px] font-black text-white/60 uppercase tracking-widest">PERFORMANCE NOTES</Label>
+                                <Label className="text-[9px] font-black text-white/60 uppercase tracking-widest">특이 사항</Label>
                                 <Input
                                     className="h-14 bg-white/5 border-white/5 rounded-2xl font-bold text-xs"
-                                    placeholder="ENTER MISSION MEMO..."
+                                    placeholder="메모 입력..."
                                     value={memo}
                                     onChange={e => setMemo(e.target.value)}
                                 />
@@ -487,19 +487,19 @@ export function DietLog() {
 
                         <div className="flex gap-4 pt-10 border-t border-white/5 items-center">
                             <div className="flex-1 flex items-end gap-2">
-                                <span className="text-[10px] font-black text-white/60 uppercase tracking-[0.2em] mb-1.5">CUMULATIVE LOAD</span>
+                                <span className="text-[10px] font-black text-white/60 uppercase tracking-[0.2em] mb-1.5">누적 섭취량</span>
                                 <span className="text-3xl font-black text-rose-500 tracking-tighter">
                                     {items.reduce((acc, i) => acc + i.calories, 0)}
                                     <small className="text-[11px] ml-1 opacity-40 uppercase">kcal</small>
                                 </span>
                             </div>
-                            <Button variant="outline" className="h-14 px-8 rounded-2xl border-white/10 bg-white/5 text-white/40 font-black text-[10px] tracking-widest uppercase hover:text-white" onClick={() => setIsDialogOpen(false)}>CANCEL</Button>
+                            <Button variant="outline" className="h-14 px-8 rounded-2xl border-white/10 bg-white/5 text-white/40 font-black text-[10px] tracking-widest uppercase hover:text-white" onClick={() => setIsDialogOpen(false)}>취소</Button>
                             <Button
                                 onClick={handleSave}
                                 disabled={items.length === 0}
                                 className="h-14 px-10 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-black text-sm tracking-widest uppercase shadow-xl"
                             >
-                                COMMIT LOG
+                                기록 전송
                             </Button>
                         </div>
                     </div>

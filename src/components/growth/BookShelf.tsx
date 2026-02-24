@@ -72,7 +72,7 @@ export function BookShelf({ onEdit }: BookShelfProps) {
                 {/* Hover UI */}
                 <div className="absolute inset-0 bg-black/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col items-center justify-center p-8 text-center ring-inset ring-1 ring-white/10">
                     <div className="mb-6">
-                        <h5 className="text-[10px] font-black text-amber-500 tracking-[0.3em] uppercase mb-1">DATA INSPECTION</h5>
+                        <h5 className="text-[10px] font-black text-amber-500 tracking-[0.3em] uppercase mb-1">데이터 분석</h5>
                         <p className="text-sm font-black text-white uppercase tracking-tighter line-clamp-2">{book.title}</p>
                     </div>
 
@@ -82,13 +82,13 @@ export function BookShelf({ onEdit }: BookShelfProps) {
                             className="h-10 rounded-xl border-white/10 bg-white/5 text-[9px] font-black uppercase tracking-widest hover:bg-white/10"
                             onClick={() => onEdit(book)}
                         >
-                            <Info className="w-3.5 h-3.5 mr-2 text-indigo-400" /> FILE SPEC
+                            <Info className="w-3.5 h-3.5 mr-2 text-indigo-400" /> 상세 정보
                         </Button>
                         <Button
                             className="h-10 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-[9px] font-black uppercase tracking-widest shadow-lg"
                             onClick={() => updateBook({ ...book, status: 'reading', startDate: new Date() })}
                         >
-                            <Play className="w-3.5 h-3.5 mr-2" /> COMMENCE
+                            <Play className="w-3.5 h-3.5 mr-2" /> 읽기 시작
                         </Button>
                     </div>
 
@@ -96,7 +96,7 @@ export function BookShelf({ onEdit }: BookShelfProps) {
                         <div className="mt-6 flex items-center gap-2">
                             <Timer className="w-3 h-3 text-amber-500" />
                             <span className="text-[10px] font-black text-white tracking-widest uppercase">
-                                PROGRESS {Math.round((book.currentPage / book.totalPages) * 100)}%
+                                진행률 {Math.round((book.currentPage / book.totalPages) * 100)}%
                             </span>
                         </div>
                     )}
@@ -114,7 +114,7 @@ export function BookShelf({ onEdit }: BookShelfProps) {
                     </div>
                     <div>
                         <h3 className="text-lg font-black text-white tracking-widest uppercase">{title}</h3>
-                        <p className="text-[9px] font-bold text-white/20 uppercase tracking-[0.2em]">{booksList.length} CODIFIED VOLUMES</p>
+                        <p className="text-[9px] font-bold text-white/20 uppercase tracking-[0.2em]">{booksList.length}권의 기록된 도서</p>
                     </div>
                 </div>
             </div>
@@ -149,21 +149,21 @@ export function BookShelf({ onEdit }: BookShelfProps) {
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent align="end" className="glass-premium border-white/10 min-w-[160px]">
                                             <DropdownMenuItem className="text-[10px] font-black uppercase tracking-widest gap-3 py-3" onClick={() => updateBook({ ...book, status: 'reading', startDate: new Date() })}>
-                                                <Play className="w-4 h-4 text-emerald-500" /> INITIALIZE READ
+                                                <Play className="w-4 h-4 text-emerald-500" /> 읽기 시작
                                             </DropdownMenuItem>
                                             <DropdownMenuItem className="text-[10px] font-black uppercase tracking-widest gap-3 py-3" onClick={() => updateBook({ ...book, status: 'completed', endDate: new Date(), currentPage: book.totalPages })}>
-                                                <CheckCircle className="w-4 h-4 text-sky-500" /> MARK COMPLETE
+                                                <CheckCircle className="w-4 h-4 text-sky-500" /> 완독 표시
                                             </DropdownMenuItem>
                                             <div className="h-px bg-white/5 mx-2" />
                                             <DropdownMenuItem className="text-[10px] font-black uppercase tracking-widest gap-3 py-3 text-rose-500" onClick={() => deleteBook(book.id)}>
-                                                <Trash2 className="w-4 h-4" /> ERASE ENTRY
+                                                <Trash2 className="w-4 h-4" /> 기록 삭제
                                             </DropdownMenuItem>
                                         </DropdownMenuContent>
                                     </DropdownMenu>
                                 </div>
                                 <div className="flex items-center justify-between">
                                     <p className="text-[9px] font-bold text-white/20 uppercase tracking-widest truncate max-w-[80%]">
-                                        BY {book.author || 'UNKNOWN AUTHOR'}
+                                        저자: {book.author || '알 수 없음'}
                                     </p>
                                     {book.rating && (
                                         <div className="flex items-center gap-0.5">
@@ -182,9 +182,9 @@ export function BookShelf({ onEdit }: BookShelfProps) {
 
     return (
         <div className="space-y-4 pb-20">
-            {renderShelf("ACTIVE LECTURE", books.filter(b => b.status === 'reading'), "NO ACTIVE SCANS DETECTED", <BookOpen className="w-5 h-5 text-emerald-400" />, "border-emerald-500/20")}
-            {renderShelf("QUEUE PROTOCOL", books.filter(b => b.status === 'toread'), "WISH LIST IS VACANT", <Library className="w-5 h-5 text-amber-400" />, "border-amber-500/20")}
-            {renderShelf("ARCHIVED INTELLIGENCE", books.filter(b => b.status === 'completed'), "NO COMPLETED VOLUMES FOUND", <ScrollText className="w-5 h-5 text-sky-400" />, "border-sky-500/20")}
+            {renderShelf("현재 읽고 있는 도서", books.filter(b => b.status === 'reading'), "읽고 있는 도서가 없습니다", <BookOpen className="w-5 h-5 text-emerald-400" />, "border-emerald-500/20")}
+            {renderShelf("읽을 예정인 도서", books.filter(b => b.status === 'toread'), "도서 리스트가 비어 있습니다", <Library className="w-5 h-5 text-amber-400" />, "border-amber-500/20")}
+            {renderShelf("다 읽은 도서", books.filter(b => b.status === 'completed'), "완독한 도서가 없습니다", <ScrollText className="w-5 h-5 text-sky-400" />, "border-sky-500/20")}
         </div>
     );
 }

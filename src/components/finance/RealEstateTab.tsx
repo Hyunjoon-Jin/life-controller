@@ -90,9 +90,9 @@ export function RealEstateTab() {
                             <Map className="w-6 h-6 text-white" strokeWidth={3} />
                         </div>
                         <div>
-                            <h2 className="text-3xl font-black text-white tracking-tighter uppercase leading-none">GEOSPATIAL VAULT</h2>
+                            <h2 className="text-3xl font-black text-white tracking-tighter uppercase leading-none">부동산 매물 저장소</h2>
                             <p className="text-[10px] font-bold text-white/60 tracking-[0.3em] uppercase mt-2 italic flex items-center gap-2">
-                                <Compass className="w-3 h-3 text-amber-500" /> TOPOGRAPHY SCAN: ACTIVE
+                                <Compass className="w-3 h-3 text-amber-500" /> 지형 스캔: 활성화 (ACTIVE)
                             </p>
                         </div>
                     </div>
@@ -101,7 +101,7 @@ export function RealEstateTab() {
                         <div className="group relative w-[300px]">
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 group-focus-within:text-amber-500 transition-colors" />
                             <Input
-                                placeholder="REGION / COMPLEX SCAN..."
+                                placeholder="지역 또는 아파트 단지명 검색..."
                                 className="h-12 pl-12 bg-white/5 border-white/5 rounded-2xl text-white font-black text-[10px] tracking-widest uppercase placeholder:text-white/30 focus-visible:ring-amber-500/30"
                                 value={searchQuery}
                                 onChange={e => setSearchQuery(e.target.value)}
@@ -112,7 +112,7 @@ export function RealEstateTab() {
                             onClick={() => setIsDialogOpen(true)}
                             className="h-12 px-6 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-black text-[10px] tracking-widest uppercase shadow-xl transition-all active:scale-95"
                         >
-                            <Plus className="w-4 h-4 mr-2" strokeWidth={3} /> SCRAPE ASSET
+                            <Plus className="w-4 h-4 mr-2" strokeWidth={3} /> 매물 스크랩하기
                         </Button>
                     </div>
                 </div>
@@ -147,7 +147,7 @@ export function RealEstateTab() {
 
                                     <div className="absolute bottom-6 left-6">
                                         <div className="px-3 py-1 rounded-lg bg-amber-500/20 border border-amber-500/20 backdrop-blur-md text-[8px] font-black text-amber-500 tracking-[0.2em] uppercase">
-                                            ESTATE ARTIFACT
+                                            매물 정보 데이터 (ARTIFACT)
                                         </div>
                                     </div>
                                 </div>
@@ -163,7 +163,7 @@ export function RealEstateTab() {
 
                                     <div className="flex items-baseline gap-3">
                                         <span className="text-2xl font-black text-amber-500 tracking-tighter">{scrap.price || 'P_TBC'}</span>
-                                        <span className="text-[9px] font-bold text-white/40 tracking-widest uppercase">VALUATION</span>
+                                        <span className="text-[9px] font-bold text-white/40 tracking-widest uppercase">평가액 (VALUATION)</span>
                                     </div>
 
                                     {scrap.memo && (
@@ -179,7 +179,7 @@ export function RealEstateTab() {
                                         className="w-full h-12 rounded-2xl bg-white/5 hover:bg-white/10 text-[10px] font-black text-white tracking-[0.2em] uppercase gap-3 mt-4 border border-white/5 transition-all active:scale-95 group/btn"
                                         onClick={() => window.open(scrap.url, '_blank')}
                                     >
-                                        DEPLOY REMOTE VISION <ExternalLink className="w-4 h-4 group-hover/btn:text-amber-500" />
+                                        원격 상세 정보 보기 <ExternalLink className="w-4 h-4 group-hover/btn:text-amber-500" />
                                     </Button>
                                 </CardContent>
                             </motion.div>
@@ -190,8 +190,8 @@ export function RealEstateTab() {
                         <div className="col-span-full h-80 flex flex-col items-center justify-center opacity-10 gap-6 border-2 border-dashed border-white/10 rounded-[48px]">
                             <Building2 className="w-20 h-20" />
                             <div className="text-center space-y-1">
-                                <h3 className="text-2xl font-black tracking-[0.2em] uppercase">VOID DETECTED</h3>
-                                <p className="text-[10px] font-bold tracking-[0.5em] uppercase">NO TOPOGRAPHICAL ASSETS SCRAPED</p>
+                                <h3 className="text-2xl font-black tracking-[0.2em] uppercase">매물 정보가 없습니다</h3>
+                                <p className="text-[10px] font-bold tracking-[0.5em] uppercase">스크랩된 지형 자산 정보가 발견되지 않았습니다</p>
                             </div>
                         </div>
                     )}
@@ -202,16 +202,16 @@ export function RealEstateTab() {
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogContent className="glass-premium border border-white/10 text-white rounded-[40px] p-0 shadow-2xl sm:max-w-xl max-h-[90vh] overflow-hidden">
                     <DialogHeader className="p-10 pb-0">
-                        <DialogTitle className="text-3xl font-black tracking-tighter uppercase mb-2">INTELLIGENT SCRAPE</DialogTitle>
-                        <p className="text-[10px] font-bold text-white/60 uppercase tracking-[0.2em] italic">INGESTING ASSET DATA INTO THE GEOSPATIAL VAULT</p>
+                        <DialogTitle className="text-3xl font-black tracking-tighter uppercase mb-2">지능형 매물 스크랩</DialogTitle>
+                        <p className="text-[10px] font-bold text-white/60 uppercase tracking-[0.2em] italic">부동산 자산 데이터를 시스템 저장소(VAULT)로 통합합니다</p>
                     </DialogHeader>
                     <div className="overflow-y-auto custom-scrollbar p-10 pt-4 space-y-8">
                         <div className="grid gap-6">
                             <div className="space-y-3">
-                                <Label className="text-[10px] font-black text-white/60 uppercase tracking-widest ml-2">SOURCE URL (NAVER REALTY)</Label>
+                                <Label className="text-[10px] font-black text-white/60 uppercase tracking-widest ml-2">정보 출처 (URL / NAVER REALTY)</Label>
                                 <div className="flex gap-4">
                                     <Input
-                                        placeholder="INPUT ESTATE LINK..."
+                                        placeholder="매물 또는 단지 URL 입력..."
                                         className="h-14 font-black text-[10px] tracking-widest uppercase bg-white/5 border-white/5 rounded-2xl text-white placeholder:text-white/30"
                                         value={url}
                                         onChange={e => setUrl(e.target.value)}
@@ -229,26 +229,26 @@ export function RealEstateTab() {
                             </div>
 
                             <div className="space-y-3">
-                                <Label className="text-[10px] font-black text-white/60 uppercase tracking-widest ml-2">ASSET IDENTIFIER</Label>
-                                <Input placeholder="EX: BANPO XI COMPLEX 84SQM" className="h-12 font-black text-sm tracking-widest uppercase bg-white/5 border-white/5 rounded-2xl text-white" value={title} onChange={e => setTitle(e.target.value)} />
+                                <Label className="text-[10px] font-black text-white/60 uppercase tracking-widest ml-2">매물 식별자 (NAME)</Label>
+                                <Input placeholder="예: 반포 자이 84㎡, 판교 푸르지오..." className="h-12 font-black text-sm tracking-widest uppercase bg-white/5 border-white/5 rounded-2xl text-white" value={title} onChange={e => setTitle(e.target.value)} />
                             </div>
 
                             <div className="grid grid-cols-2 gap-6">
                                 <div className="space-y-3">
-                                    <Label className="text-[10px] font-black text-white/60 uppercase tracking-widest ml-2">GEO-LOCATION</Label>
-                                    <Input placeholder="SEOUL, SEOCHO-GU..." className="h-12 font-black text-[10px] tracking-widest uppercase bg-white/5 border-white/5 rounded-2xl text-white" value={location} onChange={e => setLocation(e.target.value)} />
+                                    <Label className="text-[10px] font-black text-white/60 uppercase tracking-widest ml-2">지리적 위치 (LOCATION)</Label>
+                                    <Input placeholder="서울시 서초구..." className="h-12 font-black text-[10px] tracking-widest uppercase bg-white/5 border-white/5 rounded-2xl text-white" value={location} onChange={e => setLocation(e.target.value)} />
                                 </div>
                                 <div className="space-y-3">
-                                    <Label className="text-[10px] font-black text-white/60 uppercase tracking-widest ml-2">VALUATION (KRW)</Label>
-                                    <Input placeholder="EX: 3.5B" className="h-12 font-black text-[10px] tracking-widest bg-white/5 border-white/5 rounded-2xl text-white" value={price} onChange={e => setPrice(e.target.value)} />
+                                    <Label className="text-[10px] font-black text-white/60 uppercase tracking-widest ml-2">평가 가치 (KRW)</Label>
+                                    <Input placeholder="예: 35억, 5억/200" className="h-12 font-black text-[10px] tracking-widest bg-white/5 border-white/5 rounded-2xl text-white" value={price} onChange={e => setPrice(e.target.value)} />
                                 </div>
                             </div>
 
                             <div className="space-y-3">
-                                <Label className="text-[10px] font-black text-white/60 uppercase tracking-widest ml-2">ON-SITE OBSERVATIONS</Label>
+                                <Label className="text-[10px] font-black text-white/60 uppercase tracking-widest ml-2">현장 관찰 기록 (MEMO)</Label>
                                 <textarea
                                     className="min-h-[150px] w-full rounded-3xl border border-white/5 bg-white/5 p-6 text-xs font-bold text-white placeholder:text-white/30 leading-relaxed resize-none focus:ring-2 focus:ring-amber-500/20"
-                                    placeholder="INFRASTRUCTURE, EDUCATION NODES, TRANSPORTATION ACCESS..."
+                                    placeholder="학군, 교통, 주변 인프라 및 단지 특징 입력..."
                                     value={memo}
                                     onChange={e => setMemo(e.target.value)}
                                 />
@@ -261,7 +261,7 @@ export function RealEstateTab() {
                             disabled={!title || !url}
                             className="w-full h-16 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-black text-sm tracking-[0.2em] shadow-2xl active:scale-95 transition-all uppercase"
                         >
-                            ENCRYPT TO VAULT
+                            저장소에 정보 승인 및 기록
                         </Button>
                     </DialogFooter>
                 </DialogContent>

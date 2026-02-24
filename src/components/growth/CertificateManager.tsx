@@ -93,10 +93,10 @@ export function CertificateManager() {
 
     const getStatusLabel = (status: Certificate['status']) => {
         switch (status) {
-            case 'acquired': return 'ACQUIRED';
-            case 'studying': return 'IN PROGRESS';
-            case 'expired': return 'EXPIRED';
-            default: return 'UNKNOWN';
+            case 'acquired': return '취득 완료';
+            case 'studying': return '진행 중';
+            case 'expired': return '만료됨';
+            default: return '알 수 없음';
         }
     };
 
@@ -120,9 +120,9 @@ export function CertificateManager() {
                             <ShieldCheck className="w-6 h-6 text-white" strokeWidth={3} />
                         </div>
                         <div>
-                            <h2 className="text-3xl font-black text-white tracking-tighter uppercase leading-none">CREDENTIAL VAULT</h2>
+                            <h2 className="text-3xl font-black text-white tracking-tighter uppercase leading-none">자격증 보관함</h2>
                             <p className="text-[10px] font-bold text-white/20 tracking-[0.3em] uppercase mt-2 italic flex items-center gap-2">
-                                <Terminal className="w-3 h-3 text-emerald-500" /> ENCRYPTED REPOSITORY: ACTIVE
+                                <Terminal className="w-3 h-3 text-emerald-500" /> 암호화된 저장소: 활성화됨
                             </p>
                         </div>
                     </div>
@@ -131,14 +131,14 @@ export function CertificateManager() {
                         onClick={() => { resetForm(); setIsDialogOpen(true); }}
                         className="h-12 px-6 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-black text-[10px] tracking-widest uppercase shadow-xl transition-all active:scale-95"
                     >
-                        <Plus className="w-4 h-4 mr-2" strokeWidth={3} /> NEW CREDENTIAL
+                        <Plus className="w-4 h-4 mr-2" strokeWidth={3} /> 새 자격증 등록
                     </Button>
                 </div>
 
                 {/* Vault Filter/Search Placeholder UI */}
                 <div className="flex items-center gap-4 mb-8 bg-white/[0.02] border border-white/5 p-4 rounded-2xl">
                     <Search className="w-4 h-4 text-white/20 ml-2" />
-                    <span className="text-[10px] font-bold text-white/10 uppercase tracking-widest italic">SCANNING ARCHIVES...</span>
+                    <span className="text-[10px] font-bold text-white/10 uppercase tracking-widest italic">아카이브 스캔 중...</span>
                     <div className="ml-auto flex gap-2">
                         <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                         <div className="w-2 h-2 rounded-full bg-cyan-500 animate-pulse delay-75" />
@@ -175,12 +175,12 @@ export function CertificateManager() {
                                             </span>
                                             {examDDay && (
                                                 <div className="flex items-center gap-2 text-[9px] font-black text-cyan-400 bg-cyan-500/10 px-3 py-1 rounded-lg border border-cyan-500/20 tracking-tighter uppercase">
-                                                    <Zap className="w-3 h-3" /> EXAM: {examDDay}
+                                                    <Zap className="w-3 h-3" /> 시험까지: {examDDay}
                                                 </div>
                                             )}
                                             {expiryDDay && (
                                                 <div className="flex items-center gap-2 text-[9px] font-black text-rose-400 bg-rose-500/10 px-3 py-1 rounded-lg border border-rose-500/20 tracking-tighter uppercase">
-                                                    <Clock className="w-3 h-3" /> EXPIRES: {expiryDDay}
+                                                    <Clock className="w-3 h-3" /> 만료까지: {expiryDDay}
                                                 </div>
                                             )}
                                         </div>
@@ -197,7 +197,7 @@ export function CertificateManager() {
                                                         <FileCheck className="w-4 h-4" />
                                                     </div>
                                                     <div>
-                                                        <p className="text-[8px] font-black text-white/20 uppercase tracking-widest">PERFORMANCE SCORE</p>
+                                                        <p className="text-[8px] font-black text-white/20 uppercase tracking-widest">성적 / 점수</p>
                                                         <p className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">{cert.score}</p>
                                                     </div>
                                                 </div>
@@ -207,7 +207,7 @@ export function CertificateManager() {
                                                     <Calendar className="w-4 h-4" />
                                                 </div>
                                                 <div>
-                                                    <p className="text-[8px] font-black text-white/20 uppercase tracking-widest">{isStudying ? 'SCHEDULED DATE' : 'ACQUISITION DATE'}</p>
+                                                    <p className="text-[8px] font-black text-white/20 uppercase tracking-widest">{isStudying ? '시험 예정일' : '취득일'}</p>
                                                     <p className="text-[10px] font-black text-white/60 uppercase tracking-widest">{format(new Date(cert.date), 'yyyy.MM.dd')}</p>
                                                 </div>
                                             </div>
@@ -219,7 +219,7 @@ export function CertificateManager() {
                                                     rel="noreferrer"
                                                     className="flex items-center justify-center gap-2 w-full h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-[9px] font-black text-cyan-400 hover:bg-cyan-500 hover:text-white transition-all tracking-widest uppercase mt-2"
                                                 >
-                                                    <ExternalLink className="w-3 h-3" /> DATALINK SECURED
+                                                    <ExternalLink className="w-3 h-3" /> 데이터 링크 확인
                                                 </a>
                                             )}
                                         </div>
@@ -244,27 +244,27 @@ export function CertificateManager() {
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogContent className="glass-premium border border-white/10 text-white rounded-[40px] p-0 shadow-2xl sm:max-w-3xl max-h-[90vh] overflow-hidden">
                     <DialogHeader className="p-10 pb-0">
-                        <DialogTitle className="text-3xl font-black tracking-tighter uppercase mb-2">{editingId ? 'RECALIBRATE VAULT' : 'INITIALIZE CREDENTIAL'}</DialogTitle>
-                        <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] italic">UPDATING NEURAL CREDENTIALS IN ENCRYPTED REPOSITORY</p>
+                        <DialogTitle className="text-3xl font-black tracking-tighter uppercase mb-2">{editingId ? '자격증 정보 수정' : '자격증 등록'}</DialogTitle>
+                        <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] italic">저장소에 신경망 인증 정보를 업데이트 중</p>
                     </DialogHeader>
 
                     <div className="p-10 pt-4 overflow-y-auto custom-scrollbar space-y-8">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div className="space-y-3">
-                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">CREDENTIAL IDENTIFIER</Label>
+                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">자격증 명칭</Label>
                                 <Input
                                     value={name}
                                     onChange={e => setName(e.target.value)}
-                                    placeholder="EX: CLOUD SOLUTIONS ARCHITECT"
+                                    placeholder="예: 클라우드 솔루션 아키텍트"
                                     className="h-14 font-black text-xl border-white/5 bg-white/5 rounded-2xl text-white placeholder:text-white/10"
                                 />
                             </div>
                             <div className="space-y-3">
-                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">ISSUING SECTOR</Label>
+                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">발급 기관</Label>
                                 <Input
                                     value={issuer}
                                     onChange={e => setIssuer(e.target.value)}
-                                    placeholder="EX: AWS, COMPTIA, GOOGLE"
+                                    placeholder="예: AWS, GOOGLE, 한국산업인력공단"
                                     className="h-14 font-black text-lg border-white/5 bg-white/5 rounded-2xl text-white placeholder:text-white/10"
                                 />
                             </div>
@@ -272,19 +272,19 @@ export function CertificateManager() {
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                             <div className="space-y-3">
-                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">VAULT STATUS</Label>
+                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">진행 상태</Label>
                                 <select
                                     className="flex h-12 w-full rounded-2xl border border-white/5 bg-white/5 px-4 font-black uppercase text-[10px] tracking-widest text-white outline-none focus:ring-2 focus:ring-emerald-500/20"
                                     value={status}
                                     onChange={e => setStatus(e.target.value as any)}
                                 >
-                                    <option value="studying" className="bg-slate-900">IN PROGRESS</option>
-                                    <option value="acquired" className="bg-slate-900">ACQUIRED</option>
-                                    <option value="expired" className="bg-slate-900">EXPIRED</option>
+                                    <option value="studying" className="bg-slate-900">공부 중</option>
+                                    <option value="acquired" className="bg-slate-900">취득 완료</option>
+                                    <option value="expired" className="bg-slate-900">만료됨</option>
                                 </select>
                             </div>
                             <div className="space-y-3">
-                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">{status === 'studying' ? 'TARGET CHRONO' : 'ACQUIRED CHRONO'}</Label>
+                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">{status === 'studying' ? '시험 예정일' : '취득 날짜'}</Label>
                                 <Input
                                     type="date"
                                     value={date ? format(date, "yyyy-MM-dd") : ''}
@@ -293,7 +293,7 @@ export function CertificateManager() {
                                 />
                             </div>
                             <div className="space-y-3">
-                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">EXPIRATION SCAN (OPTIONAL)</Label>
+                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">만료일 (필수 아님)</Label>
                                 <Input
                                     type="date"
                                     value={expiryDate}
@@ -305,16 +305,16 @@ export function CertificateManager() {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div className="space-y-3">
-                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">PERFORMANCE METRICS</Label>
+                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">취득 성적 / 점수</Label>
                                 <Input
                                     value={score}
                                     onChange={e => setScore(e.target.value)}
-                                    placeholder="EX: 990, GRADE A, LEVEL 1"
+                                    placeholder="예: 990, A학점, 1급"
                                     className="h-12 font-black text-[10px] bg-white/5 border-white/5 rounded-2xl text-white uppercase tracking-widest"
                                 />
                             </div>
                             <div className="space-y-3">
-                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">CREDENTIAL ID</Label>
+                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">자격 번호 (SERIAL)</Label>
                                 <Input
                                     value={credentialId}
                                     onChange={e => setCredentialId(e.target.value)}
@@ -325,7 +325,7 @@ export function CertificateManager() {
                         </div>
 
                         <div className="space-y-3">
-                            <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">EXTERNAL DATALINK (URL)</Label>
+                            <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">외부 데이터 링크 (URL)</Label>
                             <Input
                                 value={fileUrl}
                                 onChange={e => setFileUrl(e.target.value)}
@@ -335,11 +335,11 @@ export function CertificateManager() {
                         </div>
 
                         <div className="space-y-3">
-                            <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">NEURAL MEMO / ANTAGRAVITY LOG</Label>
+                            <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">메모 / 특이사항</Label>
                             <Textarea
                                 value={memo}
                                 onChange={e => setMemo(e.target.value)}
-                                placeholder="ENTER SUPPLEMENTARY DATA..."
+                                placeholder="추가적인 정보를 입력하세요..."
                                 className="min-h-[120px] bg-white/5 border-white/5 rounded-3xl p-6 text-[11px] font-bold text-white/60 leading-relaxed italic placeholder:text-white/10 resize-none focus:ring-2 focus:ring-emerald-500/20"
                             />
                         </div>
@@ -351,14 +351,14 @@ export function CertificateManager() {
                             onClick={() => setIsDialogOpen(false)}
                             className="h-16 px-8 rounded-2xl text-[10px] font-black text-white/20 hover:text-white hover:bg-white/5 uppercase tracking-widest"
                         >
-                            ABORT
+                            취소
                         </Button>
                         <Button
                             onClick={handleSave}
                             disabled={!name}
                             className="flex-1 h-16 rounded-3xl bg-emerald-500 hover:bg-emerald-600 text-white font-black text-sm tracking-[0.2em] shadow-2xl active:scale-95 transition-all uppercase"
                         >
-                            ENCRYPT DATA
+                            완료
                         </Button>
                     </DialogFooter>
                 </DialogContent>

@@ -349,10 +349,13 @@ export function ExerciseLog() {
                                             <div className="w-2 h-2 rounded-full bg-rose-500 animate-ping" />
                                             <span className="text-[10px] font-black text-rose-400 tracking-[0.4em] uppercase">운동 진행 중</span>
                                         </div>
-                                        <div className="text-7xl font-black text-white tracking-tighter tabular-nums mb-10 drop-shadow-[0_0_30px_rgba(255,255,255,0.2)]">
-                                            {formatElapsedTime(elapsedTime)}
+                                        <div className="flex flex-col items-center">
+                                            <div className="text-4xl font-black text-rose-500 tracking-tighter tabular-nums drop-shadow-[0_0_15px_rgba(244,63,94,0.3)]">
+                                                {formatElapsedTime(elapsedTime)}
+                                            </div>
+                                            <div className="text-[10px] font-black text-rose-500/40 uppercase tracking-[0.3em] mt-2">경과 시간</div>
                                         </div>
-                                        <div className="flex gap-4 w-full max-w-lg">
+                                        <div className="flex gap-4 w-full max-w-lg mt-10">
                                             <Button onClick={openAddDialog} className="flex-1 h-16 rounded-[24px] bg-rose-500 hover:bg-rose-600 text-white font-black text-lg tracking-widest shadow-[0_20px_40px_-10px_rgba(244,63,94,0.4)] transition-all active:scale-95">
                                                 <Plus className="w-6 h-6 mr-3" strokeWidth={3} /> 운동 추가
                                             </Button>
@@ -595,8 +598,9 @@ export function ExerciseLog() {
 
                                 {exerciseRoutines.length === 0 && (
                                     <div className="col-span-full py-32 flex flex-col items-center justify-center text-center opacity-10 gap-6">
-                                        <Sparkles className="w-16 h-16" />
-                                        <p className="text-[10px] font-black tracking-[0.4em] uppercase">루틴이 없습니다</p>
+                                        <div className="h-32 flex items-center justify-center opacity-5 border-2 border-dashed border-white/5 rounded-[40px]">
+                                            <p className="text-[10px] font-black tracking-[0.4em] uppercase">데이터 없음</p>
+                                        </div>
                                     </div>
                                 )}
                             </div>

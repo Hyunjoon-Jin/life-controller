@@ -163,9 +163,9 @@ export function DietAnalysis({ entries, inBodyEntries, exerciseSessions }: DietA
         const total = carbs + protein + fat;
         if (total === 0) return [];
         return [
-            { name: 'CARBS', value: carbs, color: '#0ea5e9' },
-            { name: 'PROT', value: protein, color: '#f43f5e' },
-            { name: 'LIPID', value: fat, color: '#f59e0b' },
+            { name: '탄수화물', value: carbs, color: '#0ea5e9' },
+            { name: '단백질', value: protein, color: '#f43f5e' },
+            { name: '지방', value: fat, color: '#f59e0b' },
         ];
     }, [stats]);
 
@@ -178,8 +178,8 @@ export function DietAnalysis({ entries, inBodyEntries, exerciseSessions }: DietA
                         <Activity className="w-6 h-6 text-emerald-400" />
                     </div>
                     <div>
-                        <h3 className="text-2xl font-black text-white tracking-widest uppercase mb-1">METABOLIC ANALYSIS</h3>
-                        <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] italic">DIGESTIVE CHRONICLE & ENERGY BALANCE</p>
+                        <h3 className="text-2xl font-black text-white tracking-widest uppercase mb-1">대사 분석</h3>
+                        <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] italic">영양 섭취 및 에너지 밸런스</p>
                     </div>
                 </div>
 
@@ -189,8 +189,8 @@ export function DietAnalysis({ entries, inBodyEntries, exerciseSessions }: DietA
                     </Button>
                     <div className="px-6 text-sm font-black text-white tracking-widest uppercase">
                         {viewMode === 'week'
-                            ? `${format(dateRange.start, 'MMM dd')} - ${format(dateRange.end, 'MMM dd')}`
-                            : format(currentDate, 'MMMM yyyy').toUpperCase()
+                            ? `${format(dateRange.start, 'M월 d일', { locale: ko })} - ${format(dateRange.end, 'M월 d일', { locale: ko })}`
+                            : format(currentDate, 'yyyy년 M월', { locale: ko }).toUpperCase()
                         }
                     </div>
                     <Button variant="ghost" size="icon" onClick={() => navigate('next')} className="h-10 w-10 text-white/40 hover:text-white hover:bg-white/5">
@@ -199,8 +199,8 @@ export function DietAnalysis({ entries, inBodyEntries, exerciseSessions }: DietA
                     <div className="w-px h-6 bg-white/10 mx-2" />
                     <Tabs value={viewMode} onValueChange={(v: any) => setViewMode(v)} className="bg-transparent border-none">
                         <TabsList className="bg-white/5 p-1 rounded-xl">
-                            <TabsTrigger value="week" className="px-4 py-1.5 rounded-lg text-[9px] font-black tracking-widest uppercase data-[state=active]:bg-emerald-500 data-[state=active]:text-white">WEEK</TabsTrigger>
-                            <TabsTrigger value="month" className="px-4 py-1.5 rounded-lg text-[9px] font-black tracking-widest uppercase data-[state=active]:bg-emerald-500 data-[state=active]:text-white">MONTH</TabsTrigger>
+                            <TabsTrigger value="week" className="px-4 py-1.5 rounded-lg text-[9px] font-black tracking-widest uppercase data-[state=active]:bg-emerald-500 data-[state=active]:text-white">주간</TabsTrigger>
+                            <TabsTrigger value="month" className="px-4 py-1.5 rounded-lg text-[9px] font-black tracking-widest uppercase data-[state=active]:bg-emerald-500 data-[state=active]:text-white">월간</TabsTrigger>
                         </TabsList>
                     </Tabs>
                 </div>
@@ -209,10 +209,10 @@ export function DietAnalysis({ entries, inBodyEntries, exerciseSessions }: DietA
             {/* Stats Row */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                 {[
-                    { label: 'AVG CALORIES', value: stats.uniqueDays > 0 ? Math.round(stats.totalCalories / stats.uniqueDays) : 0, icon: Flame, color: 'rose' },
-                    { label: 'TOTAL CARBS', value: `${Math.round(stats.totalMacros.carbs)}G`, icon: Wheat, color: 'sky' },
-                    { label: 'TOTAL PROTEIN', value: `${Math.round(stats.totalMacros.protein)}G`, icon: Pizza, color: 'rose' },
-                    { label: 'TOTAL LIPIDS', value: `${Math.round(stats.totalMacros.fat)}G`, icon: Droplet, color: 'amber' },
+                    { label: '평균 섭취량', value: stats.uniqueDays > 0 ? Math.round(stats.totalCalories / stats.uniqueDays) : 0, icon: Flame, color: 'rose' },
+                    { label: '총 탄수화물', value: `${Math.round(stats.totalMacros.carbs)}g`, icon: Wheat, color: 'sky' },
+                    { label: '총 단백질', value: `${Math.round(stats.totalMacros.protein)}g`, icon: Pizza, color: 'rose' },
+                    { label: '총 지방', value: `${Math.round(stats.totalMacros.fat)}g`, icon: Droplet, color: 'amber' },
                 ].map((stat, i) => (
                     <motion.div
                         key={stat.label}
@@ -239,8 +239,8 @@ export function DietAnalysis({ entries, inBodyEntries, exerciseSessions }: DietA
                 {/* Daily Energy Consumption Chart */}
                 <Card className="lg:col-span-2 glass-premium rounded-[40px] border border-white/5 bg-transparent overflow-hidden">
                     <CardHeader className="p-10 pb-0">
-                        <CardTitle className="text-xl font-black text-white tracking-widest uppercase">ENERGY DYNAMICS</CardTitle>
-                        <p className="text-[9px] font-bold text-white/20 uppercase mt-1 tracking-widest">INTAKE VS METABOLIC TARGET</p>
+                        <CardTitle className="text-xl font-black text-white tracking-widest uppercase">에너지 동향</CardTitle>
+                        <p className="text-[9px] font-bold text-white/20 uppercase mt-1 tracking-widest">섭취량 대비 대사 목표</p>
                     </CardHeader>
                     <CardContent className="p-10 h-[400px]">
                         <ResponsiveContainer width="100%" height="100%">
@@ -260,7 +260,7 @@ export function DietAnalysis({ entries, inBodyEntries, exerciseSessions }: DietA
                                                                 <div className="w-2 h-2 rounded-full" style={{ backgroundColor: p.fill || p.stroke }} />
                                                                 <span className="text-[9px] font-black text-white/40 uppercase">{p.name}</span>
                                                             </div>
-                                                            <span className="text-xs font-black text-white">{Math.round(p.value)} <small className="text-[8px] opacity-40">KCAL</small></span>
+                                                            <span className="text-xs font-black text-white">{Math.round(p.value)} <small className="text-[8px] opacity-40">kcal</small></span>
                                                         </div>
                                                     ))}
                                                 </div>
@@ -269,10 +269,10 @@ export function DietAnalysis({ entries, inBodyEntries, exerciseSessions }: DietA
                                         return null;
                                     }}
                                 />
-                                <Bar dataKey="carbsKcal" stackId="a" fill="#0ea5e9" name="CARBS" barSize={30} />
-                                <Bar dataKey="proteinKcal" stackId="a" fill="#f43f5e" name="PROT" barSize={30} />
-                                <Bar dataKey="fatKcal" stackId="a" fill="#f59e0b" name="LIPID" barSize={30} radius={[6, 6, 0, 0]} />
-                                <Line type="step" dataKey="target" stroke="#10b981" strokeWidth={4} strokeDasharray="8 8" name="TARGET" dot={false} />
+                                <Bar dataKey="carbsKcal" stackId="a" fill="#0ea5e9" name="탄수화물" barSize={30} />
+                                <Bar dataKey="proteinKcal" stackId="a" fill="#f43f5e" name="단백질" barSize={30} />
+                                <Bar dataKey="fatKcal" stackId="a" fill="#f59e0b" name="지방" barSize={30} radius={[6, 6, 0, 0]} />
+                                <Line type="step" dataKey="target" stroke="#10b981" strokeWidth={4} strokeDasharray="8 8" name="목표" dot={false} />
                             </ComposedChart>
                         </ResponsiveContainer>
                     </CardContent>
@@ -281,8 +281,8 @@ export function DietAnalysis({ entries, inBodyEntries, exerciseSessions }: DietA
                 {/* Macro Ratio Breakdown */}
                 <Card className="glass-premium rounded-[40px] border border-white/5 bg-transparent overflow-hidden">
                     <CardHeader className="p-10 pb-0 text-center">
-                        <CardTitle className="text-xl font-black text-white tracking-widest uppercase">RATIO VARIANCE</CardTitle>
-                        <p className="text-[9px] font-bold text-white/20 uppercase mt-1 tracking-widest">MACRONUTRIENT DISTRIBUTION</p>
+                        <CardTitle className="text-xl font-black text-white tracking-widest uppercase">영양 성분 비율</CardTitle>
+                        <p className="text-[9px] font-bold text-white/20 uppercase mt-1 tracking-widest">3대 영양소 분포</p>
                     </CardHeader>
                     <CardContent className="p-10 h-[400px] flex flex-col justify-between">
                         {macroRatioData.length > 0 ? (
@@ -318,7 +318,7 @@ export function DietAnalysis({ entries, inBodyEntries, exerciseSessions }: DietA
                         ) : (
                             <div className="flex flex-col items-center justify-center h-full opacity-10 gap-4">
                                 <PieChartIcon className="w-12 h-12" />
-                                <p className="text-[10px] font-black tracking-widest uppercase">DATA AWAITING CALIBRATION</p>
+                                <p className="text-[10px] font-black tracking-widest uppercase">데이터 분석 대기 중</p>
                             </div>
                         )}
                     </CardContent>
@@ -330,7 +330,7 @@ export function DietAnalysis({ entries, inBodyEntries, exerciseSessions }: DietA
                 <CardHeader className="p-10 pb-0">
                     <div className="flex items-center gap-3">
                         <Award className="w-5 h-5 text-amber-500" />
-                        <CardTitle className="text-xl font-black text-white tracking-widest uppercase">RECURRING ENTITIES</CardTitle>
+                        <CardTitle className="text-xl font-black text-white tracking-widest uppercase">자주 먹는 음식</CardTitle>
                     </div>
                 </CardHeader>
                 <CardContent className="p-10">
@@ -348,12 +348,12 @@ export function DietAnalysis({ entries, inBodyEntries, exerciseSessions }: DietA
                                         0{idx + 1}
                                     </div>
                                     <div className="text-sm font-black text-white uppercase tracking-tighter mb-2 truncate px-4">{food.name}</div>
-                                    <div className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">{food.count} OCCURRENCES</div>
+                                    <div className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">{food.count}회 섭취</div>
                                 </motion.div>
                             ))}
                         </div>
                     ) : (
-                        <div className="py-12 text-center opacity-10 font-black text-[10px] tracking-[0.3em] uppercase border-2 border-dashed border-white/5 rounded-3xl text-white">NO LOG HISTORY DETECTED</div>
+                        <div className="py-12 text-center opacity-10 font-black text-[10px] tracking-[0.3em] uppercase border-2 border-dashed border-white/5 rounded-3xl text-white">기록 데이터 없음</div>
                     )}
                 </CardContent>
             </Card>

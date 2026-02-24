@@ -157,9 +157,9 @@ ${actionItems.map(a => `- ${a}`).join('\n')}
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent className="sm:max-w-[800px] h-[80vh] flex flex-col p-0">
                 <DialogHeader className="px-6 py-4 border-b">
-                    <DialogTitle>{bookToEdit ? '책 정보 수정' : '새 책 추가'}</DialogTitle>
+                    <DialogTitle>{bookToEdit ? '도서 정보 수정' : '새 도서 추가'}</DialogTitle>
                     <DialogDescription>
-                        책 정보를 입력하거나 링크를 통해 자동으로 불러오세요.
+                        도서 정보를 입력하거나 링크를 통해 자동으로 불러오세요.
                     </DialogDescription>
                 </DialogHeader>
 
@@ -268,7 +268,7 @@ ${actionItems.map(a => `- ${a}`).join('\n')}
                                             </Button>
                                         </div>
                                         <p className="text-xs text-muted-foreground">
-                                            * 도서 상세 페이지 주소를 입력하면 제목, 저자, 표지를 자동으로 채워줍니다.
+                                            * 도서 상세 페이지 주소를 입력하면 제목, 저자, 표지를 자동으로 불러옵니다.
                                         </p>
                                     </div>
                                 </div>
@@ -358,9 +358,9 @@ ${actionItems.map(a => `- ${a}`).join('\n')}
                                                 onChange={(e) => setStatus(e.target.value as BookStatus)}
                                                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                                             >
-                                                <option value="toread">읽을 책 (To Read)</option>
-                                                <option value="reading">읽고 있는 책 (Reading)</option>
-                                                <option value="completed">완독 (Completed)</option>
+                                                <option value="toread">읽을 도서</option>
+                                                <option value="reading">읽고 있는 도서</option>
+                                                <option value="completed">완독</option>
                                             </select>
                                         </div>
                                     </div>

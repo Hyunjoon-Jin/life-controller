@@ -86,14 +86,14 @@ export function AssetDashboard() {
 
     const getTypeLabel = (type: Asset['type']) => {
         switch (type) {
-            case 'bank': return 'SAVINGS';
-            case 'cash': return 'LIQUID CASH';
-            case 'stock': return 'EQUITIES';
-            case 'real_estate': return 'PROPERTY';
-            case 'crypto': return 'DIGITAL ASSETS';
-            case 'loan': return 'LIABILITIES';
-            case 'credit_card': return 'CREDIT LINE';
-            default: return 'OTHER';
+            case 'bank': return '예적금';
+            case 'cash': return '유동 현금';
+            case 'stock': return '주식/자산';
+            case 'real_estate': return '부동산';
+            case 'crypto': return '가상자산';
+            case 'loan': return '대출/부채';
+            case 'credit_card': return '신용 한도';
+            default: return '기타';
         }
     };
 
@@ -122,9 +122,9 @@ export function AssetDashboard() {
                             <Activity className="w-6 h-6 text-white" strokeWidth={3} />
                         </div>
                         <div>
-                            <h2 className="text-3xl font-black text-white tracking-tighter uppercase leading-none">CAPITAL MATRIX</h2>
+                            <h2 className="text-3xl font-black text-white tracking-tighter uppercase leading-none">자산 분석 센터</h2>
                             <p className="text-[10px] font-bold text-white/20 tracking-[0.3em] uppercase mt-2 italic flex items-center gap-2">
-                                <ShieldCheck className="w-3 h-3 text-emerald-500" /> FISCAL INTEGRITY: OPTIMAL
+                                <ShieldCheck className="w-3 h-3 text-emerald-500" /> 재무 건전성: 최적 (OPTIMAL)
                             </p>
                         </div>
                     </div>
@@ -132,14 +132,14 @@ export function AssetDashboard() {
                     <div className="flex items-center gap-4">
                         <div className="bg-white/5 p-1.5 rounded-2xl border border-white/5 flex gap-2">
                             <div className="px-4 py-2 rounded-xl bg-indigo-500/10 border border-indigo-500/20">
-                                <span className="text-[10px] font-black text-indigo-400 tracking-widest uppercase">REAL-TIME SYNC: ACTIVE</span>
+                                <span className="text-[10px] font-black text-indigo-400 tracking-widest uppercase">실시간 동기화: 활성화</span>
                             </div>
                         </div>
                         <Button
                             onClick={() => { resetForm(); setIsDialogOpen(true); }}
                             className="h-12 px-6 rounded-2xl bg-indigo-500 hover:bg-indigo-600 text-white font-black text-[10px] tracking-widest uppercase shadow-xl transition-all active:scale-95"
                         >
-                            <Plus className="w-4 h-4 mr-2" strokeWidth={3} /> INITIALIZE ASSET
+                            <Plus className="w-4 h-4 mr-2" strokeWidth={3} /> 자산 추가하기
                         </Button>
                     </div>
                 </div>
@@ -151,7 +151,7 @@ export function AssetDashboard() {
                     </div>
                     <CardContent className="p-10 flex flex-col md:flex-row items-center justify-between gap-8 relative z-10">
                         <div className="text-center md:text-left">
-                            <h3 className="text-[10px] font-black text-white/40 tracking-[0.4em] uppercase mb-4">TOTAL NET VALUATION</h3>
+                            <h3 className="text-[10px] font-black text-white/40 tracking-[0.4em] uppercase mb-4">순자산 총 가치 (NET WORTH)</h3>
                             <div className="flex items-baseline gap-4 justify-center md:justify-start">
                                 <span className="text-5xl md:text-7xl font-black text-white tracking-tighter">{netWorth.toLocaleString()}</span>
                                 <span className="text-xl font-bold text-white/20 uppercase tracking-widest">KRW</span>
@@ -162,14 +162,14 @@ export function AssetDashboard() {
                             <div className="flex-1 bg-white/5 p-6 rounded-3xl border border-white/5 backdrop-blur-md">
                                 <div className="flex items-center gap-2 mb-2">
                                     <ArrowUpRight className="w-4 h-4 text-emerald-400" />
-                                    <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">GROSS ASSETS</span>
+                                    <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">총 자산</span>
                                 </div>
                                 <div className="text-xl font-black text-white tracking-tight">{totalAssets.toLocaleString()}원</div>
                             </div>
                             <div className="flex-1 bg-white/5 p-6 rounded-3xl border border-white/5 backdrop-blur-md">
                                 <div className="flex items-center gap-2 mb-2">
                                     <ArrowDownRight className="w-4 h-4 text-rose-400" />
-                                    <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">GROSS LIABILITIES</span>
+                                    <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">총 부채</span>
                                 </div>
                                 <div className="text-xl font-black text-white tracking-tight">{totalLiabilities.toLocaleString()}원</div>
                             </div>
@@ -185,7 +185,7 @@ export function AssetDashboard() {
                     <div className="space-y-6">
                         <div className="flex items-center gap-3 px-2">
                             <TrendingUp className="w-5 h-5 text-emerald-500" />
-                            <h3 className="text-xl font-black text-white tracking-widest uppercase">ASSET PORTFOLIO</h3>
+                            <h3 className="text-xl font-black text-white tracking-widest uppercase">자산 포트폴리오</h3>
                         </div>
 
                         <div className="space-y-4">
@@ -215,7 +215,7 @@ export function AssetDashboard() {
                                         <div className="flex items-center gap-6">
                                             <div className="text-right">
                                                 <div className="text-lg font-black text-white tracking-tight">{asset.balance.toLocaleString()}</div>
-                                                <div className="text-[9px] font-bold text-white/10 uppercase tracking-widest">KRW VALUE</div>
+                                                <div className="text-[9px] font-bold text-white/10 uppercase tracking-widest">KRW 가치</div>
                                             </div>
                                             <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
                                                 <button onClick={() => handleEdit(asset)} className="w-10 h-10 rounded-xl bg-white/5 text-white/20 hover:text-white transition-all flex items-center justify-center">
@@ -232,7 +232,7 @@ export function AssetDashboard() {
                             {assets.filter(a => !['loan', 'credit_card'].includes(a.type)).length === 0 && (
                                 <div className="h-40 flex flex-col items-center justify-center opacity-10 gap-4 border-2 border-dashed border-white/10 rounded-[32px]">
                                     <Sparkles className="w-8 h-8" />
-                                    <p className="text-[10px] font-black tracking-[0.3em] uppercase">PORTFOLIO IS VACANT</p>
+                                    <p className="text-[10px] font-black tracking-[0.3em] uppercase">포트폴리오가 비어 있습니다</p>
                                 </div>
                             )}
                         </div>
@@ -242,7 +242,7 @@ export function AssetDashboard() {
                     <div className="space-y-6">
                         <div className="flex items-center gap-3 px-2">
                             <TrendingDown className="w-5 h-5 text-rose-500" />
-                            <h3 className="text-xl font-black text-white tracking-widest uppercase">LIABILITY MATRIX</h3>
+                            <h3 className="text-xl font-black text-white tracking-widest uppercase">부채 매트릭스</h3>
                         </div>
 
                         <div className="space-y-4">
@@ -267,14 +267,14 @@ export function AssetDashboard() {
                                                     <h4 className="text-sm font-black text-white tracking-widest uppercase mb-1">{asset.name}</h4>
                                                     <div className="flex items-center gap-3">
                                                         <span className="text-[9px] font-bold text-white/20 uppercase tracking-widest">{getTypeLabel(asset.type)}</span>
-                                                        {asset.billingDate && <span className="text-[9px] font-black text-rose-400">BILLING D-{asset.billingDate}</span>}
+                                                        {asset.billingDate && <span className="text-[9px] font-black text-rose-400">결제일 D-{asset.billingDate}</span>}
                                                     </div>
                                                 </div>
                                             </div>
                                             <div className="flex items-center gap-6">
                                                 <div className="text-right">
                                                     <div className="text-lg font-black text-rose-400 tracking-tight">{asset.balance.toLocaleString()}</div>
-                                                    <div className="text-[9px] font-bold text-white/10 uppercase tracking-widest text-right">EXPOSURE</div>
+                                                    <div className="text-[9px] font-bold text-white/10 uppercase tracking-widest text-right">부채 노출액</div>
                                                 </div>
                                                 <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
                                                     <button onClick={() => handleEdit(asset)} className="w-10 h-10 rounded-xl bg-white/5 text-white/20 hover:text-white transition-all flex items-center justify-center">
@@ -290,8 +290,8 @@ export function AssetDashboard() {
                                         {asset.type === 'credit_card' && asset.limit && (
                                             <div className="space-y-3 px-1">
                                                 <div className="flex justify-between text-[8px] font-black tracking-widest uppercase text-white/20">
-                                                    <span>CREDIT UTILIZATION</span>
-                                                    <span>{progress.toFixed(1)}% / LIMIT {asset.limit.toLocaleString()}</span>
+                                                    <span>한도 대비 이용률</span>
+                                                    <span>{progress.toFixed(1)}% / 한도 {asset.limit.toLocaleString()}</span>
                                                 </div>
                                                 <div className="h-1.5 bg-white/5 rounded-full overflow-hidden border border-white/5">
                                                     <motion.div
@@ -308,7 +308,7 @@ export function AssetDashboard() {
                             {assets.filter(a => ['loan', 'credit_card'].includes(a.type)).length === 0 && (
                                 <div className="h-40 flex flex-col items-center justify-center opacity-10 gap-4 border-2 border-dashed border-white/10 rounded-[32px]">
                                     <ShieldCheck className="w-8 h-8" />
-                                    <p className="text-[10px] font-black tracking-[0.3em] uppercase">DEBT-FREE CLASSIFICATION</p>
+                                    <p className="text-[10px] font-black tracking-[0.3em] uppercase">부채 없는 청정 상태</p>
                                 </div>
                             )}
                         </div>
@@ -320,39 +320,39 @@ export function AssetDashboard() {
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogContent className="glass-premium border border-white/10 text-white rounded-[40px] p-0 shadow-2xl sm:max-w-xl max-h-[90vh] overflow-hidden">
                     <DialogHeader className="p-10 pb-0">
-                        <DialogTitle className="text-3xl font-black tracking-tighter uppercase mb-2">{editingId ? 'RECALIBRATE ASSET' : 'INITIALIZE ASSET'}</DialogTitle>
-                        <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] italic">SPECIFY FISCAL PARAMETERS FOR MATRIX INTEGRATION</p>
+                        <DialogTitle className="text-3xl font-black tracking-tighter uppercase mb-2">{editingId ? '자산 정보 수정' : '신규 자산 초기화'}</DialogTitle>
+                        <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] italic">시스템 매트릭스 통합을 위한 재무 파라미터를 지정하십시오</p>
                     </DialogHeader>
                     <div className="overflow-y-auto custom-scrollbar p-10 pt-4 space-y-8">
                         <div className="grid gap-6">
                             <div className="space-y-3">
-                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">ASSET IDENTIFIER</Label>
+                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">자산 식별자 (NAME)</Label>
                                 <Input
                                     className="h-14 font-black text-xl border-white/5 bg-white/5 focus-visible:ring-indigo-500/30 rounded-2xl text-white placeholder:text-white/10"
-                                    placeholder="EX: HANA BANK, NASDAQ PORTFOLIO..."
+                                    placeholder="예: OO은행 예금, 나스닥 포트폴리오..."
                                     value={name}
                                     onChange={e => setName(e.target.value)}
                                 />
                             </div>
                             <div className="grid grid-cols-2 gap-6">
                                 <div className="space-y-3">
-                                    <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">CLASSIFICATION</Label>
+                                    <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">자산 분류</Label>
                                     <select
                                         className="flex h-12 w-full rounded-2xl border border-white/5 bg-white/5 px-4 font-black uppercase text-[10px] tracking-widest text-white outline-none focus:ring-2 focus:ring-indigo-500/20"
                                         value={type}
                                         onChange={e => setType(e.target.value as any)}
                                     >
-                                        <option value="bank" className="bg-slate-900">SAVINGS</option>
-                                        <option value="cash" className="bg-slate-900">LIQUID CASH</option>
-                                        <option value="stock" className="bg-slate-900">EQUITIES</option>
-                                        <option value="real_estate" className="bg-slate-900">PROPERTY</option>
-                                        <option value="crypto" className="bg-slate-900">DIGITAL ASSETS</option>
-                                        <option value="loan" className="bg-slate-900">LIABILITY (LOAN)</option>
-                                        <option value="credit_card" className="bg-slate-900">CREDIT LINE</option>
+                                        <option value="bank" className="bg-slate-900">예적금 (SAVINGS)</option>
+                                        <option value="cash" className="bg-slate-900">유동 현금 (CASH)</option>
+                                        <option value="stock" className="bg-slate-900">주식/투자 (EQUITIES)</option>
+                                        <option value="real_estate" className="bg-slate-900">부동산 (PROPERTY)</option>
+                                        <option value="crypto" className="bg-slate-900">가상자산 (DIGITAL)</option>
+                                        <option value="loan" className="bg-slate-900">대출/부채 (LIABILITY)</option>
+                                        <option value="credit_card" className="bg-slate-900">신용 한도 (CREDIT)</option>
                                     </select>
                                 </div>
                                 <div className="space-y-3">
-                                    <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">CURRENT VALUATION</Label>
+                                    <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">현재 평가액</Label>
                                     <Input
                                         type="number"
                                         placeholder="0"
@@ -364,9 +364,9 @@ export function AssetDashboard() {
                             </div>
 
                             <div className="space-y-3">
-                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">ACCESS CREDENTIALS (OPTIONAL)</Label>
+                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">계좌/식별 번호 (선택)</Label>
                                 <Input
-                                    placeholder="ACCOUNT NUMBER / SYSTEM ID"
+                                    placeholder="계좌 번호 또는 시스템 ID"
                                     className="h-12 bg-white/5 border-white/5 rounded-2xl text-white placeholder:text-white/10 text-[10px] font-mono tracking-widest uppercase"
                                     value={accountNumber}
                                     onChange={e => setAccountNumber(e.target.value)}
@@ -375,7 +375,7 @@ export function AssetDashboard() {
 
                             <div className="grid grid-cols-2 gap-6">
                                 <div className="space-y-3">
-                                    <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">ANNUAL RATE (%)</Label>
+                                    <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">연간 수익률/이율 (%)</Label>
                                     <Input
                                         type="number"
                                         placeholder="0.00"
@@ -387,7 +387,7 @@ export function AssetDashboard() {
                                 </div>
                                 {type === 'credit_card' ? (
                                     <div className="space-y-3">
-                                        <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">BILLING CYCLE</Label>
+                                        <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">결제 주기 (일)</Label>
                                         <Input
                                             type="number"
                                             placeholder="1-31"
@@ -398,10 +398,10 @@ export function AssetDashboard() {
                                     </div>
                                 ) : (
                                     <div className="space-y-3">
-                                        <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">CREDIT THRESHOLD</Label>
+                                        <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">부채 임계값/한도</Label>
                                         <Input
                                             type="number"
-                                            placeholder="MAX LIMIT"
+                                            placeholder="최대 한도액"
                                             className="h-12 font-black text-[10px] bg-white/5 border-white/5 rounded-2xl text-white"
                                             value={limit}
                                             onChange={e => setLimit(e.target.value)}
@@ -413,7 +413,7 @@ export function AssetDashboard() {
                             {type === 'credit_card' && (
                                 <div className="grid grid-cols-2 gap-6">
                                     <div className="space-y-3">
-                                        <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">UTILIZATION LIMIT</Label>
+                                        <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">이용 한도액</Label>
                                         <Input
                                             type="number"
                                             placeholder="MAX LINE"
@@ -423,13 +423,13 @@ export function AssetDashboard() {
                                         />
                                     </div>
                                     <div className="space-y-3">
-                                        <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">SETTLEMENT ACCOUNT</Label>
+                                        <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">연결 결제 계좌</Label>
                                         <select
                                             className="flex h-12 w-full rounded-2xl border border-white/5 bg-white/5 px-4 font-black uppercase text-[10px] tracking-widest text-white outline-none focus:ring-2 focus:ring-indigo-500/20"
                                             value={linkedAssetId}
                                             onChange={e => setLinkedAssetId(e.target.value)}
                                         >
-                                            <option value="" className="bg-slate-900">NOT LINKED</option>
+                                            <option value="" className="bg-slate-900">연결되지 않음</option>
                                             {assets.filter(a => a.type === 'bank').map(a => (
                                                 <option key={a.id} value={a.id} className="bg-slate-900">{a.name}</option>
                                             ))}
@@ -439,9 +439,9 @@ export function AssetDashboard() {
                             )}
 
                             <div className="space-y-3">
-                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">SYSTEM NOTES</Label>
+                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">시스템 메모 (NOTES)</Label>
                                 <Input
-                                    placeholder="ADDITIONAL METADATA..."
+                                    placeholder="추가 메타데이터 입력..."
                                     className="h-12 bg-white/5 border-white/5 rounded-2xl text-white placeholder:text-white/10 text-[10px] font-black uppercase tracking-widest"
                                     value={memo}
                                     onChange={e => setMemo(e.target.value)}
@@ -455,7 +455,7 @@ export function AssetDashboard() {
                             disabled={!name || !balance}
                             className="w-full h-16 rounded-2xl bg-indigo-500 hover:bg-indigo-600 text-white font-black text-sm tracking-[0.2em] shadow-2xl active:scale-95 transition-all uppercase"
                         >
-                            COMMIT TO MATRIX
+                            매트릭스에 정보 업로드
                         </Button>
                     </DialogFooter>
                 </DialogContent>

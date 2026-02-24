@@ -48,9 +48,9 @@ export function LanguageStats({ language }: LanguageStatsProps) {
             {/* Summary Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {[
-                    { label: 'TOTAL ACQUISITION', value: `${Math.floor(totalTime / 60)}H ${totalTime % 60}M`, icon: Clock, color: 'text-indigo-400', sub: 'ACCUMULATED TEMPORAL DATA' },
-                    { label: 'LEXICAL COUNT', value: `${totalVocab} WORDS`, icon: BookOpen, color: 'text-emerald-400', sub: 'SECURED NEURAL ENTRIES' },
-                    { label: 'ACTIVE STREAK', value: `${totalDays} DAYS`, icon: Trophy, color: 'text-amber-400', sub: 'CONSISTENCY PROTOCOL' },
+                    { label: '누적 학습 시간', value: `${Math.floor(totalTime / 60)}시간 ${totalTime % 60}분`, icon: Clock, color: 'text-indigo-400', sub: '누적된 시간 데이터' },
+                    { label: '확보 단어 수', value: `${totalVocab} 단어`, icon: BookOpen, color: 'text-emerald-400', sub: '확보된 어휘 항목' },
+                    { label: '학습 일수', value: `${totalDays}일`, icon: Trophy, color: 'text-amber-400', sub: '연속성 프로토콜' },
                 ].map((stat, idx) => (
                     <motion.div
                         initial={{ opacity: 0, y: 10 }}
@@ -93,14 +93,14 @@ export function LanguageStats({ language }: LanguageStatsProps) {
                         <div className="flex items-center justify-between">
                             <div className="space-y-1">
                                 <CardTitle className="text-xl font-black text-white tracking-widest uppercase flex items-center gap-3">
-                                    <BarChart3 className="w-5 h-5 text-indigo-400" /> TEMPORAL FLUCTUATION
+                                    <BarChart3 className="w-5 h-5 text-indigo-400" /> 학습 시간 변동
                                 </CardTitle>
-                                <p className="text-[10px] font-bold text-white/20 tracking-[0.2em] uppercase italic">SESSION INTENSITY: LAST 7 CYCLES</p>
+                                <p className="text-[10px] font-bold text-white/20 tracking-[0.2em] uppercase italic">최근 7일 학습 강도</p>
                             </div>
                             <div className="hidden sm:flex gap-4">
                                 <div className="flex items-center gap-2">
                                     <div className="w-2 h-2 rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.5)]" />
-                                    <span className="text-[8px] font-black text-white/40 tracking-widest uppercase">MINUTES ACQUIRED</span>
+                                    <span className="text-[8px] font-black text-white/40 tracking-widest uppercase">학습 시간 (분)</span>
                                 </div>
                             </div>
                         </div>
@@ -140,8 +140,8 @@ export function LanguageStats({ language }: LanguageStatsProps) {
                                                 return (
                                                     <div className="glass-premium border border-white/10 p-4 rounded-2xl shadow-2xl backdrop-blur-xl">
                                                         <p className="text-[9px] font-black text-white/20 tracking-widest uppercase mb-1">{payload[0].payload.date}</p>
-                                                        <p className="text-xl font-black text-indigo-400 tracking-tighter">{payload[0].value} MIN</p>
-                                                        <p className="text-[8px] font-bold text-white/10 tracking-widest uppercase mt-1 italic">INTENSITY VERIFIED</p>
+                                                        <p className="text-xl font-black text-indigo-400 tracking-tighter">{payload[0].value}분</p>
+                                                        <p className="text-[8px] font-bold text-white/10 tracking-widest uppercase mt-1 italic">강도 확인됨</p>
                                                     </div>
                                                 );
                                             }

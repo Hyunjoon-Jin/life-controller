@@ -67,7 +67,7 @@ export function HobbyLog() {
 
     const handleDeleteHobby = (id: string, e: React.MouseEvent) => {
         e.stopPropagation();
-        if (confirm('TERMINATE THIS HOBBY ARCHIVE? ALL RECORDS WILL BE ERASED.')) {
+        if (confirm('이 취미 저장소를 종료하시겠습니까? 모든 기록이 삭제됩니다.')) {
             deleteHobby(id);
             if (selectedHobbyId === id) { setView('list'); setSelectedHobbyId(null); }
         }
@@ -90,7 +90,7 @@ export function HobbyLog() {
     };
 
     const handleDeletePost = (id: string) => {
-        if (confirm('ERASE THIS LOG ENTRY?')) {
+        if (confirm('이 기록을 삭제하시겠습니까?')) {
             deleteHobbyPost(id);
         }
     };
@@ -133,9 +133,9 @@ export function HobbyLog() {
                                 <Palette className="w-6 h-6 text-white" strokeWidth={3} />
                             </div>
                             <div>
-                                <h2 className="text-3xl font-black text-white tracking-tighter uppercase leading-none">CREATIVE RESERVOIR</h2>
+                                <h2 className="text-3xl font-black text-white tracking-tighter uppercase leading-none">취미 저장소</h2>
                                 <p className="text-[10px] font-bold text-white/20 tracking-[0.3em] uppercase mt-2 italic flex items-center gap-2">
-                                    <Sparkles className="w-3 h-3 text-amber-500" /> PASSION ARCHIVE: SYNCHRONIZED
+                                    <Sparkles className="w-3 h-3 text-amber-500" /> 열정 아카이브: 동기화됨
                                 </p>
                             </div>
                         </div>
@@ -148,30 +148,30 @@ export function HobbyLog() {
                             </DialogTrigger>
                             <DialogContent className="glass-premium border border-white/10 text-white rounded-[40px] p-0 shadow-2xl sm:max-w-[550px] overflow-hidden">
                                 <DialogHeader className="p-10 pb-0">
-                                    <DialogTitle className="text-3xl font-black tracking-tighter uppercase mb-2">INITIALIZE SPACE</DialogTitle>
-                                    <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] italic">ALLOCATING NEURAL BANDWIDTH FOR NEW CREATIVE OUTLET</p>
+                                    <DialogTitle className="text-3xl font-black tracking-tighter uppercase mb-2">공간 초기화</DialogTitle>
+                                    <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] italic">새로운 창의적 활동을 위한 대역폭 할당</p>
                                 </DialogHeader>
                                 <div className="p-10 pt-4 space-y-8">
                                     <div className="space-y-3">
-                                        <label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">HOBBY IDENTITY</label>
+                                        <label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">취미 정체성</label>
                                         <Input
                                             className="h-14 font-black text-xl border-white/5 bg-white/5 focus-visible:ring-amber-500/30 rounded-2xl text-white placeholder:text-white/10"
-                                            placeholder="EX: ANALOG PHOTO, BAKING..."
+                                            placeholder="예: 아날로그 사진, 베이킹..."
                                             value={newHobbyTitle}
                                             onChange={e => setNewHobbyTitle(e.target.value)}
                                         />
                                     </div>
                                     <div className="space-y-3">
-                                        <label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">MISSION PROTOCOL</label>
+                                        <label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">미션 프로토콜</label>
                                         <Input
                                             className="h-12 bg-white/5 border-white/5 rounded-2xl text-white placeholder:text-white/10 font-bold uppercase text-[10px] tracking-widest"
-                                            placeholder="DESCRIBE THE CORE DRIVE"
+                                            placeholder="핵심 추진 동력을 설명하세요"
                                             value={newHobbyDesc}
                                             onChange={e => setNewHobbyDesc(e.target.value)}
                                         />
                                     </div>
                                     <div className="space-y-3">
-                                        <label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">VISUAL ENCODING</label>
+                                        <label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">시각적 인코딩</label>
                                         <div className="flex items-center gap-6 p-6 rounded-3xl bg-white/[0.02] border border-white/5">
                                             <div className="w-24 h-24 bg-white/5 rounded-2xl overflow-hidden border border-white/5 flex items-center justify-center relative hover:bg-white/10 transition-all cursor-pointer group">
                                                 {newHobbyCover ? (
@@ -187,8 +187,8 @@ export function HobbyLog() {
                                                 />
                                             </div>
                                             <div className="flex-1">
-                                                <p className="text-[10px] font-black text-amber-500 uppercase tracking-widest">TAP TO UPLOAD COVER</p>
-                                                <p className="text-[9px] font-bold text-white/20 mt-1 uppercase tracking-tighter leading-tight">ATTACH A VISUAL ANCHOR FOR THIS MEMORY SPACE.</p>
+                                                <p className="text-[10px] font-black text-amber-500 uppercase tracking-widest">커버 업로드</p>
+                                                <p className="text-[9px] font-bold text-white/20 mt-1 uppercase tracking-tighter leading-tight">이 기억 공간에 대한 시각적 고정 이미지를 첨부하세요.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -199,7 +199,7 @@ export function HobbyLog() {
                                         disabled={!newHobbyTitle}
                                         className="w-full h-14 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-black text-sm tracking-widest uppercase shadow-xl transition-all active:scale-95"
                                     >
-                                        ACTIVATE SECTOR
+                                        섹터 활성화
                                     </Button>
                                 </DialogFooter>
                             </DialogContent>
@@ -212,8 +212,8 @@ export function HobbyLog() {
                         <div className="h-full flex flex-col items-center justify-center text-center opacity-10 gap-6">
                             <Palette className="w-20 h-20" />
                             <div className="space-y-2">
-                                <h3 className="text-2xl font-black tracking-[0.2em] uppercase">VOID DETECTED</h3>
-                                <p className="text-[10px] font-bold tracking-[0.5em] uppercase">NO CREATIVE VECTORS INITIALIZED</p>
+                                <h3 className="text-2xl font-black tracking-[0.2em] uppercase">공백 감지됨</h3>
+                                <p className="text-[10px] font-bold tracking-[0.5em] uppercase">초기화된 창의적 벡터가 없습니다</p>
                             </div>
                         </div>
                     ) : (
@@ -245,18 +245,18 @@ export function HobbyLog() {
                                                 <div className="absolute inset-x-0 bottom-0 p-8 z-20">
                                                     <div className="flex items-center gap-3 mb-4">
                                                         <div className="px-4 h-6 rounded-lg bg-amber-500/20 text-[9px] font-black tracking-widest text-amber-500 uppercase flex items-center border border-amber-500/20 backdrop-blur-md">
-                                                            {count} ARCHIVES
+                                                            {count}개의 기록
                                                         </div>
                                                     </div>
                                                     <h3 className="text-2xl font-black text-white tracking-tighter uppercase leading-none mb-2 group-hover:text-amber-400 transition-colors">{hobby.title}</h3>
                                                     <p className="text-[10px] font-bold text-white/30 uppercase tracking-widest line-clamp-1 italic">
-                                                        {hobby.description || 'SILENT PASSIVE LOG'}
+                                                        {hobby.description || '정적인 로그'}
                                                     </p>
 
                                                     <div className="mt-8 pt-6 border-t border-white/10 flex items-center justify-between opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-4 group-hover:translate-y-0">
                                                         <div className="flex items-center gap-2">
                                                             <CalendarIcon className="w-3 h-3 text-white/20" />
-                                                            <span className="text-[9px] font-black text-white/20 uppercase tracking-widest">EST. {format(new Date(hobby.startDate), 'yyyy')}</span>
+                                                            <span className="text-[9px] font-black text-white/20 uppercase tracking-widest">설립일 {format(new Date(hobby.startDate), 'yyyy', { locale: ko })}</span>
                                                         </div>
                                                         <button
                                                             className="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-500 flex items-center justify-center hover:bg-rose-500 hover:text-white transition-all shadow-xl active:scale-90"
@@ -296,20 +296,20 @@ export function HobbyLog() {
                             className="w-fit flex items-center gap-3 px-6 py-2.5 rounded-2xl bg-white/10 border border-white/10 text-white/60 hover:text-white hover:bg-white/20 transition-all font-black text-[10px] tracking-widest uppercase active:scale-95"
                             onClick={() => setView('list')}
                         >
-                            <ArrowLeft className="w-4 h-4" /> RETURN TO SECTOR MAP
+                            <ArrowLeft className="w-4 h-4" /> 섹터 맵으로 돌아가기
                         </button>
                         <div className="flex items-end justify-between gap-12">
                             <div className="max-w-2xl">
                                 <h2 className="text-6xl font-black text-white tracking-tighter uppercase leading-none drop-shadow-2xl mb-4">{selectedHobby.title}</h2>
                                 <p className="text-[11px] font-bold text-white/40 tracking-[0.2em] uppercase leading-relaxed max-w-xl italic">
-                                    <Terminal className="w-3 h-3 inline mr-2 text-amber-500" /> {selectedHobby.description || 'MISSION PROTOCOL NOT SPECIFIED'}
+                                    <Terminal className="w-3 h-3 inline mr-2 text-amber-500" /> {selectedHobby.description || '미션 프로토콜이 지정되지 않음'}
                                 </p>
                             </div>
                             <Button
                                 onClick={() => setIsPostDialogOpen(true)}
                                 className="h-16 px-10 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-black text-sm tracking-widest shadow-2xl transition-all active:scale-95 shrink-0"
                             >
-                                <Plus className="w-6 h-6 mr-4" strokeWidth={3} /> INITIALIZE LOG
+                                <Plus className="w-6 h-6 mr-4" strokeWidth={3} /> 로그 초기화
                             </Button>
                         </div>
                     </div>
@@ -322,8 +322,8 @@ export function HobbyLog() {
                         <div className="flex flex-col items-center justify-center py-32 opacity-10 gap-6">
                             <Book className="w-20 h-20" />
                             <div className="text-center space-y-2">
-                                <h3 className="text-2xl font-black tracking-[0.2em] uppercase">STREAMS VACANT</h3>
-                                <p className="text-[10px] font-bold tracking-[0.5em] uppercase">NO CHRONOLOGICAL LOGS RECORDED</p>
+                                <h3 className="text-2xl font-black tracking-[0.2em] uppercase">스트림 비어있음</h3>
+                                <p className="text-[10px] font-bold tracking-[0.5em] uppercase">기록된 연대기적 로그가 없습니다</p>
                             </div>
                         </div>
                     ) : (
@@ -345,7 +345,7 @@ export function HobbyLog() {
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent align="end" className="glass-premium border border-white/10 min-w-[200px]">
                                             <DropdownMenuItem className="text-[10px] font-black uppercase tracking-widest gap-3 py-4 text-rose-500" onClick={() => handleDeletePost(post.id)}>
-                                                <Trash2 className="w-4 h-4" /> ERASE ENTRY
+                                                <Trash2 className="w-4 h-4" /> 항목 삭제
                                             </DropdownMenuItem>
                                         </DropdownMenuContent>
                                     </DropdownMenu>
@@ -358,9 +358,9 @@ export function HobbyLog() {
                                     </div>
                                     <div className="space-y-2">
                                         <div className="flex items-center gap-3">
-                                            <span className="text-[9px] font-black text-amber-500 tracking-widest uppercase">STATION {idx + 1} // COMMITTED</span>
+                                            <span className="text-[9px] font-black text-amber-500 tracking-widest uppercase">STATION {idx + 1} // 기록됨</span>
                                             <span className="w-1 h-1 rounded-full bg-white/20" />
-                                            <span className="text-[9px] font-bold text-white/20 uppercase tracking-widest">{format(new Date(post.date), 'hh:mm a')}</span>
+                                            <span className="text-[9px] font-bold text-white/20 uppercase tracking-widest">{format(new Date(post.date), 'aa hh:mm', { locale: ko })}</span>
                                         </div>
                                         <h3 className="text-3xl font-black text-white tracking-tighter uppercase leading-tight">{post.title}</h3>
                                     </div>
@@ -392,7 +392,7 @@ export function HobbyLog() {
                                     ))}
                                     {post.link && (
                                         <a href={post.link} target="_blank" rel="noreferrer" className="ml-auto flex items-center gap-2 group/link">
-                                            <span className="text-[9px] font-black text-white/20 uppercase tracking-widest group-hover/link:text-amber-500 transition-colors">ACCESS ASSET</span>
+                                            <span className="text-[9px] font-black text-white/20 uppercase tracking-widest group-hover/link:text-amber-500 transition-colors">자산 액세스</span>
                                             <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/5 flex items-center justify-center group-hover/link:bg-amber-500 transition-all">
                                                 <ArrowUpRight className="w-4 h-4 text-white" />
                                             </div>

@@ -106,15 +106,15 @@ export function LanguageResources({ language }: { language: string }) {
             <div className="flex flex-col sm:flex-row items-center justify-between gap-6 px-4">
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full sm:w-[450px]">
                     <TabsList className="bg-white/5 p-1 rounded-2xl border border-white/5 h-12 w-full grid grid-cols-2">
-                        <TabsTrigger value="library" className="rounded-xl font-black text-[9px] tracking-widest uppercase data-[state=active]:bg-indigo-500 data-[state=active]:text-white">LINGUAL ARCHIVE</TabsTrigger>
-                        <TabsTrigger value="recommendations" className="rounded-xl font-black text-[9px] tracking-widest uppercase data-[state=active]:bg-indigo-500 data-[state=active]:text-white">GLOBAL INTEL</TabsTrigger>
+                        <TabsTrigger value="library" className="rounded-xl font-black text-[9px] tracking-widest uppercase data-[state=active]:bg-indigo-500 data-[state=active]:text-white">학습 아카이브</TabsTrigger>
+                        <TabsTrigger value="recommendations" className="rounded-xl font-black text-[9px] tracking-widest uppercase data-[state=active]:bg-indigo-500 data-[state=active]:text-white">추천 리소스</TabsTrigger>
                     </TabsList>
                 </Tabs>
                 <Button
                     onClick={() => setIsDialogOpen(true)}
                     className="h-12 px-6 rounded-2xl bg-indigo-500 hover:bg-indigo-600 text-white font-black text-[9px] tracking-widest uppercase shadow-xl transition-all active:scale-95 w-full sm:w-auto"
                 >
-                    <Plus className="w-4 h-4 mr-2" strokeWidth={3} /> INDEX NEW SOURCE
+                    <Plus className="w-4 h-4 mr-2" strokeWidth={3} /> 새로운 리소스 등록
                 </Button>
             </div>
 
@@ -130,12 +130,12 @@ export function LanguageResources({ language }: { language: string }) {
                         {/* Currently Studying */}
                         <div className="space-y-6">
                             <h3 className="text-[10px] font-black text-indigo-400 tracking-[0.4em] uppercase flex items-center gap-3 italic px-4">
-                                <Zap className="w-3 h-3" /> ACTIVE FREQUENCIES ({inProgress.length})
+                                <Zap className="w-3 h-3" /> 학습 중 ({inProgress.length})
                             </h3>
                             {inProgress.length === 0 ? (
                                 <div className="px-4">
                                     <div className="h-24 flex items-center justify-center bg-white/[0.02] border border-dashed border-white/5 rounded-[32px] text-[9px] font-black text-white/10 tracking-widest uppercase">
-                                        NO ACTIVE FREQUENCIES DETECTED
+                                        현재 학습 중인 리소스가 없습니다
                                     </div>
                                 </div>
                             ) : (
@@ -150,7 +150,7 @@ export function LanguageResources({ language }: { language: string }) {
                         {/* To Study */}
                         <div className="space-y-6">
                             <h3 className="text-[10px] font-black text-amber-500/60 tracking-[0.4em] uppercase flex items-center gap-3 italic px-4">
-                                <Bookmark className="w-3 h-3" /> QUEUED DATALINKS ({toStudy.length})
+                                <Bookmark className="w-3 h-3" /> 대기 중인 리소스 ({toStudy.length})
                             </h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4">
                                 {toStudy.map(resource => (
@@ -163,7 +163,7 @@ export function LanguageResources({ language }: { language: string }) {
                         {completed.length > 0 && (
                             <div className="space-y-6">
                                 <h3 className="text-[10px] font-black text-white/20 tracking-[0.4em] uppercase flex items-center gap-3 italic px-4">
-                                    <CheckCircle2 className="w-3 h-3" /> ARCHIVED ARTIFACTS ({completed.length})
+                                    <CheckCircle2 className="w-3 h-3" /> 아카이브된 리소스 ({completed.length})
                                 </h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 opacity-40 hover:opacity-100 transition-opacity">
                                     {completed.map(resource => (
@@ -215,7 +215,7 @@ export function LanguageResources({ language }: { language: string }) {
                                             variant="secondary"
                                             onClick={() => handleAddRecommendation(rec)}
                                         >
-                                            <Plus className="w-3 h-3 mr-2" strokeWidth={3} /> LINK TO ARCHIVE
+                                            <Plus className="w-3 h-3 mr-2" strokeWidth={3} /> 아카이브에 연결
                                         </Button>
                                     </CardContent>
                                 </Card>
@@ -223,7 +223,7 @@ export function LanguageResources({ language }: { language: string }) {
                         )) : (
                             <div className="col-span-full py-40 text-center flex flex-col items-center justify-center opacity-10 gap-6">
                                 <Globe className="w-16 h-16" />
-                                <p className="text-[10px] font-black tracking-[0.4em] uppercase">GLOBAL INTEL FEED VACANT</p>
+                                <p className="text-[10px] font-black tracking-[0.4em] uppercase">추천 리소스가 없습니다</p>
                             </div>
                         )}
                     </motion.div>
@@ -234,23 +234,23 @@ export function LanguageResources({ language }: { language: string }) {
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogContent className="glass-premium border border-white/10 text-white rounded-[40px] p-0 shadow-2xl sm:max-w-3xl">
                     <DialogHeader className="p-10 pb-0">
-                        <DialogTitle className="text-3xl font-black tracking-tighter uppercase mb-2">INDEX NEW SOURCE</DialogTitle>
-                        <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] italic">CALIBRATING DATALINK FOR LINGUISTIC ACQUISITION</p>
+                        <DialogTitle className="text-3xl font-black tracking-tighter uppercase mb-2">새로운 소스 등록</DialogTitle>
+                        <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] italic">언어 습득을 위한 데이터링크 보정</p>
                     </DialogHeader>
 
                     <div className="p-10 pt-4 space-y-8">
                         <div className="space-y-3">
-                            <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">SOURCE IDENTIFIER</Label>
+                            <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">소스 식별자</Label>
                             <Input
                                 value={newTitle}
                                 onChange={e => setNewTitle(e.target.value)}
-                                placeholder="EX: BBC NEWS, TED TALK X..."
+                                placeholder="예: BBC 뉴스, TED TALK..."
                                 className="h-14 font-black text-xl border-white/5 bg-white/5 rounded-2xl text-white placeholder:text-white/10"
                             />
                         </div>
 
                         <div className="space-y-3">
-                            <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">DATALINK (URL)</Label>
+                            <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">데이터링크 (URL)</Label>
                             <div className="relative">
                                 <LinkIcon className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/10" />
                                 <Input
@@ -264,30 +264,30 @@ export function LanguageResources({ language }: { language: string }) {
 
                         <div className="grid grid-cols-2 gap-8">
                             <div className="space-y-3">
-                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">SOURCE VECTOR</Label>
+                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">소스 유형</Label>
                                 <select
                                     className="flex h-12 w-full rounded-2xl border border-white/5 bg-white/5 px-4 font-black uppercase text-[10px] tracking-widest text-white outline-none focus:ring-2 focus:ring-indigo-500/20"
                                     value={newType}
                                     onChange={e => setNewType(e.target.value as any)}
                                 >
-                                    <option value="video" className="bg-slate-900">VISUAL DATA</option>
-                                    <option value="article" className="bg-slate-900">ACADEMIC TEXT</option>
-                                    <option value="lecture" className="bg-slate-900">PROTOCOL LECTURE</option>
-                                    <option value="book" className="bg-slate-900">PHYSICAL MANUSCRIPT</option>
+                                    <option value="video" className="bg-slate-900">영상 데이터</option>
+                                    <option value="article" className="bg-slate-900">학술 텍스트</option>
+                                    <option value="lecture" className="bg-slate-900">프로토콜 강의</option>
+                                    <option value="book" className="bg-slate-900">물리적 원고</option>
                                 </select>
                             </div>
                             <div className="space-y-3">
-                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">CATEGORICAL TAG</Label>
-                                <Input value={newCategory} onChange={e => setNewCategory(e.target.value)} placeholder="EX: GRAMMAR, LISTENING" className="h-12 bg-white/5 border-white/5 rounded-2xl text-white text-[10px] font-black tracking-widest uppercase" />
+                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">카테고리 태그</Label>
+                                <Input value={newCategory} onChange={e => setNewCategory(e.target.value)} placeholder="예: 문법, 리스닝" className="h-12 bg-white/5 border-white/5 rounded-2xl text-white text-[10px] font-black tracking-widest uppercase" />
                             </div>
                         </div>
 
                         <div className="space-y-3">
-                            <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">NEURAL MEMO (OPTIONAL)</Label>
+                            <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">메모 (선택사항)</Label>
                             <Textarea
                                 value={newMemo}
                                 onChange={e => setNewMemo(e.target.value)}
-                                placeholder="SPECIFY PROTOCOL DETAILS..."
+                                placeholder="프로토콜 세부 정보를 입력하세요..."
                                 className="min-h-[100px] bg-white/5 border-white/5 rounded-2xl p-6 text-[11px] font-bold text-white/60 leading-relaxed italic placeholder:text-white/10 resize-none focus:ring-2 focus:ring-indigo-500/20"
                             />
                         </div>
@@ -306,7 +306,7 @@ export function LanguageResources({ language }: { language: string }) {
                             disabled={!newTitle || !newUrl}
                             className="flex-1 h-16 rounded-3xl bg-indigo-500 hover:bg-indigo-600 text-white font-black text-sm tracking-[0.2em] shadow-2xl active:scale-95 transition-all uppercase"
                         >
-                            SECURE SOURCE
+                            소스 등록
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -360,7 +360,7 @@ function ResourceCard({ resource, onUpdate, onDelete }: { resource: LanguageReso
                             className="flex-1 h-10 rounded-xl bg-indigo-500/10 text-indigo-400 text-[9px] font-black tracking-widest uppercase border border-indigo-500/20 hover:bg-indigo-500 hover:text-white"
                             onClick={() => handleStatusChange('studying')}
                         >
-                            <Zap className="w-3 h-3 mr-2" /> INITIALIZE
+                            <Zap className="w-3 h-3 mr-2" /> 학습 시작
                         </Button>
                     )}
                     {resource.status === 'studying' && (
@@ -369,7 +369,7 @@ function ResourceCard({ resource, onUpdate, onDelete }: { resource: LanguageReso
                             className="flex-1 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 text-[9px] font-black tracking-widest uppercase border border-emerald-500/20 hover:bg-emerald-500 hover:text-white"
                             onClick={() => handleStatusChange('completed')}
                         >
-                            <CheckCircle2 className="w-3 h-3 mr-2" /> ARCHIVE
+                            <CheckCircle2 className="w-3 h-3 mr-2" /> 아카이브
                         </Button>
                     )}
                     <button

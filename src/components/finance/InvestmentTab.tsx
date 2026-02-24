@@ -110,9 +110,9 @@ export function InvestmentTab() {
                             <TrendingUp className="w-6 h-6 text-white" strokeWidth={3} />
                         </div>
                         <div>
-                            <h2 className="text-3xl font-black text-white tracking-tighter uppercase leading-none">SPECULATIVE INTEL</h2>
+                            <h2 className="text-3xl font-black text-white tracking-tighter uppercase leading-none">투자 분석 센터</h2>
                             <p className="text-[10px] font-bold text-white/20 tracking-[0.3em] uppercase mt-2 italic flex items-center gap-2">
-                                <Zap className="w-3 h-3 text-amber-500" /> MARKET VOLATILITY: MONITORED
+                                <Zap className="w-3 h-3 text-amber-500" /> 시장 변동성: 모니터링 중 (MONITORED)
                             </p>
                         </div>
                     </div>
@@ -121,7 +121,7 @@ export function InvestmentTab() {
                         <div className="group relative w-[300px]">
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within:text-indigo-500 transition-colors" />
                             <Input
-                                placeholder="GLOBAL TICKER SEARCH..."
+                                placeholder="글로벌 티커 검색 (예: NVDA)..."
                                 className="h-12 pl-12 bg-white/5 border-white/5 rounded-2xl text-white font-black text-[10px] tracking-widest uppercase placeholder:text-white/10 focus-visible:ring-indigo-500/30"
                                 value={searchQuery}
                                 onChange={e => setSearchQuery(e.target.value)}
@@ -132,7 +132,7 @@ export function InvestmentTab() {
                             onClick={() => setIsDialogOpen(true)}
                             className="h-12 px-6 rounded-2xl bg-indigo-500 hover:bg-indigo-600 text-white font-black text-[10px] tracking-widest uppercase shadow-xl transition-all active:scale-95"
                         >
-                            <Plus className="w-4 h-4 mr-2" strokeWidth={3} /> NEW ANALYSIS
+                            <Plus className="w-4 h-4 mr-2" strokeWidth={3} /> 새 분석 추가
                         </Button>
                     </div>
                 </div>
@@ -201,11 +201,11 @@ export function InvestmentTab() {
                                 <div className="space-y-4 relative z-10">
                                     <div className="flex justify-between items-center px-2">
                                         <div className="flex flex-col">
-                                            <span className="text-[8px] font-black text-white/20 tracking-widest uppercase mb-1">TARGET QUOTA</span>
-                                            <span className="text-lg font-black text-white">{analysis.targetPrice ? `${analysis.targetPrice.toLocaleString()} USD` : 'NOT SET'}</span>
+                                            <span className="text-[8px] font-black text-white/20 tracking-widest uppercase mb-1">목표 가격 (TARGET)</span>
+                                            <span className="text-lg font-black text-white">{analysis.targetPrice ? `${analysis.targetPrice.toLocaleString()} USD` : '미설정'}</span>
                                         </div>
                                         <div className="flex flex-col text-right">
-                                            <span className="text-[8px] font-black text-white/20 tracking-widest uppercase mb-1">STAMPED</span>
+                                            <span className="text-[8px] font-black text-white/20 tracking-widest uppercase mb-1">기록일</span>
                                             <span className="text-[10px] font-bold text-white/40 uppercase">{new Date(analysis.analysisDate).toLocaleDateString()}</span>
                                         </div>
                                     </div>
@@ -230,7 +230,7 @@ export function InvestmentTab() {
                                             className="h-10 px-4 rounded-xl hover:bg-white/5 text-[9px] font-black text-white/20 hover:text-white tracking-widest uppercase gap-2 transition-all"
                                             onClick={() => window.open(analysis.url || `https://finance.yahoo.com/quote/${analysis.symbol}`, '_blank')}
                                         >
-                                            BROWSE SOURCE <ExternalLink className="w-3 h-3" />
+                                            출처 원문 보기 <ExternalLink className="w-3 h-3" />
                                         </Button>
                                     </div>
                                 </div>
@@ -242,8 +242,8 @@ export function InvestmentTab() {
                         <div className="col-span-full h-80 flex flex-col items-center justify-center opacity-10 gap-6 border-2 border-dashed border-white/10 rounded-[48px]">
                             <BarChart3 className="w-20 h-20" />
                             <div className="text-center space-y-1">
-                                <h3 className="text-2xl font-black tracking-[0.2em] uppercase">VOID DETECTED</h3>
-                                <p className="text-[10px] font-bold tracking-[0.5em] uppercase">NO STRATEGIC INSIGHTS RECORDED</p>
+                                <h3 className="text-2xl font-black tracking-[0.2em] uppercase">분석 기록이 없습니다</h3>
+                                <p className="text-[10px] font-bold tracking-[0.5em] uppercase">기록된 전략적 통찰이 발견되지 않았습니다</p>
                             </div>
                         </div>
                     )}
@@ -254,16 +254,16 @@ export function InvestmentTab() {
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogContent className="glass-premium border border-white/10 text-white rounded-[40px] p-0 shadow-2xl sm:max-w-3xl max-h-[90vh] overflow-hidden">
                     <DialogHeader className="p-10 pb-0">
-                        <DialogTitle className="text-3xl font-black tracking-tighter uppercase mb-2">INITIALIZE INTEL</DialogTitle>
-                        <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] italic">ENCRYPTING MARKET DATA FOR STRATEGIC ANALYSIS</p>
+                        <DialogTitle className="text-3xl font-black tracking-tighter uppercase mb-2">신규 투자 분석 초기화</DialogTitle>
+                        <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] italic">전략적 분석을 위해 시장 센서 데이터를 암호화합니다</p>
                     </DialogHeader>
                     <div className="overflow-y-auto custom-scrollbar p-10 pt-4 space-y-8">
                         <div className="grid gap-6">
                             <div className="space-y-3">
-                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">SOURCE FEED (URL)</Label>
+                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">정보 출처 피드 (URL)</Label>
                                 <div className="flex gap-4">
                                     <Input
-                                        placeholder="YAHOO, NAVER, INVESTING URL..."
+                                        placeholder="YAHOO, NAVER FINANCE 등 URL 입력..."
                                         className="h-14 font-black text-[10px] tracking-widest uppercase bg-white/5 border-white/5 rounded-2xl text-white placeholder:text-white/10"
                                         value={url}
                                         onChange={e => setUrl(e.target.value)}
@@ -282,17 +282,17 @@ export function InvestmentTab() {
 
                             <div className="grid grid-cols-2 gap-6">
                                 <div className="space-y-3">
-                                    <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">SYSTEM TICKER</Label>
+                                    <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">시스템 티커 (SYMBOL)</Label>
                                     <Input
-                                        placeholder="EX: NVDA"
+                                        placeholder="예: NVDA, 005930"
                                         className="h-12 font-black text-sm tracking-widest uppercase bg-white/5 border-white/5 rounded-2xl text-white"
                                         value={symbol} onChange={e => setSymbol(e.target.value)}
                                     />
                                 </div>
                                 <div className="space-y-3">
-                                    <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">ENTITY IDENTITY</Label>
+                                    <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">엔티티 식별명 (NAME)</Label>
                                     <Input
-                                        placeholder="EX: NVIDIA CORP"
+                                        placeholder="예: NVIDIA CORP, 삼성전자"
                                         className="h-12 font-black text-sm tracking-widest uppercase bg-white/5 border-white/5 rounded-2xl text-white"
                                         value={name} onChange={e => setName(e.target.value)}
                                     />
@@ -301,19 +301,19 @@ export function InvestmentTab() {
 
                             <div className="grid grid-cols-2 gap-6">
                                 <div className="space-y-3">
-                                    <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">STRATEGIC RATING</Label>
+                                    <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">전략적 투자의견 (RATING)</Label>
                                     <select
                                         className="flex h-12 w-full rounded-2xl border border-white/5 bg-white/5 px-4 font-black uppercase text-[10px] tracking-widest text-white outline-none focus:ring-2 focus:ring-indigo-500/20"
                                         value={rating}
                                         onChange={e => setRating(e.target.value as any)}
                                     >
-                                        <option value="buy" className="bg-slate-900">BUY (ACCUMULATE)</option>
-                                        <option value="hold" className="bg-slate-900">HOLD (RETAIN)</option>
-                                        <option value="sell" className="bg-slate-900">SELL (LIQUIDATE)</option>
+                                        <option value="buy" className="bg-slate-900">매수 (BUY / ACCUMULATE)</option>
+                                        <option value="hold" className="bg-slate-900">중립 (HOLD / RETAIN)</option>
+                                        <option value="sell" className="bg-slate-900">매도 (SELL / LIQUIDATE)</option>
                                     </select>
                                 </div>
                                 <div className="space-y-3">
-                                    <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">TARGET QUOTA (USD)</Label>
+                                    <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">목표 가격 (TARGET PRICE)</Label>
                                     <Input
                                         type="number"
                                         placeholder="0.00"
@@ -324,19 +324,19 @@ export function InvestmentTab() {
                             </div>
 
                             <div className="space-y-3">
-                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">INTEL NARRATIVE (MARKDOWN)</Label>
+                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">지능형 내러티브 (MARKDOWN 분석)</Label>
                                 <textarea
                                     className="min-h-[200px] w-full rounded-3xl border border-white/5 bg-white/5 p-6 text-xs font-bold text-white placeholder:text-white/10 leading-relaxed resize-none focus:ring-2 focus:ring-indigo-500/20"
-                                    placeholder="INPUT MARKET SENSORS, RISKS, AND CATALYSTS..."
+                                    placeholder="시장 센서, 위험 요소, 그리고 촉매제에 대한 분석 내용을 입력하십시오..."
                                     value={content}
                                     onChange={e => setContent(e.target.value)}
                                 />
                             </div>
 
                             <div className="space-y-3">
-                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">METADATA TAGS</Label>
+                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">메타데이터 태그 (TAGS)</Label>
                                 <Input
-                                    placeholder="#AI, #GROWTH, #RISK"
+                                    placeholder="#반도체, #성장주, #AI 등..."
                                     className="h-12 bg-white/5 border-white/5 rounded-2xl text-white placeholder:text-white/10 text-[10px] font-black uppercase tracking-widest"
                                     value={tags} onChange={e => setTags(e.target.value)}
                                 />
@@ -349,7 +349,7 @@ export function InvestmentTab() {
                             disabled={!symbol || !name}
                             className="w-full h-16 rounded-2xl bg-indigo-500 hover:bg-indigo-600 text-white font-black text-sm tracking-[0.2em] shadow-2xl active:scale-95 transition-all uppercase"
                         >
-                            COMMIT TO INTEL FEED
+                            분석 피드에 기록 업로드
                         </Button>
                     </DialogFooter>
                 </DialogContent>

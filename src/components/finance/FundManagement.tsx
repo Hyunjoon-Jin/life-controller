@@ -67,24 +67,24 @@ export function FundManagement() {
                             <Briefcase className="w-6 h-6 text-white" strokeWidth={3} />
                         </div>
                         <div>
-                            <h2 className="text-3xl font-black text-white tracking-tighter uppercase leading-none">LIQUIDITY PROVISION</h2>
+                            <h2 className="text-3xl font-black text-white tracking-tighter uppercase leading-none">자금 운용 현황</h2>
                             <p className="text-[10px] font-bold text-white/20 tracking-[0.3em] uppercase mt-2 italic flex items-center gap-2">
-                                <Terminal className="w-3 h-3 text-emerald-500" /> FISCAL QUOTAS: SYNCHRONIZED
+                                <Terminal className="w-3 h-3 text-emerald-500" /> 재무 쿼터: 시스템 동기화됨
                             </p>
                         </div>
                     </div>
                     <div className="text-right">
-                        <span className="text-[9px] font-black text-white/20 tracking-widest uppercase">CURRENT CYCLE</span>
-                        <div className="text-sm font-bold text-white/40 uppercase">{format(currentDate, 'yyyy MM')}</div>
+                        <span className="text-[9px] font-black text-white/20 tracking-widest uppercase">현재 필터 주기 (CYCLE)</span>
+                        <div className="text-sm font-bold text-white/40 uppercase">{format(currentDate, 'yyyy년 MM월')}</div>
                     </div>
                 </div>
 
                 {/* Fiscal Quotas Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     {[
-                        { label: 'PRIMARY INCOME', actual: actualIncome, goal: monthlyGoals.income, progress: incomeProgress, icon: TrendingUp, color: 'text-indigo-400', bg: 'from-indigo-500/[0.05]' },
-                        { label: 'SAVINGS ACCRUAL', actual: actualSaving, goal: monthlyGoals.saving, progress: savingProgress, icon: PiggyBank, color: 'text-emerald-400', bg: 'from-emerald-500/[0.05]' },
-                        { label: 'SPENDING EXPOSURE', actual: actualSpending, goal: monthlyGoals.spending, progress: spendingProgress, icon: TrendingDown, color: spendingProgress > 90 ? 'text-rose-400' : 'text-amber-400', bg: 'from-amber-500/[0.05]' }
+                        { label: '주요 수입 (INCOME)', actual: actualIncome, goal: monthlyGoals.income, progress: incomeProgress, icon: TrendingUp, color: 'text-indigo-400', bg: 'from-indigo-500/[0.05]' },
+                        { label: '저축 적립액 (SAVINGS)', actual: actualSaving, goal: monthlyGoals.saving, progress: savingProgress, icon: PiggyBank, color: 'text-emerald-400', bg: 'from-emerald-500/[0.05]' },
+                        { label: '지출 노출도 (EXPENSE)', actual: actualSpending, goal: monthlyGoals.spending, progress: spendingProgress, icon: TrendingDown, color: spendingProgress > 90 ? 'text-rose-400' : 'text-amber-400', bg: 'from-amber-500/[0.05]' }
                     ].map((item, idx) => (
                         <Card key={idx} className={cn("glass-premium border-white/10 bg-gradient-to-br to-transparent overflow-hidden rounded-[32px]", item.bg)}>
                             <CardContent className="p-6 flex flex-col justify-between h-full gap-4">
@@ -98,8 +98,8 @@ export function FundManagement() {
                                         <span className="text-[10px] font-bold text-white/10 uppercase">KRW</span>
                                     </div>
                                     <div className="flex items-center justify-between text-[8px] font-black text-white/20 tracking-widest uppercase mb-1">
-                                        <span>QUOTA: {item.goal.toLocaleString()}</span>
-                                        <span>{Math.round(item.progress)}%</span>
+                                        <span>배정 쿼터: {item.goal.toLocaleString()}</span>
+                                        <span>{Math.round(item.progress)}% 달성</span>
                                     </div>
                                     <div className="h-1.5 bg-white/5 rounded-full overflow-hidden border border-white/5">
                                         <motion.div
@@ -121,13 +121,13 @@ export function FundManagement() {
                     <div className="space-y-6">
                         <div className="flex items-center justify-between px-2">
                             <h3 className="text-[10px] font-black text-white/20 tracking-[0.4em] uppercase flex items-center gap-3">
-                                <Target className="w-3 h-3 text-emerald-500" /> MACRO OBJECTIVES
+                                <Target className="w-3 h-3 text-emerald-500" /> 거시적 재무 목표 (MACRO)
                             </h3>
                             <Button
                                 onClick={() => { setEditingGoal(null); setGoalTitle(''); setGoalTarget(''); setGoalCurrent('0'); setIsDialogOpen(true); }}
                                 variant="ghost" className="h-8 text-[8px] font-black text-emerald-500 hover:text-emerald-400 uppercase tracking-widest gap-2"
                             >
-                                <Plus className="w-3 h-3" /> INITIALIZE PLAN
+                                <Plus className="w-3 h-3" strokeWidth={3} /> 신규 플랜 초기화
                             </Button>
                         </div>
 
@@ -154,8 +154,8 @@ export function FundManagement() {
                                                 <div>
                                                     <h4 className="text-lg font-black text-white tracking-tight uppercase mb-1">{goal.title}</h4>
                                                     <div className="flex items-center gap-3">
-                                                        <span className="text-[8px] font-black text-white/20 tracking-widest uppercase">OBJECTIVE: {goal.targetAmount.toLocaleString()} KRW</span>
-                                                        <span className="text-[8px] font-black text-emerald-400 tracking-widest uppercase">{progress.toFixed(1)}% ACHIEVED</span>
+                                                        <span className="text-[8px] font-black text-white/20 tracking-widest uppercase">목표 금액: {goal.targetAmount.toLocaleString()} KRW</span>
+                                                        <span className="text-[8px] font-black text-emerald-400 tracking-widest uppercase">{progress.toFixed(1)}% 달성</span>
                                                     </div>
                                                 </div>
                                                 <button
@@ -180,7 +180,7 @@ export function FundManagement() {
                             {financeGoals.length === 0 && (
                                 <div className="h-32 flex flex-col items-center justify-center opacity-10 gap-3 border-2 border-dashed border-white/10 rounded-[32px]">
                                     <Target className="w-8 h-8" />
-                                    <p className="text-[10px] font-bold tracking-[0.3em] uppercase">STRATEGIC PLANS VACANT</p>
+                                    <p className="text-[10px] font-bold tracking-[0.3em] uppercase">등록된 전략적 플랜이 없습니다</p>
                                 </div>
                             )}
                         </div>
@@ -188,11 +188,11 @@ export function FundManagement() {
 
                     <div className="space-y-6">
                         <h3 className="text-[10px] font-black text-white/20 tracking-[0.4em] uppercase px-2 flex items-center gap-3">
-                            <PiggyBank className="w-3 h-3 text-indigo-400" /> QUOTA CONFIGURATION
+                            <PiggyBank className="w-3 h-3 text-indigo-400" /> 재무 쿼터 파라미터 보정
                         </h3>
                         <div className="glass-premium rounded-[40px] border border-white/5 p-10 space-y-8 bg-gradient-to-br from-white/[0.02] to-transparent">
                             <div className="space-y-3">
-                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2 italic">MONTHLY REVENUE TARGET</Label>
+                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2 italic">월 수입 목표 (REVENUE TARGET)</Label>
                                 <Input
                                     type="number"
                                     className="h-14 font-black text-xl tracking-tighter bg-white/5 border-white/5 rounded-2xl text-white outline-none focus:ring-2 focus:ring-emerald-500/20"
@@ -201,7 +201,7 @@ export function FundManagement() {
                                 />
                             </div>
                             <div className="space-y-3">
-                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2 italic">ACCRUAL QUOTA (SAVINGS)</Label>
+                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2 italic">자산 적립 쿼터 (SAVINGS)</Label>
                                 <Input
                                     type="number"
                                     className="h-14 font-black text-xl tracking-tighter bg-white/5 border-white/5 rounded-2xl text-white outline-none focus:ring-2 focus:ring-indigo-500/20"
@@ -210,7 +210,7 @@ export function FundManagement() {
                                 />
                             </div>
                             <div className="space-y-3">
-                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2 italic">MAX EXPOSURE LIMIT (SPENDING)</Label>
+                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2 italic">최대 지출 노출 한도 (SPENDING)</Label>
                                 <Input
                                     type="number"
                                     className="h-14 font-black text-xl tracking-tighter bg-white/5 border-white/5 rounded-2xl text-white outline-none focus:ring-2 focus:ring-rose-500/20"
@@ -220,7 +220,7 @@ export function FundManagement() {
                             </div>
                             <div className="pt-4 opacity-10 flex items-center gap-3 justify-center">
                                 <ShieldCheck className="w-4 h-4" />
-                                <span className="text-[8px] font-black tracking-[0.5em] uppercase">SECURE PROTOCOL ACTIVE</span>
+                                <span className="text-[8px] font-black tracking-[0.5em] uppercase">보안 프로토콜 활성화됨 (SECURE ACTIVE)</span>
                             </div>
                         </div>
                     </div>
@@ -231,14 +231,14 @@ export function FundManagement() {
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogContent className="glass-premium border border-white/10 text-white rounded-[40px] p-0 shadow-2xl sm:max-w-xl overflow-hidden">
                     <DialogHeader className="p-10 pb-0">
-                        <DialogTitle className="text-3xl font-black tracking-tighter uppercase mb-2">{editingGoal ? 'MODIFY STRATEGY' : 'INITIATE STRATEGY'}</DialogTitle>
-                        <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] italic">CALIBRATING LONG-TERM FISCAL OBJECTIVES</p>
+                        <DialogTitle className="text-3xl font-black tracking-tighter uppercase mb-2">{editingGoal ? '재무 전략 보정' : '신규 전략 초기화'}</DialogTitle>
+                        <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] italic">장기적인 거시 재무 목표를 보정하고 설정하십시오</p>
                     </DialogHeader>
                     <div className="p-10 pt-4 space-y-8">
                         <div className="space-y-3">
-                            <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">OBJECTIVE IDENTIFIER</Label>
+                            <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">전략 목표 식별자 (NAME)</Label>
                             <Input
-                                placeholder="EX: REAL ESTATE POSSESSION, EMERGENCY BUFFER..."
+                                placeholder="예: 아파트 청약 자금, 비상금 적립..."
                                 value={goalTitle}
                                 onChange={e => setGoalTitle(e.target.value)}
                                 className="h-14 font-black text-[10px] tracking-widest uppercase bg-white/5 border-white/5 rounded-2xl text-white placeholder:text-white/10"
@@ -246,7 +246,7 @@ export function FundManagement() {
                         </div>
                         <div className="grid grid-cols-2 gap-6">
                             <div className="space-y-3">
-                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">TARGET MAGNITUDE (KRW)</Label>
+                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">목표 금액 (TARGET / KRW)</Label>
                                 <Input
                                     type="number"
                                     placeholder="0"
@@ -256,7 +256,7 @@ export function FundManagement() {
                                 />
                             </div>
                             <div className="space-y-3">
-                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">CURRENT ACCUMULATION</Label>
+                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">현재 적립액 (CURRENT)</Label>
                                 <Input
                                     type="number"
                                     placeholder="0"
@@ -281,7 +281,7 @@ export function FundManagement() {
                             disabled={!goalTitle || !goalTarget}
                             className="w-full h-16 rounded-3xl bg-emerald-500 hover:bg-emerald-600 text-white font-black text-sm tracking-[0.2em] shadow-2xl active:scale-95 transition-all uppercase"
                         >
-                            ENCRYPT PLAN
+                            전략 플랜 승인 및 저장
                         </Button>
                     </DialogFooter>
                 </DialogContent>

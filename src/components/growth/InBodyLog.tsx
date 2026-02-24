@@ -188,9 +188,9 @@ export function InBodyLog() {
                             <Fingerprint className="w-6 h-6 text-white" strokeWidth={3} />
                         </div>
                         <div>
-                            <h2 className="text-3xl font-black text-white tracking-tighter uppercase leading-none">BIOMETRIC EVOLUTION</h2>
+                            <h2 className="text-3xl font-black text-white tracking-tighter uppercase leading-none">신체 진화 지표</h2>
                             <p className="text-[10px] font-bold text-white/20 tracking-[0.3em] uppercase mt-2 italic flex items-center gap-2">
-                                <ShieldCheck className="w-3 h-3 text-indigo-500" /> PHYSIOLOGICAL INTEGRITY: VERIFIED
+                                <ShieldCheck className="w-3 h-3 text-indigo-500" /> 생체 데이터 무결성: 확인됨
                             </p>
                         </div>
                     </div>
@@ -201,13 +201,13 @@ export function InBodyLog() {
                             variant="outline"
                             className="h-12 px-6 rounded-2xl border-indigo-500/30 bg-indigo-500/10 text-indigo-400 font-black text-[10px] tracking-widest uppercase hover:bg-indigo-500/20"
                         >
-                            <Target className="w-4 h-4 mr-2" /> SET OBJECTIVE
+                            <Target className="w-4 h-4 mr-2" /> 목표 설정
                         </Button>
                         <Button
                             onClick={() => { resetEntryForm(); setIsDialogOpen(true); }}
                             className="h-12 px-6 rounded-2xl bg-indigo-500 hover:bg-indigo-600 text-white font-black text-[10px] tracking-widest uppercase shadow-xl transition-all active:scale-95"
                         >
-                            <Plus className="w-4 h-4 mr-2" strokeWidth={3} /> NEW SCAN
+                            <Plus className="w-4 h-4 mr-2" strokeWidth={3} /> 새로운 측정
                         </Button>
                     </div>
                 </div>
@@ -226,29 +226,29 @@ export function InBodyLog() {
                                 <div className="w-8 h-8 rounded-xl bg-indigo-500/20 flex items-center justify-center">
                                     <TrendingUp className="w-4 h-4 text-indigo-400" />
                                 </div>
-                                <h3 className="text-xl font-black text-white tracking-widest uppercase">TRAJECTORY ANALYSIS</h3>
+                                <h3 className="text-xl font-black text-white tracking-widest uppercase">성장 경로 분석</h3>
                             </div>
                             <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest">
-                                TARGET HORIZON: <span className="text-white ml-2">{format(new Date(bodyCompositionGoal!.targetDate), 'MMM dd, yyyy').toUpperCase()}</span>
-                                <span className="mx-4 font-black text-indigo-500">{goalSummary.daysLeft > 0 ? `T-MINUS ${goalSummary.daysLeft} DAYS` : 'CRITICAL THRESHOLD'}</span>
+                                목표 기한: <span className="text-white ml-2">{format(new Date(bodyCompositionGoal!.targetDate), 'yyyy.MM.dd')}</span>
+                                <span className="mx-4 font-black text-indigo-500">{goalSummary.daysLeft > 0 ? `기한까지 ${goalSummary.daysLeft}일 남음` : '기한 도달'}</span>
                             </p>
                         </div>
 
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-12 sm:gap-16">
                             {goalSummary.targetWeight && (
                                 <div className="text-center">
-                                    <span className="text-[9px] font-black text-white/20 uppercase tracking-widest block mb-2">MASS PKAL</span>
+                                    <span className="text-[9px] font-black text-white/20 uppercase tracking-widest block mb-2">체중 목표</span>
                                     <div className="flex items-end gap-3 justify-center">
                                         <span className="text-2xl font-black text-white tracking-tighter">{goalSummary.currentWeight}</span>
                                         <ChevronRight className="w-4 h-4 text-white/10 mb-1" />
                                         <span className="text-2xl font-black text-indigo-500 tracking-tighter">{goalSummary.targetWeight}</span>
                                     </div>
-                                    <div className="mt-1 text-[9px] font-black uppercase text-indigo-400/60">{goalSummary.weightDiff > 0 ? '+' : ''}{goalSummary.weightDiff.toFixed(1)} KG VARIANCE</div>
+                                    <div className="mt-1 text-[9px] font-black uppercase text-indigo-400/60">{goalSummary.weightDiff > 0 ? '+' : ''}{goalSummary.weightDiff.toFixed(1)} KG 변화</div>
                                 </div>
                             )}
                             {goalSummary.targetMuscle && (
                                 <div className="text-center">
-                                    <span className="text-[9px] font-black text-white/20 uppercase tracking-widest block mb-2">MUSCLE LOAD</span>
+                                    <span className="text-[9px] font-black text-white/20 uppercase tracking-widest block mb-2">골격근량 목표</span>
                                     <div className="flex items-end gap-3 justify-center">
                                         <span className="text-2xl font-black text-white tracking-tighter">{goalSummary.currentMuscle}</span>
                                         <ChevronRight className="w-4 h-4 text-white/10 mb-1" />
@@ -258,7 +258,7 @@ export function InBodyLog() {
                             )}
                             {goalSummary.targetFat && (
                                 <div className="text-center">
-                                    <span className="text-[9px] font-black text-white/20 uppercase tracking-widest block mb-2">FAT RATIO</span>
+                                    <span className="text-[9px] font-black text-white/20 uppercase tracking-widest block mb-2">체지방률 목표</span>
                                     <div className="flex items-end gap-3 justify-center">
                                         <span className="text-2xl font-black text-white tracking-tighter">{goalSummary.currentFat}%</span>
                                         <ChevronRight className="w-4 h-4 text-white/10 mb-1" />
@@ -275,21 +275,21 @@ export function InBodyLog() {
                     <Card className="glass-premium rounded-[40px] border border-white/5 bg-transparent overflow-hidden">
                         <CardHeader className="p-10 pb-0 flex flex-row items-center justify-between">
                             <div>
-                                <CardTitle className="text-xl font-black text-white tracking-widest uppercase">CHRONOLOGICAL EVOLUTION</CardTitle>
-                                <p className="text-[9px] font-bold text-white/20 uppercase mt-1 tracking-widest">SKELETAL & TISSUE MATURATION</p>
+                                <CardTitle className="text-xl font-black text-white tracking-widest uppercase">측정 지표 변화 추이</CardTitle>
+                                <p className="text-[9px] font-bold text-white/20 uppercase mt-1 tracking-widest">체중 및 체성분 데이터 시각화</p>
                             </div>
                             <div className="flex gap-4">
                                 <div className="flex items-center gap-2">
                                     <div className="w-2 h-2 rounded-full bg-indigo-500" />
-                                    <span className="text-[8px] font-black text-white/40 uppercase tracking-widest">MASS</span>
+                                    <span className="text-[8px] font-black text-white/40 uppercase tracking-widest">체중</span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <div className="w-2 h-2 rounded-full bg-emerald-500" />
-                                    <span className="text-[8px] font-black text-white/40 uppercase tracking-widest">MUSCLE</span>
+                                    <span className="text-[8px] font-black text-white/40 uppercase tracking-widest">근육량</span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <div className="w-2 h-2 rounded-full bg-rose-500" />
-                                    <span className="text-[8px] font-black text-white/40 uppercase tracking-widest">FAT</span>
+                                    <span className="text-[8px] font-black text-white/40 uppercase tracking-widest">체지방</span>
                                 </div>
                             </div>
                         </CardHeader>
@@ -323,7 +323,7 @@ export function InBodyLog() {
                                                             <div key={p.name} className="flex items-center justify-between gap-6 mb-2 last:mb-0">
                                                                 <div className="flex items-center gap-2">
                                                                     <div className="w-2 h-2 rounded-full" style={{ backgroundColor: p.stroke }} />
-                                                                    <span className="text-[9px] font-black text-white/40 uppercase">{p.name}</span>
+                                                                    <span className="text-[9px] font-black text-white/40 uppercase">{p.name === 'MASS' ? '체중' : p.name === 'MUSCLE' ? '근율량' : '체지방량'}</span>
                                                                 </div>
                                                                 <span className="text-xs font-black text-white">{p.value} <small className="text-[8px] opacity-40 uppercase">kg</small></span>
                                                             </div>
@@ -344,7 +344,7 @@ export function InBodyLog() {
                 ) : (
                     <div className="h-48 flex flex-col items-center justify-center opacity-10 gap-4 border-2 border-dashed border-white/10 rounded-[40px]">
                         <TrendingUp className="w-12 h-12" />
-                        <p className="text-[10px] font-black tracking-[0.3em] uppercase">SYSTEM REQUIRES DUAL DATA POINTS FOR TREND CALIMBRATION</p>
+                        <p className="text-[10px] font-black tracking-[0.3em] uppercase">트렌드 분석을 위해 최소 2회 이상의 데이터가 필요합니다</p>
                     </div>
                 )}
 
@@ -353,12 +353,12 @@ export function InBodyLog() {
                     <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-3">
                             <Activity className="w-5 h-5 text-indigo-500" />
-                            <h3 className="text-xl font-black text-white tracking-widest uppercase">SCAN CHRONICLE</h3>
+                            <h3 className="text-xl font-black text-white tracking-widest uppercase">인바디 측정 기록</h3>
                         </div>
                     </div>
 
                     {listEntries.length === 0 ? (
-                        <div className="py-20 text-center opacity-5 font-black text-[12px] tracking-[0.5em] uppercase">VOID DATA SET</div>
+                        <div className="py-20 text-center opacity-5 font-black text-[12px] tracking-[0.5em] uppercase">측정 데이터가 없습니다</div>
                     ) : (
                         <div className="grid grid-cols-1 gap-6">
                             {listEntries.map((entry, idx) => (
@@ -370,7 +370,7 @@ export function InBodyLog() {
                                     className="group glass-premium rounded-[40px] border border-white/5 p-8 hover:bg-white/[0.03] transition-all relative overflow-hidden"
                                 >
                                     <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/5 rounded-bl-[80px] -mr-8 -mt-8 flex items-center justify-center pointer-events-none">
-                                        <div className="text-[10px] font-black text-white/5 transform rotate-45 mt-4 ml-4">SCAN ID: {entry.id.slice(0, 4)}</div>
+                                        <div className="text-[10px] font-black text-white/5 transform rotate-45 mt-4 ml-4">기록 ID: {entry.id.slice(0, 4)}</div>
                                     </div>
 
                                     <div className="flex flex-col lg:flex-row justify-between lg:items-center gap-8 relative z-10">
@@ -380,7 +380,7 @@ export function InBodyLog() {
                                                 <span className="text-2xl font-black text-white tracking-tighter leading-none">{format(new Date(entry.date), 'dd')}</span>
                                             </div>
                                             <div>
-                                                <h4 className="text-sm font-black text-white tracking-widest uppercase">SCAN PROTOCOL {listEntries.length - idx}</h4>
+                                                <h4 className="text-sm font-black text-white tracking-widest uppercase">측정 기록 #{listEntries.length - idx}</h4>
                                                 <p className="text-[10px] font-bold text-white/20 uppercase mt-1 italic">{format(new Date(entry.date), 'yyyy.MM.dd | HH:mm')}</p>
                                             </div>
                                         </div>
@@ -389,7 +389,7 @@ export function InBodyLog() {
                                             <div className="flex flex-col bg-indigo-500/10 p-4 rounded-3xl border border-indigo-500/20 shadow-inner">
                                                 <div className="flex items-center gap-2 mb-2">
                                                     <Scale className="w-3.5 h-3.5 text-indigo-400" />
-                                                    <span className="text-[8px] font-black text-indigo-400 uppercase tracking-widest">MASS</span>
+                                                    <span className="text-[8px] font-black text-indigo-400 uppercase tracking-widest">체중</span>
                                                 </div>
                                                 <span className="text-xl font-black text-white tracking-tighter">{entry.weight} <small className="text-[10px] opacity-40">KG</small></span>
                                             </div>
@@ -397,7 +397,7 @@ export function InBodyLog() {
                                             <div className="flex flex-col bg-emerald-500/10 p-4 rounded-3xl border border-emerald-500/20 shadow-inner">
                                                 <div className="flex items-center gap-2 mb-2">
                                                     <Brain className="w-3.5 h-3.5 text-emerald-400" />
-                                                    <span className="text-[8px] font-black text-emerald-400 uppercase tracking-widest">MUSCLE</span>
+                                                    <span className="text-[8px] font-black text-emerald-400 uppercase tracking-widest">근육량</span>
                                                 </div>
                                                 <span className="text-xl font-black text-white tracking-tighter">{entry.skeletalMuscleMass} <small className="text-[10px] opacity-40">KG</small></span>
                                             </div>
@@ -405,10 +405,10 @@ export function InBodyLog() {
                                             <div className="flex flex-col bg-rose-500/10 p-4 rounded-3xl border border-rose-500/20 shadow-inner">
                                                 <div className="flex items-center gap-2 mb-2">
                                                     <Droplet className="w-3.5 h-3.5 text-rose-400" />
-                                                    <span className="text-[8px] font-black text-rose-400 uppercase tracking-widest">FAT</span>
+                                                    <span className="text-[8px] font-black text-rose-400 uppercase tracking-widest">체지방</span>
                                                 </div>
                                                 <div className="flex items-end gap-2">
-                                                    <span className="text-xl font-black text-white tracking-tighter">{entry.bodyFatMass} <small className="text-[10px] opacity-40">KG</small></span>
+                                                    <span className="text-xl font-black text-white tracking-tighter">{entry.bodyFatMass} <small className="text-[10px] opacity-40">kg</small></span>
                                                     <span className="text-[10px] font-black text-rose-500 mb-1">{entry.bodyFatPercent}%</span>
                                                 </div>
                                             </div>
@@ -416,7 +416,7 @@ export function InBodyLog() {
                                             <div className="flex flex-col bg-amber-500/10 p-4 rounded-3xl border border-amber-500/20 shadow-inner">
                                                 <div className="flex items-center gap-2 mb-2 focus:outline-none">
                                                     <Zap className="w-3.5 h-3.5 text-amber-400" />
-                                                    <span className="text-[8px] font-black text-amber-400 uppercase tracking-widest">BASAL</span>
+                                                    <span className="text-[8px] font-black text-amber-400 uppercase tracking-widest">기초대사</span>
                                                 </div>
                                                 <span className="text-xl font-black text-white tracking-tighter">{entry.basalMetabolicRate} <small className="text-[9px] opacity-40">KCAL</small></span>
                                             </div>
@@ -424,10 +424,10 @@ export function InBodyLog() {
 
                                         <div className="flex items-center gap-4">
                                             <div className="hidden xl:flex flex-col text-right">
-                                                <div className="text-[8px] font-black text-white/20 uppercase tracking-widest mb-1">METRIC CLASSIFICATION</div>
+                                                <div className="text-[8px] font-black text-white/20 uppercase tracking-widest mb-1">상세 지표 분석</div>
                                                 <div className="flex gap-2">
                                                     <span className="px-2 py-0.5 rounded-lg bg-white/5 text-[9px] font-black text-sky-500 border border-sky-500/20 uppercase tracking-widest">BMI {entry.bmi}</span>
-                                                    <span className="px-2 py-0.5 rounded-lg bg-white/5 text-[9px] font-black text-amber-500 border border-amber-500/20 uppercase tracking-widest">VISC Lv.{entry.visceralFatLevel}</span>
+                                                    <span className="px-2 py-0.5 rounded-lg bg-white/5 text-[9px] font-black text-amber-500 border border-amber-500/20 uppercase tracking-widest">내장지방 {entry.visceralFatLevel}단계</span>
                                                 </div>
                                             </div>
                                             <button
@@ -442,7 +442,7 @@ export function InBodyLog() {
                                     {entry.memo && (
                                         <div className="mt-8 pt-6 border-t border-white/5">
                                             <p className="text-[10px] font-bold text-white/30 italic uppercase tracking-widest flex items-center gap-3">
-                                                <Sparkles className="w-3 h-3 text-amber-500" /> OBSERVATION LOG: {entry.memo}
+                                                <Sparkles className="w-3 h-3 text-amber-500" /> 분석 로그: {entry.memo}
                                             </p>
                                         </div>
                                     )}
@@ -457,14 +457,14 @@ export function InBodyLog() {
             <Dialog open={isGoalDialogOpen} onOpenChange={setIsGoalDialogOpen}>
                 <DialogContent className="glass-premium border border-indigo-500/20 text-white rounded-[40px] p-10 max-w-md shadow-2xl backdrop-blur-3xl">
                     <DialogHeader>
-                        <DialogTitle className="text-3xl font-black tracking-tighter uppercase mb-2">CALIBRATE OBJECTIVE</DialogTitle>
+                        <DialogTitle className="text-3xl font-black tracking-tighter uppercase mb-2">목표 설정</DialogTitle>
                         <DialogDescription className="text-[10px] font-bold text-white/40 uppercase tracking-[0.2em] italic leading-relaxed">
-                            DEFINE PHYSIOLOGICAL TARGET PARAMETERS AND TEMPORAL DEADLINES FOR EVOLUTIONARY TRACKING.
+                            신체 목표 파라미터와 기한을 설정하여 변화를 추적하세요.
                         </DialogDescription>
                     </DialogHeader>
                     <div className="space-y-8 mt-10">
                         <div className="space-y-3">
-                            <Label className="text-[9px] font-black text-white/20 uppercase tracking-widest">TARGET DATE HORIZON</Label>
+                            <Label className="text-[9px] font-black text-white/20 uppercase tracking-widest">목표 기한</Label>
                             <Input
                                 type="date"
                                 value={format(goalDate, 'yyyy-MM-dd')}
@@ -474,7 +474,7 @@ export function InBodyLog() {
                         </div>
                         <div className="grid grid-cols-2 gap-6">
                             <div className="space-y-3">
-                                <Label className="text-[9px] font-black text-white/20 uppercase tracking-widest">DESIRED MASS (KG)</Label>
+                                <Label className="text-[9px] font-black text-white/20 uppercase tracking-widest">목표 체중 (KG)</Label>
                                 <Input
                                     type="number"
                                     value={goalWeight}
@@ -484,7 +484,7 @@ export function InBodyLog() {
                                 />
                             </div>
                             <div className="space-y-3">
-                                <Label className="text-[9px] font-black text-white/20 uppercase tracking-widest">MUSCLE TARGET (KG)</Label>
+                                <Label className="text-[9px] font-black text-white/20 uppercase tracking-widest">목표 골격근량 (KG)</Label>
                                 <Input
                                     type="number"
                                     value={goalMuscle}
@@ -495,7 +495,7 @@ export function InBodyLog() {
                             </div>
                         </div>
                         <div className="space-y-3">
-                            <Label className="text-[9px] font-black text-white/20 uppercase tracking-widest">OPTIMAL FAT PERCENT (%)</Label>
+                            <Label className="text-[9px] font-black text-white/20 uppercase tracking-widest">목표 체지방률 (%)</Label>
                             <Input
                                 type="number"
                                 value={goalFatPercent}
@@ -510,7 +510,7 @@ export function InBodyLog() {
                             onClick={handleSaveGoal}
                             className="w-full h-14 rounded-2xl bg-indigo-500 hover:bg-indigo-600 font-black text-sm tracking-widest uppercase shadow-xl"
                         >
-                            COMMIT TARGET
+                            목표 저장
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -520,13 +520,13 @@ export function InBodyLog() {
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogContent className="glass-premium border border-white/10 text-white rounded-[40px] p-0 shadow-2xl sm:max-w-[600px] overflow-hidden">
                     <DialogHeader className="p-10 pb-0">
-                        <DialogTitle className="text-3xl font-black tracking-tighter uppercase mb-2">INITIALIZE SCAN</DialogTitle>
-                        <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] italic">CAPTURING HIGH-FIDELITY BIOMETRIC INPUT FOR ANALYTICAL PROCESSING</p>
+                        <DialogTitle className="text-3xl font-black tracking-tighter uppercase mb-2">측정 데이터 입력</DialogTitle>
+                        <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] italic">신체 데이터 분석을 위한 정보를 입력하세요</p>
                     </DialogHeader>
 
                     <div className="p-10 space-y-8 max-h-[75vh] overflow-y-auto custom-scrollbar">
                         <div className="space-y-3">
-                            <Label className="text-[9px] font-black text-white/20 uppercase tracking-widest">TIMESTAMP & OCR SCAN</Label>
+                            <Label className="text-[9px] font-black text-white/20 uppercase tracking-widest">측정 일시 및 이미지 스캔</Label>
                             <div className="flex gap-4">
                                 <Input
                                     type="datetime-local"
@@ -544,7 +544,7 @@ export function InBodyLog() {
                                         )}
                                     >
                                         {isScanning ? <Loader2 className="w-4 h-4 animate-spin" /> : <ScanLine className="w-4 h-4" />}
-                                        {isScanning ? 'SCANNING...' : 'SCAN SHEET'}
+                                        {isScanning ? '스캔 중...' : '이미지 스캔'}
                                     </Label>
                                 </div>
                             </div>
@@ -553,22 +553,22 @@ export function InBodyLog() {
                         <div className="bg-white/5 rounded-[32px] border border-white/5 p-8 space-y-8">
                             <div className="grid grid-cols-2 gap-6">
                                 <div className="space-y-2">
-                                    <Label className="text-[8px] font-black text-white/20 uppercase tracking-widest ml-2">HEIGHT (CM)</Label>
+                                    <Label className="text-[8px] font-black text-white/20 uppercase tracking-widest ml-2">신장 (CM)</Label>
                                     <Input value={height} onChange={e => setHeight(e.target.value)} className="h-12 bg-white/5 border-none text-xl font-black rounded-xl text-center" />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label className="text-[8px] font-black text-rose-500 uppercase tracking-widest ml-2">MASS PKAL (KG) *</Label>
+                                    <Label className="text-[8px] font-black text-rose-500 uppercase tracking-widest ml-2">체중 (KG) *</Label>
                                     <Input value={weight} onChange={e => setWeight(e.target.value)} className="h-12 bg-white/5 border-none text-xl font-black rounded-xl text-center text-rose-500" />
                                 </div>
                             </div>
 
                             <div className="grid grid-cols-2 gap-6">
                                 <div className="space-y-2">
-                                    <Label className="text-[8px] font-black text-white/20 uppercase tracking-widest ml-2">MUSCLE (KG)</Label>
+                                    <Label className="text-[8px] font-black text-white/20 uppercase tracking-widest ml-2">골격근량 (KG)</Label>
                                     <Input value={skeletalMuscle} onChange={e => setSkeletalMuscle(e.target.value)} className="h-12 bg-white/5 border-none text-xl font-black rounded-xl text-center text-emerald-500" />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label className="text-[8px] font-black text-white/20 uppercase tracking-widest ml-2">BASAL BMR (KCAL)</Label>
+                                    <Label className="text-[8px] font-black text-white/20 uppercase tracking-widest ml-2">기초대사량 (KCAL)</Label>
                                     <Input value={bmr} onChange={e => setBmr(e.target.value)} className="h-12 bg-white/5 border-none text-xl font-black rounded-xl text-center text-amber-500" />
                                 </div>
                             </div>
@@ -576,7 +576,7 @@ export function InBodyLog() {
                             <div className="pt-4 border-t border-white/5">
                                 <div className="grid grid-cols-2 gap-6">
                                     <div className="space-y-2">
-                                        <Label className="text-[8px] font-black text-white/20 uppercase tracking-widest ml-2">BODY FAT MASS (KG)</Label>
+                                        <Label className="text-[8px] font-black text-white/20 uppercase tracking-widest ml-2">체지방량 (KG)</Label>
                                         <Input
                                             value={bodyFat}
                                             onChange={e => {
@@ -590,7 +590,7 @@ export function InBodyLog() {
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className="text-[8px] font-black text-white/20 uppercase tracking-widest ml-2">FAT RATIO (%)</Label>
+                                        <Label className="text-[8px] font-black text-white/20 uppercase tracking-widest ml-2">체지방률 (%)</Label>
                                         <Input
                                             value={bodyFatPercent}
                                             onChange={e => {
@@ -608,21 +608,21 @@ export function InBodyLog() {
 
                             <div className="grid grid-cols-2 gap-6">
                                 <div className="space-y-2">
-                                    <Label className="text-[8px] font-black text-white/20 uppercase tracking-widest ml-2">BMI RATIO</Label>
+                                    <Label className="text-[8px] font-black text-white/20 uppercase tracking-widest ml-2">BMI 지수</Label>
                                     <Input value={bmi} readOnly className="h-12 bg-white/2 border-none text-xl font-black rounded-xl text-center text-sky-500 cursor-default" />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label className="text-[8px] font-black text-white/20 uppercase tracking-widest ml-2">VISCERAL LEVEL</Label>
+                                    <Label className="text-[8px] font-black text-white/20 uppercase tracking-widest ml-2">내장지방 레벨</Label>
                                     <Input value={visceralFat} onChange={e => setVisceralFat(e.target.value)} className="h-12 bg-white/5 border-none text-xl font-black rounded-xl text-center" />
                                 </div>
                             </div>
                         </div>
 
                         <div className="space-y-3">
-                            <Label className="text-[9px] font-black text-white/20 uppercase tracking-widest">OBSERVATION MEMO</Label>
+                            <Label className="text-[9px] font-black text-white/20 uppercase tracking-widest">측정 메모</Label>
                             <Input
                                 className="h-14 bg-white/5 border-white/5 rounded-2xl font-bold text-xs"
-                                placeholder="ENTER NEURAL FEEDBACK..."
+                                placeholder="특이 사항을 입력하세요..."
                                 value={memo}
                                 onChange={e => setMemo(e.target.value)}
                             />
@@ -631,13 +631,13 @@ export function InBodyLog() {
 
                     <div className="p-10 pt-0">
                         <div className="flex gap-4 items-center">
-                            <Button variant="outline" className="h-14 px-8 rounded-2xl border-white/10 bg-white/5 text-white/40 font-black text-[10px] tracking-widest uppercase hover:text-white" onClick={() => setIsDialogOpen(false)}>ABORT</Button>
+                            <Button variant="outline" className="h-14 px-8 rounded-2xl border-white/10 bg-white/5 text-white/40 font-black text-[10px] tracking-widest uppercase hover:text-white" onClick={() => setIsDialogOpen(false)}>취소</Button>
                             <Button
                                 onClick={handleSaveEntry}
                                 disabled={!weight}
                                 className="flex-1 h-14 rounded-2xl bg-indigo-500 hover:bg-indigo-600 text-white font-black text-sm tracking-widest uppercase shadow-xl"
                             >
-                                TRANSMIT DATA
+                                데이터 저장
                             </Button>
                         </div>
                     </div>

@@ -131,7 +131,7 @@ export function ExerciseAnalysis({ sessions, inBodyEntries = [] }: ExerciseAnaly
                     <p className="text-lg font-black text-white uppercase tracking-tighter">
                         {payload[0].value.toLocaleString()}
                         <small className="text-[9px] ml-1 opacity-40">
-                            {dailyChartMetric === 'duration' ? '분' : dailyChartMetric === 'volume' ? 'KG' : '세트'}
+                            {dailyChartMetric === 'duration' ? '분' : dailyChartMetric === 'volume' ? 'kg' : '세트'}
                         </small>
                     </p>
                 </div>
@@ -160,8 +160,8 @@ export function ExerciseAnalysis({ sessions, inBodyEntries = [] }: ExerciseAnaly
                     </Button>
                     <div className="px-6 text-sm font-black text-white tracking-widest uppercase">
                         {viewMode === 'week'
-                            ? `${format(dateRange.start, 'MMM dd')} - ${format(dateRange.end, 'MMM dd')}`
-                            : format(currentDate, 'MMMM yyyy').toUpperCase()
+                            ? `${format(dateRange.start, 'M월 dd일', { locale: ko })} - ${format(dateRange.end, 'M월 dd일', { locale: ko })}`
+                            : format(currentDate, 'yyyy년 M월', { locale: ko }).toUpperCase()
                         }
                     </div>
                     <Button variant="ghost" size="icon" onClick={() => navigate('next')} className="h-10 w-10 text-white/40 hover:text-white hover:bg-white/5">
@@ -384,8 +384,8 @@ export function ExerciseAnalysis({ sessions, inBodyEntries = [] }: ExerciseAnaly
                                         iconType="circle"
                                         formatter={(value) => <span className="text-[10px] font-black tracking-widest text-white/40 uppercase ml-2">{value}</span>}
                                     />
-                                    <Area yAxisId="left" type="monotone" dataKey="weight" name="체중 (KG)" stroke="#0ea5e9" strokeWidth={4} fillOpacity={1} fill="url(#colorWeight)" dot={{ r: 4, fill: '#0ea5e9', stroke: '#000', strokeWidth: 2 }} />
-                                    <Area yAxisId="left" type="monotone" dataKey="skeletalMuscleMass" name="근육량 (KG)" stroke="#8b5cf6" strokeWidth={4} fillOpacity={1} fill="url(#colorMuscle)" dot={{ r: 4, fill: '#8b5cf6', stroke: '#000', strokeWidth: 2 }} />
+                                    <Area yAxisId="left" type="monotone" dataKey="weight" name="체중 (kg)" stroke="#0ea5e9" strokeWidth={4} fillOpacity={1} fill="url(#colorWeight)" dot={{ r: 4, fill: '#0ea5e9', stroke: '#000', strokeWidth: 2 }} />
+                                    <Area yAxisId="left" type="monotone" dataKey="skeletalMuscleMass" name="근육량 (kg)" stroke="#8b5cf6" strokeWidth={4} fillOpacity={1} fill="url(#colorMuscle)" dot={{ r: 4, fill: '#8b5cf6', stroke: '#000', strokeWidth: 2 }} />
                                     <Line yAxisId="right" type="monotone" dataKey="bodyFatPercent" name="체지방 (%)" stroke="#f43f5e" strokeWidth={4} dot={{ r: 4, fill: '#f43f5e', stroke: '#000', strokeWidth: 2 }} strokeDasharray="5 5" />
                                 </AreaChart>
                             </ResponsiveContainer>

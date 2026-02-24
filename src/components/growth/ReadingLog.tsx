@@ -42,9 +42,9 @@ export function ReadingLog() {
                             <BookIcon className="w-6 h-6 text-white" strokeWidth={3} />
                         </div>
                         <div>
-                            <h2 className="text-3xl font-black text-white tracking-tighter uppercase leading-none">BIBLIOGRAPHIC SANCTUARY</h2>
+                            <h2 className="text-3xl font-black text-white tracking-tighter uppercase leading-none">도서 아카이브</h2>
                             <p className="text-[10px] font-bold text-white/20 tracking-[0.3em] uppercase mt-2 italic flex items-center gap-2">
-                                <Feather className="w-3 h-3 text-amber-500" /> INTELLECTUAL CURATION: ARCHIVING KNOWLEDGE
+                                <Feather className="w-3 h-3 text-amber-500" /> 지적 큐레이션: 지식 보관 중
                             </p>
                         </div>
                     </div>
@@ -58,7 +58,7 @@ export function ReadingLog() {
                                     viewMode === 'shelf' ? "bg-amber-500 text-white shadow-lg" : "text-white/40 hover:text-white"
                                 )}
                             >
-                                <Library className="w-4 h-4" /> SHELF
+                                <Library className="w-4 h-4" /> 책장
                             </button>
                             <button
                                 onClick={() => setViewMode('list')}
@@ -67,7 +67,7 @@ export function ReadingLog() {
                                     viewMode === 'list' ? "bg-amber-500 text-white shadow-lg" : "text-white/40 hover:text-white"
                                 )}
                             >
-                                <ListIcon className="w-4 h-4" /> CATALOG
+                                <ListIcon className="w-4 h-4" /> 목록
                             </button>
                         </div>
                         <div className="w-px h-6 bg-white/10 mx-2" />
@@ -75,7 +75,7 @@ export function ReadingLog() {
                             onClick={handleOpenCreate}
                             className="h-10 px-6 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-black text-[10px] tracking-widest uppercase shadow-xl transition-all active:scale-95"
                         >
-                            <Plus className="w-4 h-4 mr-2" strokeWidth={3} /> REGISTER VOLUME
+                            <Plus className="w-4 h-4 mr-2" strokeWidth={3} /> 도서 등록
                         </Button>
                     </div>
                 </div>
@@ -83,10 +83,10 @@ export function ReadingLog() {
                 {/* Quick Selection / Filter TABS */}
                 <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
                     {[
-                        { label: 'ALL VOLUMES', icon: ScrollText, count: books.length },
-                        { label: 'CURRENT READING', icon: BookOpen, count: books.filter(b => b.status === 'reading').length },
-                        { label: 'ARCHIVED', icon: Archive, count: books.filter(b => b.status === 'completed').length },
-                        { label: 'WISH LIST', icon: Bookmark, count: books.filter(b => b.status === 'toread').length },
+                        { label: '전체 도서', icon: ScrollText, count: books.length },
+                        { label: '읽고 있는 책', icon: BookOpen, count: books.filter(b => b.status === 'reading').length },
+                        { label: '다 읽은 책', icon: Archive, count: books.filter(b => b.status === 'completed').length },
+                        { label: '읽고 싶은 책', icon: Bookmark, count: books.filter(b => b.status === 'toread').length },
                     ].map(tab => (
                         <button
                             key={tab.label}
@@ -122,8 +122,8 @@ export function ReadingLog() {
                         >
                             <ScrollText className="w-20 h-20" />
                             <div className="space-y-2">
-                                <h3 className="text-2xl font-black tracking-[0.2em] uppercase">SYSTEM CALIBRATION</h3>
-                                <p className="text-[10px] font-bold tracking-[0.5em] uppercase">CATALOG VIEW ENHANCEMENT IN PROGRESS</p>
+                                <h3 className="text-2xl font-black tracking-[0.2em] uppercase">시스템 보정 중</h3>
+                                <p className="text-[10px] font-bold tracking-[0.5em] uppercase">목록 뷰 기능 강화 중입니다</p>
                             </div>
                         </motion.div>
                     )}

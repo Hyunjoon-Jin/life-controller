@@ -57,7 +57,7 @@ export function PortfolioBoard() {
 
     // --- Language Modal State ---
     const [languageForm, setLanguageForm] = useState<{ language: string; testName: string; score: string; date: Date }>({
-        language: 'English', testName: '', score: '', date: new Date()
+        language: '영어', testName: '', score: '', date: new Date()
     });
 
     // --- Search & Upload State ---
@@ -116,7 +116,7 @@ export function PortfolioBoard() {
                     });
                 }
             } else {
-                setLanguageForm({ language: 'English', testName: '', score: '', date: new Date() });
+                setLanguageForm({ language: '영어', testName: '', score: '', date: new Date() });
             }
         }
     };
@@ -321,7 +321,7 @@ export function PortfolioBoard() {
                             <div className="flex items-center gap-4">
                                 <span className="text-xl font-black text-indigo-400 tracking-widest uppercase italic">{userProfile.jobTitle}</span>
                                 <div className="h-4 w-px bg-white/10" />
-                                <span className="text-[10px] font-black text-white/20 tracking-[0.4em] uppercase">SYSTEM OPERATOR ID: #001</span>
+                                <span className="text-[10px] font-black text-white/20 tracking-[0.4em] uppercase">시스템 대시보드 ID: #001</span>
                             </div>
                         </div>
 
@@ -334,9 +334,9 @@ export function PortfolioBoard() {
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             {[
-                                { icon: Mail, label: 'ENCRYPTED CHANNEL', value: userProfile.email },
-                                { icon: Phone, label: 'DIRECT SECURE LINK', value: userProfile.phone },
-                                { icon: MapPin, label: 'GEOGRAPHIC NODE', value: userProfile.address || 'UNDEFINED' },
+                                { icon: Mail, label: '이메일 (CHANNEL)', value: userProfile.email },
+                                { icon: Phone, label: '연락처 (LINK)', value: userProfile.phone },
+                                { icon: MapPin, label: '지역 (NODE)', value: userProfile.address || '미설정' },
                             ].map((info, idx) => (
                                 <div key={idx} className="space-y-2">
                                     <div className="flex items-center gap-2 text-[8px] font-black text-white/10 tracking-[0.3em] uppercase">
@@ -357,7 +357,7 @@ export function PortfolioBoard() {
                         <section className="space-y-6">
                             <div className="flex items-center justify-between px-4">
                                 <h2 className="text-[10px] font-black text-white/20 tracking-[0.4em] uppercase flex items-center gap-3 italic">
-                                    <GraduationCap className="w-4 h-4 text-indigo-400" /> ACADEMIC MATRIX
+                                    <GraduationCap className="w-4 h-4 text-indigo-400" /> 학력 정보 (ACADEMIC)
                                 </h2>
                                 <button onClick={() => openModal('education')} className="text-indigo-400 hover:text-white transition-colors">
                                     <Plus className="w-4 h-4" />
@@ -377,12 +377,12 @@ export function PortfolioBoard() {
                                         <div className="mt-4 flex items-center justify-between">
                                             <div className="flex items-center gap-2 text-[9px] font-black text-white/20 tracking-widest uppercase">
                                                 <Calendar className="w-3 h-3" />
-                                                {format(new Date(edu.startDate), 'yyyy.MM')} — {edu.isCurrent ? 'ACTIVE' : (edu.endDate ? format(new Date(edu.endDate), 'yyyy.MM') : 'GRADUATED')}
+                                                {format(new Date(edu.startDate), 'yyyy.MM')} — {edu.isCurrent ? '재학 중' : (edu.endDate ? format(new Date(edu.endDate), 'yyyy.MM') : '졸업')}
                                             </div>
                                             {edu.files && edu.files.length > 0 && (
                                                 <div className="flex gap-1">
                                                     <Paperclip className="w-3 h-3 text-white/20" />
-                                                    <span className="text-[8px] font-black text-white/40">{edu.files.length} VERIFIED</span>
+                                                    <span className="text-[8px] font-black text-white/40">{edu.files.length}개 확인됨</span>
                                                 </div>
                                             )}
                                         </div>
@@ -395,7 +395,7 @@ export function PortfolioBoard() {
                         <section className="space-y-6">
                             <div className="flex items-center justify-between px-4">
                                 <h2 className="text-[10px] font-black text-white/20 tracking-[0.4em] uppercase flex items-center gap-3 italic">
-                                    <Languages className="w-4 h-4 text-cyan-400" /> LINGUAL PROCESSOR
+                                    <Languages className="w-4 h-4 text-cyan-400" /> 언어 능력 (LINGUAL)
                                 </h2>
                                 <button onClick={() => openModal('language')} className="text-cyan-400 hover:text-white transition-colors">
                                     <Plus className="w-4 h-4" />
@@ -424,7 +424,7 @@ export function PortfolioBoard() {
                         <section className="space-y-6">
                             <div className="flex items-center justify-between px-4">
                                 <h2 className="text-[10px] font-black text-white/20 tracking-[0.4em] uppercase flex items-center gap-3 italic">
-                                    <Award className="w-4 h-4 text-emerald-400" /> CREDENTIAL VAULT
+                                    <Award className="w-4 h-4 text-emerald-400" /> 자격증 및 수상 (VAULT)
                                 </h2>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
@@ -447,10 +447,10 @@ export function PortfolioBoard() {
                         <section className="space-y-8">
                             <div className="flex items-center justify-between px-4">
                                 <h2 className="text-[12px] font-black text-white/30 tracking-[0.5em] uppercase flex items-center gap-4 italic">
-                                    <Cpu className="w-5 h-5 text-indigo-500" /> EXPERIENCE INFRASTRUCTURE
+                                    <Cpu className="w-5 h-5 text-indigo-500" /> 경력 사항 (EXPERIENCE)
                                 </h2>
                                 <Button onClick={() => openModal('career')} variant="ghost" className="h-10 px-4 rounded-xl bg-indigo-500/10 text-indigo-400 text-[9px] font-black tracking-widest uppercase border border-indigo-500/20 hover:bg-indigo-500 hover:text-white transition-all">
-                                    <Plus className="w-4 h-4 mr-2" /> REPLICATE ENTRY
+                                    <Plus className="w-4 h-4 mr-2" /> 경력 추가
                                 </Button>
                             </div>
 
@@ -480,7 +480,7 @@ export function PortfolioBoard() {
                                                     </div>
                                                     <div className="shrink-0">
                                                         <span className="text-[10px] font-black text-white/40 bg-white/5 border border-white/5 px-4 py-2 rounded-xl tracking-widest uppercase">
-                                                            {format(new Date(career.startDate), 'yyyy.MM')} — {career.isCurrent ? 'ACTIVE SESS.' : (career.endDate ? format(new Date(career.endDate), 'yyyy.MM') : 'TERMINATED')}
+                                                            {format(new Date(career.startDate), 'yyyy.MM')} — {career.isCurrent ? '재직 중' : (career.endDate ? format(new Date(career.endDate), 'yyyy.MM') : '퇴사')}
                                                         </span>
                                                     </div>
                                                 </div>
@@ -519,10 +519,10 @@ export function PortfolioBoard() {
                         <section className="space-y-8 pb-20">
                             <div className="flex items-center justify-between px-4">
                                 <h2 className="text-[12px] font-black text-white/30 tracking-[0.5em] uppercase flex items-center gap-4 italic">
-                                    <Trophy className="w-5 h-5 text-amber-500" /> ARTIFACT PORTFOLIO
+                                    <Trophy className="w-5 h-5 text-amber-500" /> 프로젝트 포트폴리오 (ARTIFACT)
                                 </h2>
                                 <Button onClick={() => openModal('project')} variant="ghost" className="h-10 px-4 rounded-xl bg-amber-500/10 text-amber-400 text-[9px] font-black tracking-widest uppercase border border-amber-500/20 hover:bg-amber-500 hover:text-white transition-all">
-                                    <Plus className="w-4 h-4 mr-2" /> INITIALIZE ARTIFACT
+                                    <Plus className="w-4 h-4 mr-2" /> 프로젝트 추가
                                 </Button>
                             </div>
 
@@ -547,7 +547,7 @@ export function PortfolioBoard() {
                                             </div>
 
                                             <div className="text-[10px] font-black text-white/30 uppercase tracking-[0.4em] mb-6 flex items-center gap-2">
-                                                <Zap className="w-3 h-3 text-amber-500" /> {proj.role || 'CORE OPERATOR'}
+                                                <Zap className="w-3 h-3 text-amber-500" /> {proj.role || '핵심 담당자'}
                                             </div>
 
                                             <div className="glass-premium bg-white/[0.02] border border-white/5 rounded-2xl p-5 mb-8 flex-1">
@@ -569,7 +569,7 @@ export function PortfolioBoard() {
                                                     <div className="flex gap-4 pt-4 border-t border-white/5">
                                                         {proj.links.map((link, idx) => (
                                                             <a key={idx} href={link.url} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-[9px] font-black text-cyan-400 hover:text-white transition-colors tracking-widest uppercase">
-                                                                <ExternalLink className="w-3 h-3" /> {link.label || 'DATALINK'}
+                                                                <ExternalLink className="w-3 h-3" /> {link.label || '데이터 링크'}
                                                             </a>
                                                         ))}
                                                     </div>
@@ -594,36 +594,36 @@ export function PortfolioBoard() {
             <Dialog open={modal?.type === 'profile'} onOpenChange={(open) => !open && setModal(null)}>
                 <DialogContent className="glass-premium border border-white/10 text-white rounded-[40px] p-0 shadow-2xl sm:max-w-3xl">
                     <DialogHeader className="p-10 pb-0">
-                        <DialogTitle className="text-3xl font-black tracking-tighter uppercase mb-2">RECALIBRATE IDENTITY</DialogTitle>
-                        <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] italic">UPDATING SYSTEM OPERATOR CORE PARAMETERS</p>
+                        <DialogTitle className="text-3xl font-black tracking-tighter uppercase mb-2">프로필 설정</DialogTitle>
+                        <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] italic">사용자 핵심 파라미터 업데이트 중</p>
                     </DialogHeader>
                     <div className="p-10 pt-4 space-y-8 max-h-[70vh] overflow-y-auto no-scrollbar">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div className="space-y-3">
-                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">OPERATOR NAME</Label>
+                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">이름 (NAME)</Label>
                                 <Input value={profileForm.name} onChange={e => setProfileForm({ ...profileForm, name: e.target.value })} className="h-14 font-black text-xl border-white/5 bg-white/5 rounded-2xl text-white" />
                             </div>
                             <div className="space-y-3">
-                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">DESIGNATED JOB TITLE</Label>
+                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">직함 (JOB TITLE)</Label>
                                 <Input value={profileForm.jobTitle} onChange={e => setProfileForm({ ...profileForm, jobTitle: e.target.value })} className="h-14 font-black text-lg border-white/5 bg-white/5 rounded-2xl text-white" />
                             </div>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div className="space-y-3">
-                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">SECURE LINK (PHONE)</Label>
+                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">연락처 (PHONE)</Label>
                                 <Input value={profileForm.phone} onChange={e => setProfileForm({ ...profileForm, phone: e.target.value })} className="h-12 bg-white/5 border-white/5 rounded-2xl text-white" />
                             </div>
                             <div className="space-y-3">
-                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">ENCRYPTED CHANNEL (EMAIL)</Label>
+                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">이메일 (EMAIL)</Label>
                                 <Input value={profileForm.email} onChange={e => setProfileForm({ ...profileForm, email: e.target.value })} className="h-12 bg-white/5 border-white/5 rounded-2xl text-white" />
                             </div>
                         </div>
                         <div className="space-y-3">
-                            <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">IDENTITY AVATAR URL</Label>
+                            <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">프로필 이미지 URL (AVATAR)</Label>
                             <Input value={profileForm.photo || ''} onChange={e => setProfileForm({ ...profileForm, photo: e.target.value })} className="h-12 bg-white/5 border-white/5 rounded-2xl text-white" />
                         </div>
                         <div className="space-y-3">
-                            <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">OPERATOR LOG (BIO)</Label>
+                            <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">자기소개 (BIO)</Label>
                             <Textarea
                                 className="min-h-[120px] bg-white/5 border-white/5 rounded-3xl p-6 text-[11px] font-bold text-white/60 leading-relaxed italic placeholder:text-white/10 resize-none"
                                 value={profileForm.bio}
@@ -632,8 +632,8 @@ export function PortfolioBoard() {
                         </div>
                     </div>
                     <DialogFooter className="p-10 pt-4 bg-white/[0.02] border-t border-white/5">
-                        <Button variant="ghost" onClick={() => setModal(null)} className="h-16 px-8 rounded-2xl text-[10px] font-black text-white/20 hover:text-white hover:bg-white/5 uppercase tracking-widest">ABORT</Button>
-                        <Button onClick={handleSaveProfile} className="flex-1 h-16 rounded-3xl bg-indigo-500 hover:bg-indigo-600 text-white font-black text-sm tracking-[0.2em] shadow-2xl transition-all uppercase">COMMIT CHANGES</Button>
+                        <Button variant="ghost" onClick={() => setModal(null)} className="h-16 px-8 rounded-2xl text-[10px] font-black text-white/20 hover:text-white hover:bg-white/5 uppercase tracking-widest">취소</Button>
+                        <Button onClick={handleSaveProfile} className="flex-1 h-16 rounded-3xl bg-indigo-500 hover:bg-indigo-600 text-white font-black text-sm tracking-[0.2em] shadow-2xl transition-all uppercase">변경사항 저장</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
@@ -643,16 +643,16 @@ export function PortfolioBoard() {
             <Dialog open={modal?.type === 'education'} onOpenChange={(open) => !open && setModal(null)}>
                 <DialogContent className="glass-premium border border-white/10 text-white rounded-[40px] p-0 shadow-2xl sm:max-w-2xl">
                     <DialogHeader className="p-10 pb-0">
-                        <DialogTitle className="text-3xl font-black tracking-tighter uppercase mb-2">INDEX ACADEMIC NODE</DialogTitle>
-                        <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] italic">CALIBRATING EDUCATIONAL PARAMETERS IN CORE MATRIX</p>
+                        <DialogTitle className="text-3xl font-black tracking-tighter uppercase mb-2">학력 정보 등록</DialogTitle>
+                        <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] italic">학력 관련 데이터 등록 및 업데이트</p>
                     </DialogHeader>
                     <div className="p-10 pt-4 space-y-8 max-h-[70vh] overflow-y-auto no-scrollbar">
                         <div className="space-y-3">
-                            <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">SCHOOL IDENTIFIER</Label>
+                            <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">학교명 (SCHOOL)</Label>
                             <div className="flex gap-4">
                                 <div className="relative flex-1">
                                     <Input
-                                        placeholder="SEARCH ARCHIVES..."
+                                        placeholder="학교 검색..."
                                         value={schoolSearch}
                                         onChange={e => {
                                             setSchoolSearch(e.target.value);
@@ -693,21 +693,21 @@ export function PortfolioBoard() {
                         </div>
                         <div className="grid grid-cols-2 gap-8">
                             <div className="space-y-3">
-                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">DEGREE TYPE</Label>
-                                <Input placeholder="EX: BACHELOR, MASTER" value={eduForm.degree || ''} onChange={e => setEduForm({ ...eduForm, degree: e.target.value })} className="h-12 bg-white/5 border-white/5 rounded-2xl text-white uppercase font-black" />
+                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">학위 (DEGREE)</Label>
+                                <Input placeholder="예: 학사, 석사" value={eduForm.degree || ''} onChange={e => setEduForm({ ...eduForm, degree: e.target.value })} className="h-12 bg-white/5 border-white/5 rounded-2xl text-white uppercase font-black" />
                             </div>
                             <div className="space-y-3">
-                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">SPECIFIC MAJOR</Label>
-                                <Input placeholder="EX: COMPUTER SCIENCE" value={eduForm.major || ''} onChange={e => setEduForm({ ...eduForm, major: e.target.value })} className="h-12 bg-white/5 border-white/5 rounded-2xl text-white uppercase font-black" />
+                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">전공 (MAJOR)</Label>
+                                <Input placeholder="예: 컴퓨터공학" value={eduForm.major || ''} onChange={e => setEduForm({ ...eduForm, major: e.target.value })} className="h-12 bg-white/5 border-white/5 rounded-2xl text-white uppercase font-black" />
                             </div>
                         </div>
                         <div className="grid grid-cols-2 gap-8">
                             <div className="space-y-3">
-                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">START CHRONO</Label>
+                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">시작일 (START)</Label>
                                 <Input type="date" value={eduForm.startDate ? format(new Date(eduForm.startDate), 'yyyy-MM-dd') : ''} onChange={e => setEduForm({ ...eduForm, startDate: new Date(e.target.value) })} className="h-12 bg-white/5 border-white/5 rounded-2xl text-white" />
                             </div>
                             <div className="space-y-3">
-                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">END CHRONO (PROJECTED)</Label>
+                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">졸업(예정)일 (END)</Label>
                                 <Input
                                     type="date"
                                     value={eduForm.endDate ? format(new Date(eduForm.endDate), 'yyyy-MM-dd') : ''}
@@ -724,15 +724,15 @@ export function PortfolioBoard() {
                                 checked={eduForm.isCurrent || false}
                                 onChange={e => setEduForm({ ...eduForm, isCurrent: e.target.checked, endDate: e.target.checked ? undefined : eduForm.endDate })}
                             />
-                            <Label htmlFor="eduCurrent" className="text-[10px] font-black text-white/60 uppercase tracking-[0.2em]">CURRENTLY ACTIVE IN THIS NODE</Label>
+                            <Label htmlFor="eduCurrent" className="text-[10px] font-black text-white/60 uppercase tracking-[0.2em]">현재 재학 중 (CURRENTLY ACTIVE)</Label>
                         </div>
                         <div className="space-y-4 pt-4 border-t border-white/5">
                             <div className="flex items-center justify-between">
                                 <Label className="text-[10px] font-black text-indigo-400 uppercase tracking-widest flex items-center gap-2">
-                                    <Paperclip className="w-4 h-4" /> VERIFIED ARTIFACTS
+                                    <Paperclip className="w-4 h-4" /> 증빙 자료 (ARTIFACTS)
                                 </Label>
                                 <button className="text-[9px] font-black text-white/20 hover:text-white tracking-widest uppercase flex items-center gap-2 transition-colors" onClick={() => document.getElementById('edu-file-up')?.click()}>
-                                    <Plus className="w-3 h-3" /> ATTACH DATA
+                                    <Plus className="w-3 h-3" /> 파일 첨부
                                 </button>
                                 <input id="edu-file-up" type="file" className="hidden" multiple accept=".pdf,.ppt,.pptx,.jpg,.jpeg,.png,.gif" onChange={(e) => handleFileUpload(e, 'education')} />
                             </div>
@@ -750,8 +750,8 @@ export function PortfolioBoard() {
                         </div>
                     </div>
                     <DialogFooter className="p-10 pt-4 bg-white/[0.02] border-t border-white/5">
-                        <Button variant="ghost" onClick={() => setModal(null)} className="h-16 px-8 rounded-2xl text-[10px] font-black text-white/20 hover:text-white hover:bg-white/5 uppercase tracking-widest">ABORT</Button>
-                        <Button onClick={handleSaveEducation} className="flex-1 h-16 rounded-3xl bg-indigo-500 hover:bg-indigo-600 text-white font-black text-sm tracking-[0.2em] shadow-2xl transition-all uppercase">COMMIT NODE</Button>
+                        <Button variant="ghost" onClick={() => setModal(null)} className="h-16 px-8 rounded-2xl text-[10px] font-black text-white/20 hover:text-white hover:bg-white/5 uppercase tracking-widest">취소</Button>
+                        <Button onClick={handleSaveEducation} className="flex-1 h-16 rounded-3xl bg-indigo-500 hover:bg-indigo-600 text-white font-black text-sm tracking-[0.2em] shadow-2xl transition-all uppercase">등록 (COMMIT)</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
@@ -760,27 +760,27 @@ export function PortfolioBoard() {
             <Dialog open={modal?.type === 'career'} onOpenChange={(val) => !val && setModal(null)}>
                 <DialogContent className="glass-premium border border-white/10 text-white rounded-[40px] p-0 shadow-2xl sm:max-w-3xl h-[85vh] flex flex-col">
                     <DialogHeader className="p-10 pb-0">
-                        <DialogTitle className="text-3xl font-black tracking-tighter uppercase mb-2">REPLICATE EXPERIENCE</DialogTitle>
-                        <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] italic">UPDATING CAREER INFRASTRUCTURE PARAMETERS</p>
+                        <DialogTitle className="text-3xl font-black tracking-tighter uppercase mb-2">경력 사항 등록</DialogTitle>
+                        <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] italic">경력 인프라 데이터 업데이트 중</p>
                     </DialogHeader>
                     <div className="flex-1 overflow-y-auto p-10 pt-4 space-y-10 custom-scrollbar">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div className="space-y-3">
-                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">ENTITY (COMPANY)</Label>
-                                <Input value={careerForm.company || ''} onChange={e => setCareerForm({ ...careerForm, company: e.target.value })} className="h-14 font-black text-xl border-white/5 bg-white/5 rounded-2xl text-white uppercase" placeholder="EX: STARK INDUSTRIES" />
+                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">회사명 (COMPANY)</Label>
+                                <Input value={careerForm.company || ''} onChange={e => setCareerForm({ ...careerForm, company: e.target.value })} className="h-14 font-black text-xl border-white/5 bg-white/5 rounded-2xl text-white uppercase" placeholder="예: (주)다이아몬드" />
                             </div>
                             <div className="space-y-3">
-                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">DESIGNATED POSITION</Label>
-                                <Input value={careerForm.position || ''} onChange={e => setCareerForm({ ...careerForm, position: e.target.value })} className="h-14 font-black text-lg border-white/5 bg-white/5 rounded-2xl text-white uppercase" placeholder="EX: SENIOR ARCHITECT" />
+                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">직위/직책 (POSITION)</Label>
+                                <Input value={careerForm.position || ''} onChange={e => setCareerForm({ ...careerForm, position: e.target.value })} className="h-14 font-black text-lg border-white/5 bg-white/5 rounded-2xl text-white uppercase" placeholder="예: 책임 연구원" />
                             </div>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div className="space-y-3">
-                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">INITIALIZATION DATE</Label>
+                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">입사일 (START)</Label>
                                 <Input type="date" value={careerForm.startDate ? format(new Date(careerForm.startDate), 'yyyy-MM-dd') : ''} onChange={e => setCareerForm({ ...careerForm, startDate: new Date(e.target.value) })} className="h-12 bg-white/5 border-white/5 rounded-2xl text-white font-black uppercase" />
                             </div>
                             <div className="space-y-3">
-                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">TERMINATION DATE</Label>
+                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">퇴사일 (END)</Label>
                                 <Input
                                     type="date"
                                     value={careerForm.endDate ? format(new Date(careerForm.endDate), 'yyyy-MM-dd') : ''}
@@ -792,21 +792,21 @@ export function PortfolioBoard() {
                         </div>
                         <div className="flex items-center gap-4 bg-white/5 p-6 rounded-3xl border border-white/5">
                             <input type="checkbox" id="carCurrent" checked={careerForm.isCurrent || false} onChange={e => setCareerForm({ ...careerForm, isCurrent: e.target.checked, endDate: e.target.checked ? undefined : careerForm.endDate })} className="w-6 h-6 accent-indigo-500" />
-                            <Label htmlFor="carCurrent" className="text-[10px] font-black text-white/60 uppercase tracking-widest italic">ACTIVE SESSION (CURRENTLY EMPLOYED)</Label>
+                            <Label htmlFor="carCurrent" className="text-[10px] font-black text-white/60 uppercase tracking-widest italic">현재 재직 중 (CURRENTLY EMPLOYED)</Label>
                         </div>
                         <div className="space-y-3">
-                            <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">INFRASTRUCTURE LOG (SUMMARY)</Label>
+                            <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">업무 내용 (요약)</Label>
                             <Textarea
                                 className="min-h-[150px] bg-white/5 border-white/5 rounded-3xl p-6 text-[11px] font-bold text-white/60 leading-relaxed uppercase tracking-wider italic placeholder:text-white/10"
                                 value={careerForm.description || ''}
                                 onChange={e => setCareerForm({ ...careerForm, description: e.target.value })}
-                                placeholder="ENTER MAJOR OPERATIONAL DATA..."
+                                placeholder="주요 업무 내용을 입력하세요..."
                             />
                         </div>
                     </div>
                     <DialogFooter className="p-10 pt-4 bg-white/[0.02] border-t border-white/5">
-                        <Button variant="ghost" onClick={() => setModal(null)} className="h-16 px-8 rounded-2xl text-[10px] font-black text-white/20 hover:text-white hover:bg-white/5 uppercase tracking-widest">ABORT</Button>
-                        <Button onClick={handleSaveCareer} className="flex-1 h-16 rounded-3xl bg-indigo-500 hover:bg-indigo-600 text-white font-black text-sm tracking-[0.2em] shadow-2xl transition-all uppercase">COMMIT EXPERIENCE</Button>
+                        <Button variant="ghost" onClick={() => setModal(null)} className="h-16 px-8 rounded-2xl text-[10px] font-black text-white/20 hover:text-white hover:bg-white/5 uppercase tracking-widest">취소</Button>
+                        <Button onClick={handleSaveCareer} className="flex-1 h-16 rounded-3xl bg-indigo-500 hover:bg-indigo-600 text-white font-black text-sm tracking-[0.2em] shadow-2xl transition-all uppercase">완료</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
@@ -815,36 +815,36 @@ export function PortfolioBoard() {
             <Dialog open={modal?.type === 'project'} onOpenChange={(val) => !val && setModal(null)}>
                 <DialogContent className="glass-premium border border-white/10 text-white rounded-[40px] p-0 shadow-2xl sm:max-w-2xl">
                     <DialogHeader className="p-10 pb-0">
-                        <DialogTitle className="text-3xl font-black tracking-tighter uppercase mb-2">INITIALIZE ARTIFACT</DialogTitle>
-                        <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] italic">TRANSMITTING PROJECT ARTIFACT DATA TO CORE ARCHIVE</p>
+                        <DialogTitle className="text-3xl font-black tracking-tighter uppercase mb-2">프로젝트 등록</DialogTitle>
+                        <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] italic">프로젝트 포트폴리오 데이터 저장 중</p>
                     </DialogHeader>
                     <div className="p-10 pt-4 space-y-8 max-h-[70vh] overflow-y-auto no-scrollbar">
                         <div className="space-y-3">
-                            <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">ARTIFACT IDENTIFIER</Label>
-                            <Input value={projectForm.title || ''} onChange={e => setProjectForm({ ...projectForm, title: e.target.value })} className="h-14 font-black text-xl border-white/5 bg-white/5 rounded-2xl text-white uppercase" placeholder="EX: PROJECT HYPERSPACE" />
+                            <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">프로젝트명 (IDENTIFIER)</Label>
+                            <Input value={projectForm.title || ''} onChange={e => setProjectForm({ ...projectForm, title: e.target.value })} className="h-14 font-black text-xl border-white/5 bg-white/5 rounded-2xl text-white uppercase" placeholder="예: 차세대 시스템 구축" />
                         </div>
                         <div className="grid grid-cols-2 gap-8">
                             <div className="space-y-3">
-                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">TEMPORAL RADIUS</Label>
-                                <Input placeholder="EX: 2023.01 - 2023.12" value={projectForm.period || ''} onChange={e => setProjectForm({ ...projectForm, period: e.target.value })} className="h-12 bg-white/5 border-white/5 rounded-2xl text-white font-black uppercase" />
+                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">수행 기간 (PERIOD)</Label>
+                                <Input placeholder="예: 2023.01 - 2023.12" value={projectForm.period || ''} onChange={e => setProjectForm({ ...projectForm, period: e.target.value })} className="h-12 bg-white/5 border-white/5 rounded-2xl text-white font-black uppercase" />
                             </div>
                             <div className="space-y-3">
-                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">DESIGNATED ROLE</Label>
-                                <Input placeholder="EX: LEAD ARCHITECT" value={projectForm.role || ''} onChange={e => setProjectForm({ ...projectForm, role: e.target.value })} className="h-12 bg-white/5 border-white/5 rounded-2xl text-white font-black uppercase" />
+                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">담당 역할 (ROLE)</Label>
+                                <Input placeholder="예: 서버 개발 및 설계" value={projectForm.role || ''} onChange={e => setProjectForm({ ...projectForm, role: e.target.value })} className="h-12 bg-white/5 border-white/5 rounded-2xl text-white font-black uppercase" />
                             </div>
                         </div>
                         <div className="space-y-3">
-                            <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">CORE TECHNOLOGIES (CSV)</Label>
-                            <Input placeholder="AWS, NODE.JS, REACT" value={projectTechStack} onChange={e => setProjectTechStack(e.target.value)} className="h-12 bg-white/5 border-white/5 rounded-2xl text-white font-black uppercase" />
+                            <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">사용 기술 (TECH STACK - 쉼표 구분)</Label>
+                            <Input placeholder="AWS, Node.js, React" value={projectTechStack} onChange={e => setProjectTechStack(e.target.value)} className="h-12 bg-white/5 border-white/5 rounded-2xl text-white font-black uppercase" />
                         </div>
                         <div className="space-y-3">
-                            <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">ARTIFACT SPECIFICATIONS (LOG)</Label>
+                            <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">프로젝트 상세 설명 (LOG)</Label>
                             <Textarea className="min-h-[120px] bg-white/5 border-white/5 rounded-3xl p-6 text-[11px] font-bold text-white/60 leading-relaxed uppercase tracking-wider italic placeholder:text-white/10" value={projectForm.description || ''} onChange={e => setProjectForm({ ...projectForm, description: e.target.value })} />
                         </div>
                     </div>
                     <DialogFooter className="p-10 pt-4 bg-white/[0.02] border-t border-white/5">
-                        <Button variant="ghost" onClick={() => setModal(null)} className="h-16 px-8 rounded-2xl text-[10px] font-black text-white/20 hover:text-white hover:bg-white/5 uppercase tracking-widest">ABORT</Button>
-                        <Button onClick={handleSaveProject} className="flex-1 h-16 rounded-3xl bg-amber-500 hover:bg-amber-600 text-white font-black text-sm tracking-[0.2em] shadow-2xl transition-all uppercase">COMMIT ARTIFACT</Button>
+                        <Button variant="ghost" onClick={() => setModal(null)} className="h-16 px-8 rounded-2xl text-[10px] font-black text-white/20 hover:text-white hover:bg-white/5 uppercase tracking-widest">취소</Button>
+                        <Button onClick={handleSaveProject} className="flex-1 h-16 rounded-3xl bg-amber-500 hover:bg-amber-600 text-white font-black text-sm tracking-[0.2em] shadow-2xl transition-all uppercase">완료</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
@@ -853,41 +853,41 @@ export function PortfolioBoard() {
             <Dialog open={modal?.type === 'language'} onOpenChange={(val) => !val && setModal(null)}>
                 <DialogContent className="glass-premium border border-white/10 text-white rounded-[40px] p-0 shadow-2xl sm:max-w-xl">
                     <DialogHeader className="p-10 pb-0">
-                        <DialogTitle className="text-3xl font-black tracking-tighter uppercase mb-2">INDEX LINGUAL SCORE</DialogTitle>
-                        <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] italic">UPDATING PHONETIC AND SYNTACTIC PERFORMANCE</p>
+                        <DialogTitle className="text-3xl font-black tracking-tighter uppercase mb-2">어학 성적 등록</DialogTitle>
+                        <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] italic">어학 능력 데이터 업데이트 중</p>
                     </DialogHeader>
                     <div className="p-10 pt-4 space-y-8">
                         <div className="space-y-3">
-                            <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">LINGUAL SECTOR</Label>
+                            <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">언어 (LINGUAL)</Label>
                             <select
                                 className="flex h-12 w-full rounded-2xl border border-white/5 bg-white/5 px-4 font-black uppercase text-[10px] tracking-widest text-white outline-none focus:ring-2 focus:ring-cyan-500/20"
                                 value={languageForm.language}
                                 onChange={e => setLanguageForm({ ...languageForm, language: e.target.value })}
                             >
-                                <option value="English" className="bg-slate-900">ENGLISH</option>
-                                <option value="Japanese" className="bg-slate-900">JAPANESE</option>
-                                <option value="Chinese" className="bg-slate-900">CHINESE</option>
-                                <option value="Spanish" className="bg-slate-900">SPANISH</option>
+                                <option value="English" className="bg-slate-900">영어</option>
+                                <option value="Japanese" className="bg-slate-900">일본어</option>
+                                <option value="Chinese" className="bg-slate-900">중국어</option>
+                                <option value="Spanish" className="bg-slate-900">스페인어</option>
                             </select>
                         </div>
                         <div className="space-y-3">
-                            <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">SPECIFIC ASSESSMENT (TEST)</Label>
-                            <Input placeholder="EX: TOEIC, OPIc, JLPT" value={languageForm.testName} onChange={e => setLanguageForm({ ...languageForm, testName: e.target.value })} className="h-12 bg-white/5 border-white/5 rounded-2xl text-white font-black uppercase" />
+                            <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">시험 종류 (TEST)</Label>
+                            <Input placeholder="예: TOEIC, OPIc, JLPT" value={languageForm.testName} onChange={e => setLanguageForm({ ...languageForm, testName: e.target.value })} className="h-12 bg-white/5 border-white/5 rounded-2xl text-white font-black uppercase" />
                         </div>
                         <div className="grid grid-cols-2 gap-8">
                             <div className="space-y-3">
-                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">PERFORMANCE SCORE</Label>
-                                <Input placeholder="EX: 990, IH, N1" value={languageForm.score} onChange={e => setLanguageForm({ ...languageForm, score: e.target.value })} className="h-12 bg-white/5 border-white/5 rounded-2xl text-white font-black uppercase" />
+                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">성정/점수 (SCORE)</Label>
+                                <Input placeholder="예: 990, IH, N1" value={languageForm.score} onChange={e => setLanguageForm({ ...languageForm, score: e.target.value })} className="h-12 bg-white/5 border-white/5 rounded-2xl text-white font-black uppercase" />
                             </div>
                             <div className="space-y-3">
-                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">ACQUISITION DATE</Label>
+                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">취득일 (DATE)</Label>
                                 <Input type="date" value={isValid(new Date(languageForm.date)) ? format(new Date(languageForm.date), 'yyyy-MM-dd') : ''} onChange={e => setLanguageForm({ ...languageForm, date: new Date(e.target.value) })} className="h-12 bg-white/5 border-white/5 rounded-2xl text-white font-black" />
                             </div>
                         </div>
                     </div>
                     <DialogFooter className="p-10 pt-4 bg-white/[0.02] border-t border-white/5">
-                        <Button variant="ghost" onClick={() => setModal(null)} className="h-16 px-8 rounded-2xl text-[10px] font-black text-white/20 hover:text-white hover:bg-white/5 uppercase tracking-widest">ABORT</Button>
-                        <Button onClick={handleSaveLanguage} className="flex-1 h-16 rounded-3xl bg-cyan-500 hover:bg-cyan-600 text-white font-black text-sm tracking-[0.2em] shadow-2xl transition-all uppercase">COMMIT SCORE</Button>
+                        <Button variant="ghost" onClick={() => setModal(null)} className="h-16 px-8 rounded-2xl text-[10px] font-black text-white/20 hover:text-white hover:bg-white/5 uppercase tracking-widest">취소</Button>
+                        <Button onClick={handleSaveLanguage} className="flex-1 h-16 rounded-3xl bg-cyan-500 hover:bg-cyan-600 text-white font-black text-sm tracking-[0.2em] shadow-2xl transition-all uppercase">완료</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

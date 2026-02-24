@@ -187,9 +187,9 @@ export function LearningPlanner({ onNavigate }: LearningPlannerProps) {
 
     const getStatusLabel = (status: Certificate['status']) => {
         switch (status) {
-            case 'acquired': return 'ACQUIRED';
-            case 'studying': return 'IN PROGRESS';
-            default: return 'EXPIRED';
+            case 'acquired': return '취득 완료';
+            case 'studying': return '학습 중';
+            default: return '만료됨';
         }
     };
 
@@ -203,9 +203,9 @@ export function LearningPlanner({ onNavigate }: LearningPlannerProps) {
 
     const getLangStatusLabel = (status: LanguageResource['status']) => {
         switch (status) {
-            case 'completed': return 'COMPLETED';
-            case 'studying': return 'ACTIVE';
-            default: return 'QUEUED';
+            case 'completed': return '완료';
+            case 'studying': return '학습 중';
+            default: return '대기 중';
         }
     };
 
@@ -221,9 +221,9 @@ export function LearningPlanner({ onNavigate }: LearningPlannerProps) {
                             <BrainCircuit className="w-6 h-6 text-white" strokeWidth={3} />
                         </div>
                         <div>
-                            <h2 className="text-3xl font-black text-white tracking-tighter uppercase leading-none">COGNITIVE COMMAND</h2>
+                            <h2 className="text-3xl font-black text-white tracking-tighter uppercase leading-none">학습 지휘 본부</h2>
                             <p className="text-[10px] font-bold text-white/20 tracking-[0.3em] uppercase mt-2 italic flex items-center gap-2">
-                                <Terminal className="w-3 h-3 text-cyan-500" /> NEURAL ACQUISITION: OPTIMIZED
+                                <Terminal className="w-3 h-3 text-cyan-500" /> 지식 습득 시스템: 최적화됨
                             </p>
                         </div>
                     </div>
@@ -234,13 +234,13 @@ export function LearningPlanner({ onNavigate }: LearningPlannerProps) {
                             onClick={() => onNavigate?.('calendar')}
                             className="h-12 px-6 rounded-2xl bg-white/5 text-[10px] font-black text-white/40 hover:text-white tracking-widest uppercase border border-white/5 transition-all"
                         >
-                            <Calendar className="w-4 h-4 mr-2 opacity-50" /> CHRONO VIEW
+                            <Calendar className="w-4 h-4 mr-2 opacity-50" /> 일정 보기
                         </Button>
                         <Button
                             onClick={openNew}
                             className="h-12 px-6 rounded-2xl bg-cyan-500 hover:bg-cyan-600 text-white font-black text-[10px] tracking-widest uppercase shadow-xl transition-all active:scale-95"
                         >
-                            <Plus className="w-4 h-4 mr-2" strokeWidth={3} /> INITIALIZE GOAL
+                            <Plus className="w-4 h-4 mr-2" strokeWidth={3} /> 목표 설정
                         </Button>
                     </div>
                 </div>
@@ -250,7 +250,7 @@ export function LearningPlanner({ onNavigate }: LearningPlannerProps) {
                     <Card className="glass-premium border-white/10 bg-gradient-to-br from-cyan-500/[0.05] to-transparent overflow-hidden rounded-[32px] md:col-span-1 border-l-4 border-l-cyan-500">
                         <CardContent className="p-8 flex flex-col justify-between h-full gap-6">
                             <div className="flex items-center justify-between">
-                                <span className="text-[9px] font-black text-white/20 tracking-widest uppercase italic">SYNAPTIC GROWTH</span>
+                                <span className="text-[9px] font-black text-white/20 tracking-widest uppercase italic">성장 달성률</span>
                                 <div className="px-2 py-0.5 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-[8px] font-black text-cyan-400 tracking-widest">
                                     LVL {growthLevel}
                                 </div>
@@ -258,7 +258,7 @@ export function LearningPlanner({ onNavigate }: LearningPlannerProps) {
                             <div className="space-y-4">
                                 <div className="flex items-baseline gap-2">
                                     <span className="text-4xl font-black text-white tracking-tighter">{growthPercentage}%</span>
-                                    <span className="text-[10px] font-bold text-white/10 tracking-widest uppercase italic">EFFICIENCY</span>
+                                    <span className="text-[10px] font-bold text-white/10 tracking-widest uppercase italic">효율성</span>
                                 </div>
                                 <div className="h-1.5 bg-white/5 rounded-full overflow-hidden border border-white/5">
                                     <motion.div
@@ -268,8 +268,8 @@ export function LearningPlanner({ onNavigate }: LearningPlannerProps) {
                                     />
                                 </div>
                                 <div className="flex justify-between text-[8px] font-black text-white/20 tracking-widest uppercase">
-                                    <span>ACQUIRED: {completedItems}</span>
-                                    <span>ACTIVE: {inProgressItems}</span>
+                                    <span>취득 완료: {completedItems}</span>
+                                    <span>진행 중: {inProgressItems}</span>
                                 </div>
                             </div>
                         </CardContent>
@@ -281,7 +281,7 @@ export function LearningPlanner({ onNavigate }: LearningPlannerProps) {
                         </div>
                         <CardHeader className="p-8 pb-4">
                             <CardTitle className="text-[9px] font-black text-white/20 tracking-[0.4em] uppercase flex items-center gap-3 italic">
-                                <Clock className="w-3 h-3 text-rose-500" /> TEMPORAL DEADLINES
+                                <Clock className="w-3 h-3 text-rose-500" /> 진행 예정 일정
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="p-8 pt-0 flex gap-6 overflow-x-auto custom-scrollbar pb-6 scroll-smooth">
@@ -321,7 +321,7 @@ export function LearningPlanner({ onNavigate }: LearningPlannerProps) {
                             ) : (
                                 <div className="h-24 flex items-center gap-4 text-white/10 italic">
                                     <Target className="w-6 h-6 opacity-20" />
-                                    <span className="text-[10px] font-bold tracking-[0.3em] uppercase">NO CRITICAL DEADLINES SCANNED</span>
+                                    <span className="text-[10px] font-bold tracking-[0.3em] uppercase">임박한 일정이 없습니다.</span>
                                 </div>
                             )}
                         </CardContent>
@@ -336,10 +336,10 @@ export function LearningPlanner({ onNavigate }: LearningPlannerProps) {
                     <div className="space-y-6">
                         <div className="flex items-center justify-between px-2">
                             <h3 className="text-[10px] font-black text-white/20 tracking-[0.4em] uppercase flex items-center gap-3 italic font-black">
-                                <Cpu className="w-3 h-3 text-cyan-400" /> LINGUISTIC PROCESSOR
+                                <Cpu className="w-3 h-3 text-cyan-400" /> 언어 학습 프로세서
                             </h3>
                             <span className="text-[9px] font-black text-cyan-400/40 tracking-widest uppercase">
-                                SYNC: {completedLangResources}/{totalLangResources}
+                                동기화: {completedLangResources}/{totalLangResources}
                             </span>
                         </div>
                         <div className="space-y-4">
@@ -368,7 +368,7 @@ export function LearningPlanner({ onNavigate }: LearningPlannerProps) {
                                             </div>
                                             <div className="flex items-center gap-8">
                                                 <div className="text-right hidden sm:block">
-                                                    <div className="text-[10px] font-black text-cyan-400 tracking-tighter mb-1">{getLangProgress(resource)}% COMPLETED</div>
+                                                    <div className="text-[10px] font-black text-cyan-400 tracking-tighter mb-1">{getLangProgress(resource)}% 완료</div>
                                                     <div className="w-20 h-1 bg-white/5 rounded-full overflow-hidden border border-white/5">
                                                         <div className="h-full bg-cyan-500" style={{ width: `${getLangProgress(resource)}%` }} />
                                                     </div>
@@ -395,7 +395,7 @@ export function LearningPlanner({ onNavigate }: LearningPlannerProps) {
                                 ) : (
                                     <div className="h-40 flex flex-col items-center justify-center opacity-10 gap-4 border-2 border-dashed border-white/10 rounded-[32px]">
                                         <BookOpen className="w-10 h-10" />
-                                        <p className="text-[10px] font-black tracking-[0.3em] uppercase">SYSTEM LIBRARY VACANT</p>
+                                        <p className="text-[10px] font-black tracking-[0.3em] uppercase">학습 라이브러리가 비어 있습니다.</p>
                                     </div>
                                 )}
                             </AnimatePresence>
@@ -406,10 +406,10 @@ export function LearningPlanner({ onNavigate }: LearningPlannerProps) {
                     <div className="space-y-6">
                         <div className="flex items-center justify-between px-2">
                             <h3 className="text-[10px] font-black text-white/20 tracking-[0.4em] uppercase flex items-center gap-3 italic font-black">
-                                <Award className="w-3 h-3 text-emerald-400" /> CREDENTIAL VAULT
+                                <Award className="w-3 h-3 text-emerald-400" /> 자격증 및 증명서
                             </h3>
                             <span className="text-[9px] font-black text-emerald-400/40 tracking-widest uppercase">
-                                ARCHIVED: {acquiredCerts}/{totalCerts}
+                                보관됨: {acquiredCerts}/{totalCerts}
                             </span>
                         </div>
                         <div className="space-y-4">
@@ -432,7 +432,7 @@ export function LearningPlanner({ onNavigate }: LearningPlannerProps) {
                                                     )}>
                                                         {cert.status === 'acquired' ? <CheckCircle2 strokeWidth={3} /> : <GraduationCap strokeWidth={2.5} />}
                                                     </div>
-                                                    <div>
+                                                    <div className="flex-1 min-w-0">
                                                         <h4 className={cn("text-sm font-black uppercase tracking-widest mb-1", cert.status === 'acquired' ? "text-white/40 line-through" : "text-white")}>{cert.name}</h4>
                                                         <div className="text-[9px] font-bold text-white/20 uppercase tracking-widest italic">{cert.issuer}</div>
                                                     </div>
@@ -464,7 +464,7 @@ export function LearningPlanner({ onNavigate }: LearningPlannerProps) {
                                 ) : (
                                     <div className="h-40 flex flex-col items-center justify-center opacity-10 gap-4 border-2 border-dashed border-white/10 rounded-[48px]">
                                         <Award className="w-10 h-10" />
-                                        <p className="text-[10px] font-black tracking-[0.3em] uppercase">NO CREDENTIALS SECURED</p>
+                                        <p className="text-[10px] font-black tracking-[0.3em] uppercase">취득한 자격증이 없습니다.</p>
                                     </div>
                                 )}
                             </AnimatePresence>
@@ -477,24 +477,24 @@ export function LearningPlanner({ onNavigate }: LearningPlannerProps) {
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogContent className="glass-premium border border-white/10 text-white rounded-[40px] p-0 shadow-2xl sm:max-w-3xl max-h-[90vh] overflow-hidden">
                     <DialogHeader className="p-10 pb-0">
-                        <DialogTitle className="text-3xl font-black tracking-tighter uppercase mb-2">{editingCertId || editingLangId ? 'RECALIBRATE GOAL' : 'INITIALIZE GOAL'}</DialogTitle>
-                        <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] italic">CALIBRATING NEURAL PARAMETERS FOR COGNITIVE ACQUISITION</p>
+                        <DialogTitle className="text-3xl font-black tracking-tighter uppercase mb-2">{editingCertId || editingLangId ? '목표 재설정' : '목표 설정'}</DialogTitle>
+                        <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] italic">학습을 위한 시스템 파라미터 조정 중</p>
                     </DialogHeader>
 
                     <div className="p-10 pt-4 overflow-y-auto custom-scrollbar space-y-8">
                         <Tabs value={goalType} onValueChange={(v: any) => setGoalType(v)} className="w-full">
                             <TabsList className="grid w-full grid-cols-2 bg-white/5 p-1.5 rounded-2xl border border-white/5 h-16">
-                                <TabsTrigger value="certificate" className="rounded-xl font-black text-[10px] tracking-widest uppercase data-[state=active]:bg-cyan-500 data-[state=active]:text-white">CERTIFICATION</TabsTrigger>
-                                <TabsTrigger value="language" className="rounded-xl font-black text-[10px] tracking-widest uppercase data-[state=active]:bg-cyan-500 data-[state=active]:text-white">LINGUISTICS</TabsTrigger>
+                                <TabsTrigger value="certificate" className="rounded-xl font-black text-[10px] tracking-widest uppercase data-[state=active]:bg-cyan-500 data-[state=active]:text-white">자격증</TabsTrigger>
+                                <TabsTrigger value="language" className="rounded-xl font-black text-[10px] tracking-widest uppercase data-[state=active]:bg-cyan-500 data-[state=active]:text-white">언어 학습</TabsTrigger>
                             </TabsList>
 
                             <div className="py-8 space-y-8">
                                 <div className="space-y-3">
-                                    <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">GOAL IDENTIFIER</Label>
+                                    <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">목표 명칭</Label>
                                     <Input
                                         value={title}
                                         onChange={e => setTitle(e.target.value)}
-                                        placeholder="EX: CLOUD ARCHITECT, LEVEL C1..."
+                                        placeholder="예: 정보처리기사, 영어 회화..."
                                         className="h-14 font-black text-xl border-white/5 bg-white/5 rounded-2xl text-white placeholder:text-white/10"
                                     />
                                 </div>
@@ -502,11 +502,11 @@ export function LearningPlanner({ onNavigate }: LearningPlannerProps) {
                                 {goalType === 'certificate' && (
                                     <div className="grid grid-cols-2 gap-6">
                                         <div className="space-y-3">
-                                            <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">ISSUING SECTOR</Label>
-                                            <Input value={issuer} onChange={e => setIssuer(e.target.value)} placeholder="EX: AWS, GOOGLE..." className="h-12 font-black text-[10px] uppercase tracking-widest bg-white/5 border-white/5 rounded-2xl text-white" />
+                                            <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">발급 기관</Label>
+                                            <Input value={issuer} onChange={e => setIssuer(e.target.value)} placeholder="예: 한국산업인력공단, ETS..." className="h-12 font-black text-[10px] uppercase tracking-widest bg-white/5 border-white/5 rounded-2xl text-white" />
                                         </div>
                                         <div className="space-y-3">
-                                            <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">CHRONO-TARGET</Label>
+                                            <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">목표 일자</Label>
                                             <Input type="date" value={date} onChange={e => setDate(e.target.value)} className="h-12 font-black text-[10px] bg-white/5 border-white/5 rounded-2xl text-white" />
                                         </div>
                                     </div>
@@ -516,34 +516,34 @@ export function LearningPlanner({ onNavigate }: LearningPlannerProps) {
                                     <>
                                         <div className="grid grid-cols-2 gap-6">
                                             <div className="space-y-3">
-                                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">LINGUAL VECTOR</Label>
+                                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">학습 언어</Label>
                                                 <select
                                                     className="flex h-12 w-full rounded-2xl border border-white/5 bg-white/5 px-4 font-black uppercase text-[10px] tracking-center text-white outline-none focus:ring-2 focus:ring-cyan-500/20"
                                                     value={langType}
                                                     onChange={e => setLangType(e.target.value)}
                                                 >
-                                                    <option value="English" className="bg-slate-900">ENGLISH</option>
-                                                    <option value="Japanese" className="bg-slate-900">JAPANESE</option>
-                                                    <option value="Chinese" className="bg-slate-900">CHINESE</option>
-                                                    <option value="Other" className="bg-slate-900">OTHER</option>
+                                                    <option value="English" className="bg-slate-900">영어</option>
+                                                    <option value="Japanese" className="bg-slate-900">일본어</option>
+                                                    <option value="Chinese" className="bg-slate-900">중국어</option>
+                                                    <option value="Other" className="bg-slate-900">기타</option>
                                                 </select>
                                             </div>
                                             <div className="space-y-3">
-                                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">MEDIUM TYPE</Label>
+                                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">학습 매체</Label>
                                                 <select
                                                     className="flex h-12 w-full rounded-2xl border border-white/5 bg-white/5 px-4 font-black uppercase text-[10px] tracking-widest text-white outline-none focus:ring-2 focus:ring-cyan-500/20"
                                                     value={langResourceType}
                                                     onChange={e => setLangResourceType(e.target.value as any)}
                                                 >
-                                                    <option value="book" className="bg-slate-900">ACADEMIC TEXT</option>
-                                                    <option value="video" className="bg-slate-900">VISUAL DATA</option>
-                                                    <option value="lecture" className="bg-slate-900">PROTOCOL LECTURE</option>
-                                                    <option value="other" className="bg-slate-900">OTHER</option>
+                                                    <option value="book" className="bg-slate-900">교재/도서</option>
+                                                    <option value="video" className="bg-slate-900">영상 자료</option>
+                                                    <option value="lecture" className="bg-slate-900">강의</option>
+                                                    <option value="other" className="bg-slate-900">기타</option>
                                                 </select>
                                             </div>
                                         </div>
                                         <div className="space-y-3">
-                                            <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">EXTERNAL DATALINK (URL)</Label>
+                                            <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">외부 데이터 링크 (URL)</Label>
                                             <Input value={langUrl} onChange={e => setLangUrl(e.target.value)} placeholder="HTTPS://..." className="h-12 bg-white/5 border-white/5 rounded-2xl text-white text-[10px] font-black tracking-widest uppercase" />
                                         </div>
                                     </>
@@ -551,7 +551,7 @@ export function LearningPlanner({ onNavigate }: LearningPlannerProps) {
 
                                 <div className="space-y-3">
                                     <div className="flex justify-between items-center ml-2">
-                                        <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest">COGNITIVE BLUEPRINT / AI ROADMAP</Label>
+                                        <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest">학습 설계 / AI 로드맵</Label>
                                         <Button
                                             type="button"
                                             variant="ghost"
@@ -561,13 +561,13 @@ export function LearningPlanner({ onNavigate }: LearningPlannerProps) {
                                             className="h-8 text-[9px] font-black text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/10 px-3 uppercase tracking-widest gap-2"
                                         >
                                             {isPlanning ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
-                                            AI SYNTHESIS
+                                            AI 분석
                                         </Button>
                                     </div>
                                     <Textarea
                                         value={memo}
                                         onChange={e => setMemo(e.target.value)}
-                                        placeholder="SPECIFY SUB-OBJECTIVES OR GENERATE VIA AI..."
+                                        placeholder="세부 학습 목표를 입력하거나 AI로 생성하세요..."
                                         className="min-h-[160px] bg-white/5 border-white/5 rounded-3xl p-6 text-[11px] font-bold text-white/60 leading-relaxed italic placeholder:text-white/10 resize-none focus:ring-2 focus:ring-cyan-500/20"
                                     />
                                 </div>
@@ -581,14 +581,14 @@ export function LearningPlanner({ onNavigate }: LearningPlannerProps) {
                             onClick={() => setIsDialogOpen(false)}
                             className="h-16 px-8 rounded-2xl text-[10px] font-black text-white/20 hover:text-white hover:bg-white/5 uppercase tracking-widest"
                         >
-                            ABORT
+                            취소
                         </Button>
                         <Button
                             onClick={handleSave}
                             disabled={!title}
                             className="flex-1 h-16 rounded-3xl bg-cyan-500 hover:bg-cyan-600 text-white font-black text-sm tracking-[0.2em] shadow-2xl active:scale-95 transition-all uppercase"
                         >
-                            ENCRYPT GOAL
+                            목표 저장
                         </Button>
                     </DialogFooter>
                 </DialogContent>

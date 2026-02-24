@@ -14,6 +14,7 @@ import {
     Terminal, Fingerprint, Activity
 } from 'lucide-react';
 import { format } from 'date-fns';
+import { ko } from 'date-fns/locale';
 import { LanguageStats } from './LanguageStats';
 import { VocabQuiz } from './VocabQuiz';
 import { LanguageResources } from './LanguageResources';
@@ -32,12 +33,12 @@ export function LanguageLog() {
     const [memo, setMemo] = useState('');
 
     const languages = [
-        { id: 'English', label: 'ENGLISH', code: 'EN' },
-        { id: 'Japanese', label: 'JAPANESE', code: 'JA' },
-        { id: 'Chinese', label: 'CHINESE', code: 'ZH' },
-        { id: 'Spanish', label: 'SPANISH', code: 'ES' },
-        { id: 'German', label: 'GERMAN', code: 'DE' },
-        { id: 'French', label: 'FRENCH', code: 'FR' },
+        { id: 'English', label: '영어', code: 'EN' },
+        { id: 'Japanese', label: '일본어', code: 'JA' },
+        { id: 'Chinese', label: '중국어', code: 'ZH' },
+        { id: 'Spanish', label: '스페인어', code: 'ES' },
+        { id: 'German', label: '독일어', code: 'DE' },
+        { id: 'French', label: '프랑스어', code: 'FR' },
     ];
 
     const handleAddVocab = () => {
@@ -74,9 +75,9 @@ export function LanguageLog() {
                             <Languages className="w-6 h-6 text-white" strokeWidth={3} />
                         </div>
                         <div>
-                            <h2 className="text-3xl font-black text-white tracking-tighter uppercase leading-none">LINGUISTIC HUB</h2>
+                            <h2 className="text-3xl font-black text-white tracking-tighter uppercase leading-none">언어 학습 허브</h2>
                             <p className="text-[10px] font-bold text-white/20 tracking-[0.3em] uppercase mt-2 italic flex items-center gap-2">
-                                <Terminal className="w-3 h-3 text-indigo-500" /> NEURAL SYNAPSE CALIBRATION: ACTIVE
+                                <Terminal className="w-3 h-3 text-indigo-500" /> 신경 시냅스 보정: 활성
                             </p>
                         </div>
                     </div>
@@ -103,10 +104,10 @@ export function LanguageLog() {
                 {/* Sub-Navigation */}
                 <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
                     {[
-                        { id: 'stats', label: 'ANALYTICS', icon: BarChart2 },
-                        { id: 'log', label: 'INPUT LOG', icon: PenTool },
-                        { id: 'quiz', label: 'LEXICON QUIZ', icon: GraduationCap },
-                        { id: 'resources', label: 'RESOURCES', icon: BookMarkedIcon },
+                        { id: 'stats', label: '분석 기록', icon: BarChart2 },
+                        { id: 'log', label: '학습 입력', icon: PenTool },
+                        { id: 'quiz', label: '단어 퀴즈', icon: GraduationCap },
+                        { id: 'resources', label: '학습 자원', icon: BookMarkedIcon },
                     ].map(tab => (
                         <button
                             key={tab.id}
@@ -153,13 +154,13 @@ export function LanguageLog() {
                                 <CardHeader className="p-8 pb-0">
                                     <div className="flex items-center gap-3">
                                         <Zap className="w-5 h-5 text-indigo-400" />
-                                        <CardTitle className="text-xl font-black text-white tracking-widest uppercase">INPUT PROTOCOL</CardTitle>
+                                        <CardTitle className="text-xl font-black text-white tracking-widest uppercase">입력 프로토콜</CardTitle>
                                     </div>
-                                    <p className="text-[9px] font-bold text-white/20 uppercase mt-1 tracking-widest">TRANSMIT NEW STUDY DATA</p>
+                                    <p className="text-[9px] font-bold text-white/20 uppercase mt-1 tracking-widest">새로운 학습 데이터 전송</p>
                                 </CardHeader>
                                 <CardContent className="p-8 space-y-6">
                                     <div className="space-y-3">
-                                        <Label className="text-[9px] font-black text-white/20 uppercase tracking-widest ml-2">SESSION DURATION (MIN)</Label>
+                                        <Label className="text-[9px] font-black text-white/20 uppercase tracking-widest ml-2">학습 시간 (분)</Label>
                                         <div className="relative group">
                                             <Clock className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within:text-indigo-400 transition-colors" />
                                             <Input
@@ -173,16 +174,16 @@ export function LanguageLog() {
                                     </div>
 
                                     <div className="space-y-3 pt-4 border-t border-white/5">
-                                        <Label className="text-[9px] font-black text-white/20 uppercase tracking-widest ml-2">LEXICAL ACQUISITION</Label>
+                                        <Label className="text-[9px] font-black text-white/20 uppercase tracking-widest ml-2">어휘 습득</Label>
                                         <div className="flex gap-3">
                                             <Input
-                                                placeholder="WORD"
+                                                placeholder="단어"
                                                 value={currentWord}
                                                 onChange={(e) => setCurrentWord(e.target.value)}
                                                 className="h-12 flex-1 font-black text-[10px] tracking-widest bg-white/5 border-white/5 rounded-xl text-white"
                                             />
                                             <Input
-                                                placeholder="MEANING"
+                                                placeholder="의미"
                                                 value={currentMeaning}
                                                 onChange={(e) => setCurrentMeaning(e.target.value)}
                                                 onKeyDown={(e) => e.key === 'Enter' && handleAddVocab()}
@@ -227,9 +228,9 @@ export function LanguageLog() {
                                     </div>
 
                                     <div className="space-y-3 pt-4 border-t border-white/5">
-                                        <Label className="text-[9px] font-black text-white/20 uppercase tracking-widest ml-2">SESSION OVERVIEW</Label>
+                                        <Label className="text-[9px] font-black text-white/20 uppercase tracking-widest ml-2">주요 내용 및 메모</Label>
                                         <Textarea
-                                            placeholder="ENTER NEURAL FEEDBACK..."
+                                            placeholder="피드백 입력..."
                                             className="min-h-[100px] bg-white/5 border-white/5 rounded-2xl font-bold text-[10px] tracking-widest uppercase text-white p-5 focus:ring-indigo-500/30"
                                             value={memo}
                                             onChange={(e) => setMemo(e.target.value)}
@@ -241,7 +242,7 @@ export function LanguageLog() {
                                         onClick={handleSave}
                                         disabled={!studyTime && vocabList.length === 0}
                                     >
-                                        <Save className="w-4 h-4 mr-3" /> COMMIT LOG
+                                        <Save className="w-4 h-4 mr-3" /> 로그 기록
                                     </Button>
                                 </CardContent>
                             </Card>
@@ -251,14 +252,14 @@ export function LanguageLog() {
                                 <div className="flex items-center justify-between mb-4">
                                     <div className="flex items-center gap-3">
                                         <Activity className="w-5 h-5 text-indigo-500" />
-                                        <h3 className="text-xl font-black text-white tracking-widest uppercase">TRANSMISSION FEED</h3>
+                                        <h3 className="text-xl font-black text-white tracking-widest uppercase">학습 타임라인</h3>
                                     </div>
                                 </div>
 
                                 {filteredEntries.length === 0 ? (
                                     <div className="h-full flex flex-col items-center justify-center opacity-10 gap-4 border-2 border-dashed border-white/10 rounded-[40px] py-20">
                                         <BookOpen className="w-12 h-12" />
-                                        <p className="text-[10px] font-black tracking-[0.3em] uppercase text-center">NO LINGUISTIC ARTIFACTS DETECTED<br />IN THE CURRENT FREQUENCY</p>
+                                        <p className="text-[10px] font-black tracking-[0.3em] uppercase text-center">기록된 학습 데이터가<br />없습니다</p>
                                     </div>
                                 ) : (
                                     <div className="space-y-6">
@@ -279,9 +280,9 @@ export function LanguageLog() {
                                                     <div className="flex items-center justify-between">
                                                         <div className="flex items-center gap-3">
                                                             <div className="flex h-6 items-center px-4 rounded-lg bg-indigo-500/20 text-[9px] font-black tracking-widest text-indigo-400 uppercase border border-indigo-500/20">
-                                                                SESSION {entry.studyTime} MIN
+                                                                학습 {entry.studyTime}분
                                                             </div>
-                                                            <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">{format(new Date(entry.date), 'hh:mm a')}</span>
+                                                            <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">{format(new Date(entry.date), 'aa hh:mm', { locale: ko })}</span>
                                                         </div>
                                                         <button
                                                             onClick={() => deleteLanguageEntry(entry.id)}

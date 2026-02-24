@@ -74,7 +74,7 @@ export function ActiveSessionCard({ index, session, onUpdate, onDelete }: Active
                         <h4 className="text-xl font-black text-white tracking-tighter uppercase leading-none">{session.type}</h4>
                         <div className="flex items-center gap-2 mt-1.5 opacity-40">
                             <span className="text-[10px] font-bold uppercase tracking-widest">
-                                {({'weight': '웨이트', 'cardio': '유산소', 'sport': '스포츠', 'fitness': '피트니스'} as Record<string, string>)[session.category as string] || session.category} 구분
+                                {({ 'weight': '웨이트', 'cardio': '유산소', 'sport': '스포츠', 'fitness': '피트니스' } as Record<string, string>)[session.category as string] || session.category} 구분
                             </span>
                         </div>
                     </div>
@@ -137,7 +137,7 @@ export function ActiveSessionCard({ index, session, onUpdate, onDelete }: Active
                                             <span className="font-black text-[10px] text-white/60 w-8">{set.setNumber}세트</span>
                                             <div className="flex items-end gap-1">
                                                 <span className="text-xl font-black text-white tracking-tighter">{set.weight}</span>
-                                                <span className="text-[10px] font-black text-rose-500 mb-1">KG</span>
+                                                <span className="text-[10px] font-black text-rose-500 mb-1">kg</span>
                                             </div>
                                             <X className="w-3 h-3 text-white/40" />
                                             <div className="flex items-end gap-1">
@@ -164,7 +164,7 @@ export function ActiveSessionCard({ index, session, onUpdate, onDelete }: Active
                                     <span className="text-2xl font-black text-white tracking-tighter">
                                         {session.sets.reduce((acc, curr) => acc + (curr.weight * curr.reps), 0).toLocaleString()}
                                     </span>
-                                    <span className="text-[11px] font-black text-rose-500 mb-1.5 uppercase">KG</span>
+                                    <span className="text-[11px] font-black text-rose-500 mb-1.5 uppercase">kg</span>
                                 </div>
                             </div>
                         </div>
@@ -180,7 +180,7 @@ export function ActiveSessionCard({ index, session, onUpdate, onDelete }: Active
                                 {session.distance && (
                                     <div className="flex flex-col gap-1">
                                         <label className="text-[9px] font-black text-white/60 uppercase tracking-widest">거리</label>
-                                        <span className="text-3xl font-black text-white tracking-tighter">{session.distance} <small className="text-xs text-sky-500">KM</small></span>
+                                        <span className="text-3xl font-black text-white tracking-tighter">{session.distance} <small className="text-xs text-sky-500">km</small></span>
                                     </div>
                                 )}
                                 {session.duration && (
