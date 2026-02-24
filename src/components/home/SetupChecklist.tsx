@@ -3,14 +3,13 @@
 import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, Circle, ArrowRight, Sparkles, Trophy, Settings, ListTodo, Info } from 'lucide-react';
+import { CheckCircle2, Sparkles, Trophy, Settings, ListTodo, Flame } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useData } from '@/context/DataProvider';
 import { cn } from '@/lib/utils';
 
 export function SetupChecklist() {
-    const { goals, tasks, homeShortcuts, userProfile } = useData();
-    const [isVisible, setIsVisible] = useState(true);
+    const { goals, tasks, homeShortcuts, userProfile, habits } = useData();
     const [isDismissed, setIsDismissed] = useState(false);
 
     useEffect(() => {
@@ -48,27 +47,28 @@ export function SetupChecklist() {
             desc: '자주 쓰는 기능을 홈화면에 배치하세요.'
         },
         {
-            id: 'guide',
-            label: '가이드 살펴보기',
-            icon: Info,
-            completed: false, // Will be tracked via local state or just manual click
-            desc: '상세 가이드를 통해 모든 기능을 마스터하세요.'
+            id: 'habit',
+            label: '습관 만들기',
+            icon: Flame,
+            completed: habits.length > 0,
+            desc: '매일 반복하고 싶은 나만의 습관을 등록해보세요.'
         }
     ];
 
     const completedCount = missions.filter(m => m.completed).length;
     const progress = (completedCount / missions.length) * 100;
+    const allDone = completedCount === missions.length;
 
-    if (isDismissed || (completedCount === missions.length && !isVisible)) return null;
+    if (isDismissed) return null;
 
     const handleDismiss = () => {
-        setIsDismissed(true);
         localStorage.setItem('onboarding_checklist_dismissed', 'true');
+        setIsDismissed(true);
     };
 
     return (
         <AnimatePresence>
-            {isVisible && (
+            {!allDone && (
                 <motion.div
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -94,7 +94,7 @@ export function SetupChecklist() {
                                         <p className="text-2xl font-black text-slate-900 dark:text-white leading-none">{Math.round(progress)}%</p>
                                     </div>
                                     <div className="w-16 h-16 rounded-full border-4 border-slate-100 dark:border-white/5 relative flex items-center justify-center">
-                                        <svg className="w-full h-full transform -rotate-90">
+                                        <svg className="w-full h-full transform -rotate-90" viewBox="0 0 64 64">
                                             <circle
                                                 cx="32" cy="32" r="28"
                                                 fill="transparent"
@@ -144,7 +144,7 @@ export function SetupChecklist() {
                             </div>
 
                             <div className="mt-8 pt-6 border-t border-slate-100 dark:border-white/5 flex items-center justify-between">
-                                <p className="text-xs text-slate-400 font-medium italic">이 체크리스트는 모든 단계를 완료하면 사라집니다.</p>
+                                <p className="text-xs text-slate-400 font-medium italic">모든 단계를 완료하면 자동으로 사라집니다.</p>
                                 <Button
                                     variant="ghost"
                                     size="sm"
