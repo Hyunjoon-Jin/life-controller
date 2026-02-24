@@ -77,11 +77,11 @@ function GoalItem({ goal, level = 0, onAddSubGoal, onEdit, onDetail, forceExpand
         <motion.div
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
-            className={cn("space-y-3", level > 0 && "ml-4 pl-4 border-l border-white/10 relative")}
+            className={cn("space-y-3", level > 0 && "ml-4 pl-4 border-l border-border relative")}
         >
             {/* Connection Line Visual */}
             {level > 0 && (
-                <div className="absolute -left-px top-6 w-4 h-px bg-white/10" />
+                <div className="absolute -left-px top-6 w-4 h-px bg-border" />
             )}
 
             <div
@@ -102,7 +102,8 @@ function GoalItem({ goal, level = 0, onAddSubGoal, onEdit, onDetail, forceExpand
                     <button
                         onClick={() => setExpanded(!expanded)}
                         className={cn(
-                            "mt-1 p-1 rounded-lg hover:bg-white/10 text-white/40 transition-all shrink-0 h-8 w-8 flex items-center justify-center",
+                            "mt-1 p-1 rounded-lg hover:bg-white/10 transition-all shrink-0 h-8 w-8 flex items-center justify-center",
+                            level === 0 ? "text-white/40" : "text-muted-foreground",
                             !hasSubGoals && "invisible pointer-events-none"
                         )}
                     >
@@ -116,7 +117,7 @@ function GoalItem({ goal, level = 0, onAddSubGoal, onEdit, onDetail, forceExpand
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                             <div className="flex-1 cursor-pointer min-w-0" onClick={() => onDetail(goal)}>
                                 <div className="flex items-center gap-3 flex-wrap">
-                                    <h4 className={cn("font-black text-white uppercase tracking-tight group-hover:text-amber-400 transition-colors truncate", level === 0 ? "text-lg" : "text-sm")}>
+                                    <h4 className={cn("font-black uppercase tracking-tight group-hover:text-amber-400 transition-colors truncate", level === 0 ? "text-lg text-white" : "text-sm text-foreground")}>
                                         {goal.title}
                                     </h4>
 
@@ -136,7 +137,7 @@ function GoalItem({ goal, level = 0, onAddSubGoal, onEdit, onDetail, forceExpand
                                         {(goal.category || 'other').toUpperCase()}
                                     </div>
 
-                                    <div className="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-[9px] font-black text-white/40 uppercase tracking-widest">
+                                    <div className={cn("px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-[9px] font-black uppercase tracking-widest", level === 0 ? "text-white/40" : "text-muted-foreground")}>
                                         {getPlanTypeLabel(goal.planType)}
                                     </div>
                                 </div>
@@ -165,7 +166,7 @@ function GoalItem({ goal, level = 0, onAddSubGoal, onEdit, onDetail, forceExpand
                         {/* Progress Monitoring */}
                         <div className="flex items-center gap-4">
                             <div className="flex-1 space-y-1">
-                                <div className="flex justify-between text-[9px] font-black text-white/60 uppercase tracking-[0.2em]">
+                                <div className={cn("flex justify-between text-[9px] font-black uppercase tracking-[0.2em]", level === 0 ? "text-white/60" : "text-muted-foreground")}>
                                     <span>Deployment Status</span>
                                     <span className={cn(goal.progress === 100 ? "text-emerald-400" : "text-amber-400")}>
                                         {goal.progress}% COMPLETE
@@ -191,7 +192,7 @@ function GoalItem({ goal, level = 0, onAddSubGoal, onEdit, onDetail, forceExpand
                                     "px-3 py-1.5 rounded-xl border flex flex-col items-center justify-center min-w-[70px]",
                                     new Date(goal.deadline) < new Date()
                                         ? "bg-rose-500/10 border-rose-500/30 text-rose-400"
-                                        : "bg-white/5 border-white/10 text-white/40"
+                                        : level === 0 ? "bg-white/5 border-white/10 text-white/40" : "bg-muted/50 border-border text-muted-foreground"
                                 )}>
                                     <span className="text-[8px] font-black uppercase tracking-widest leading-none">Term</span>
                                     <span className="text-[11px] font-black mt-1">
@@ -386,15 +387,15 @@ export default function GoalTree() {
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
             {/* Command Header */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-white/10">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-border">
                 <div className="space-y-2">
                     <div className="flex items-center gap-3">
                         <div className="w-12 h-12 rounded-2xl bg-amber-500/20 flex items-center justify-center border border-amber-500/30">
                             <Shield className="w-6 h-6 text-amber-500" />
                         </div>
                         <div>
-                            <h2 className="text-3xl font-black text-white tracking-tighter uppercase italic">Strategic Command Center</h2>
-                            <p className="text-[10px] font-black text-white/60 uppercase tracking-[0.4em]">Master Objective Interface // Auth: Admin</p>
+                            <h2 className="text-3xl font-black text-foreground tracking-tighter uppercase italic">Strategic Command Center</h2>
+                            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.4em]">Master Objective Interface // Auth: Admin</p>
                         </div>
                     </div>
                 </div>
@@ -424,17 +425,17 @@ export default function GoalTree() {
                         placeholder="전략 목표 필터링 (Search Unit)..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="h-12 bg-white/5 border-white/10 text-white placeholder:text-white/40 pl-12 rounded-2xl focus:ring-amber-500/20"
+                        className="h-12 bg-white/5 border-border text-foreground placeholder:text-muted-foreground pl-12 rounded-2xl focus:ring-amber-500/20"
                     />
-                    <Search className="absolute left-4 top-4 w-5 h-5 text-white/40" />
+                    <Search className="absolute left-4 top-4 w-5 h-5 text-muted-foreground" />
                 </div>
 
                 <div className="grid grid-cols-2 gap-2">
                     <Select value={filterCategory} onValueChange={(v) => setFilterCategory(v as any)}>
-                        <SelectTrigger className="h-12 bg-white/5 border-white/10 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest">
+                        <SelectTrigger className="h-12 bg-white/5 border-border text-foreground rounded-2xl text-[11px] font-black uppercase tracking-widest">
                             <SelectValue placeholder="CATEGORY" />
                         </SelectTrigger>
-                        <SelectContent className="bg-slate-900 border-white/10 text-white">
+                        <SelectContent className="bg-popover border-border text-popover-foreground">
                             <SelectItem value="all">ALL DOMAINS</SelectItem>
                             <SelectItem value="financial">ECONOMY</SelectItem>
                             <SelectItem value="health">BIO-HAZARD</SelectItem>
@@ -446,10 +447,10 @@ export default function GoalTree() {
                     </Select>
 
                     <Select value={sortBy} onValueChange={(v) => setSortBy(v as any)}>
-                        <SelectTrigger className="h-12 bg-white/5 border-white/10 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest">
+                        <SelectTrigger className="h-12 bg-white/5 border-border text-foreground rounded-2xl text-[11px] font-black uppercase tracking-widest">
                             <SelectValue placeholder="SORT" />
                         </SelectTrigger>
-                        <SelectContent className="bg-slate-900 border-white/10 text-white">
+                        <SelectContent className="bg-popover border-border text-popover-foreground">
                             <SelectItem value="deadline">BY TIMELINE</SelectItem>
                             <SelectItem value="progress">BY DEPLOYMENT</SelectItem>
                             <SelectItem value="name">BY DESIGNATION</SelectItem>
@@ -529,7 +530,7 @@ export default function GoalTree() {
                                         <SelectTrigger className="h-12 bg-white/5 border-white/10 text-white rounded-xl font-bold">
                                             <SelectValue />
                                         </SelectTrigger>
-                                        <SelectContent className="bg-slate-900 border-white/10 text-white">
+                                        <SelectContent className="bg-popover border-border text-popover-foreground">
                                             <SelectItem value="high">🔥 CRITICAL</SelectItem>
                                             <SelectItem value="medium">⚡ STANDARD</SelectItem>
                                             <SelectItem value="low">🌱 BACKLOG</SelectItem>
@@ -542,7 +543,7 @@ export default function GoalTree() {
                                         <SelectTrigger className="h-12 bg-white/5 border-white/10 text-white rounded-xl font-bold">
                                             <SelectValue />
                                         </SelectTrigger>
-                                        <SelectContent className="bg-slate-900 border-white/10 text-white">
+                                        <SelectContent className="bg-popover border-border text-popover-foreground">
                                             <SelectItem value="financial">ECONOMY</SelectItem>
                                             <SelectItem value="health">BIO-HAZARD</SelectItem>
                                             <SelectItem value="career">PROFESSIONAL</SelectItem>

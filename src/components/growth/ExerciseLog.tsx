@@ -342,7 +342,7 @@ export function ExerciseLog() {
                                 <motion.div
                                     initial={{ scale: 0.95, opacity: 0 }}
                                     animate={{ scale: 1, opacity: 1 }}
-                                    className="bg-[#0a0a0a]/60 backdrop-blur-xl rounded-[40px] border border-white/5 overflow-hidden shadow-2xl flex-shrink-0"
+                                    className="glass-premium rounded-[40px] border border-white/5 overflow-hidden shadow-2xl flex-shrink-0"
                                 >
                                     <div className="p-10 flex flex-col items-center justify-center bg-gradient-to-b from-rose-500/10 to-transparent">
                                         <div className="flex items-center gap-3 mb-6">

@@ -123,7 +123,7 @@ export default function Home() {
           </div>
         </div>
         <div className="flex flex-col items-center gap-2">
-          <span className="font-extrabold text-xl tracking-tighter text-white">
+          <span className="font-extrabold text-xl tracking-tighter text-foreground">
             J들의 <span className="text-primary">놀이터</span>
           </span>
           <div className="flex items-center gap-1.5">

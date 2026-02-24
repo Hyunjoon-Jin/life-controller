@@ -552,7 +552,7 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
 
             {/* Manage Shortcuts Dialog */}
             <Dialog open={isManageDialogOpen} onOpenChange={setIsManageDialogOpen}>
-                <DialogContent className="max-w-lg bg-[#111827] border border-white/10 text-white">
+                <DialogContent className="max-w-lg bg-modal border border-border text-foreground">
                     <DialogHeader>
                         <DialogTitle>내 서비스 관리</DialogTitle>
                         <DialogDescription>
@@ -570,24 +570,24 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
                                         "flex flex-col items-center justify-center gap-2 p-3 rounded-2xl border-2 transition-all relative",
                                         isSelected
                                             ? "border-primary bg-primary/15"
-                                            : "border-white/10 bg-white/5 hover:bg-white/10"
+                                            : "border-border bg-muted/50 hover:bg-muted"
                                     )}
                                 >
                                     {isSelected && (
-                                        <div className="absolute top-2 right-2 w-5 h-5 bg-primary text-white rounded-full flex items-center justify-center text-xs">
+                                        <div className="absolute top-2 right-2 w-5 h-5 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xs">
                                             <CheckSquare className="w-3 h-3" />
                                         </div>
                                     )}
-                                    <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center", isSelected ? "bg-primary/20" : "bg-white/10")}>
-                                        <item.icon className={cn("w-5 h-5", isSelected ? "text-primary" : "text-white/60")} />
+                                    <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center", isSelected ? "bg-primary/20" : "bg-muted")}>
+                                        <item.icon className={cn("w-5 h-5", isSelected ? "text-primary" : "text-muted-foreground")} />
                                     </div>
-                                    <span className={cn("text-xs font-medium", isSelected ? "text-primary" : "text-white/70")}>{item.label}</span>
+                                    <span className={cn("text-xs font-medium", isSelected ? "text-primary" : "text-muted-foreground")}>{item.label}</span>
                                 </button>
                             );
                         })}
                     </div>
                     <DialogFooter>
-                        <Button variant="outline" className="border-white/20 text-white/70 hover:text-white hover:bg-white/10" onClick={() => setIsManageDialogOpen(false)}>취소</Button>
+                        <Button variant="outline" className="border-border text-muted-foreground hover:text-foreground hover:bg-muted" onClick={() => setIsManageDialogOpen(false)}>취소</Button>
                         <Button onClick={handleSaveShortcuts}>저장하기</Button>
                     </DialogFooter>
                 </DialogContent>
