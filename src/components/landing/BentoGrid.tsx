@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { Calendar, Target, Activity, DollarSign, Sparkles, Briefcase, Zap } from 'lucide-react';
+import { Calendar, Target, Activity, DollarSign, Sparkles, Briefcase, Zap, GraduationCap, Clock } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 interface BentoGridProps {
@@ -121,6 +121,38 @@ export function BentoVisuals() {
                     <span className="text-[8px] text-blue-400">수분</span>
                 </div>
             </div>
-        )
+        ),
+        Study: (
+            <div className="flex flex-col gap-2 p-4 justify-end">
+                {[
+                    { label: '알고리즘', w: 72, color: 'bg-indigo-400' },
+                    { label: '영어 단어', w: 55, color: 'bg-violet-400' },
+                    { label: '자격증', w: 34, color: 'bg-emerald-400' },
+                ].map(s => (
+                    <div key={s.label} className="flex items-center gap-2">
+                        <span className="text-[7px] font-bold text-slate-400 w-10 shrink-0 text-right">{s.label}</span>
+                        <div className="flex-1 h-1.5 bg-slate-200/40 rounded-full overflow-hidden">
+                            <div className={cn('h-full rounded-full', s.color)} style={{ width: `${s.w}%` }} />
+                        </div>
+                    </div>
+                ))}
+            </div>
+        ),
+        Project: (
+            <div className="p-4 flex flex-col gap-2 justify-end">
+                {[
+                    { label: '기획', w: '100%', color: 'bg-purple-400' },
+                    { label: '디자인', w: '75%', color: 'bg-purple-300' },
+                    { label: '개발', w: '45%', color: 'bg-purple-200' },
+                ].map(s => (
+                    <div key={s.label} className="flex items-center gap-2">
+                        <span className="text-[7px] font-bold text-slate-400 w-8 shrink-0 text-right">{s.label}</span>
+                        <div className="flex-1 h-2 bg-purple-100/30 rounded-full overflow-hidden">
+                            <div className={cn('h-full rounded-full', s.color)} style={{ width: s.w }} />
+                        </div>
+                    </div>
+                ))}
+            </div>
+        ),
     };
 }

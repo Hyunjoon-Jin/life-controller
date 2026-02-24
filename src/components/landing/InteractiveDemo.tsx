@@ -17,7 +17,7 @@ const DEMO_TABS = [
     { id: 'goals', label: '목표', icon: Target, color: 'green' },
     { id: 'finance', label: '경제', icon: DollarSign, color: 'emerald' },
     { id: 'health', label: '건강', icon: Activity, color: 'rose' },
-    { id: 'team', label: '팀', icon: Users, color: 'purple' },
+    { id: 'study', label: '학습', icon: GraduationCap, color: 'indigo' },
     { id: 'ideas', label: '아이디어', icon: Lightbulb, color: 'amber' },
 ] as const;
 
@@ -57,6 +57,19 @@ const INITIAL_HABITS = [
     { id: '2', name: '운동', icon: '🏃', streak: 7, done: true },
     { id: '3', name: '명상', icon: '🧘', streak: 0, done: false },
 ];
+
+const INITIAL_STUDY_SUBJECTS = [
+    { id: '1', name: '알고리즘', barColor: 'bg-blue-500', pct: 72, sessions: 8 },
+    { id: '2', name: '영어 단어', barColor: 'bg-violet-500', pct: 55, sessions: 12 },
+    { id: '3', name: '자격증 준비', barColor: 'bg-emerald-500', pct: 34, sessions: 5 },
+];
+
+const WEEK_DAYS = ['월', '화', '수', '목', '금', '토', '일'];
+// jsDay: 0=Sun,1=Mon...6=Sat → index 0=Mon…6=Sun
+function getTodayWeekIdx() {
+    const d = new Date().getDay();
+    return d === 0 ? 6 : d - 1;
+}
 
 // ─── Helper ──────────────────────────────────────────────────────────────────
 function generateSubText(title: string, progress: number): string {
@@ -99,6 +112,29 @@ export function InteractiveDemo() {
     const [healthStats, setHealthStats] = useState({ calories: 0, water: 0, workouts: 0 });
     const [teamTasks, setTeamTasks] = useState(INITIAL_TEAM_TASKS.map(t => ({ ...t })));
     const [habitItems, setHabitItems] = useState(INITIAL_HABITS.map(h => ({ ...h })));
+    // Study / Pomodoro
+    const [studySubject, setStudySubject] = useState('알고리즘');
+    const [pomodoroRunning, setPomodoroRunning] = useState(false);
+    const [pomodoroTime, setPomodoroTime] = useState(25 * 60);
+    const [studySubjects] = useState(INITIAL_STUDY_SUBJECTS.map(s => ({ ...s })));
+    const todayIdx = getTodayWeekIdx();
+
+    // Pomodoro Timer
+    useEffect(() => {
+        if (!pomodoroRunning) return;
+        const interval = setInterval(() => {
+            setPomodoroTime(t => (t <= 1 ? 0 : t - 1));
+        }, 1000);
+        return () => clearInterval(interval);
+    }, [pomodoroRunning]);
+
+    useEffect(() => {
+        if (pomodoroTime === 0 && pomodoroRunning) {
+            setPomodoroRunning(false);
+            toast('🍅 포모도로 완료! 5분 휴식하세요.');
+            setPomodoroTime(25 * 60);
+        }
+    }, [pomodoroTime, pomodoroRunning]);
 
     // ─── Derived values ───────────────────────────────────────────────────────
     const doneCount = tasks.filter(t => t.done).length;
@@ -252,6 +288,9 @@ export function InteractiveDemo() {
                         setNotes(INITIAL_NOTES.map(n => ({ ...n })));
                         setTeamTasks(INITIAL_TEAM_TASKS.map(t => ({ ...t })));
                         setHabitItems(INITIAL_HABITS.map(h => ({ ...h })));
+                        setPomodoroRunning(false);
+                        setPomodoroTime(25 * 60);
+                        setStudySubject('알고리즘');
                         toast('데모가 초기화되었습니다.');
                     }}
                     className="absolute top-6 right-6 text-xs font-bold text-muted-foreground hover:text-blue-500 transition-colors z-10"
@@ -284,23 +323,62 @@ export function InteractiveDemo() {
                             {activeTab === 'schedule' && (
                                 <motion.div
                                     key="sc-input" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
-                                    className="space-y-6"
+                                    className="space-y-5"
                                 >
-                                    <div className="space-y-2">
-                                        <h4 className="text-2xl font-black text-slate-900 dark:text-white">실제처럼 기록해보세요</h4>
-                                        <p className="text-sm text-slate-500 font-medium">데모 화면에 할 일을 추가하고 체크해보세요. (좌우로 스와이프하여 메뉴 전환)</p>
+                                    <div className="space-y-1">
+                                        <h4 className="text-2xl font-black text-slate-900 dark:text-white">일정을 직접 관리해보세요</h4>
+                                        <p className="text-sm text-slate-500 font-medium">할 일을 추가하고 오른쪽 화면에서 드래그로 순서를 바꿔보세요.</p>
                                     </div>
+
+                                    {/* Mini weekly calendar */}
+                                    <div className="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-2xl">
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">이번 주</p>
+                                        <div className="flex gap-1">
+                                            {WEEK_DAYS.map((day, i) => {
+                                                const isToday = i === todayIdx;
+                                                const taskCount = tasks.filter(t => !t.done).length;
+                                                const hasDot = i === todayIdx && taskCount > 0;
+                                                return (
+                                                    <div key={day} className={cn(
+                                                        'flex-1 flex flex-col items-center gap-1 py-2 rounded-xl text-center transition-all',
+                                                        isToday ? 'bg-blue-600' : 'hover:bg-slate-100 dark:hover:bg-slate-700'
+                                                    )}>
+                                                        <span className={cn('text-[9px] font-black', isToday ? 'text-white' : 'text-slate-400')}>{day}</span>
+                                                        <div className={cn('w-1.5 h-1.5 rounded-full', hasDot ? 'bg-white/70' : (i < todayIdx ? 'bg-blue-300' : 'bg-transparent'))} />
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+
+                                    {/* Task stats */}
+                                    <div className="flex gap-3">
+                                        <div className="flex-1 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-2xl text-center">
+                                            <p className="text-xl font-black text-blue-600">{tasks.filter(t => t.done).length}<span className="text-sm text-blue-400">/{tasks.length}</span></p>
+                                            <p className="text-[10px] font-bold text-slate-400">오늘 완료</p>
+                                        </div>
+                                        <div className="flex-1 p-3 bg-amber-50 dark:bg-amber-900/20 rounded-2xl text-center">
+                                            <p className="text-xl font-black text-amber-500">{habitItems.filter(h => h.done).length}<span className="text-sm text-amber-400">/{habitItems.length}</span></p>
+                                            <p className="text-[10px] font-bold text-slate-400">습관 완료</p>
+                                        </div>
+                                        <div className="flex-1 p-3 bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl text-center">
+                                            <p className="text-xl font-black text-emerald-500">🔥{Math.max(...habitItems.map(h => h.streak))}</p>
+                                            <p className="text-[10px] font-bold text-slate-400">최장 스트릭</p>
+                                        </div>
+                                    </div>
+
+                                    {/* Add task */}
                                     <div className="flex gap-2">
                                         <input
                                             type="text"
                                             value={newTask}
                                             onChange={(e) => setNewTask(e.target.value)}
                                             onKeyDown={(e) => e.key === 'Enter' && addTask()}
-                                            placeholder="할 일을 입력하세요 (예: 비타민 챙겨먹기)"
-                                            className="flex-1 h-14 px-4 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl text-sm font-bold outline-none ring-2 ring-transparent focus:ring-blue-500 transition-all"
+                                            placeholder="할 일 추가 (예: 프로젝트 기획서 작성)"
+                                            className="flex-1 h-12 px-4 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl text-sm font-bold outline-none ring-2 ring-transparent focus:ring-blue-500 transition-all"
                                         />
-                                        <Button onClick={addTask} size="icon" className="w-14 h-14 rounded-2xl bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-500/20">
-                                            <Plus className="w-6 h-6" />
+                                        <Button onClick={addTask} size="icon" className="w-12 h-12 rounded-2xl bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-500/20">
+                                            <Plus className="w-5 h-5" />
                                         </Button>
                                     </div>
                                 </motion.div>
@@ -419,37 +497,73 @@ export function InteractiveDemo() {
                                 </motion.div>
                             )}
 
-                            {/* ── Team Input ── */}
-                            {activeTab === 'team' && (
-                                <motion.div key="tm-input" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-6">
-                                    <div className="space-y-2">
-                                        <h4 className="text-2xl font-black text-slate-900 dark:text-white">팀원의 작업 상태를 업데이트하세요</h4>
-                                        <p className="text-sm text-slate-500 font-medium">카드를 클릭하여 완료 여부를 토글해보세요.</p>
+                            {/* ── Study Input ── */}
+                            {activeTab === 'study' && (
+                                <motion.div key="st-input" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-5">
+                                    <div className="space-y-1">
+                                        <h4 className="text-2xl font-black text-slate-900 dark:text-white">집중 학습 세션</h4>
+                                        <p className="text-sm text-slate-500 font-medium">과목을 선택하고 포모도로 타이머를 시작해보세요.</p>
                                     </div>
-                                    <div className="space-y-3">
-                                        {teamTasks.map(t => (
-                                            <button
-                                                key={t.id}
-                                                onClick={() => toggleTeamTask(t.id)}
-                                                className={cn(
-                                                    "w-full flex items-center gap-4 p-4 rounded-2xl border-2 transition-all text-left",
-                                                    t.done
-                                                        ? "bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-700"
-                                                        : "bg-slate-50 dark:bg-slate-800/50 border-transparent hover:border-slate-200 dark:hover:border-slate-600"
-                                                )}
-                                            >
-                                                <div className={cn("w-9 h-9 rounded-full flex items-center justify-center text-white font-black text-sm shrink-0", t.color)}>
-                                                    {t.avatar}
+
+                                    {/* Subject Selection */}
+                                    <div className="space-y-2">
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">과목 선택</p>
+                                        <div className="flex flex-wrap gap-2">
+                                            {studySubjects.map(s => (
+                                                <button
+                                                    key={s.id}
+                                                    onClick={() => setStudySubject(s.name)}
+                                                    className={cn(
+                                                        'px-4 py-2 rounded-xl text-xs font-black transition-all border-2',
+                                                        studySubject === s.name
+                                                            ? cn(s.barColor.replace('bg-', 'bg-'), 'text-white border-transparent shadow-md')
+                                                            : 'bg-slate-50 dark:bg-slate-800 text-slate-500 border-slate-100 dark:border-slate-700 hover:border-slate-300'
+                                                    )}
+                                                >
+                                                    {s.name}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Pomodoro Button */}
+                                    <div className="space-y-2">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-sm font-black text-slate-700 dark:text-slate-300">
+                                                {studySubject} · {Math.floor(pomodoroTime / 60)}:{String(pomodoroTime % 60).padStart(2, '0')}
+                                            </span>
+                                            <span className={cn('text-xs font-black', pomodoroRunning ? 'text-rose-500' : 'text-slate-400')}>
+                                                {pomodoroRunning ? '🍅 집중 중' : '준비 완료'}
+                                            </span>
+                                        </div>
+                                        <Button
+                                            onClick={() => {
+                                                if (!pomodoroRunning) setPomodoroTime(25 * 60);
+                                                setPomodoroRunning(!pomodoroRunning);
+                                                if (!pomodoroRunning) toast(`${studySubject} 포모도로 시작! 🍅 25분 집중하세요.`);
+                                            }}
+                                            className={cn(
+                                                'w-full h-14 rounded-2xl font-black text-white transition-all',
+                                                pomodoroRunning
+                                                    ? 'bg-rose-500 hover:bg-rose-600'
+                                                    : 'bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-500/20'
+                                            )}
+                                        >
+                                            {pomodoroRunning ? '⏸ 일시정지' : '▶ 포모도로 시작 (25분)'}
+                                        </Button>
+                                    </div>
+
+                                    {/* Exam D-day */}
+                                    <div className="p-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-2xl space-y-2">
+                                        <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">📅 시험 D-day</p>
+                                        <div className="flex gap-3">
+                                            {[{ label: 'TOEIC', days: 12 }, { label: '정보처리기사', days: 30 }].map(exam => (
+                                                <div key={exam.label} className="flex-1 text-center p-2.5 bg-white dark:bg-indigo-900/40 rounded-xl shadow-sm">
+                                                    <p className="text-base font-black text-indigo-600 dark:text-indigo-400">D-{exam.days}</p>
+                                                    <p className="text-[9px] text-slate-500 font-bold mt-0.5">{exam.label}</p>
                                                 </div>
-                                                <div className="flex-1 min-w-0">
-                                                    <p className="text-xs font-black text-slate-400">{t.member}</p>
-                                                    <p className={cn("text-sm font-bold truncate", t.done ? "line-through text-slate-400" : "text-slate-700 dark:text-slate-200")}>{t.task}</p>
-                                                </div>
-                                                <div className={cn("w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors", t.done ? "bg-emerald-500 border-emerald-500" : "border-slate-300")}>
-                                                    {t.done && <CheckCircle2 className="w-3 h-3 text-white" />}
-                                                </div>
-                                            </button>
-                                        ))}
+                                            ))}
+                                        </div>
                                     </div>
                                 </motion.div>
                             )}
@@ -702,44 +816,73 @@ export function InteractiveDemo() {
                                 </motion.div>
                             )}
 
-                            {/* ── Team Preview ── */}
-                            {activeTab === 'team' && (
-                                <motion.div key="tm-preview" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className={cn("space-y-4", frameMode === 'tablet' && "col-span-2")}>
+                            {/* ── Study Preview ── */}
+                            {activeTab === 'study' && (
+                                <motion.div key="st-preview" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className={cn("space-y-4", frameMode === 'tablet' && "col-span-2")}>
                                     <div className="space-y-1">
-                                        <h5 className="text-xs font-black text-slate-400 uppercase tracking-widest">팀 현황</h5>
-                                        <p className="text-xl font-black text-slate-900 dark:text-white">오늘의 팀 달성률</p>
+                                        <h5 className="text-xs font-black text-slate-400 uppercase tracking-widest">학습 대시보드</h5>
+                                        <p className="text-xl font-black text-slate-900 dark:text-white">이번 주 14h 30min</p>
                                     </div>
-                                    <div className="p-4 bg-violet-600 rounded-[24px] text-white">
-                                        <p className="text-[10px] font-black uppercase opacity-60 mb-1">팀 전체 달성률</p>
-                                        <div className="flex items-center justify-between">
-                                            <span className="text-3xl font-black">{teamAchievement}%</span>
-                                            <div className="flex -space-x-2">
-                                                {teamTasks.map(t => (
-                                                    <div key={t.id} className={cn("w-8 h-8 rounded-full border-2 border-violet-600 flex items-center justify-center text-white font-black text-xs", t.color)}>
-                                                        {t.avatar}
-                                                    </div>
-                                                ))}
+
+                                    {/* Pomodoro Timer Circle */}
+                                    <div className="flex justify-center">
+                                        <div className="relative w-28 h-28">
+                                            <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
+                                                <circle cx="50" cy="50" r="44" fill="none" stroke={pomodoroRunning ? '#c7d2fe' : '#f1f5f9'} strokeWidth="8" />
+                                                <motion.circle
+                                                    cx="50" cy="50" r="44"
+                                                    fill="none"
+                                                    stroke={pomodoroRunning ? '#6366f1' : '#94a3b8'}
+                                                    strokeWidth="8"
+                                                    strokeLinecap="round"
+                                                    strokeDasharray={276.46}
+                                                    animate={{ strokeDashoffset: 276.46 * (1 - pomodoroTime / (25 * 60)) }}
+                                                    transition={{ duration: 0.5 }}
+                                                />
+                                            </svg>
+                                            <div className="absolute inset-0 flex flex-col items-center justify-center">
+                                                <span className="text-base font-black text-slate-900 dark:text-white">
+                                                    {Math.floor(pomodoroTime / 60)}:{String(pomodoroTime % 60).padStart(2, '0')}
+                                                </span>
+                                                <span className="text-[9px] text-slate-400 font-bold">🍅 FOCUS</span>
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="space-y-2">
-                                        {teamTasks.map(t => (
-                                            <div key={t.id} className={cn(
-                                                "flex items-center gap-3 p-3 rounded-2xl transition-all",
-                                                t.done ? "bg-emerald-50 dark:bg-emerald-900/20" : "bg-white dark:bg-slate-800/60 border border-slate-100 dark:border-white/10"
-                                            )}>
-                                                <div className={cn("w-8 h-8 rounded-full flex items-center justify-center text-white font-black text-xs shrink-0", t.color)}>
-                                                    {t.avatar}
+
+                                    {/* Subject Progress */}
+                                    <div className="p-3 bg-white dark:bg-slate-800/80 rounded-[20px] border border-slate-100 dark:border-white/10 space-y-3">
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">과목별 진행률</p>
+                                        {studySubjects.map(s => (
+                                            <div key={s.id} className="space-y-1">
+                                                <div className="flex justify-between text-[10px] font-bold">
+                                                    <span className={cn('font-black', studySubject === s.name ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-500')}>{s.name}</span>
+                                                    <span className="text-slate-400">{s.pct}%</span>
                                                 </div>
-                                                <div className="flex-1 min-w-0">
-                                                    <p className="text-[10px] font-black text-slate-400">{t.member}</p>
-                                                    <p className={cn("text-xs font-bold truncate", t.done ? "line-through text-slate-400" : "text-slate-700 dark:text-slate-200")}>{t.task}</p>
-                                                </div>
-                                                <div className={cn("shrink-0 text-[10px] font-black", t.done ? "text-emerald-500" : "text-slate-300")}>
-                                                    {t.done ? '완료' : '진행중'}
+                                                <div className="h-1.5 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                                                    <motion.div
+                                                        className={cn('h-full rounded-full', s.barColor)}
+                                                        animate={{ width: `${s.pct}%` }}
+                                                        transition={{ duration: 0.5 }}
+                                                    />
                                                 </div>
                                             </div>
                                         ))}
+                                    </div>
+
+                                    {/* Streak + Sessions */}
+                                    <div className="flex gap-2">
+                                        <div className="flex-1 p-3 bg-amber-50 dark:bg-amber-900/20 rounded-2xl text-center">
+                                            <p className="text-base font-black text-amber-500">🔥 8일</p>
+                                            <p className="text-[9px] text-slate-400 font-bold mt-0.5">연속 학습</p>
+                                        </div>
+                                        <div className="flex-1 p-3 bg-indigo-50 dark:bg-indigo-900/20 rounded-2xl text-center">
+                                            <p className="text-base font-black text-indigo-600">{studySubjects.reduce((a, s) => a + s.sessions, 0)}회</p>
+                                            <p className="text-[9px] text-slate-400 font-bold mt-0.5">이번달 세션</p>
+                                        </div>
+                                        <div className="flex-1 p-3 bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl text-center">
+                                            <p className="text-base font-black text-emerald-600">D-12</p>
+                                            <p className="text-[9px] text-slate-400 font-bold mt-0.5">TOEIC</p>
+                                        </div>
                                     </div>
                                 </motion.div>
                             )}

@@ -9,7 +9,8 @@ import {
     Calendar, Target, Activity, DollarSign,
     Sparkles, ChevronRight, Zap,
     Shield, Globe, Heart, Star,
-    CheckCircle2, TrendingUp
+    CheckCircle2, TrendingUp, GraduationCap, Briefcase, BookOpen,
+    Clock, Users
 } from 'lucide-react';
 import { BentoGrid, BentoCard, BentoVisuals } from './BentoGrid';
 import { InteractiveDemo } from './InteractiveDemo';
@@ -30,6 +31,53 @@ const jsonLd = {
     },
     "description": "인생과 업무의 균형을 위한 올인원 생산성 도구."
 };
+
+const MODES = [
+    {
+        id: 'life',
+        label: '일상 모드',
+        icon: Sparkles,
+        desc: '하루를 체계적으로 설계하는 기본 워크스페이스',
+        features: ['오늘의 일정 & 드래그 시간 배치', '습관 스트릭 & 반복 루틴 관리', '가계부 & 순자산 현황 추적', '인바디 · 식단 · 운동 기록'],
+        accent: 'text-emerald-400',
+        bg: 'bg-emerald-500/10',
+        border: 'border-emerald-500/20',
+        glow: 'bg-emerald-500',
+    },
+    {
+        id: 'study',
+        label: '학습 모드',
+        icon: GraduationCap,
+        desc: '시험·자격증·자기계발을 위한 집중 학습 환경',
+        features: ['포모도로 타이머 & 집중 세션', '과목별 학습 진도 시각화', '시험 D-day 카운트다운', '독서 · 언어 학습 · 자격증 기록'],
+        accent: 'text-indigo-400',
+        bg: 'bg-indigo-500/10',
+        border: 'border-indigo-500/20',
+        glow: 'bg-indigo-500',
+    },
+    {
+        id: 'work',
+        label: '업무 모드',
+        icon: Briefcase,
+        desc: '팀 프로젝트와 업무 효율을 극대화하는 전문가 모드',
+        features: ['칸반 보드 & 프로젝트 관리', '팀 협업 & 업무 배분', '업무 시간 추적기 (타임로그)', '주간 보고서 자동 생성'],
+        accent: 'text-purple-400',
+        bg: 'bg-purple-500/10',
+        border: 'border-purple-500/20',
+        glow: 'bg-purple-500',
+    },
+    {
+        id: 'ambition',
+        label: '야망 모드',
+        icon: Target,
+        desc: '큰 꿈을 현실로 만드는 장기 목표 관리 특화 모드',
+        features: ['OKR 목표 & 핵심 결과 트리', '포트폴리오 & 이력 정리', '자격증 취득 로드맵', 'AI 기반 성과 분석 리포트'],
+        accent: 'text-amber-400',
+        bg: 'bg-amber-500/10',
+        border: 'border-amber-500/20',
+        glow: 'bg-amber-500',
+    },
+];
 
 export function LandingPage() {
     const [scrollProgress, setScrollProgress] = useState(0);
@@ -111,7 +159,7 @@ export function LandingPage() {
                     className="absolute top-0 w-0.5 bg-blue-600 -z-10"
                     style={{ height: `${scrollProgress}%` }}
                 />
-                {[0, 25, 50, 75, 100].map((p, i) => (
+                {[0, 17, 34, 51, 68, 85].map((p, i) => (
                     <div
                         key={p}
                         onClick={() => {
@@ -267,12 +315,12 @@ export function LandingPage() {
             {/* ── 2. Bento Grid Features ── */}
             <section data-snap="true" className="h-screen snap-start flex flex-col justify-center px-6 overflow-hidden pt-20">
                 <div className="container mx-auto max-w-6xl h-full flex flex-col justify-center">
-                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 shrink-0">
+                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6 shrink-0">
                         <div className="max-w-xl">
-                            <h2 className="text-2xl md:text-4xl font-black tracking-tight mb-3">
+                            <h2 className="text-2xl md:text-4xl font-black tracking-tight mb-2">
                                 기능 하나하나가 <br /> <span className="text-blue-600">혁신적인</span> 이유
                             </h2>
-                            <p className="text-base font-medium text-slate-500">
+                            <p className="text-sm font-medium text-slate-500">
                                 단조로운 할 일 목록이 아닙니다. 데이터가 연결되고 성장이 가시화되는 진짜 도구입니다.
                             </p>
                         </div>
@@ -280,49 +328,136 @@ export function LandingPage() {
 
                     <div className="flex-1 min-h-0">
                         <BentoGrid className="h-full">
+                            {/* C1: col-span-2 row-span-2 */}
                             <BentoCard
                                 title="스마트 스케줄러"
-                                description="일정과 할 일을 한눈에 관리하고 드래그하여 시간을 배치하세요."
+                                description="월·주·일 캘린더를 자유롭게 전환하고 드래그로 시간 블록을 배치하세요. 습관 스트릭, 우선순위 설정, 반복 알림까지 — 아무것도 놓치지 않는 하루 설계."
                                 icon={Calendar}
                                 className="md:col-span-2 md:row-span-2"
                                 visual={visuals.Calendar}
-                                delay={0.1}
+                                delay={0.05}
                             />
+                            {/* C2: col-span-2 */}
                             <BentoCard
-                                title="목표 & OKR"
-                                description="큰 꿈을 작은 행동으로 쪼개어 실현 가능한 계획으로 만듭니다."
+                                title="목표 & OKR 트리"
+                                description="큰 꿈을 측정 가능한 핵심 결과(KR)로 분해합니다. 상위 목표가 달성될수록 하위 지표가 자동 연산되고, 달성 히스토리가 타임라인으로 기록됩니다."
                                 icon={Target}
                                 colorClassName="bg-emerald-50 dark:bg-emerald-900/30"
                                 iconClassName="text-emerald-600 dark:text-emerald-400"
                                 className="md:col-span-2"
                                 visual={visuals.Target}
-                                delay={0.2}
+                                delay={0.1}
                             />
+                            {/* C3: 1 cell */}
                             <BentoCard
                                 title="전방위 자산 관리"
-                                description="가계부, 자산, 투자 수익률까지 하나의 대시보드에서."
+                                description="가계부부터 부동산·투자 수익률까지. 순자산 변화 그래프와 저축 목표를 한 화면에서 추적합니다."
                                 icon={DollarSign}
                                 colorClassName="bg-purple-50 dark:bg-purple-900/30"
                                 iconClassName="text-purple-600 dark:text-purple-400"
                                 visual={visuals.Finance}
-                                delay={0.3}
+                                delay={0.15}
                             />
+                            {/* C4: 1 cell */}
                             <BentoCard
                                 title="통합 건강 기록"
-                                description="운동, 식단, 인바디 변화를 기록하고 신체 변화를 분석하세요."
+                                description="운동 세션, 인바디, 식단, 수분 섭취를 모두 기록하고 신체 변화를 그래프로 가시화합니다."
                                 icon={Activity}
                                 colorClassName="bg-rose-50 dark:bg-rose-900/30"
                                 iconClassName="text-rose-600 dark:text-rose-400"
-                                className="md:col-span-2"
                                 visual={visuals.Health}
-                                delay={0.4}
+                                delay={0.2}
+                            />
+                            {/* C5: col-span-2 */}
+                            <BentoCard
+                                title="학습 플래너 & 포모도로"
+                                description="독서, 언어, 자격증 학습 진도를 과목별로 추적합니다. 포모도로 타이머와 시험 D-day 카운터로 집중력을 극대화하세요."
+                                icon={GraduationCap}
+                                colorClassName="bg-indigo-50 dark:bg-indigo-900/30"
+                                iconClassName="text-indigo-600 dark:text-indigo-400"
+                                className="md:col-span-2"
+                                visual={visuals.Study}
+                                delay={0.25}
+                            />
+                            {/* C6: col-span-2 */}
+                            <BentoCard
+                                title="프로젝트 & 협업"
+                                description="칸반 보드, 간트 차트, 팀 업무 배분까지. 업무 시간 추적기와 주간 보고서 자동 생성으로 생산성을 극대화합니다."
+                                icon={Briefcase}
+                                colorClassName="bg-violet-50 dark:bg-violet-900/30"
+                                iconClassName="text-violet-600 dark:text-violet-400"
+                                className="md:col-span-2"
+                                visual={visuals.Project}
+                                delay={0.3}
                             />
                         </BentoGrid>
                     </div>
                 </div>
             </section>
 
-            {/* ── 3. Interactive Demo ── */}
+            {/* ── 3. 4 Modes ── */}
+            <section data-snap="true" className="h-screen snap-start flex flex-col justify-center px-6 bg-slate-900 overflow-hidden pt-20">
+                <div className="container mx-auto max-w-6xl h-full flex flex-col justify-center gap-6">
+                    {/* Header */}
+                    <div className="text-center shrink-0">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-emerald-400 text-[10px] font-black uppercase tracking-widest mb-4">
+                            <Sparkles className="w-3 h-3" /> 4가지 전문 모드
+                        </div>
+                        <h2 className="text-2xl md:text-4xl font-black tracking-tight text-white mb-2">
+                            상황에 맞는 <span className="text-emerald-400">전문 워크스페이스</span>
+                        </h2>
+                        <p className="text-slate-400 font-medium text-sm max-w-xl mx-auto">
+                            버튼 하나로 UI와 기능 세트가 자동 전환됩니다. 학습할 땐 학습에, 일할 땐 업무에 — 오직 지금 중요한 것에만 집중하세요.
+                        </p>
+                    </div>
+
+                    {/* Mode Cards */}
+                    <div className="flex-1 min-h-0 grid grid-cols-2 lg:grid-cols-4 gap-4">
+                        {MODES.map((mode, i) => (
+                            <motion.div
+                                key={mode.id}
+                                initial={{ opacity: 0, y: 24 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.5, delay: i * 0.08 }}
+                                className={cn(
+                                    'relative p-5 rounded-[28px] border flex flex-col gap-4 overflow-hidden',
+                                    mode.bg, mode.border
+                                )}
+                            >
+                                {/* Icon + Label */}
+                                <div className="flex items-center gap-3">
+                                    <div className={cn('w-11 h-11 rounded-2xl flex items-center justify-center shrink-0', mode.bg, 'border', mode.border)}>
+                                        <mode.icon className={cn('w-5 h-5', mode.accent)} />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-base font-black text-white leading-tight">{mode.label}</h3>
+                                        <p className={cn('text-[10px] font-bold uppercase tracking-wider', mode.accent)}>Mode</p>
+                                    </div>
+                                </div>
+
+                                {/* Desc */}
+                                <p className="text-xs text-slate-400 font-medium leading-relaxed">{mode.desc}</p>
+
+                                {/* Features */}
+                                <ul className="space-y-2 flex-1">
+                                    {mode.features.map((f, j) => (
+                                        <li key={j} className="flex items-start gap-2 text-xs font-medium text-slate-300">
+                                            <CheckCircle2 className={cn('w-3.5 h-3.5 mt-0.5 shrink-0', mode.accent)} />
+                                            {f}
+                                        </li>
+                                    ))}
+                                </ul>
+
+                                {/* Background glow */}
+                                <div className={cn('absolute -bottom-10 -right-10 w-28 h-28 rounded-full blur-2xl opacity-15', mode.glow)} />
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* ── 4. Interactive Demo ── */}
             <section data-snap="true" className="h-screen snap-start flex flex-col justify-center px-6 bg-slate-50 overflow-hidden pt-20">
                 <div className="container mx-auto h-full flex flex-col justify-center gap-4">
                     <div className="text-center shrink-0 space-y-1">
@@ -345,12 +480,12 @@ export function LandingPage() {
                 </div>
             </section>
 
-            {/* ── 4. Pricing & FAQ ── */}
+            {/* ── 5. Pricing & FAQ ── */}
             <section data-snap="true" className="h-screen snap-start flex flex-col justify-center overflow-hidden pt-20">
                 <PricingAndFAQ mode="life" />
             </section>
 
-            {/* ── 5. Final CTA + Footer ── */}
+            {/* ── 6. Final CTA + Footer ── */}
             <section data-snap="true" className="h-screen snap-start flex flex-col bg-white overflow-hidden pt-20">
                 {/* Final CTA */}
                 <div className="flex-1 flex flex-col items-center justify-center gap-6 px-6 text-center">
