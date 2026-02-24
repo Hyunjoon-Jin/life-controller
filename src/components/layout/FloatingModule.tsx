@@ -60,7 +60,7 @@ export function FloatingModule({ onOpenGuide }: { onOpenGuide?: () => void }) {
     ];
 
     return (
-        <div className="fixed bottom-24 right-6 md:bottom-8 md:right-8 z-50 flex flex-col items-end gap-4">
+        <div className="fixed bottom-[calc(96px+env(safe-area-inset-bottom,0px))] right-4 md:bottom-8 md:right-8 z-50 flex flex-col items-end gap-4">
             {/* Sub Buttons (Stacked above) */}
             <AnimatePresence>
                 {isOpen && (
@@ -82,7 +82,7 @@ export function FloatingModule({ onOpenGuide }: { onOpenGuide?: () => void }) {
                                 <motion.span
                                     initial={{ opacity: 0, x: 10 }}
                                     animate={{ opacity: 1, x: 0 }}
-                                    className="glass-premium px-3 py-1.5 rounded-xl border border-white/10 text-[10px] font-black text-white/70 uppercase tracking-widest shadow-xl pointer-events-none group-hover/item:text-white transition-colors"
+                                    className="[@media(max-width:360px)]:hidden glass-premium px-3 py-1.5 rounded-xl border border-white/10 text-[10px] font-black text-white/70 uppercase tracking-widest shadow-xl pointer-events-none group-hover/item:text-white transition-colors"
                                 >
                                     {item.label}
                                 </motion.span>
@@ -114,7 +114,7 @@ export function FloatingModule({ onOpenGuide }: { onOpenGuide?: () => void }) {
                     "h-14 rounded-[22px] shadow-[0_20px_40px_-5px_rgba(0,0,0,0.5)] transition-all duration-500 group relative overflow-hidden border-2",
                     isOpen
                         ? "w-14 bg-white/10 border-white/20 backdrop-blur-xl"
-                        : "w-[120px] bg-indigo-600 hover:bg-indigo-700 border-indigo-500/50 hover:shadow-[0_0_30px_rgba(79,70,229,0.4)]"
+                        : "w-14 sm:w-[120px] bg-indigo-600 hover:bg-indigo-700 border-indigo-500/50 hover:shadow-[0_0_30px_rgba(79,70,229,0.4)]"
                 )}
             >
                 {/* Kinetic Background Glow */}
@@ -141,7 +141,7 @@ export function FloatingModule({ onOpenGuide }: { onOpenGuide?: () => void }) {
                             className="flex items-center gap-2"
                         >
                             <Zap className="w-5 h-5 text-white animate-pulse" />
-                            <span className="text-[11px] font-black uppercase tracking-widest text-white">부가기능</span>
+                            <span className="hidden sm:inline text-[11px] font-black uppercase tracking-widest text-white">부가기능</span>
                         </motion.div>
                     )}
                 </AnimatePresence>
@@ -182,7 +182,7 @@ export function FloatingModule({ onOpenGuide }: { onOpenGuide?: () => void }) {
                             <div className="relative group">
                                 <div className="absolute inset-0 bg-amber-500/5 blur-2xl rounded-3xl opacity-0 group-focus-within:opacity-100 transition-opacity" />
                                 <textarea
-                                    className="relative w-full h-[400px] bg-white/[0.03] border border-white/10 rounded-[24px] p-6 text-[15px] font-medium leading-relaxed text-white/80 focus:outline-none focus:border-amber-500/40 focus:ring-4 focus:ring-amber-500/5 transition-all resize-none shadow-inner custom-scrollbar placeholder:text-white/10"
+                                    className="relative w-full h-[200px] sm:h-[350px] bg-white/[0.03] border border-white/10 rounded-[24px] p-5 sm:p-6 text-[15px] font-medium leading-relaxed text-white/80 focus:outline-none focus:border-amber-500/40 focus:ring-4 focus:ring-amber-500/5 transition-all resize-none shadow-inner custom-scrollbar placeholder:text-white/10"
                                     placeholder="전역적으로 공유될 데이터를 입력하세요..."
                                     value={globalMemo}
                                     onChange={(e) => setGlobalMemo(e.target.value)}

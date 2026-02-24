@@ -241,11 +241,11 @@
   }
 
   .pb-safe {
-    padding-bottom: env(safe-area-inset-bottom);
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
   }
 
   .pt-safe {
-    padding-top: env(safe-area-inset-top);
+    padding-top: max(0px, env(safe-area-inset-top));
   }
 
   .min-h-touch {
@@ -305,4 +305,24 @@ html,
 body {
   overscroll-behavior-y: contain;
   touch-action: manipulation;
+}
+
+/* ─── Extra mobile-specific utilities ─── */
+
+/* Extreme-small screen (360px or less): hide floating labels */
+@media screen and (max-width: 360px) {
+  .floating-label {
+    display: none;
+  }
+}
+
+/* Dynamic viewport height support */
+@supports (height: 100dvh) {
+  .h-screen-safe { height: 100dvh; }
+  .max-h-screen-safe { max-height: 100dvh; }
+}
+
+@supports not (height: 100dvh) {
+  .h-screen-safe { height: 100vh; }
+  .max-h-screen-safe { max-height: 100vh; }
 }

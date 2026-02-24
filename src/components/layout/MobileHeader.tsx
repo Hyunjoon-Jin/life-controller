@@ -56,14 +56,14 @@ export function MobileHeader({
                         <Menu className="w-6 h-6" />
                     </Button>
                 </SheetTrigger>
-                <SheetContent side="right" className="w-[310px] flex flex-col p-0 glass-premium border-l border-white/10 text-white overflow-hidden">
+                <SheetContent side="right" className="w-[min(310px,85vw)] flex flex-col p-0 glass-premium border-l border-white/10 text-white overflow-hidden">
                     {/* Header with Title and Toggle */}
-                    <div className="p-6 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
+                    <div className="p-4 sm:p-6 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
                         <SheetTitle className="text-xl font-black text-white/90 tracking-widest">MENU</SheetTitle>
                         <ThemeToggle />
                     </div>
 
-                    <div className="flex-1 overflow-y-auto px-6 py-8 custom-scrollbar space-y-10">
+                    <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-6 sm:py-8 custom-scrollbar space-y-8 sm:space-y-10">
                         {/* Mode Switcher */}
                         <div className="bg-white/[0.03] border border-white/5 rounded-2xl p-1.5 flex shadow-inner">
                             <button
@@ -173,7 +173,7 @@ export function MobileHeader({
                     </div>
 
                     {/* Footer Area */}
-                    <div className="p-6 bg-white/[0.02] border-t border-white/5 space-y-6">
+                    <div className="p-4 sm:p-6 bg-white/[0.02] border-t border-white/5 space-y-4 sm:space-y-6">
                         <Button asChild className="w-full h-12 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-black text-[10px] tracking-widest border-0 shadow-[0_10px_20px_-5px_rgba(16,185,129,0.3)]">
                             <a href="/pricing" className="flex items-center justify-center uppercase">UPGRADE TO PRO <Sparkles className="w-3 h-3 ml-2" /></a>
                         </Button>

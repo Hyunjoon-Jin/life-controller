@@ -117,7 +117,7 @@ export function MobileBottomNav({
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             exit={{ opacity: 0, y: 20, scale: 0.95 }}
                             transition={{ type: 'spring', stiffness: 400, damping: 28 }}
-                            className="mb-4 glass-premium border border-white/10 rounded-[28px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.5)] overflow-hidden"
+                            className="mb-4 glass-premium border border-white/10 rounded-[28px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.5)] overflow-hidden max-h-[50vh] overflow-y-auto"
                         >
                             <div className="p-3 space-y-2">
                                 {SUB_MENUS[expandedCategory]?.map((tab: any) => {
@@ -194,11 +194,11 @@ export function MobileBottomNav({
                                 <span className="text-[9px] font-black tracking-widest text-white/20">ALL</span>
                             </motion.button>
                         </SheetTrigger>
-                        <SheetContent side="bottom" className="glass-premium rounded-t-[40px] h-[70vh] border-t border-white/10 text-white p-8">
-                            <SheetHeader className="mb-8">
+                        <SheetContent side="bottom" className="glass-premium rounded-t-[40px] h-[min(70vh,600px)] max-h-[85svh] border-t border-white/10 text-white p-5 sm:p-8 flex flex-col">
+                            <SheetHeader className="mb-5 sm:mb-8 shrink-0">
                                 <SheetTitle className="text-2xl font-black text-white px-2">EXPLORE</SheetTitle>
                             </SheetHeader>
-                            <div className="grid grid-cols-2 gap-4 h-[calc(70vh-150px)] overflow-y-auto no-scrollbar pb-10">
+                            <div className="grid grid-cols-2 gap-3 flex-1 overflow-y-auto no-scrollbar pb-safe pb-6 min-h-0">
                                 <button onClick={() => { setMainMode('schedule'); setActiveCategory('finance'); setExpandedCategory(null); }} className="flex flex-col items-start gap-4 p-6 glass-premium border border-white/5 rounded-[32px] group">
                                     <div className="w-12 h-12 bg-emerald-500/20 text-emerald-400 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
                                         <DollarSign className="w-6 h-6" />

@@ -24,7 +24,7 @@ export function CalendarView() {
                 setShowProjectTasks={setShowProjectTasks}
             />
 
-            <div className="flex-1 min-h-[500px]">
+            <div className="flex-1 min-h-[300px] sm:min-h-[500px]">
                 {view === 'month' && (
                     <MonthView
                         currentDate={currentDate}
