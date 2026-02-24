@@ -123,9 +123,9 @@ export function TaskBoard({ projectId, hideHeader = false }: TaskBoardProps) {
     const TaskForm = () => (
         <div className="grid gap-6 py-4">
             <div className="space-y-3">
-                <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">task name</label>
+                <label className="text-[10px] font-black text-white/60 uppercase tracking-[0.2em]">task name</label>
                 <Input
-                    className="h-14 font-black text-xl border-white/5 bg-white/5 focus-visible:ring-emerald-500/30 rounded-2xl text-white placeholder:text-white/10"
+                    className="h-14 font-black text-xl border-white/5 bg-white/5 focus-visible:ring-emerald-500/30 rounded-2xl text-white placeholder:text-white/30"
                     placeholder="WONDERFUL TASK..."
                     value={newTaskTitle}
                     onChange={e => setNewTaskTitle(e.target.value)}
@@ -134,7 +134,7 @@ export function TaskBoard({ projectId, hideHeader = false }: TaskBoardProps) {
 
             <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-3">
-                    <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Category</label>
+                    <label className="text-[10px] font-black text-white/60 uppercase tracking-[0.2em]">Category</label>
                     <select
                         className="flex h-12 w-full rounded-2xl border border-white/5 bg-white/5 px-4 py-2 text-sm font-bold text-white outline-none focus:ring-2 focus:ring-emerald-500/20"
                         value={newTaskType}
@@ -153,7 +153,7 @@ export function TaskBoard({ projectId, hideHeader = false }: TaskBoardProps) {
                     </select>
                 </div>
                 <div className="space-y-3">
-                    <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Deadline</label>
+                    <label className="text-[10px] font-black text-white/60 uppercase tracking-[0.2em]">Deadline</label>
                     <div className="rounded-2xl overflow-hidden border border-white/5 bg-black/20">
                         <DatePicker
                             date={newTaskDeadline}
@@ -164,9 +164,9 @@ export function TaskBoard({ projectId, hideHeader = false }: TaskBoardProps) {
             </div>
 
             <div className="space-y-3">
-                <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Notes</label>
+                <label className="text-[10px] font-black text-white/60 uppercase tracking-[0.2em]">Notes</label>
                 <Input
-                    className="h-12 bg-white/5 border-white/5 rounded-2xl text-white placeholder:text-white/10"
+                    className="h-12 bg-white/5 border-white/5 rounded-2xl text-white placeholder:text-white/30"
                     placeholder="EXTRA DETAILS..."
                     value={newTaskRemarks}
                     onChange={e => setNewTaskRemarks(e.target.value)}
@@ -189,7 +189,7 @@ export function TaskBoard({ projectId, hideHeader = false }: TaskBoardProps) {
                             </div>
                             <div>
                                 <h2 className="text-3xl font-black text-white tracking-tighter uppercase">TASK BOARD</h2>
-                                <p className="text-xs font-bold text-white/30 tracking-widest uppercase mt-0.5">MANAGE YOUR DAILY MISSIONS</p>
+                                <p className="text-xs font-bold text-white/60 tracking-widest uppercase mt-0.5">MANAGE YOUR DAILY MISSIONS</p>
                             </div>
                         </div>
 
@@ -225,7 +225,7 @@ export function TaskBoard({ projectId, hideHeader = false }: TaskBoardProps) {
                                 "px-6 py-2.5 rounded-2xl transition-all font-black text-[11px] tracking-widest uppercase border",
                                 selectedProjectId === 'all'
                                     ? "bg-emerald-500 text-white border-emerald-500/50 shadow-[0_10px_20px_-5px_rgba(16,185,129,0.3)]"
-                                    : "bg-white/5 border-white/5 text-white/30 hover:text-white/60 hover:bg-white/10"
+                                    : "bg-white/5 border-white/5 text-white/50 hover:text-white/60 hover:bg-white/10"
                             )}
                         >
                             ALL TASKS
@@ -238,7 +238,7 @@ export function TaskBoard({ projectId, hideHeader = false }: TaskBoardProps) {
                                     "px-6 py-2.5 rounded-2xl transition-all font-black text-[11px] tracking-widest uppercase border",
                                     selectedProjectId === p.id
                                         ? "bg-white text-black border-white shadow-[0_10px_20px_-5px_rgba(255,255,255,0.2)]"
-                                        : "bg-white/5 border-white/5 text-white/30 hover:text-white/60"
+                                        : "bg-white/5 border-white/5 text-white/50 hover:text-white/60"
                                 )}
                             >
                                 <span className="flex items-center gap-2">
@@ -277,7 +277,7 @@ export function TaskBoard({ projectId, hideHeader = false }: TaskBoardProps) {
                 </div>
             )}
 
-            <div className="hidden md:grid grid-cols-[60px_2fr_120px_140px_2fr_120px_80px] gap-4 px-8 py-4 border-b border-white/[0.03] text-[9px] font-black text-white/20 uppercase tracking-[0.2em] bg-white/[0.01]">
+            <div className="hidden md:grid grid-cols-[60px_2fr_120px_140px_2fr_120px_80px] gap-4 px-8 py-4 border-b border-white/[0.03] text-[9px] font-black text-white/60 uppercase tracking-[0.2em] bg-white/[0.01]">
                 <div className="text-center">Done</div>
                 <div>Mission Detail</div>
                 <div>Category</div>
@@ -296,10 +296,10 @@ export function TaskBoard({ projectId, hideHeader = false }: TaskBoardProps) {
                             className="w-24 h-24 rounded-[32px] bg-white/5 border border-white/5 flex items-center justify-center mb-8 relative"
                         >
                             <div className="absolute inset-0 bg-emerald-500/10 blur-2xl rounded-full" />
-                            <ListTodo className="w-10 h-10 text-white/10 relative z-10" />
+                            <ListTodo className="w-10 h-10 text-white/30 relative z-10" />
                         </motion.div>
                         <p className="text-2xl font-black text-white/80 uppercase tracking-tighter">NO ACTIVE MISSIONS</p>
-                        <p className="text-xs font-bold text-white/20 tracking-widest uppercase mt-3 max-w-xs leading-relaxed">YOUR SLATE IS CLEAN. INITIALIZE A NEW TASK TO BEGIN.</p>
+                        <p className="text-xs font-bold text-white/60 tracking-widest uppercase mt-3 max-w-xs leading-relaxed">YOUR SLATE IS CLEAN. INITIALIZE A NEW TASK TO BEGIN.</p>
                     </div>
                 ) : (
                     <div className="p-4 md:p-0">
@@ -335,7 +335,7 @@ export function TaskBoard({ projectId, hideHeader = false }: TaskBoardProps) {
                                             {task.title}
                                         </div>
                                         <div className="md:hidden flex items-center gap-2 mt-1">
-                                            <span className="text-[9px] font-black text-white/30 uppercase tracking-widest">{task.type}</span>
+                                            <span className="text-[9px] font-black text-white/60 uppercase tracking-widest">{task.type}</span>
                                             <div className="w-1 h-1 rounded-full bg-white/10" />
                                             <span className="text-[9px] font-black text-rose-500/60 uppercase">
                                                 {task.deadline ? format(new Date(task.deadline), 'MMM d') : 'NO LIMIT'}
@@ -353,7 +353,7 @@ export function TaskBoard({ projectId, hideHeader = false }: TaskBoardProps) {
                                         {task.deadline ? format(new Date(task.deadline), 'yyyy . MM . dd') : '-'}
                                     </div>
 
-                                    <div className="hidden md:block text-[11px] text-white/20 font-medium truncate italic" title={task.remarks}>
+                                    <div className="hidden md:block text-[11px] text-white/50 font-medium truncate italic" title={task.remarks}>
                                         {task.remarks || '-'}
                                     </div>
 
@@ -364,7 +364,7 @@ export function TaskBoard({ projectId, hideHeader = false }: TaskBoardProps) {
                                     <div className="opacity-100 md:opacity-0 group-hover:opacity-100 flex justify-end transition-all">
                                         <DropdownMenu>
                                             <DropdownMenuTrigger asChild>
-                                                <button className="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-white/10 text-white/20 hover:text-white transition-all">
+                                                <button className="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-white/10 text-white/40 hover:text-white transition-all">
                                                     <MoreHorizontal className="w-5 h-5" />
                                                 </button>
                                             </DropdownMenuTrigger>

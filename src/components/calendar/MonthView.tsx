@@ -117,7 +117,7 @@ export function MonthView({ currentDate, onDateClick, showProjectTasks }: { curr
                 {weekDays.map((day) => (
                     <div
                         key={day}
-                        className="py-4 text-center text-[10px] font-black text-white/30 uppercase tracking-[0.2em]"
+                        className="py-4 text-center text-[10px] font-black text-white/60 uppercase tracking-[0.2em]"
                     >
                         {day}
                     </div>
@@ -244,7 +244,7 @@ export function MonthView({ currentDate, onDateClick, showProjectTasks }: { curr
                     style={{ top: contextMenu.y, left: contextMenu.x }}
                     onClick={(e) => e.stopPropagation()}
                 >
-                    <div className="px-3 py-2 text-[10px] font-black text-white/30 border-b border-white/5 mb-1.5 uppercase tracking-widest">
+                    <div className="px-3 py-2 text-[10px] font-black text-white/60 border-b border-white/5 mb-1.5 uppercase tracking-widest">
                         {format(contextMenu.date, 'M월 d일')}
                     </div>
                     <button
@@ -270,7 +270,7 @@ export function MonthView({ currentDate, onDateClick, showProjectTasks }: { curr
                     </DialogHeader>
                     <div className="grid gap-6 py-4">
                         <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="status" className="text-right text-xs font-bold text-white/40">상태</Label>
+                            <Label htmlFor="status" className="text-right text-xs font-bold text-white/60">상태</Label>
                             <select
                                 id="status"
                                 className="col-span-3 h-12 bg-white/5 border-white/10 rounded-xl px-4 text-sm font-bold text-white focus:ring-2 ring-emerald-500/50 transition-all outline-none"
@@ -284,7 +284,7 @@ export function MonthView({ currentDate, onDateClick, showProjectTasks }: { curr
                             </select>
                         </div>
                         <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="startTime" className="text-right text-xs font-bold text-white/40">시작</Label>
+                            <Label htmlFor="startTime" className="text-right text-xs font-bold text-white/60">시작</Label>
                             <Input
                                 id="startTime"
                                 type="time"
@@ -294,7 +294,7 @@ export function MonthView({ currentDate, onDateClick, showProjectTasks }: { curr
                             />
                         </div>
                         <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="endTime" className="text-right text-xs font-bold text-white/40">종료</Label>
+                            <Label htmlFor="endTime" className="text-right text-xs font-bold text-white/60">종료</Label>
                             <Input
                                 id="endTime"
                                 type="time"
@@ -322,7 +322,7 @@ export function MonthView({ currentDate, onDateClick, showProjectTasks }: { curr
                     </DialogHeader>
                     <div className="grid gap-6 py-4">
                         <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="type" className="text-right text-xs font-bold text-white/40">종류</Label>
+                            <Label htmlFor="type" className="text-right text-xs font-bold text-white/60">종류</Label>
                             <select
                                 id="type"
                                 className="col-span-3 h-12 bg-white/5 border-white/10 rounded-xl px-4 text-sm font-bold text-white outline-none"

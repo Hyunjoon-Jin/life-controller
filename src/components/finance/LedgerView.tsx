@@ -125,7 +125,7 @@ export function LedgerView() {
                         </div>
                         <div>
                             <h2 className="text-3xl font-black text-white tracking-tighter uppercase leading-none">NEURAL LEDGER</h2>
-                            <p className="text-[10px] font-bold text-white/20 tracking-[0.3em] uppercase mt-2 italic flex items-center gap-2">
+                            <p className="text-[10px] font-bold text-white/60 tracking-[0.3em] uppercase mt-2 italic flex items-center gap-2">
                                 <Terminal className="w-3 h-3 text-indigo-500" /> TRANSACTION FEED: REAL-TIME SECURE
                             </p>
                         </div>
@@ -163,14 +163,14 @@ export function LedgerView() {
                     <Card className="glass-premium border-white/10 bg-gradient-to-br from-indigo-500/[0.05] to-transparent overflow-hidden rounded-[32px] md:col-span-1">
                         <CardContent className="p-6 flex flex-col justify-between h-full gap-4">
                             <div className="flex items-center justify-between">
-                                <span className="text-[9px] font-black text-white/20 tracking-widest uppercase">NET DELTA</span>
+                                <span className="text-[9px] font-black text-white/60 tracking-widest uppercase">NET DELTA</span>
                                 <Activity className="w-4 h-4 text-indigo-500" />
                             </div>
                             <div className="flex flex-col">
                                 <span className={cn("text-2xl font-black tracking-tighter", balance >= 0 ? "text-emerald-400" : "text-rose-400")}>
                                     {balance >= 0 ? '+' : ''}{balance.toLocaleString()}
                                 </span>
-                                <span className="text-[8px] font-bold text-white/10 uppercase tracking-widest">CURRENT CYCLE STATUS</span>
+                                <span className="text-[8px] font-bold text-white/40 uppercase tracking-widest">CURRENT CYCLE STATUS</span>
                             </div>
                         </CardContent>
                     </Card>
@@ -178,12 +178,12 @@ export function LedgerView() {
                     <Card className="glass-premium border-white/10 bg-gradient-to-br from-emerald-500/[0.05] to-transparent overflow-hidden rounded-[32px] md:col-span-1">
                         <CardContent className="p-6 flex flex-col justify-between h-full gap-4">
                             <div className="flex items-center justify-between">
-                                <span className="text-[9px] font-black text-white/20 tracking-widest uppercase">GROSS REVENUE</span>
+                                <span className="text-[9px] font-black text-white/60 tracking-widest uppercase">GROSS REVENUE</span>
                                 <TrendingUp className="w-4 h-4 text-emerald-500" />
                             </div>
                             <div className="flex flex-col">
                                 <span className="text-2xl font-black text-white tracking-tighter">+{totalIncome.toLocaleString()}</span>
-                                <span className="text-[8px] font-bold text-white/10 uppercase tracking-widest">INCOMING STREAM</span>
+                                <span className="text-[8px] font-bold text-white/40 uppercase tracking-widest">INCOMING STREAM</span>
                             </div>
                         </CardContent>
                     </Card>
@@ -191,12 +191,12 @@ export function LedgerView() {
                     <Card className="glass-premium border-white/10 bg-gradient-to-br from-rose-500/[0.05] to-transparent overflow-hidden rounded-[32px] md:col-span-1">
                         <CardContent className="p-6 flex flex-col justify-between h-full gap-4">
                             <div className="flex items-center justify-between">
-                                <span className="text-[9px] font-black text-white/20 tracking-widest uppercase">GROSS DEBIT</span>
+                                <span className="text-[9px] font-black text-white/60 tracking-widest uppercase">GROSS DEBIT</span>
                                 <TrendingDown className="w-4 h-4 text-rose-400" />
                             </div>
                             <div className="flex flex-col">
                                 <span className="text-2xl font-black text-white tracking-tighter">-{totalExpense.toLocaleString()}</span>
-                                <span className="text-[8px] font-bold text-white/10 uppercase tracking-widest">OUTGOING FLOW</span>
+                                <span className="text-[8px] font-bold text-white/40 uppercase tracking-widest">OUTGOING FLOW</span>
                             </div>
                         </CardContent>
                     </Card>
@@ -219,7 +219,7 @@ export function LedgerView() {
                                         className={cn("h-full", budgetProgress > 90 ? "bg-rose-500" : budgetProgress > 70 ? "bg-amber-500" : "bg-indigo-500")}
                                     />
                                 </div>
-                                <p className="text-[8px] font-bold text-white/10 uppercase tracking-tighter text-right">TAP TO RECONFIGURE</p>
+                                <p className="text-[8px] font-bold text-white/40 uppercase tracking-tighter text-right">TAP TO RECONFIGURE</p>
                             </div>
                         </CardContent>
                     </Card>
@@ -251,7 +251,7 @@ export function LedgerView() {
 
                                     <div className="flex items-center gap-8">
                                         <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex flex-col items-center justify-center shrink-0">
-                                            <span className="text-[9px] font-black text-white/20 uppercase leading-none mb-1">{format(new Date(t.date), 'MMM')}</span>
+                                            <span className="text-[9px] font-black text-white/60 uppercase leading-none mb-1">{format(new Date(t.date), 'MMM')}</span>
                                             <span className="text-xl font-black text-white tracking-tighter leading-none">{format(new Date(t.date), 'dd')}</span>
                                         </div>
 
@@ -265,7 +265,7 @@ export function LedgerView() {
                                                 )}>
                                                     {t.category}
                                                 </div>
-                                                <span className="text-[8px] font-bold text-white/10 uppercase tracking-widest">{format(new Date(t.date), 'HH:mm')}</span>
+                                                <span className="text-[8px] font-bold text-white/40 uppercase tracking-widest">{format(new Date(t.date), 'HH:mm')}</span>
                                             </div>
                                             <h4 className="text-lg font-black text-white tracking-tight uppercase">{t.description || 'SILENT LOG'}</h4>
                                             {t.tags && t.tags.length > 0 && (
@@ -287,11 +287,11 @@ export function LedgerView() {
                                             )}>
                                                 {t.type === 'income' ? '+' : t.type === 'expense' ? '-' : ''}{t.amount.toLocaleString()}
                                             </div>
-                                            <div className="text-[8px] font-bold text-white/10 uppercase tracking-widest">UNIT: KRW</div>
+                                            <div className="text-[8px] font-bold text-white/40 uppercase tracking-widest">UNIT: KRW</div>
                                         </div>
 
                                         <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
-                                            <button onClick={() => handleEdit(t)} className="w-10 h-10 rounded-xl bg-white/5 text-white/20 hover:text-white transition-all flex items-center justify-center shadow-xl">
+                                            <button onClick={() => handleEdit(t)} className="w-10 h-10 rounded-xl bg-white/5 text-white/40 hover:text-white transition-all flex items-center justify-center shadow-xl">
                                                 <Edit2 className="w-4 h-4" />
                                             </button>
                                             <button onClick={() => deleteTransaction(t.id)} className="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white transition-all flex items-center justify-center shadow-xl">
@@ -311,17 +311,17 @@ export function LedgerView() {
                 <DialogContent className="glass-premium border border-white/10 text-white rounded-[40px] p-0 shadow-2xl sm:max-w-2xl max-h-[90vh] overflow-hidden">
                     <DialogHeader className="p-10 pb-0">
                         <DialogTitle className="text-3xl font-black tracking-tighter uppercase mb-2">{editingId ? 'RECALIBRATE LOG' : 'INITIALIZE LOG'}</DialogTitle>
-                        <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] italic">INPUT FISCAL DATA CONTEXT FOR NEURAL FEED INTEGRATION</p>
+                        <p className="text-[10px] font-bold text-white/60 uppercase tracking-[0.2em] italic">INPUT FISCAL DATA CONTEXT FOR NEURAL FEED INTEGRATION</p>
                     </DialogHeader>
                     <div className="overflow-y-auto custom-scrollbar p-10 pt-4 space-y-8">
                         <div className="grid gap-6">
                             <div className="space-y-3">
-                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">CHRONO-STAMP</Label>
+                                <Label className="text-[10px] font-black text-white/60 uppercase tracking-widest ml-2">CHRONO-STAMP</Label>
                                 <DateTimePicker date={date} setDate={setDate} />
                             </div>
 
                             <div className="space-y-3">
-                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">FLOW VECTOR</Label>
+                                <Label className="text-[10px] font-black text-white/60 uppercase tracking-widest ml-2">FLOW VECTOR</Label>
                                 <div className="grid grid-cols-3 gap-3">
                                     {[
                                         { id: 'income', label: 'INCOME', color: 'border-emerald-500/20 text-emerald-400 bg-emerald-500/5' },
@@ -333,7 +333,7 @@ export function LedgerView() {
                                             onClick={() => setType(item.id as any)}
                                             className={cn(
                                                 "h-14 rounded-2xl border font-black text-[10px] tracking-widest transition-all active:scale-95",
-                                                type === item.id ? item.color : "border-white/5 text-white/20 hover:border-white/20"
+                                                type === item.id ? item.color : "border-white/5 text-white/50 hover:border-white/20"
                                             )}
                                         >
                                             {item.label}
@@ -344,7 +344,7 @@ export function LedgerView() {
 
                             <div className="grid grid-cols-2 gap-6">
                                 <div className="space-y-3">
-                                    <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">CLASSIFICATION</Label>
+                                    <Label className="text-[10px] font-black text-white/60 uppercase tracking-widest ml-2">CLASSIFICATION</Label>
                                     <Input
                                         placeholder="EX: FOOD, SALARY, RENT"
                                         className="h-12 font-black text-[10px] tracking-widest uppercase bg-white/5 border-white/5 rounded-2xl text-white"
@@ -353,7 +353,7 @@ export function LedgerView() {
                                     />
                                 </div>
                                 <div className="space-y-3">
-                                    <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">MAGNITUDE (KRW)</Label>
+                                    <Label className="text-[10px] font-black text-white/60 uppercase tracking-widest ml-2">MAGNITUDE (KRW)</Label>
                                     <Input
                                         type="number"
                                         placeholder="0"
@@ -365,7 +365,7 @@ export function LedgerView() {
                             </div>
 
                             <div className="space-y-3">
-                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">SOURCE / DESTINATION</Label>
+                                <Label className="text-[10px] font-black text-white/60 uppercase tracking-widest ml-2">SOURCE / DESTINATION</Label>
                                 <select
                                     className="flex h-12 w-full rounded-2xl border border-white/5 bg-white/5 px-4 font-black uppercase text-[10px] tracking-widest text-white outline-none"
                                     value={type === 'expense' && cardId ? cardId : assetId}
@@ -396,10 +396,10 @@ export function LedgerView() {
                             </div>
 
                             <div className="space-y-3">
-                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">LOG NARRATIVE</Label>
+                                <Label className="text-[10px] font-black text-white/60 uppercase tracking-widest ml-2">LOG NARRATIVE</Label>
                                 <Input
                                     placeholder="DETAILS OF TRANSACTION..."
-                                    className="h-12 bg-white/5 border-white/5 rounded-2xl text-white placeholder:text-white/10 text-[10px] font-black uppercase tracking-widest"
+                                    className="h-12 bg-white/5 border-white/5 rounded-2xl text-white placeholder:text-white/30 text-[10px] font-black uppercase tracking-widest"
                                     value={description}
                                     onChange={e => setDescription(e.target.value)}
                                 />
@@ -423,20 +423,20 @@ export function LedgerView() {
                 <DialogContent className="glass-premium border border-white/10 text-white rounded-[40px] p-0 shadow-2xl sm:max-w-md overflow-hidden">
                     <DialogHeader className="p-10 pb-0">
                         <DialogTitle className="text-3xl font-black tracking-tighter uppercase mb-2">QUOTA CONFIG</DialogTitle>
-                        <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] italic">SET FISCAL BOUNDARIES FOR THE CURRENT CYCLE</p>
+                        <p className="text-[10px] font-bold text-white/60 uppercase tracking-[0.2em] italic">SET FISCAL BOUNDARIES FOR THE CURRENT CYCLE</p>
                     </DialogHeader>
                     <div className="p-10 pt-4 space-y-8">
                         <div className="space-y-3">
-                            <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">PRIMARY OBJECTIVE</Label>
+                            <Label className="text-[10px] font-black text-white/60 uppercase tracking-widest ml-2">PRIMARY OBJECTIVE</Label>
                             <Input
                                 placeholder="EX: REDUCE CALORIC DEBT, INCREASE SAVINGS..."
-                                className="h-14 font-black text-sm border-white/5 bg-white/5 rounded-2xl text-white placeholder:text-white/10 uppercase"
+                                className="h-14 font-black text-sm border-white/5 bg-white/5 rounded-2xl text-white placeholder:text-white/30 uppercase"
                                 value={budgetGoal}
                                 onChange={e => setBudgetGoal(e.target.value)}
                             />
                         </div>
                         <div className="space-y-3">
-                            <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">MAXIMUM EXPOSURE (KRW)</Label>
+                            <Label className="text-[10px] font-black text-white/60 uppercase tracking-widest ml-2">MAXIMUM EXPOSURE (KRW)</Label>
                             <Input
                                 type="number"
                                 placeholder="0"

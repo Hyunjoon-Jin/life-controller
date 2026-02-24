@@ -191,17 +191,17 @@ export function GoalDetailDialog({ isOpen, onOpenChange, goal }: GoalDetailDialo
                                     "text-6xl font-black tracking-tighter tabular-nums italic",
                                     goal.progress === 100 ? "text-emerald-500 drop-shadow-[0_0_15px_rgba(16,185,129,0.3)]" : "text-white/90"
                                 )}>
-                                    {goal.progress}<span className="text-xl align-top ml-1 font-black text-white/20">%</span>
+                                    {goal.progress}<span className="text-xl align-top ml-1 font-black text-white/60">%</span>
                                 </span>
                             </div>
-                            <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em]">Resource Allocated</span>
+                            <span className="text-[10px] font-black text-white/60 uppercase tracking-[0.4em]">Resource Allocated</span>
                         </div>
                     </div>
 
                     {/* Industrial Progress Controller */}
                     <div className="mt-10 space-y-3">
                         <div className="flex justify-between items-end">
-                            <h4 className="text-[9px] font-black text-white/30 uppercase tracking-[0.3em] flex items-center gap-2">
+                            <h4 className="text-[9px] font-black text-white/60 uppercase tracking-[0.3em] flex items-center gap-2">
                                 <Terminal className="w-3.5 h-3.5" /> Deployment Manual Override
                             </h4>
                             <span className="text-[10px] font-black text-amber-500/50 italic animate-pulse">DRAG TO SYNC PROGRESS</span>
@@ -251,7 +251,7 @@ export function GoalDetailDialog({ isOpen, onOpenChange, goal }: GoalDetailDialo
                                     "pb-5 text-[11px] font-black border-b-2 transition-all duration-300 whitespace-nowrap flex items-center gap-3 tracking-[0.2em]",
                                     activeTab === tab.id
                                         ? "border-amber-500 text-amber-500"
-                                        : "border-transparent text-white/30 hover:text-white/60"
+                                        : "border-transparent text-white/50 hover:text-white/60"
                                 )}
                             >
                                 <tab.icon className="w-4 h-4" />
@@ -259,7 +259,7 @@ export function GoalDetailDialog({ isOpen, onOpenChange, goal }: GoalDetailDialo
                                 {tab.count !== undefined && (
                                     <span className={cn(
                                         "px-2 py-0.5 rounded-md text-[9px] font-black transition-colors",
-                                        activeTab === tab.id ? "bg-amber-500/20 text-amber-500" : "bg-white/5 text-white/20"
+                                        activeTab === tab.id ? "bg-amber-500/20 text-amber-500" : "bg-white/5 text-white/60"
                                     )}>
                                         {tab.count}
                                     </span>
@@ -282,7 +282,7 @@ export function GoalDetailDialog({ isOpen, onOpenChange, goal }: GoalDetailDialo
                             >
                                 {/* Briefing Section */}
                                 <section className="space-y-4">
-                                    <h3 className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em] flex items-center gap-3">
+                                    <h3 className="text-[10px] font-black text-white/60 uppercase tracking-[0.3em] flex items-center gap-3">
                                         <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
                                         In-Brief Context
                                     </h3>
@@ -290,14 +290,14 @@ export function GoalDetailDialog({ isOpen, onOpenChange, goal }: GoalDetailDialo
                                         {goal.memo ? (
                                             <span className="font-mono">// MISSION LOG: {goal.memo}</span>
                                         ) : (
-                                            <span className="text-white/20 font-mono tracking-widest">// NO STRATEGIC DATA LOGGED</span>
+                                            <span className="text-white/60 font-mono tracking-widest">// NO STRATEGIC DATA LOGGED</span>
                                         )}
                                     </div>
                                 </section>
 
                                 {/* Hierarchy Units */}
                                 <section className="space-y-4">
-                                    <h3 className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em] flex items-center gap-3">
+                                    <h3 className="text-[10px] font-black text-white/60 uppercase tracking-[0.3em] flex items-center gap-3">
                                         <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
                                         Sub-Tactical Units
                                     </h3>
@@ -318,8 +318,8 @@ export function GoalDetailDialog({ isOpen, onOpenChange, goal }: GoalDetailDialo
                                                 </div>
                                             ))
                                         ) : (
-                                            <div className="flex flex-col items-center justify-center py-16 text-white/10 glass-premium rounded-[32px] border border-dashed border-white/5">
-                                                <Lock className="w-12 h-12 mb-4 opacity-10" />
+                                            <div className="flex flex-col items-center justify-center py-16 text-white/40 glass-premium rounded-[32px] border border-dashed border-white/5">
+                                                <Lock className="w-12 h-12 mb-4 opacity-40" />
                                                 <p className="text-[11px] font-black uppercase tracking-widest">No Sub-Units Initialized</p>
                                             </div>
                                         )}
@@ -338,7 +338,7 @@ export function GoalDetailDialog({ isOpen, onOpenChange, goal }: GoalDetailDialo
                             >
                                 <div className="flex gap-3">
                                     <input
-                                        className="flex-1 bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm font-bold placeholder:text-white/10 focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all text-white"
+                                        className="flex-1 bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm font-bold placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all text-white"
                                         placeholder="INITIATE NEW OPERATION..."
                                         value={newTaskTitle}
                                         onChange={(e) => setNewTaskTitle(e.target.value)}
@@ -349,8 +349,8 @@ export function GoalDetailDialog({ isOpen, onOpenChange, goal }: GoalDetailDialo
 
                                 <div className="space-y-3">
                                     {linkedTasks.length === 0 ? (
-                                        <div className="flex flex-col items-center justify-center py-20 text-white/10 bg-white/[0.02] rounded-[40px] border border-dashed border-white/5">
-                                            <Terminal className="w-16 h-16 mb-4 opacity-5 animate-pulse" />
+                                        <div className="flex flex-col items-center justify-center py-20 text-white/40 bg-white/[0.02] rounded-[40px] border border-dashed border-white/5">
+                                            <Terminal className="w-16 h-16 mb-4 opacity-40 animate-pulse" />
                                             <p className="font-black uppercase tracking-widest">Active Operations Zero</p>
                                         </div>
                                     ) : (
@@ -360,7 +360,7 @@ export function GoalDetailDialog({ isOpen, onOpenChange, goal }: GoalDetailDialo
                                                     onClick={() => toggleTask(task)}
                                                     className={cn(
                                                         "transition-all transform active:scale-90 p-1 rounded-lg",
-                                                        task.completed ? "bg-amber-500 text-slate-900" : "bg-white/5 text-white/20 hover:text-amber-500"
+                                                        task.completed ? "bg-amber-500 text-slate-900" : "bg-white/5 text-white/40 hover:text-amber-500"
                                                     )}
                                                 >
                                                     {task.completed ? <CheckCircle2 className="w-6 h-6" strokeWidth={3} /> : <Circle className="w-6 h-6" strokeWidth={3} />}
@@ -386,10 +386,10 @@ export function GoalDetailDialog({ isOpen, onOpenChange, goal }: GoalDetailDialo
 
                                                 <div className="flex items-center gap-3">
                                                     <div className="flex opacity-0 group-hover:opacity-100 transition-opacity gap-1">
-                                                        <Button variant="ghost" size="icon" className="h-9 w-9 text-white/20 hover:text-amber-500 hover:bg-amber-500/10 rounded-xl" onClick={() => startEditingTask(task)}>
+                                                        <Button variant="ghost" size="icon" className="h-9 w-9 text-white/40 hover:text-amber-500 hover:bg-amber-500/10 rounded-xl" onClick={() => startEditingTask(task)}>
                                                             <Pencil className="w-4 h-4" />
                                                         </Button>
-                                                        <Button variant="ghost" size="icon" className="h-9 w-9 text-white/20 hover:text-rose-500 hover:bg-rose-500/10 rounded-xl" onClick={() => handleDeleteTask(task.id)}>
+                                                        <Button variant="ghost" size="icon" className="h-9 w-9 text-white/40 hover:text-rose-500 hover:bg-rose-500/10 rounded-xl" onClick={() => handleDeleteTask(task.id)}>
                                                             <Trash2 className="w-4 h-4" />
                                                         </Button>
                                                     </div>
@@ -410,8 +410,8 @@ export function GoalDetailDialog({ isOpen, onOpenChange, goal }: GoalDetailDialo
                                 className="space-y-6"
                             >
                                 {linkedEvents.length === 0 ? (
-                                    <div className="flex flex-col items-center justify-center py-24 text-white/10">
-                                        <Clock className="w-16 h-16 mb-4 opacity-5" />
+                                    <div className="flex flex-col items-center justify-center py-24 text-white/40">
+                                        <Clock className="w-16 h-16 mb-4 opacity-40" />
                                         <p className="font-black uppercase tracking-[0.3em]">Temporal Linking Unavailable</p>
                                     </div>
                                 ) : (
@@ -419,12 +419,12 @@ export function GoalDetailDialog({ isOpen, onOpenChange, goal }: GoalDetailDialo
                                         {linkedEvents.sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime()).map(event => (
                                             <div key={event.id} className="flex items-center gap-6 group">
                                                 <div className="flex flex-col items-center min-w-[70px] py-3 bg-white/5 rounded-2xl border border-white/5">
-                                                    <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">{format(new Date(event.start), 'MMM')}</span>
+                                                    <span className="text-[10px] font-black text-white/60 uppercase tracking-widest">{format(new Date(event.start), 'MMM')}</span>
                                                     <span className="text-2xl font-black text-white">{format(new Date(event.start), 'd')}</span>
                                                 </div>
                                                 <div className="flex-1 p-5 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all">
                                                     <div className="font-black text-sm uppercase tracking-tight text-white/90 mb-1">{event.title}</div>
-                                                    <div className="text-[10px] text-white/30 flex items-center gap-2 font-black tracking-widest">
+                                                    <div className="text-[10px] text-white/60 flex items-center gap-2 font-black tracking-widest">
                                                         <Clock className="w-3.5 h-3.5 text-amber-500" />
                                                         {format(new Date(event.start), 'HH:mm')} - {format(new Date(event.end), 'HH:mm')}
                                                     </div>

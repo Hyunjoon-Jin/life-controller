@@ -60,7 +60,6 @@ export const metadata: Metadata = {
 
 import { SessionReset } from '@/components/auth/SessionReset';
 import { PullToRefreshHandler } from "@/components/layout/PullToRefreshHandler";
-import { HelpFAB } from "@/components/layout/HelpFAB";
 import { WelcomeOnboarding } from "@/components/guide/WelcomeOnboarding";
 
 import { GoogleAdSense } from '@/components/ads/GoogleAdSense';
@@ -90,7 +89,6 @@ export default function RootLayout({
                 disableTransitionOnChange
               >
                 {children}
-                <HelpFAB />
                 <WelcomeOnboarding />
                 <Toaster position="top-center" richColors />
               </ThemeProvider>

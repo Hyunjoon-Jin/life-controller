@@ -109,7 +109,7 @@ export function CalendarHeader({ currentDate, view, setView, onNext, onPrev, onT
                                 "px-5 py-2 text-[10px] font-black rounded-xl uppercase transition-all tracking-[0.1em]",
                                 view === v
                                     ? "bg-emerald-500 text-white shadow-[0_8px_16px_-4px_rgba(16,185,129,0.4)]"
-                                    : "text-white/30 hover:text-white/60 hover:bg-white/5"
+                                    : "text-white/50 hover:text-white/60 hover:bg-white/5"
                             )}
                         >
                             {v === 'month' ? 'MONTH' : v === 'week' ? 'WEEK' : 'DAY'}

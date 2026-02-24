@@ -142,7 +142,7 @@ function GoalItem({ goal, level = 0, onAddSubGoal, onEdit, onDetail, forceExpand
                                 </div>
 
                                 {level === 0 && goal.memo && (
-                                    <p className="text-[11px] text-white/30 font-medium line-clamp-1 mt-1 uppercase tracking-tight italic">
+                                    <p className="text-[11px] text-white/60 font-medium line-clamp-1 mt-1 uppercase tracking-tight italic">
                                         // {goal.memo}
                                     </p>
                                 )}
@@ -165,7 +165,7 @@ function GoalItem({ goal, level = 0, onAddSubGoal, onEdit, onDetail, forceExpand
                         {/* Progress Monitoring */}
                         <div className="flex items-center gap-4">
                             <div className="flex-1 space-y-1">
-                                <div className="flex justify-between text-[9px] font-black text-white/20 uppercase tracking-[0.2em]">
+                                <div className="flex justify-between text-[9px] font-black text-white/60 uppercase tracking-[0.2em]">
                                     <span>Deployment Status</span>
                                     <span className={cn(goal.progress === 100 ? "text-emerald-400" : "text-amber-400")}>
                                         {goal.progress}% COMPLETE
@@ -394,7 +394,7 @@ export default function GoalTree() {
                         </div>
                         <div>
                             <h2 className="text-3xl font-black text-white tracking-tighter uppercase italic">Strategic Command Center</h2>
-                            <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.4em]">Master Objective Interface // Auth: Admin</p>
+                            <p className="text-[10px] font-black text-white/60 uppercase tracking-[0.4em]">Master Objective Interface // Auth: Admin</p>
                         </div>
                     </div>
                 </div>
@@ -424,9 +424,9 @@ export default function GoalTree() {
                         placeholder="전략 목표 필터링 (Search Unit)..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="h-12 bg-white/5 border-white/10 text-white placeholder:text-white/20 pl-12 rounded-2xl focus:ring-amber-500/20"
+                        className="h-12 bg-white/5 border-white/10 text-white placeholder:text-white/40 pl-12 rounded-2xl focus:ring-amber-500/20"
                     />
-                    <Search className="absolute left-4 top-4 w-5 h-5 text-white/20" />
+                    <Search className="absolute left-4 top-4 w-5 h-5 text-white/40" />
                 </div>
 
                 <div className="grid grid-cols-2 gap-2">
@@ -488,7 +488,7 @@ export default function GoalTree() {
                     >
                         <Compass className="w-16 h-16 text-white/5 mb-6 animate-spin-slow" />
                         <h3 className="text-xl font-black text-white uppercase tracking-widest">No Strategic Data Detected</h3>
-                        <p className="text-[10px] text-white/20 font-black uppercase tracking-[0.3em] mt-2">Initialize new ambition unit to begin operation</p>
+                        <p className="text-[10px] text-white/60 font-black uppercase tracking-[0.3em] mt-2">Initialize new ambition unit to begin operation</p>
                     </motion.div>
                 )}
             </div>
@@ -506,7 +506,7 @@ export default function GoalTree() {
                                     <h3 className="text-xl font-black uppercase tracking-tight">
                                         {editingGoalId ? 'Modify Unit' : 'Initialize Unit'}
                                     </h3>
-                                    <p className="text-[9px] font-black text-white/30 uppercase tracking-widest mt-1">Strategic Objective Parameter Config</p>
+                                    <p className="text-[9px] font-black text-white/60 uppercase tracking-widest mt-1">Strategic Objective Parameter Config</p>
                                 </div>
                             </DialogTitle>
                         </DialogHeader>
@@ -518,7 +518,7 @@ export default function GoalTree() {
                                     value={newGoalTitle}
                                     onChange={(e) => setNewGoalTitle(e.target.value)}
                                     placeholder="DESIGNATE OBJECTIVE NAME..."
-                                    className="h-12 bg-white/5 border-white/10 text-white placeholder:text-white/10 rounded-xl font-bold"
+                                    className="h-12 bg-white/5 border-white/10 text-white placeholder:text-white/40 rounded-xl font-bold"
                                 />
                             </div>
 
@@ -558,7 +558,7 @@ export default function GoalTree() {
                             <div className="space-y-2">
                                 <Label className="text-[10px] font-black text-amber-500 uppercase tracking-[0.3em]">Tactical Memo</Label>
                                 <textarea
-                                    className="w-full h-32 bg-white/5 border-white/10 text-white p-4 rounded-xl text-xs font-medium resize-none placeholder:text-white/10 focus:ring-1 focus:ring-amber-500/50"
+                                    className="w-full h-32 bg-white/5 border-white/10 text-white p-4 rounded-xl text-xs font-medium resize-none placeholder:text-white/40 focus:ring-1 focus:ring-amber-500/50"
                                     placeholder="ENTER STRATEGIC CONTEXT..."
                                     value={newGoalMemo}
                                     onChange={(e) => setNewGoalMemo(e.target.value)}

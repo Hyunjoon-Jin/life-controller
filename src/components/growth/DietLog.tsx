@@ -168,7 +168,7 @@ export function DietLog() {
                         </div>
                         <div>
                             <h2 className="text-3xl font-black text-white tracking-tighter uppercase leading-none">NUTRITIONAL CORE</h2>
-                            <p className="text-[10px] font-bold text-white/20 tracking-[0.3em] uppercase mt-2 italic flex items-center gap-2">
+                            <p className="text-[10px] font-bold text-white/60 tracking-[0.3em] uppercase mt-2 italic flex items-center gap-2">
                                 <Scale className="w-3 h-3" /> METABOLIC STATUS: SYNCHRONIZED
                             </p>
                         </div>
@@ -216,11 +216,11 @@ export function DietLog() {
                                         <div key={dateKey} className="space-y-6">
                                             <div className="flex items-center justify-between border-b border-white/5 pb-4">
                                                 <div className="flex items-center gap-4">
-                                                    <div className="text-3xl font-black text-white/10 italic tracking-tighter">{format(parseISO(dateKey), 'MM.dd')}</div>
+                                                    <div className="text-3xl font-black text-white/40 italic tracking-tighter">{format(parseISO(dateKey), 'MM.dd')}</div>
                                                     <div className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">{format(parseISO(dateKey), 'EEEE', { locale: ko })}</div>
                                                 </div>
                                                 <div className="flex items-end gap-2">
-                                                    <span className="text-[9px] font-black text-white/20 uppercase tracking-widest mb-1">AGGREGATE</span>
+                                                    <span className="text-[9px] font-black text-white/60 uppercase tracking-widest mb-1">AGGREGATE</span>
                                                     <span className="text-2xl font-black text-rose-500 tracking-tighter">{Math.round(dayCalories)} <small className="text-[10px] opacity-40">KCAL</small></span>
                                                 </div>
                                             </div>
@@ -260,14 +260,14 @@ export function DietLog() {
                                                             <div className="p-8 flex-1 flex flex-col">
                                                                 <div className="flex justify-between items-start mb-6">
                                                                     <div className="flex flex-col">
-                                                                        <span className="text-[9px] font-black text-white/20 uppercase tracking-widest leading-none mb-1">{format(new Date(entry.date), 'HH:mm')} PROTOCOL</span>
+                                                                        <span className="text-[9px] font-black text-white/60 uppercase tracking-widest leading-none mb-1">{format(new Date(entry.date), 'HH:mm')} PROTOCOL</span>
                                                                         {entry.items?.map((item, idx) => (
                                                                             <div key={idx} className="text-lg font-black text-white tracking-tighter uppercase">{item.name}</div>
                                                                         ))}
                                                                     </div>
                                                                     <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                                        <button onClick={() => handleEdit(entry)} className="w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center text-white/20 hover:bg-emerald-500 hover:text-white transition-all"><Edit2 className="w-4 h-4" /></button>
-                                                                        <button onClick={() => deleteDietEntry(entry.id)} className="w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center text-white/20 hover:bg-rose-500 hover:text-white transition-all"><Trash2 className="w-4 h-4" /></button>
+                                                                        <button onClick={() => handleEdit(entry)} className="w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center text-white/40 hover:bg-emerald-500 hover:text-white transition-all"><Edit2 className="w-4 h-4" /></button>
+                                                                        <button onClick={() => deleteDietEntry(entry.id)} className="w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center text-white/40 hover:bg-rose-500 hover:text-white transition-all"><Trash2 className="w-4 h-4" /></button>
                                                                     </div>
                                                                 </div>
 
@@ -275,15 +275,15 @@ export function DietLog() {
                                                                     <div className="mt-auto pt-6 border-t border-white/5 flex items-center justify-between">
                                                                         <div className="flex gap-4">
                                                                             <div className="flex flex-col">
-                                                                                <span className="text-[8px] font-black text-white/10 uppercase mb-0.5">CARBS</span>
+                                                                                <span className="text-[8px] font-black text-white/40 uppercase mb-0.5">CARBS</span>
                                                                                 <span className="text-xs font-black text-sky-400">{Math.round(entry.totalMacros.carbs)}G</span>
                                                                             </div>
                                                                             <div className="flex flex-col">
-                                                                                <span className="text-[8px] font-black text-white/10 uppercase mb-0.5">PROT</span>
+                                                                                <span className="text-[8px] font-black text-white/40 uppercase mb-0.5">PROT</span>
                                                                                 <span className="text-xs font-black text-rose-400">{Math.round(entry.totalMacros.protein)}G</span>
                                                                             </div>
                                                                             <div className="flex flex-col">
-                                                                                <span className="text-[8px] font-black text-white/10 uppercase mb-0.5">LIPID</span>
+                                                                                <span className="text-[8px] font-black text-white/40 uppercase mb-0.5">LIPID</span>
                                                                                 <span className="text-xs font-black text-amber-400">{Math.round(entry.totalMacros.fat)}G</span>
                                                                             </div>
                                                                         </div>
@@ -294,7 +294,7 @@ export function DietLog() {
                                                                 )}
 
                                                                 {entry.memo && (
-                                                                    <p className="mt-4 text-[10px] font-bold text-white/20 italic border-l-2 border-emerald-500/20 pl-4">{entry.memo}</p>
+                                                                    <p className="mt-4 text-[10px] font-bold text-white/60 italic border-l-2 border-emerald-500/20 pl-4">{entry.memo}</p>
                                                                 )}
                                                             </div>
                                                         </motion.div>
@@ -329,13 +329,13 @@ export function DietLog() {
                         <DialogTitle className="text-3xl font-black tracking-tighter uppercase mb-2">
                             {editingId ? 'RECONSTRUCT LOG' : 'INITIALIZE INTAKE'}
                         </DialogTitle>
-                        <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] italic">SPECIFY INPUT PARAMETERS FOR NUTRITIONAL ANALYSIS</p>
+                        <p className="text-[10px] font-bold text-white/60 uppercase tracking-[0.2em] italic">SPECIFY INPUT PARAMETERS FOR NUTRITIONAL ANALYSIS</p>
                     </DialogHeader>
 
                     <div className="p-10 space-y-10">
                         <div className="grid grid-cols-2 gap-8">
                             <div className="space-y-3">
-                                <Label className="text-[9px] font-black text-white/20 uppercase tracking-widest">TEMPORAL TIMESTAMP</Label>
+                                <Label className="text-[9px] font-black text-white/60 uppercase tracking-widest">TEMPORAL TIMESTAMP</Label>
                                 <Input
                                     type="datetime-local"
                                     value={date ? format(date, "yyyy-MM-dd'T'HH:mm") : ''}
@@ -344,7 +344,7 @@ export function DietLog() {
                                 />
                             </div>
                             <div className="space-y-3">
-                                <Label className="text-[9px] font-black text-white/20 uppercase tracking-widest">PHASE CLASSIFICATION</Label>
+                                <Label className="text-[9px] font-black text-white/60 uppercase tracking-widest">PHASE CLASSIFICATION</Label>
                                 <Select value={mealType} onValueChange={(v) => setMealType(v as any)}>
                                     <SelectTrigger className="h-14 font-black text-[10px] tracking-widest uppercase bg-white/5 border-white/5 rounded-2xl text-white">
                                         <SelectValue />
@@ -366,7 +366,7 @@ export function DietLog() {
                         {/* Items Section */}
                         <div className="bg-white/5 rounded-[32px] border border-white/5 p-8 space-y-8">
                             <div className="flex justify-between items-center">
-                                <Label className="text-[9px] font-black text-white/20 uppercase tracking-widest">NUTRITIONAL ENTITIES ({items.length})</Label>
+                                <Label className="text-[9px] font-black text-white/60 uppercase tracking-widest">NUTRITIONAL ENTITIES ({items.length})</Label>
                                 <Button
                                     variant="outline"
                                     onClick={() => setIsSearchOpen(true)}
@@ -388,14 +388,14 @@ export function DietLog() {
                                             <div className="text-sm font-black text-white uppercase tracking-tighter truncate">{item.name}</div>
                                             <div className="flex items-center gap-4 mt-1">
                                                 <span className="text-[9px] font-black text-rose-500 uppercase">{Math.round(item.calories)} KCAL</span>
-                                                <div className="flex gap-2 text-[8px] font-black text-white/20 uppercase">
+                                                <div className="flex gap-2 text-[8px] font-black text-white/60 uppercase">
                                                     <span>C:{Math.round(item.macros.carbs)}G</span>
                                                     <span>P:{Math.round(item.macros.protein)}G</span>
                                                     <span>F:{Math.round(item.macros.fat)}G</span>
                                                 </div>
                                             </div>
                                         </div>
-                                        <button onClick={() => handleRemoveItem(item.id)} className="w-8 h-8 rounded-lg bg-white/5 text-white/10 opacity-0 group-hover:opacity-100 hover:bg-rose-500 hover:text-white transition-all transform hover:rotate-12">
+                                        <button onClick={() => handleRemoveItem(item.id)} className="w-8 h-8 rounded-lg bg-white/5 text-white/40 opacity-0 group-hover:opacity-100 hover:bg-rose-500 hover:text-white transition-all transform hover:rotate-12">
                                             <Trash2 className="w-4 h-4" />
                                         </button>
                                     </motion.div>
@@ -446,15 +446,15 @@ export function DietLog() {
                                 </div>
                                 <div className="grid grid-cols-3 gap-3">
                                     <div className="space-y-1">
-                                        <Label className="text-[7px] font-black text-white/20 uppercase tracking-widest ml-2">CARBS (G)</Label>
+                                        <Label className="text-[7px] font-black text-white/60 uppercase tracking-widest ml-2">CARBS (G)</Label>
                                         <Input type="number" placeholder="0" className="h-10 bg-white/5 border-white/5 rounded-xl text-center font-black text-xs" value={tempCarbs} onChange={e => setTempCarbs(e.target.value)} />
                                     </div>
                                     <div className="space-y-1">
-                                        <Label className="text-[7px] font-black text-white/20 uppercase tracking-widest ml-2">PROT (G)</Label>
+                                        <Label className="text-[7px] font-black text-white/60 uppercase tracking-widest ml-2">PROT (G)</Label>
                                         <Input type="number" placeholder="0" className="h-10 bg-white/5 border-white/5 rounded-xl text-center font-black text-xs" value={tempProtein} onChange={e => setTempProtein(e.target.value)} />
                                     </div>
                                     <div className="space-y-1">
-                                        <Label className="text-[7px] font-black text-white/20 uppercase tracking-widest ml-2">LIPID (G)</Label>
+                                        <Label className="text-[7px] font-black text-white/60 uppercase tracking-widest ml-2">LIPID (G)</Label>
                                         <Input type="number" placeholder="0" className="h-10 bg-white/5 border-white/5 rounded-xl text-center font-black text-xs" value={tempFat} onChange={e => setTempFat(e.target.value)} />
                                     </div>
                                 </div>
@@ -463,9 +463,9 @@ export function DietLog() {
 
                         <div className="grid grid-cols-2 gap-8">
                             <div className="space-y-3">
-                                <Label className="text-[9px] font-black text-white/20 uppercase tracking-widest">VISUAL RECORD (URL)</Label>
+                                <Label className="text-[9px] font-black text-white/60 uppercase tracking-widest">VISUAL RECORD (URL)</Label>
                                 <div className="relative">
-                                    <Camera className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
+                                    <Camera className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
                                     <Input
                                         className="pl-12 h-14 bg-white/5 border-white/5 rounded-2xl font-bold text-xs"
                                         placeholder="COPY IMAGE ENDPOINT..."
@@ -475,7 +475,7 @@ export function DietLog() {
                                 </div>
                             </div>
                             <div className="space-y-3">
-                                <Label className="text-[9px] font-black text-white/20 uppercase tracking-widest">PERFORMANCE NOTES</Label>
+                                <Label className="text-[9px] font-black text-white/60 uppercase tracking-widest">PERFORMANCE NOTES</Label>
                                 <Input
                                     className="h-14 bg-white/5 border-white/5 rounded-2xl font-bold text-xs"
                                     placeholder="ENTER MISSION MEMO..."
@@ -487,7 +487,7 @@ export function DietLog() {
 
                         <div className="flex gap-4 pt-10 border-t border-white/5 items-center">
                             <div className="flex-1 flex items-end gap-2">
-                                <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] mb-1.5">CUMULATIVE LOAD</span>
+                                <span className="text-[10px] font-black text-white/60 uppercase tracking-[0.2em] mb-1.5">CUMULATIVE LOAD</span>
                                 <span className="text-3xl font-black text-rose-500 tracking-tighter">
                                     {items.reduce((acc, i) => acc + i.calories, 0)}
                                     <small className="text-[11px] ml-1 opacity-40 uppercase">kcal</small>

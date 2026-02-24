@@ -364,10 +364,10 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
                             onClick={handleOpenManage}
                             className="flex flex-col items-center justify-center gap-3 group"
                         >
-                            <div className="w-[56px] h-[56px] rounded-2xl glass-surface text-white/30 flex items-center justify-center text-xl hover:scale-105 hover:bg-white/5 hover:text-white/60 transition-all duration-300 border-dashed border-white/10">
+                            <div className="w-[56px] h-[56px] rounded-2xl glass-surface text-white/50 flex items-center justify-center text-xl hover:scale-105 hover:bg-white/5 hover:text-white/60 transition-all duration-300 border-dashed border-white/10">
                                 <Plus className="w-6 h-6" />
                             </div>
-                            <span className="text-xs font-bold text-white/30 group-hover:text-white/60 transition-colors">
+                            <span className="text-xs font-bold text-white/50 group-hover:text-white/60 transition-colors">
                                 추가
                             </span>
                         </motion.button>
@@ -424,7 +424,7 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
                                     </motion.div>
                                 ))
                             ) : (
-                                <div className="h-full flex flex-col items-center justify-center text-white/20 text-sm font-medium py-8">
+                                <div className="h-full flex flex-col items-center justify-center text-white/60 text-sm font-medium py-8">
                                     <p>예정된 일정이 없습니다.</p>
                                 </div>
                             )}
@@ -433,7 +433,7 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
                         {todaysEvents.length > 3 && (
                             <Button
                                 variant="ghost"
-                                className="w-full mt-4 h-10 text-xs font-bold text-white/30 hover:bg-white/5 hover:text-white rounded-xl gap-2 transition-all"
+                                className="w-full mt-4 h-10 text-xs font-bold text-white/50 hover:bg-white/5 hover:text-white rounded-xl gap-2 transition-all"
                                 onClick={() => onQuickLink('schedule', 'basic', 'calendar')}
                             >
                                 전체 일정 보기 <ArrowRight className="w-4 h-4" />
@@ -531,7 +531,7 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
                                 );
                             })}
                             {goals.length === 0 && (
-                                <div className="h-full flex flex-col items-center justify-center text-white/20 text-sm font-medium py-8">
+                                <div className="h-full flex flex-col items-center justify-center text-white/60 text-sm font-medium py-8">
                                     <p>목표를 설정해보세요</p>
                                 </div>
                             )}
@@ -540,7 +540,7 @@ export function HomeDashboard({ onNavigate, onQuickLink }: HomeDashboardProps) {
                         {goals.length > 3 && (
                             <Button
                                 variant="ghost"
-                                className="w-full mt-4 h-10 text-xs font-bold text-white/30 hover:bg-white/5 hover:text-white rounded-xl gap-2 transition-all"
+                                className="w-full mt-4 h-10 text-xs font-bold text-white/50 hover:bg-white/5 hover:text-white rounded-xl gap-2 transition-all"
                                 onClick={() => onQuickLink('schedule', 'basic', 'goals')}
                             >
                                 전체 보기 <ArrowRight className="w-4 h-4" />

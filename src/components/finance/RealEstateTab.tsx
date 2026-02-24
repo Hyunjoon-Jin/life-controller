@@ -91,7 +91,7 @@ export function RealEstateTab() {
                         </div>
                         <div>
                             <h2 className="text-3xl font-black text-white tracking-tighter uppercase leading-none">GEOSPATIAL VAULT</h2>
-                            <p className="text-[10px] font-bold text-white/20 tracking-[0.3em] uppercase mt-2 italic flex items-center gap-2">
+                            <p className="text-[10px] font-bold text-white/60 tracking-[0.3em] uppercase mt-2 italic flex items-center gap-2">
                                 <Compass className="w-3 h-3 text-amber-500" /> TOPOGRAPHY SCAN: ACTIVE
                             </p>
                         </div>
@@ -99,10 +99,10 @@ export function RealEstateTab() {
 
                     <div className="flex items-center gap-4">
                         <div className="group relative w-[300px]">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within:text-amber-500 transition-colors" />
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 group-focus-within:text-amber-500 transition-colors" />
                             <Input
                                 placeholder="REGION / COMPLEX SCAN..."
-                                className="h-12 pl-12 bg-white/5 border-white/5 rounded-2xl text-white font-black text-[10px] tracking-widest uppercase placeholder:text-white/10 focus-visible:ring-amber-500/30"
+                                className="h-12 pl-12 bg-white/5 border-white/5 rounded-2xl text-white font-black text-[10px] tracking-widest uppercase placeholder:text-white/30 focus-visible:ring-amber-500/30"
                                 value={searchQuery}
                                 onChange={e => setSearchQuery(e.target.value)}
                                 onKeyDown={e => e.key === 'Enter' && handleExternalSearch()}
@@ -155,7 +155,7 @@ export function RealEstateTab() {
                                 <CardContent className="p-8 flex flex-col gap-6">
                                     <div>
                                         <h3 className="text-xl font-black text-white tracking-tight uppercase leading-tight mb-2 truncate">{scrap.title}</h3>
-                                        <div className="flex items-center gap-2 text-white/20 whitespace-nowrap overflow-hidden">
+                                        <div className="flex items-center gap-2 text-white/60 whitespace-nowrap overflow-hidden">
                                             <MapPin className="w-3 h-3 text-amber-500/40" />
                                             <span className="text-[9px] font-bold uppercase tracking-widest truncate">{scrap.location || 'COORD_UNDEFINED'}</span>
                                         </div>
@@ -163,7 +163,7 @@ export function RealEstateTab() {
 
                                     <div className="flex items-baseline gap-3">
                                         <span className="text-2xl font-black text-amber-500 tracking-tighter">{scrap.price || 'P_TBC'}</span>
-                                        <span className="text-[9px] font-bold text-white/10 tracking-widest uppercase">VALUATION</span>
+                                        <span className="text-[9px] font-bold text-white/40 tracking-widest uppercase">VALUATION</span>
                                     </div>
 
                                     {scrap.memo && (
@@ -203,16 +203,16 @@ export function RealEstateTab() {
                 <DialogContent className="glass-premium border border-white/10 text-white rounded-[40px] p-0 shadow-2xl sm:max-w-xl max-h-[90vh] overflow-hidden">
                     <DialogHeader className="p-10 pb-0">
                         <DialogTitle className="text-3xl font-black tracking-tighter uppercase mb-2">INTELLIGENT SCRAPE</DialogTitle>
-                        <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] italic">INGESTING ASSET DATA INTO THE GEOSPATIAL VAULT</p>
+                        <p className="text-[10px] font-bold text-white/60 uppercase tracking-[0.2em] italic">INGESTING ASSET DATA INTO THE GEOSPATIAL VAULT</p>
                     </DialogHeader>
                     <div className="overflow-y-auto custom-scrollbar p-10 pt-4 space-y-8">
                         <div className="grid gap-6">
                             <div className="space-y-3">
-                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">SOURCE URL (NAVER REALTY)</Label>
+                                <Label className="text-[10px] font-black text-white/60 uppercase tracking-widest ml-2">SOURCE URL (NAVER REALTY)</Label>
                                 <div className="flex gap-4">
                                     <Input
                                         placeholder="INPUT ESTATE LINK..."
-                                        className="h-14 font-black text-[10px] tracking-widest uppercase bg-white/5 border-white/5 rounded-2xl text-white placeholder:text-white/10"
+                                        className="h-14 font-black text-[10px] tracking-widest uppercase bg-white/5 border-white/5 rounded-2xl text-white placeholder:text-white/30"
                                         value={url}
                                         onChange={e => setUrl(e.target.value)}
                                     />
@@ -229,25 +229,25 @@ export function RealEstateTab() {
                             </div>
 
                             <div className="space-y-3">
-                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">ASSET IDENTIFIER</Label>
+                                <Label className="text-[10px] font-black text-white/60 uppercase tracking-widest ml-2">ASSET IDENTIFIER</Label>
                                 <Input placeholder="EX: BANPO XI COMPLEX 84SQM" className="h-12 font-black text-sm tracking-widest uppercase bg-white/5 border-white/5 rounded-2xl text-white" value={title} onChange={e => setTitle(e.target.value)} />
                             </div>
 
                             <div className="grid grid-cols-2 gap-6">
                                 <div className="space-y-3">
-                                    <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">GEO-LOCATION</Label>
+                                    <Label className="text-[10px] font-black text-white/60 uppercase tracking-widest ml-2">GEO-LOCATION</Label>
                                     <Input placeholder="SEOUL, SEOCHO-GU..." className="h-12 font-black text-[10px] tracking-widest uppercase bg-white/5 border-white/5 rounded-2xl text-white" value={location} onChange={e => setLocation(e.target.value)} />
                                 </div>
                                 <div className="space-y-3">
-                                    <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">VALUATION (KRW)</Label>
+                                    <Label className="text-[10px] font-black text-white/60 uppercase tracking-widest ml-2">VALUATION (KRW)</Label>
                                     <Input placeholder="EX: 3.5B" className="h-12 font-black text-[10px] tracking-widest bg-white/5 border-white/5 rounded-2xl text-white" value={price} onChange={e => setPrice(e.target.value)} />
                                 </div>
                             </div>
 
                             <div className="space-y-3">
-                                <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-2">ON-SITE OBSERVATIONS</Label>
+                                <Label className="text-[10px] font-black text-white/60 uppercase tracking-widest ml-2">ON-SITE OBSERVATIONS</Label>
                                 <textarea
-                                    className="min-h-[150px] w-full rounded-3xl border border-white/5 bg-white/5 p-6 text-xs font-bold text-white placeholder:text-white/10 leading-relaxed resize-none focus:ring-2 focus:ring-amber-500/20"
+                                    className="min-h-[150px] w-full rounded-3xl border border-white/5 bg-white/5 p-6 text-xs font-bold text-white placeholder:text-white/30 leading-relaxed resize-none focus:ring-2 focus:ring-amber-500/20"
                                     placeholder="INFRASTRUCTURE, EDUCATION NODES, TRANSPORTATION ACCESS..."
                                     value={memo}
                                     onChange={e => setMemo(e.target.value)}

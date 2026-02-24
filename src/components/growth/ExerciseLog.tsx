@@ -306,7 +306,7 @@ export function ExerciseLog() {
                         </div>
                         <div>
                             <h2 className="text-3xl font-black text-white tracking-tighter uppercase leading-none">운동 기록</h2>
-                            <p className="text-[10px] font-bold text-white/20 tracking-[0.3em] uppercase mt-2 italic flex items-center gap-2">
+                            <p className="text-[10px] font-bold text-white/60 tracking-[0.3em] uppercase mt-2 italic flex items-center gap-2">
                                 <Activity className="w-3 h-3" /> 시스템 상태: 최적 성능
                             </p>
                         </div>
@@ -482,13 +482,13 @@ export function ExerciseLog() {
                                                                     {session.category === 'weight' ? <Dumbbell className="w-5 h-5" /> : <Footprints className="w-5 h-5" />}
                                                                 </div>
                                                                 <div>
-                                                                    <div className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em]">{format(new Date(session.date), 'MMM dd | HH:mm')}</div>
+                                                                    <div className="text-[9px] font-black text-white/60 uppercase tracking-[0.2em]">{format(new Date(session.date), 'MMM dd | HH:mm')}</div>
                                                                     <div className="text-lg font-black text-white uppercase tracking-tighter mt-0.5">{session.type}</div>
                                                                 </div>
                                                             </div>
                                                             <button
                                                                 onClick={() => deleteExerciseSession(session.id)}
-                                                                className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center opacity-0 group-hover/item:opacity-100 hover:bg-rose-500 hover:text-white transition-all text-white/20"
+                                                                className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center opacity-0 group-hover/item:opacity-100 hover:bg-rose-500 hover:text-white transition-all text-white/40"
                                                             >
                                                                 <Trash2 className="w-4 h-4" />
                                                             </button>
@@ -544,13 +544,13 @@ export function ExerciseLog() {
                                             </div>
                                             <button
                                                 onClick={() => deleteExerciseRoutine(routine.id)}
-                                                className="w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center text-white/20 hover:bg-rose-500 hover:text-white transition-all opacity-0 group-hover:opacity-100"
+                                                className="w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center text-white/40 hover:bg-rose-500 hover:text-white transition-all opacity-0 group-hover:opacity-100"
                                             >
                                                 <X className="w-4 h-4" />
                                             </button>
                                         </div>
                                         <h4 className="text-xl font-black text-white tracking-tighter uppercase mb-2">{routine.name}</h4>
-                                        <div className="text-[10px] font-black text-white/30 tracking-widest uppercase mb-6 flex items-center gap-2">
+                                        <div className="text-[10px] font-black text-white/60 tracking-widest uppercase mb-6 flex items-center gap-2">
                                             <Flame className="w-3 h-3 text-rose-500" /> {routine.items.length}가지 운동
                                         </div>
 
@@ -561,7 +561,7 @@ export function ExerciseLog() {
                                                     {item.type} {item.sets ? `(${item.sets.length}세트)` : ''}
                                                 </div>
                                             ))}
-                                            {routine.items.length > 3 && <div className="text-[9px] font-black text-white/20 pl-4">+{routine.items.length - 3}개 더...</div>}
+                                            {routine.items.length > 3 && <div className="text-[9px] font-black text-white/60 pl-4">+{routine.items.length - 3}개 더...</div>}
                                         </div>
 
                                         <Button
@@ -624,7 +624,7 @@ export function ExerciseLog() {
                         <DialogTitle className="text-3xl font-black tracking-tighter uppercase mb-2">
                             {addStep === 'category' ? '카테고리 선택' : addStep === 'type' ? '운동 선택' : type}
                         </DialogTitle>
-                        <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] italic">
+                        <p className="text-[10px] font-bold text-white/60 uppercase tracking-[0.2em] italic">
                             {addStep === 'category' ? '운동 카테고리를 선택하세요' : '정확한 운동 종목을 선택하세요'}
                         </p>
                     </DialogHeader>
@@ -656,13 +656,13 @@ export function ExerciseLog() {
                         {addStep === 'type' && (
                             <div className="space-y-8 max-h-[450px] overflow-y-auto custom-scrollbar pr-4">
                                 <div className="space-y-3">
-                                    <label className="text-[9px] font-black text-white/20 uppercase tracking-widest">새로운 운동 추가</label>
+                                    <label className="text-[9px] font-black text-white/60 uppercase tracking-widest">새로운 운동 추가</label>
                                     <div className="flex gap-3">
                                         <Input
                                             placeholder="운동 이름 입력..."
                                             value={searchQuery}
                                             onChange={(e) => setSearchQuery(e.target.value)}
-                                            className="h-14 font-black text-sm border-white/5 bg-white/5 focus-visible:ring-rose-500/30 rounded-2xl text-white placeholder:text-white/10"
+                                            className="h-14 font-black text-sm border-white/5 bg-white/5 focus-visible:ring-rose-500/30 rounded-2xl text-white placeholder:text-white/40"
                                         />
                                         <Button
                                             className="w-14 h-14 rounded-2xl bg-rose-500 hover:bg-rose-600 text-white shadow-lg shrink-0"
@@ -692,7 +692,7 @@ export function ExerciseLog() {
                                         </Button>
                                     ))}
                                 </div>
-                                <Button variant="ghost" className="w-full h-12 font-black text-[10px] text-white/20 tracking-widest uppercase hover:text-white transition-all" onClick={() => setAddStep('category')}>
+                                <Button variant="ghost" className="w-full h-12 font-black text-[10px] text-white/60 tracking-widest uppercase hover:text-white transition-all" onClick={() => setAddStep('category')}>
                                     <ArrowLeft className="mr-3 w-4 h-4" /> 카테고리로 돌아가기
                                 </Button>
                             </div>
@@ -703,7 +703,7 @@ export function ExerciseLog() {
                                 {category === 'weight' && (
                                     <div className="space-y-8">
                                         <div className="space-y-4">
-                                            <label className="text-[9px] font-black text-white/20 uppercase tracking-widest">목표 부위</label>
+                                            <label className="text-[9px] font-black text-white/60 uppercase tracking-widest">목표 부위</label>
                                             <div className="flex flex-wrap gap-2">
                                                 {TARGET_PARTS.map(part => (
                                                     <button
@@ -711,7 +711,7 @@ export function ExerciseLog() {
                                                         onClick={() => setTargetPart(part)}
                                                         className={cn(
                                                             "text-[9px] font-black uppercase tracking-widest px-4 py-2 rounded-xl border transition-all",
-                                                            targetPart === part ? "bg-rose-500 border-rose-500 text-white shadow-lg" : "bg-white/5 border-white/5 text-white/30 hover:bg-white/10"
+                                                            targetPart === part ? "bg-rose-500 border-rose-500 text-white shadow-lg" : "bg-white/5 border-white/5 text-white/60 hover:bg-white/10"
                                                         )}
                                                     >
                                                         {part}
@@ -721,16 +721,16 @@ export function ExerciseLog() {
                                         </div>
 
                                         <div className="space-y-4">
-                                            <label className="text-[9px] font-black text-white/20 uppercase tracking-widest">세트 입력</label>
+                                            <label className="text-[9px] font-black text-white/60 uppercase tracking-widest">세트 입력</label>
                                             <div className="flex items-center gap-4">
                                                 <div className="flex-1 space-y-2">
                                                     <Input type="number" value={tempWeight} onChange={e => setTempWeight(e.target.value)} placeholder="00" className="h-16 text-2xl font-black text-center bg-white/5 border-white/5 rounded-2xl focus:ring-rose-500/30" />
-                                                    <div className="text-[8px] text-center font-black text-white/20 uppercase tracking-widest">무게 (KG)</div>
+                                                    <div className="text-[8px] text-center font-black text-white/60 uppercase tracking-widest">무게 (KG)</div>
                                                 </div>
-                                                <X className="w-5 h-5 text-white/10 mt-[-20px]" />
+                                                <X className="w-5 h-5 text-white/40 mt-[-20px]" />
                                                 <div className="flex-1 space-y-2">
                                                     <Input type="number" value={tempReps} onChange={e => setTempReps(e.target.value)} placeholder="00" className="h-16 text-2xl font-black text-center bg-white/5 border-white/5 rounded-2xl focus:ring-rose-500/30" />
-                                                    <div className="text-[8px] text-center font-black text-white/20 uppercase tracking-widest">횟수</div>
+                                                    <div className="text-[8px] text-center font-black text-white/60 uppercase tracking-widest">횟수</div>
                                                 </div>
                                                 <Button onClick={handleAddSet} className="w-16 h-16 rounded-2xl bg-rose-500 hover:bg-rose-600 shadow-xl transition-all self-start">
                                                     <Plus className="w-6 h-6" strokeWidth={3} />
@@ -742,11 +742,11 @@ export function ExerciseLog() {
                                             <div className="bg-white/5 rounded-[28px] p-6 border border-white/5 space-y-3 max-h-[180px] overflow-y-auto custom-scrollbar">
                                                 {sets.map((s, idx) => (
                                                     <div key={s.id} className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5 shadow-inner group/set">
-                                                        <span className="font-black text-white/20 text-[10px] w-8">#{idx + 1}</span>
+                                                        <span className="font-black text-white/60 text-[10px] w-8">#{idx + 1}</span>
                                                         <div className="flex-1 text-center font-black tracking-widest text-white uppercase text-[11px]">
                                                             {s.weight} KG <span className="text-rose-500 mx-3">|</span> {s.reps}회
                                                         </div>
-                                                        <button onClick={() => handleDeleteSet(s.id)} className="text-white/10 hover:text-rose-500 transition-colors">
+                                                        <button onClick={() => handleDeleteSet(s.id)} className="text-white/40 hover:text-rose-500 transition-colors">
                                                             <Trash2 className="w-4 h-4" />
                                                         </button>
                                                     </div>
@@ -760,23 +760,23 @@ export function ExerciseLog() {
                                     <div className="space-y-8">
                                         <div className="grid grid-cols-2 gap-8">
                                             <div className="space-y-3">
-                                                <label className="text-[9px] font-black text-white/20 uppercase tracking-widest">분</label>
+                                                <label className="text-[9px] font-black text-white/60 uppercase tracking-widest">분</label>
                                                 <Input type="number" value={durationMin} onChange={e => setDurationMin(e.target.value)} placeholder="0" className="h-14 font-black text-xl text-center bg-white/5 border-white/5 rounded-2xl" />
                                             </div>
                                             <div className="space-y-3">
-                                                <label className="text-[9px] font-black text-white/20 uppercase tracking-widest">초</label>
+                                                <label className="text-[9px] font-black text-white/60 uppercase tracking-widest">초</label>
                                                 <Input type="number" value={durationSec} onChange={e => setDurationSec(e.target.value)} placeholder="0" className="h-14 font-black text-xl text-center bg-white/5 border-white/5 rounded-2xl" />
                                             </div>
                                         </div>
                                         {category === 'cardio' && (
                                             <div className="space-y-3">
-                                                <label className="text-[9px] font-black text-white/20 uppercase tracking-widest">거리 (KM)</label>
+                                                <label className="text-[9px] font-black text-white/60 uppercase tracking-widest">거리 (KM)</label>
                                                 <Input type="number" value={distance} onChange={e => setDistance(e.target.value)} placeholder="0.00" className="h-14 font-black text-xl text-center bg-white/5 border-white/5 rounded-2xl" />
                                             </div>
                                         )}
                                         {category === 'sport' && (
                                             <div className="space-y-3">
-                                                <label className="text-[9px] font-black text-white/20 uppercase tracking-widest">결과</label>
+                                                <label className="text-[9px] font-black text-white/60 uppercase tracking-widest">결과</label>
                                                 <Input value={result} onChange={e => setResult(e.target.value)} placeholder="점수 / 결과..." className="h-14 font-black text-lg bg-white/5 border-white/5 rounded-2xl" />
                                             </div>
                                         )}
@@ -804,11 +804,11 @@ export function ExerciseLog() {
                     {/* Routine content would go here, omitting for brevity in this massive edit, 
                         but it should follow the same visual language - glass-premium, rose/purple focus */}
                     <div className="p-10 pt-4 bg-muted/5">
-                        <p className="text-xs font-bold text-white/30 uppercase tracking-[0.2em] italic mb-10">루틴 구성 인터페이스 활성화 중...</p>
+                        <p className="text-xs font-bold text-white/60 uppercase tracking-[0.2em] italic mb-10">루틴 구성 인터페이스 활성화 중...</p>
                         {/* Placeholder for routine builder UI */}
                         <div className="space-y-6">
                             <div className="space-y-3">
-                                <label className="text-[9px] font-black text-white/20 uppercase tracking-widest">루틴 이름</label>
+                                <label className="text-[9px] font-black text-white/60 uppercase tracking-widest">루틴 이름</label>
                                 <Input value={routineName} onChange={e => setRoutineName(e.target.value)} placeholder="루틴 이름 입력..." className="h-14 font-black text-sm border-white/5 bg-white/5 rounded-2xl" />
                             </div>
                             {/* ... other routine builder fields ... */}

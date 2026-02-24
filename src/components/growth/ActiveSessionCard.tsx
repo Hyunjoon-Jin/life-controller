@@ -81,7 +81,7 @@ export function ActiveSessionCard({ index, session, onUpdate, onDelete }: Active
                 </div>
                 <button
                     onClick={() => onDelete(session.id)}
-                    className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-white/20 hover:bg-rose-500 hover:text-white transition-all active:scale-90"
+                    className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-white/40 hover:bg-rose-500 hover:text-white transition-all active:scale-90"
                 >
                     <Trash2 className="w-5 h-5" />
                 </button>
@@ -92,7 +92,7 @@ export function ActiveSessionCard({ index, session, onUpdate, onDelete }: Active
                     {/* Weight/Reps Input */}
                     <div className="flex items-center gap-4 bg-white/5 p-6 rounded-[28px] border border-white/5">
                         <div className="flex-1 space-y-2">
-                            <label className="text-[9px] font-black text-white/20 uppercase tracking-widest ml-2">무게 (KG)</label>
+                            <label className="text-[9px] font-black text-white/60 uppercase tracking-widest ml-2">무게 (KG)</label>
                             <Input
                                 type="number"
                                 value={weight}
@@ -103,7 +103,7 @@ export function ActiveSessionCard({ index, session, onUpdate, onDelete }: Active
                         </div>
                         <div className="w-px h-10 bg-white/5 shrink-0" />
                         <div className="flex-1 space-y-2">
-                            <label className="text-[9px] font-black text-white/20 uppercase tracking-widest ml-2">횟수</label>
+                            <label className="text-[9px] font-black text-white/60 uppercase tracking-widest ml-2">횟수</label>
                             <Input
                                 type="number"
                                 value={reps}
@@ -134,19 +134,19 @@ export function ActiveSessionCard({ index, session, onUpdate, onDelete }: Active
                                         className="flex justify-between items-center p-4 rounded-2xl bg-white/5 border border-transparent hover:border-white/10 transition-all group/set"
                                     >
                                         <div className="flex items-center gap-6">
-                                            <span className="font-black text-[10px] text-white/20 w-8">{set.setNumber}세트</span>
+                                            <span className="font-black text-[10px] text-white/60 w-8">{set.setNumber}세트</span>
                                             <div className="flex items-end gap-1">
                                                 <span className="text-xl font-black text-white tracking-tighter">{set.weight}</span>
                                                 <span className="text-[10px] font-black text-rose-500 mb-1">KG</span>
                                             </div>
-                                            <X className="w-3 h-3 text-white/10" />
+                                            <X className="w-3 h-3 text-white/40" />
                                             <div className="flex items-end gap-1">
                                                 <span className="text-xl font-black text-white tracking-tighter">{set.reps}</span>
                                                 <span className="text-[10px] font-black text-sky-500 mb-1">회</span>
                                             </div>
                                         </div>
                                         <button
-                                            className="w-8 h-8 rounded-lg bg-white/5 text-white/10 opacity-0 group-hover/set:opacity-100 hover:bg-rose-500 hover:text-white transition-all transform hover:rotate-12"
+                                            className="w-8 h-8 rounded-lg bg-white/5 text-white/40 opacity-0 group-hover/set:opacity-100 hover:bg-rose-500 hover:text-white transition-all transform hover:rotate-12"
                                             onClick={() => handleDeleteSet(set.id)}
                                         >
                                             <Trash2 className="w-4 h-4" />
@@ -158,7 +158,7 @@ export function ActiveSessionCard({ index, session, onUpdate, onDelete }: Active
                             <div className="flex items-center justify-between pt-6 border-t border-white/5 mt-4">
                                 <div className="flex items-center gap-2">
                                     <Flame className="w-4 h-4 text-rose-500" />
-                                    <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">누적 볼륨</span>
+                                    <span className="text-[10px] font-black text-white/60 uppercase tracking-widest">누적 볼륨</span>
                                 </div>
                                 <div className="flex items-end gap-1">
                                     <span className="text-2xl font-black text-white tracking-tighter">
@@ -179,19 +179,19 @@ export function ActiveSessionCard({ index, session, onUpdate, onDelete }: Active
                             <>
                                 {session.distance && (
                                     <div className="flex flex-col gap-1">
-                                        <label className="text-[9px] font-black text-white/20 uppercase tracking-widest">거리</label>
+                                        <label className="text-[9px] font-black text-white/60 uppercase tracking-widest">거리</label>
                                         <span className="text-3xl font-black text-white tracking-tighter">{session.distance} <small className="text-xs text-sky-500">KM</small></span>
                                     </div>
                                 )}
                                 {session.duration && (
                                     <div className="flex flex-col gap-1">
-                                        <label className="text-[9px] font-black text-white/20 uppercase tracking-widest">시간</label>
+                                        <label className="text-[9px] font-black text-white/60 uppercase tracking-widest">시간</label>
                                         <span className="text-3xl font-black text-white tracking-tighter">{Math.floor(session.duration)} <small className="text-xs text-rose-500">분</small></span>
                                     </div>
                                 )}
                                 {session.count && (
                                     <div className="flex flex-col gap-1">
-                                        <label className="text-[9px] font-black text-white/20 uppercase tracking-widest">횟수</label>
+                                        <label className="text-[9px] font-black text-white/60 uppercase tracking-widest">횟수</label>
                                         <span className="text-3xl font-black text-white tracking-tighter">{session.count} <small className="text-xs text-amber-500">바퀴</small></span>
                                     </div>
                                 )}
@@ -199,19 +199,19 @@ export function ActiveSessionCard({ index, session, onUpdate, onDelete }: Active
                         )}
                         {session.category === 'fitness' && (
                             <div className="flex flex-col gap-1">
-                                <label className="text-[9px] font-black text-white/20 uppercase tracking-widest">운동 시간</label>
+                                <label className="text-[9px] font-black text-white/60 uppercase tracking-widest">운동 시간</label>
                                 <span className="text-3xl font-black text-white tracking-tighter">{Math.floor(session.duration || 0)} <small className="text-xs text-emerald-500">분</small></span>
                             </div>
                         )}
                         {session.category === 'sport' && (
                             <>
                                 <div className="flex flex-col gap-1">
-                                    <label className="text-[9px] font-black text-white/20 uppercase tracking-widest">시간</label>
+                                    <label className="text-[9px] font-black text-white/60 uppercase tracking-widest">시간</label>
                                     <span className="text-3xl font-black text-white tracking-tighter">{Math.floor(session.duration || 0)} <small className="text-xs text-amber-500">분</small></span>
                                 </div>
                                 {session.score && (
                                     <div className="flex flex-col gap-1 pl-8 border-l border-white/10">
-                                        <label className="text-[9px] font-black text-white/20 uppercase tracking-widest">점수</label>
+                                        <label className="text-[9px] font-black text-white/60 uppercase tracking-widest">점수</label>
                                         <span className="text-3xl font-black text-white tracking-tighter">{session.score} <small className="text-xs text-rose-500">점</small></span>
                                     </div>
                                 )}

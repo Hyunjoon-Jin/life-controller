@@ -406,7 +406,7 @@ export function WeekView({ currentDate, showProjectTasks, onDateClick }: { curre
                             )}
                             onClick={() => onDateClick(day)}
                         >
-                            <div className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">{format(day, 'EEE', { locale: ko })}</div>
+                            <div className="text-[10px] font-black text-white/60 uppercase tracking-[0.2em]">{format(day, 'EEE', { locale: ko })}</div>
                             <div
                                 className={cn(
                                     "w-9 h-9 mx-auto flex items-center justify-center rounded-xl text-sm font-black transition-all duration-500",
@@ -434,7 +434,7 @@ export function WeekView({ currentDate, showProjectTasks, onDateClick }: { curre
                 <div className="w-20 flex-shrink-0 bg-black/20 backdrop-blur-md border-r border-white/5 z-20 sticky left-0">
                     {hours.map((hour) => (
                         <div key={hour} className="h-[60px] relative border-b last:border-b-0 border-white/[0.02]">
-                            <span className="absolute -top-2.5 right-3 text-[10px] text-white/20 font-black tracking-tight uppercase">
+                            <span className="absolute -top-2.5 right-3 text-[10px] text-white/60 font-black tracking-tight uppercase">
                                 {format(new Date().setHours(hour, 0, 0, 0), 'h aa')}
                             </span>
                         </div>
@@ -524,7 +524,7 @@ export function WeekView({ currentDate, showProjectTasks, onDateClick }: { curre
                                     >
                                         <div className="p-2 flex flex-col h-full gap-0.5">
                                             <div className="font-black truncate uppercase tracking-tight text-white/95">{event.title}</div>
-                                            <div className="text-[9px] font-bold text-white/40 group-hover:text-white/60 transition-colors">
+                                            <div className="text-[9px] font-bold text-white/60 group-hover:text-white/80 transition-colors">
                                                 {format(event.start, 'HH:mm')} - {format(event.end, 'HH:mm')}
                                             </div>
                                         </div>

@@ -454,7 +454,7 @@ export function DayView({ currentDate, showProjectTasks, onNext, onPrev }: { cur
                     <div className="text-6xl font-black tracking-tighter text-white drop-shadow-2xl">{format(currentDate, 'd')}</div>
                     <div className="flex flex-col">
                         <div className="text-xl font-black text-white/90 uppercase tracking-widest">{format(currentDate, 'EEEE', { locale: ko })}</div>
-                        <div className="text-xs font-bold text-white/30 uppercase tracking-[0.2em]">{format(currentDate, 'MMMM yyyy', { locale: ko })}</div>
+                        <div className="text-xs font-bold text-white/60 uppercase tracking-[0.2em]">{format(currentDate, 'MMMM yyyy', { locale: ko })}</div>
                     </div>
                 </div>
 
@@ -486,7 +486,7 @@ export function DayView({ currentDate, showProjectTasks, onNext, onPrev }: { cur
                                     "px-3 py-1.5 text-[10px] font-black rounded-xl transition-all duration-300 tracking-wider",
                                     fontSize === size
                                         ? "bg-emerald-500 text-white shadow-[0_5px_15px_rgba(16,185,129,0.4)]"
-                                        : "text-white/30 hover:text-white/60"
+                                        : "text-white/50 hover:text-white/70"
                                 )}
                             >
                                 {size.toUpperCase()}
@@ -526,7 +526,7 @@ export function DayView({ currentDate, showProjectTasks, onNext, onPrev }: { cur
                                 style={{ height: pixelsPerHour }}
                             >
                                 {/* Time Label */}
-                                <div className="absolute -top-3 left-4 text-[10px] text-white/20 font-black tracking-widest uppercase w-14 text-right">
+                                <div className="absolute -top-3 left-4 text-[10px] text-white/60 font-black tracking-widest uppercase w-14 text-right">
                                     {format(new Date().setHours(hour, 0, 0, 0), 'h aa')}
                                 </div>
 
@@ -616,7 +616,7 @@ export function DayView({ currentDate, showProjectTasks, onNext, onPrev }: { cur
 
                                             {/* Category Tag */}
                                             {!isShort && !isHabit && (
-                                                <span className="text-[10px] font-black opacity-30 px-2 py-0.5 rounded-lg bg-white/10 shrink-0 uppercase tracking-widest leading-none">
+                                                <span className="text-[10px] font-black opacity-60 px-2 py-0.5 rounded-lg bg-white/10 shrink-0 uppercase tracking-widest leading-none">
                                                     {event.type === 'work' ? 'WORK' :
                                                         event.type === 'study' ? 'STUDY' :
                                                             event.type === 'hobby' ? 'HOBBY' :
@@ -635,14 +635,14 @@ export function DayView({ currentDate, showProjectTasks, onNext, onPrev }: { cur
                                         </div>
 
                                         {isShort && (
-                                            <div className={cn("font-bold opacity-30 ml-auto shrink-0 tracking-tighter", getTextSizeClass(fontSize, 'time'))}>
+                                            <div className={cn("font-bold opacity-60 ml-auto shrink-0 tracking-tighter", getTextSizeClass(fontSize, 'time'))}>
                                                 {format(displayEvent.start, 'HH:mm')}
                                             </div>
                                         )}
                                     </div>
 
                                     {!isShort && (
-                                        <div className={cn("font-bold opacity-30 mt-auto tracking-tighter", getTextSizeClass(fontSize, 'time'))}>
+                                        <div className={cn("font-bold opacity-60 mt-auto tracking-tighter", getTextSizeClass(fontSize, 'time'))}>
                                             {format(displayEvent.start, 'HH:mm')} - {format(displayEvent.end, 'HH:mm')}
                                         </div>
                                     )}
@@ -696,7 +696,7 @@ export function DayView({ currentDate, showProjectTasks, onNext, onPrev }: { cur
                     <DialogHeader>
                         <DialogTitle className="text-2xl font-black tracking-tight">습관 일정 삭제</DialogTitle>
                     </DialogHeader>
-                    <div className="py-6 text-sm font-bold text-white/40 leading-relaxed uppercase tracking-wide">
+                    <div className="py-6 text-sm font-bold text-white/60 leading-relaxed uppercase tracking-wide">
                         이 습관 일정을 어떻게 삭제하시겠습니까?
                     </div>
                     <DialogFooter className="flex-col sm:flex-row gap-3">
@@ -717,7 +717,7 @@ export function DayView({ currentDate, showProjectTasks, onNext, onPrev }: { cur
                         <Button
                             variant="ghost"
                             onClick={() => setShowDeleteHabitDialog(false)}
-                            className="h-12 rounded-xl text-white/30 hover:text-white font-black tracking-widest"
+                            className="h-12 rounded-xl text-white/50 hover:text-white font-black tracking-widest"
                         >
                             취소
                         </Button>
@@ -730,7 +730,7 @@ export function DayView({ currentDate, showProjectTasks, onNext, onPrev }: { cur
                     <DialogHeader>
                         <DialogTitle className="text-2xl font-black tracking-tight">습관 일정 변경</DialogTitle>
                     </DialogHeader>
-                    <div className="py-6 text-sm font-bold text-white/40 leading-relaxed uppercase tracking-wide">
+                    <div className="py-6 text-sm font-bold text-white/60 leading-relaxed uppercase tracking-wide">
                         시간대가 변경되었습니다. 어떻게 반영할까요?
                     </div>
                     <DialogFooter className="flex-col sm:flex-row gap-3">
@@ -781,7 +781,7 @@ export function DayView({ currentDate, showProjectTasks, onNext, onPrev }: { cur
                                 setShowHabitUpdateChoiceDialog(false);
                                 setPendingHabitUpdate(null);
                             }}
-                            className="h-12 rounded-xl text-white/30 hover:text-white font-black tracking-widest"
+                            className="h-12 rounded-xl text-white/50 hover:text-white font-black tracking-widest"
                         >
                             취소
                         </Button>
