@@ -162,7 +162,7 @@ export function MobileBottomNav({
                         )}>
                             <Home className="w-5 h-5" />
                         </div>
-                        <span className={cn("text-[9px] font-black tracking-widest", isActive('home') ? "text-emerald-400" : "text-white/20")}>HOME</span>
+                        <span className={cn("text-[9px] font-black tracking-widest", isActive('home') ? "text-emerald-400" : "text-white/20")}>홈</span>
                     </motion.button>
 
                     <motion.button onClick={() => handleNavTap('basic')} whileTap={{ scale: 0.9 }} className="flex flex-col items-center justify-center w-full h-full gap-1.5 group relative z-10">
@@ -172,7 +172,7 @@ export function MobileBottomNav({
                         )}>
                             <Calendar className="w-5 h-5" />
                         </div>
-                        <span className={cn("text-[9px] font-black tracking-widest", isActive('basic') ? "text-emerald-400" : "text-white/20")}>LIFE</span>
+                        <span className={cn("text-[9px] font-black tracking-widest", isActive('basic') ? "text-emerald-400" : "text-white/20")}>라이프</span>
                     </motion.button>
 
                     <motion.button onClick={() => handleNavTap('health')} whileTap={{ scale: 0.9 }} className="flex flex-col items-center justify-center w-full h-full gap-1.5 group relative z-10">
@@ -182,7 +182,7 @@ export function MobileBottomNav({
                         )}>
                             <Activity className="w-5 h-5" />
                         </div>
-                        <span className={cn("text-[9px] font-black tracking-widest", isActive('health') ? "text-emerald-400" : "text-white/20")}>HEALTH</span>
+                        <span className={cn("text-[9px] font-black tracking-widest", isActive('health') ? "text-emerald-400" : "text-white/20")}>건강</span>
                     </motion.button>
 
                     <Sheet>
@@ -191,12 +191,12 @@ export function MobileBottomNav({
                                 <div className="w-10 h-10 rounded-2xl flex items-center justify-center text-white/30 group-hover:text-white/60">
                                     <Menu className="w-5 h-5" />
                                 </div>
-                                <span className="text-[9px] font-black tracking-widest text-white/20">ALL</span>
+                                <span className="text-[9px] font-black tracking-widest text-white/20">전체</span>
                             </motion.button>
                         </SheetTrigger>
                         <SheetContent side="bottom" className="glass-premium rounded-t-[40px] h-[min(70vh,600px)] max-h-[85svh] border-t border-white/10 text-white p-5 sm:p-8 flex flex-col">
                             <SheetHeader className="mb-5 sm:mb-8 shrink-0">
-                                <SheetTitle className="text-2xl font-black text-white px-2">EXPLORE</SheetTitle>
+                                <SheetTitle className="text-2xl font-black text-white px-2">둘러보기</SheetTitle>
                             </SheetHeader>
                             <div className="grid grid-cols-2 gap-3 flex-1 overflow-y-auto no-scrollbar pb-safe pb-6 min-h-0">
                                 <button onClick={() => { setMainMode('schedule'); setActiveCategory('finance'); setExpandedCategory(null); }} className="flex flex-col items-start gap-4 p-6 glass-premium border border-white/5 rounded-[32px] group">
@@ -204,7 +204,7 @@ export function MobileBottomNav({
                                         <DollarSign className="w-6 h-6" />
                                     </div>
                                     <div className="text-left">
-                                        <div className="text-lg font-black text-white">ECONOMY</div>
+                                        <div className="text-lg font-black text-white">경제</div>
                                         <div className="text-xs text-white/30 font-medium">자산 및 지출 관리</div>
                                     </div>
                                 </button>
@@ -213,7 +213,7 @@ export function MobileBottomNav({
                                         <PenTool className="w-6 h-6" />
                                     </div>
                                     <div className="text-left">
-                                        <div className="text-lg font-black text-white">RECORDS</div>
+                                        <div className="text-lg font-black text-white">기록</div>
                                         <div className="text-xs text-white/30 font-medium">생각과 일상 기록</div>
                                     </div>
                                 </button>
@@ -223,8 +223,8 @@ export function MobileBottomNav({
                                     </div>
                                     <div className="flex-1 text-left">
                                         <div className="flex items-center gap-2">
-                                            <div className="text-lg font-black text-white text-amber-500">AMBITION MODE</div>
-                                            <div className="px-2 py-0.5 rounded-full bg-amber-500/10 text-[9px] text-amber-500 font-black border border-amber-500/20">SWITCH</div>
+                                            <div className="text-lg font-black text-white text-amber-500">야망 모드</div>
+                                            <div className="px-2 py-0.5 rounded-full bg-amber-500/10 text-[9px] text-amber-500 font-black border border-amber-500/20">전환하기</div>
                                         </div>
                                         <div className="text-xs text-white/30 font-medium mt-1">인생의 야망과 전략적 목표를 한자리에서 관리합니다</div>
                                     </div>
@@ -236,8 +236,8 @@ export function MobileBottomNav({
                                     </div>
                                     <div className="flex-1 text-left">
                                         <div className="flex items-center gap-2">
-                                            <div className="text-lg font-black text-white text-emerald-400">WORK MODE</div>
-                                            <div className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-[9px] text-emerald-400 font-black border border-emerald-500/20">SWITCH</div>
+                                            <div className="text-lg font-black text-white text-emerald-400">워크 모드</div>
+                                            <div className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-[9px] text-emerald-400 font-black border border-emerald-500/20">전환하기</div>
                                         </div>
                                         <div className="text-xs text-white/30 font-medium mt-1">전문가용 생산성 워크스페이스로 전환합니다</div>
                                     </div>

@@ -30,7 +30,7 @@ const jsonLd = {
         "price": "0",
         "priceCurrency": "KRW"
     },
-    "description": "All-in-one productivity tool for life and work balance."
+    "description": "인생과 업무의 균형을 위한 올인원 생산성 도구."
 };
 
 export function LandingPage() {
@@ -232,7 +232,7 @@ export function LandingPage() {
                             "inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest mb-8 border transition-colors",
                             landingMode === 'life' ? "bg-blue-50 border-blue-100 text-blue-600" : "bg-white/5 border-white/10 text-white"
                         )}>
-                            <Sparkles className="w-3 h-3" /> All-in-One Life & Work Controller
+                            <Sparkles className="w-3 h-3" /> 올인원 라이프 & 워크 컨트롤러
                         </div>
 
                         <h1 className="text-4xl md:text-6xl font-black tracking-tighter mb-4 leading-[1.0]">
@@ -336,7 +336,7 @@ export function LandingPage() {
                 <div className="container mx-auto h-full flex flex-col justify-center">
                     <div className="text-center mb-10 space-y-4 shrink-0">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[10px] font-black uppercase tracking-widest">
-                            Live Demo
+                            라이브 데모
                         </div>
                         <h2 className="text-2xl md:text-4xl font-black tracking-tight">
                             기다리지 말고 <span className="text-blue-600">지금 바로</span> 만져보세요
@@ -368,10 +368,10 @@ export function LandingPage() {
                 <div className="py-8 border-y border-slate-100 dark:border-white/5 bg-white dark:bg-slate-950">
                     <div className="container mx-auto px-6 max-w-6xl">
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 opacity-40">
-                            <div className="flex items-center gap-2 justify-center font-bold"><Shield className="w-5 h-5" /> Enterprise Secure</div>
-                            <div className="flex items-center gap-2 justify-center font-bold"><Globe className="w-5 h-5" /> Cloud Sync</div>
-                            <div className="flex items-center gap-2 justify-center font-bold"><Zap className="w-5 h-5" /> Dark Mode Ready</div>
-                            <div className="flex items-center gap-2 justify-center font-bold"><Heart className="w-5 h-5" /> User Focused</div>
+                            <div className="flex items-center gap-2 justify-center font-bold"><Shield className="w-5 h-5" /> 강력한 보안</div>
+                            <div className="flex items-center gap-2 justify-center font-bold"><Globe className="w-5 h-5" /> 클라우드 동기화</div>
+                            <div className="flex items-center gap-2 justify-center font-bold"><Zap className="w-5 h-5" /> 다크모드 지원</div>
+                            <div className="flex items-center gap-2 justify-center font-bold"><Heart className="w-5 h-5" /> 사용자 중심</div>
                         </div>
                     </div>
                 </div>
@@ -386,21 +386,21 @@ export function LandingPage() {
                             <p className="text-sm opacity-50">성장을 위한 완벽한 동반자.</p>
                         </div>
                         <div>
-                            <h4 className="font-bold mb-4">Product</h4>
+                            <h4 className="font-bold mb-4">제품</h4>
                             <ul className="space-y-2 text-sm opacity-50">
-                                <li>Features</li>
-                                <li>Pricing</li>
+                                <li>기능</li>
+                                <li>가격</li>
                             </ul>
                         </div>
                         <div>
-                            <h4 className="font-bold mb-4">Company</h4>
+                            <h4 className="font-bold mb-4">회사</h4>
                             <ul className="space-y-2 text-sm opacity-50">
-                                <li>About</li>
-                                <li>Contact</li>
+                                <li>소개</li>
+                                <li>문의</li>
                             </ul>
                         </div>
                         <div>
-                            <h4 className="font-bold mb-4">Social</h4>
+                            <h4 className="font-bold mb-4">소셜</h4>
                             <div className="flex gap-4">
                                 <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-white/5 flex items-center justify-center cursor-pointer hover:scale-110 transition-transform"><Star className="w-4 h-4" /></div>
                             </div>
@@ -409,8 +409,8 @@ export function LandingPage() {
                     <div className="container mx-auto text-center pt-6 border-t border-slate-100 dark:border-white/5 opacity-40 text-xs flex flex-col md:flex-row justify-between items-center gap-4">
                         <p>© {new Date().getFullYear()} J들의 놀이터.</p>
                         <div className="flex gap-6">
-                            <Link href="/privacy" className="hover:underline hover:opacity-100 transition-opacity">Privacy Policy</Link>
-                            <Link href="/terms" className="hover:underline hover:opacity-100 transition-opacity">Terms of Service</Link>
+                            <Link href="/privacy" className="hover:underline hover:opacity-100 transition-opacity">개인정보처리방침</Link>
+                            <Link href="/terms" className="hover:underline hover:opacity-100 transition-opacity">이용약관</Link>
                         </div>
                     </div>
                 </footer>

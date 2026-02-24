@@ -13,12 +13,12 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
 const DEMO_TABS = [
-    { id: 'schedule', label: 'Schedule', icon: Calendar, color: 'blue' },
-    { id: 'goals', label: 'Goals', icon: Target, color: 'green' },
-    { id: 'finance', label: 'Finance', icon: DollarSign, color: 'emerald' },
-    { id: 'health', label: 'Health', icon: Activity, color: 'rose' },
-    { id: 'team', label: 'Team', icon: Users, color: 'purple' }, // New Team Tab
-    { id: 'ideas', label: 'Ideas', icon: Lightbulb, color: 'amber' },
+    { id: 'schedule', label: '일정', icon: Calendar, color: 'blue' },
+    { id: 'goals', label: '목표', icon: Target, color: 'green' },
+    { id: 'finance', label: '경제', icon: DollarSign, color: 'emerald' },
+    { id: 'health', label: '건강', icon: Activity, color: 'rose' },
+    { id: 'team', label: '팀', icon: Users, color: 'purple' }, // New Team Tab
+    { id: 'ideas', label: '아이디어', icon: Lightbulb, color: 'amber' },
 ] as const;
 
 type DemoTabId = typeof DEMO_TABS[number]['id'];
@@ -115,7 +115,7 @@ export function InteractiveDemo() {
         <div className="w-full max-w-5xl mx-auto">
             {/* Persona Selection (Item 18) */}
             <div className="text-center mb-12">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Select Your Persona</p>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">페르소나를 선택하세요</p>
                 <div className="flex justify-center gap-3">
                     {PERSONAS.map(p => (
                         <button
@@ -193,7 +193,7 @@ export function InteractiveDemo() {
                     }}
                     className="absolute top-6 right-6 text-xs font-bold text-muted-foreground hover:text-blue-500 transition-colors z-10"
                 >
-                    Reset Demo
+                    데모 초기화
                 </button>
 
                 {/* Left: Input Dashboard */}
@@ -287,7 +287,7 @@ export function InteractiveDemo() {
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Monthly Income (만)</label>
+                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">월 수입 (만)</label>
                                             <input
                                                 type="number"
                                                 value={financeInput.income}
@@ -296,7 +296,7 @@ export function InteractiveDemo() {
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Monthly Expense (만)</label>
+                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">월 지출 (만)</label>
                                             <input
                                                 type="number"
                                                 value={financeInput.expense}
@@ -383,7 +383,7 @@ export function InteractiveDemo() {
                                     <Bell className="w-4 h-4" />
                                 </div>
                                 <div>
-                                    <p className="text-xs font-bold text-slate-900 dark:text-white">New Alert</p>
+                                    <p className="text-xs font-bold text-slate-900 dark:text-white">새로운 알림</p>
                                     <p className="text-[10px] text-slate-500">{demoNotification}</p>
                                 </div>
                             </motion.div>
@@ -395,7 +395,7 @@ export function InteractiveDemo() {
                             {activeTab === 'schedule' && (
                                 <motion.div key="sc-preview" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className={cn("space-y-6", frameMode === 'tablet' && "col-span-2")}>
                                     <div className="space-y-1">
-                                        <h5 className="text-xs font-black text-slate-400 uppercase tracking-widest">Today's Schedule</h5>
+                                        <h5 className="text-xs font-black text-slate-400 uppercase tracking-widest">오늘의 일정</h5>
                                         <p className="text-xl font-black text-slate-900 dark:text-white">순서를 변경해보세요</p>
                                     </div>
 
@@ -424,7 +424,7 @@ export function InteractiveDemo() {
                                     </Reorder.Group>
 
                                     <div className={cn("p-4 bg-blue-600 rounded-[28px] text-white shadow-xl shadow-blue-500/30", frameMode === 'tablet' && "col-span-2")}>
-                                        <p className="text-[10px] font-black uppercase opacity-60 mb-1">Completion Rate</p>
+                                        <p className="text-[10px] font-black uppercase opacity-60 mb-1">달성률</p>
                                         <div className="flex items-center justify-between">
                                             <span className="text-2xl font-black">{Math.round(taskProgress)}%</span>
                                             <Sparkles className="w-5 h-5 opacity-60" />
@@ -436,8 +436,8 @@ export function InteractiveDemo() {
                             {activeTab === 'goals' && (
                                 <motion.div key="gl-preview" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className={cn("space-y-8", frameMode === 'tablet' && "col-span-2")}>
                                     <div className="space-y-1">
-                                        <h5 className="text-xs font-black text-slate-400 uppercase tracking-widest">Growth Progress</h5>
-                                        <p className="text-xl font-black text-slate-900 dark:text-white">Step by Step</p>
+                                        <h5 className="text-xs font-black text-slate-400 uppercase tracking-widest">성장 지표</h5>
+                                        <p className="text-xl font-black text-slate-900 dark:text-white">차근차근 앞으로</p>
                                     </div>
                                     <div className={cn("space-y-6", frameMode === 'tablet' && "grid grid-cols-2 gap-6 space-y-0")}>
                                         {demoGoals.map(goal => (
@@ -468,11 +468,11 @@ export function InteractiveDemo() {
                                         </h3>
                                         <div className="flex gap-4 pt-2">
                                             <div className="space-y-1">
-                                                <p className="text-[8px] font-bold opacity-50">INCOME</p>
+                                                <p className="text-[8px] font-bold opacity-50">수입</p>
                                                 <p className="text-sm font-black text-blue-400">+{parseInt(financeInput.income || '0').toLocaleString()}만</p>
                                             </div>
                                             <div className="space-y-1">
-                                                <p className="text-[8px] font-bold opacity-50">EXPENSE</p>
+                                                <p className="text-[8px] font-bold opacity-50">지출</p>
                                                 <p className="text-sm font-black text-red-400">-{parseInt(financeInput.expense || '0').toLocaleString()}만</p>
                                             </div>
                                         </div>
@@ -495,7 +495,7 @@ export function InteractiveDemo() {
                             {activeTab === 'health' && (
                                 <motion.div key="he-preview" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className={cn("space-y-8", frameMode === 'tablet' && "col-span-2")}>
                                     <div className="space-y-1">
-                                        <h5 className="text-xs font-black text-slate-400 uppercase tracking-widest">Daily Health</h5>
+                                        <h5 className="text-xs font-black text-slate-400 uppercase tracking-widest">오늘의 건강</h5>
                                         <p className="text-xl font-black text-slate-900 dark:text-white">건강이 자산입니다</p>
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
@@ -505,7 +505,7 @@ export function InteractiveDemo() {
                                         </div>
                                         <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-3xl text-center">
                                             <div className="text-2xl font-black text-blue-500">1.2L</div>
-                                            <div className="text-[10px] font-bold text-slate-400 uppercase">Water</div>
+                                            <div className="text-[10px] font-bold text-slate-400 uppercase">수분섭취</div>
                                         </div>
                                     </div>
                                 </motion.div>
@@ -514,7 +514,7 @@ export function InteractiveDemo() {
                             {activeTab === 'ideas' && (
                                 <motion.div key="id-preview" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className={cn("space-y-4 h-full", frameMode === 'tablet' && "col-span-2")}>
                                     <div className="space-y-1 mb-4">
-                                        <h5 className="text-xs font-black text-slate-400 uppercase tracking-widest">Idea Board</h5>
+                                        <h5 className="text-xs font-black text-slate-400 uppercase tracking-widest">아이디어 보드</h5>
                                         <p className="text-xl font-black text-slate-900 dark:text-white">자유롭게 움직여보세요</p>
                                     </div>
                                     <div className="relative h-[350px] bg-slate-100 dark:bg-white/5 rounded-3xl p-4 overflow-hidden border-2 border-dashed border-slate-200 dark:border-white/10">

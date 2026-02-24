@@ -71,7 +71,7 @@ export function BentoCard({
             )}
 
             <div className="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 text-[10px] font-black text-indigo-500 uppercase tracking-widest">
-                Explore <Zap className="w-3 h-3" />
+                둘러보기 <Zap className="w-3 h-3" />
             </div>
         </motion.div>
     );

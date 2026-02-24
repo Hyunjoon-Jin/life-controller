@@ -46,7 +46,7 @@ export function MobileHeader({
                 <div className="p-1 rounded-xl bg-gradient-to-br from-white/10 to-white/5 border border-white/10 group-hover:scale-105 transition-transform">
                     <Logo variant="icon" className="w-7 h-7 brightness-0 invert" />
                 </div>
-                <span className="text-lg font-black tracking-tight text-white/90">LIFE <span className="text-emerald-400">PLANNER</span></span>
+                <span className="text-lg font-black tracking-tight text-white/90">라이프 <span className="text-emerald-400">플래너</span></span>
             </div>
 
             {/* Right: Hamburger Menu */}
@@ -59,7 +59,7 @@ export function MobileHeader({
                 <SheetContent side="right" className="w-[min(310px,85vw)] flex flex-col p-0 glass-premium border-l border-white/10 text-white overflow-hidden">
                     {/* Header with Title and Toggle */}
                     <div className="p-4 sm:p-6 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
-                        <SheetTitle className="text-xl font-black text-white/90 tracking-widest">MENU</SheetTitle>
+                        <SheetTitle className="text-xl font-black text-white/90 tracking-widest">메뉴</SheetTitle>
                         <ThemeToggle />
                     </div>
 
@@ -74,7 +74,7 @@ export function MobileHeader({
                                 )}
                             >
                                 <Sparkles className="w-4 h-4" />
-                                LIFE
+                                라이프
                             </button>
                             <button
                                 onClick={() => { setAppMode('study'); setIsOpen(false); }}
@@ -84,7 +84,7 @@ export function MobileHeader({
                                 )}
                             >
                                 <LayoutGrid className="w-4 h-4" />
-                                STUDY
+                                스터디
                             </button>
                             <button
                                 onClick={() => { setAppMode('ambition'); setIsOpen(false); }}
@@ -94,7 +94,7 @@ export function MobileHeader({
                                 )}
                             >
                                 <Target className="w-4 h-4" />
-                                AMBITION
+                                야망
                             </button>
                             <button
                                 onClick={() => { setAppMode('work'); setIsOpen(false); }}
@@ -104,7 +104,7 @@ export function MobileHeader({
                                 )}
                             >
                                 <Briefcase className="w-4 h-4" />
-                                WORK
+                                워크
                             </button>
                         </div>
 
@@ -119,13 +119,13 @@ export function MobileHeader({
                                         : "bg-white/[0.03] border-transparent text-white/50 hover:bg-white/[0.06] hover:text-white"
                                 )}
                             >
-                                <Home className="w-5 h-5" /> HOME DASHBOARD
+                                <Home className="w-5 h-5" /> 메인 대시보드
                             </button>
 
                             <div className="pt-6 border-t border-white/5">
                                 <h4 className="text-[10px] font-black text-white/10 mb-5 uppercase tracking-[0.3em] px-2 flex items-center gap-2">
                                     <div className="w-1 h-3 bg-white/10 rounded-full" />
-                                    Categories
+                                    카테고리
                                 </h4>
                                 <div className="space-y-2">
                                     {CATEGORIES.map(cat => (
@@ -163,7 +163,7 @@ export function MobileHeader({
 
                         {appMode === 'work' && (
                             <div className="p-4 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl text-[11px] text-indigo-300 font-bold text-center leading-relaxed">
-                                Professional Workspace Active: <br /> Advanced tools accessible in categories.
+                                전문 워크스페이스 활성화: <br /> 카테고리에서 고급 도구를 사용할 수 있습니다.
                             </div>
                         )}
 
@@ -175,7 +175,7 @@ export function MobileHeader({
                     {/* Footer Area */}
                     <div className="p-4 sm:p-6 bg-white/[0.02] border-t border-white/5 space-y-4 sm:space-y-6">
                         <Button asChild className="w-full h-12 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-black text-[10px] tracking-widest border-0 shadow-[0_10px_20px_-5px_rgba(16,185,129,0.3)]">
-                            <a href="/pricing" className="flex items-center justify-center uppercase">UPGRADE TO PRO <Sparkles className="w-3 h-3 ml-2" /></a>
+                            <a href="/pricing" className="flex items-center justify-center uppercase">프로로 업그레이드 <Sparkles className="w-3 h-3 ml-2" /></a>
                         </Button>
                         <div className="flex items-center justify-between">
                             <UserMenu />

@@ -119,7 +119,7 @@ export function PricingAndFAQ({ mode }: { mode: 'life' | 'work' }) {
                         합리적인 <span className="text-blue-600">가격</span>과 궁금한 이야기
                     </h2>
                     <div className="flex items-center justify-center gap-4 text-sm">
-                        <span className={cn("font-bold", !isAnnual && "text-blue-600")}>Monthly</span>
+                        <span className={cn("font-bold", !isAnnual && "text-blue-600")}>월간 결제</span>
                         <button
                             onClick={() => setIsAnnual(!isAnnual)}
                             className={cn(
@@ -129,7 +129,7 @@ export function PricingAndFAQ({ mode }: { mode: 'life' | 'work' }) {
                         >
                             <motion.div animate={{ x: isAnnual ? 24 : 0 }} className="w-4 h-4 rounded-full bg-white shadow-sm" />
                         </button>
-                        <span className={cn("font-bold", isAnnual && "text-blue-600")}>Yearly <span className="text-rose-500 font-black">-20%</span></span>
+                        <span className={cn("font-bold", isAnnual && "text-blue-600")}>연간 결제 <span className="text-rose-500 font-black">-20%</span></span>
                     </div>
                 </div>
 
@@ -148,7 +148,7 @@ export function PricingAndFAQ({ mode }: { mode: 'life' | 'work' }) {
                             >
                                 {plan.popular && (
                                     <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-3 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-md">
-                                        Popular
+                                        추천
                                     </div>
                                 )}
                                 <div>
