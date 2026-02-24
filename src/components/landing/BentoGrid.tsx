@@ -99,6 +99,28 @@ export function BentoVisuals() {
                 <div className="w-12 h-1.5 bg-purple-500/40 rounded-full" />
                 <div className="w-16 h-1.5 bg-purple-500/60 rounded-full" />
             </div>
+        ),
+        Health: (
+            <div className="grid grid-cols-3 gap-2 p-4">
+                <div className="flex flex-col items-center gap-1">
+                    <div className="h-16 w-4 bg-rose-400/30 rounded-full relative overflow-hidden">
+                        <div className="absolute bottom-0 w-full h-3/4 bg-rose-400 rounded-full" />
+                    </div>
+                    <span className="text-[8px] text-rose-400">체중</span>
+                </div>
+                <div className="flex flex-col items-center gap-1">
+                    <div className="h-16 w-4 bg-emerald-400/30 rounded-full relative overflow-hidden">
+                        <div className="absolute bottom-0 w-full h-1/2 bg-emerald-400 rounded-full" />
+                    </div>
+                    <span className="text-[8px] text-emerald-400">근육</span>
+                </div>
+                <div className="flex flex-col items-center gap-1">
+                    <div className="h-16 w-4 bg-blue-400/30 rounded-full relative overflow-hidden">
+                        <div className="absolute bottom-0 w-full h-2/3 bg-blue-400 rounded-full" />
+                    </div>
+                    <span className="text-[8px] text-blue-400">수분</span>
+                </div>
+            </div>
         )
     };
 }

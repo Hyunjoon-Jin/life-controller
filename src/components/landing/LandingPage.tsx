@@ -9,7 +9,8 @@ import {
     Calendar, Target, Activity, DollarSign,
     Sparkles, Briefcase, ChevronRight, Zap,
     Shield, Globe, Heart, Star,
-    Layers, MousePointer, Rocket
+    Layers, MousePointer, Rocket,
+    CheckCircle2, TrendingUp
 } from 'lucide-react';
 import { BentoGrid, BentoCard, BentoVisuals } from './BentoGrid';
 import { InteractiveDemo } from './InteractiveDemo';
@@ -203,18 +204,92 @@ export function LandingPage() {
             {/* 1. Hero Section */}
             <section data-snap="true" className="h-screen snap-start flex flex-col justify-center relative overflow-hidden">
                 <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                    {/* Card 1 – Today's Schedule (left, y1 parallax) */}
                     <motion.div
                         style={{ y: y1 }}
-                        animate={{ rotate: [0, 5, 0] }}
+                        animate={{ rotate: [0, 1, 0] }}
                         transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                        className="absolute top-1/4 left-10 w-48 h-32 bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl shadow-2xl opacity-40 hidden xl:block"
-                    />
+                        className="absolute top-[30%] left-8 hidden xl:block"
+                    >
+                        <div className="w-56 bg-white/95 dark:bg-slate-800/90 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-3xl shadow-2xl p-4 space-y-3">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <Calendar className="w-4 h-4 text-blue-500" />
+                                    <span className="text-xs font-black text-slate-700 dark:text-slate-200">오늘 할 일</span>
+                                </div>
+                                <span className="text-[10px] font-bold text-slate-400">3/5 완료</span>
+                            </div>
+                            <div className="h-1.5 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                                <div className="h-full bg-blue-500 rounded-full" style={{ width: '60%' }} />
+                            </div>
+                            <div className="space-y-1.5">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-4 h-4 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center shrink-0">
+                                        <CheckCircle2 className="w-2.5 h-2.5 text-blue-500" />
+                                    </div>
+                                    <span className="text-[10px] font-bold text-slate-400 line-through">09:00 팀 미팅</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <div className="w-4 h-4 rounded-full border border-slate-200 dark:border-slate-600 shrink-0" />
+                                    <span className="text-[10px] font-bold text-slate-600 dark:text-slate-300">11:00 기획서 작성</span>
+                                </div>
+                            </div>
+                        </div>
+                    </motion.div>
+
+                    {/* Card 2 – Monthly Savings (right top, independent) */}
+                    <motion.div
+                        animate={{ y: [0, -10, 0] }}
+                        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                        className="absolute top-[28%] right-8 hidden xl:block"
+                    >
+                        <div className="w-48 bg-slate-900/95 dark:bg-slate-800/90 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl p-4 space-y-2">
+                            <div className="flex items-center gap-2">
+                                <DollarSign className="w-4 h-4 text-emerald-400" />
+                                <span className="text-xs font-black text-white">이번달 저축</span>
+                            </div>
+                            <p className="text-2xl font-black text-white tracking-tighter">₩220만</p>
+                            <div className="flex items-center gap-1">
+                                <TrendingUp className="w-3 h-3 text-emerald-400" />
+                                <span className="text-[10px] font-bold text-emerald-400">전월 대비 +15%</span>
+                            </div>
+                        </div>
+                    </motion.div>
+
+                    {/* Card 3 – Goal Progress (right bottom, y2 parallax) */}
                     <motion.div
                         style={{ y: y2 }}
-                        animate={{ rotate: [0, -5, 0] }}
+                        animate={{ rotate: [0, -1, 0] }}
                         transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
-                        className="absolute bottom-1/4 right-10 w-40 h-40 bg-white/5 backdrop-blur-xl border border-white/10 rounded-full shadow-2xl opacity-30 hidden xl:block"
-                    />
+                        className="absolute bottom-[22%] right-8 hidden xl:block"
+                    >
+                        <div className="w-52 bg-white/95 dark:bg-slate-800/90 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-3xl shadow-2xl p-4 space-y-3">
+                            <div className="flex items-center gap-2">
+                                <Target className="w-4 h-4 text-emerald-500" />
+                                <span className="text-xs font-black text-slate-700 dark:text-slate-200">목표 달성률</span>
+                            </div>
+                            <div className="space-y-2">
+                                <div className="space-y-1">
+                                    <div className="flex justify-between text-[10px] font-bold">
+                                        <span className="text-slate-500 dark:text-slate-400">독서 24권</span>
+                                        <span className="text-emerald-500">65%</span>
+                                    </div>
+                                    <div className="h-1.5 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                                        <div className="h-full bg-emerald-400 rounded-full" style={{ width: '65%' }} />
+                                    </div>
+                                </div>
+                                <div className="space-y-1">
+                                    <div className="flex justify-between text-[10px] font-bold">
+                                        <span className="text-slate-500 dark:text-slate-400">운동 루틴</span>
+                                        <span className="text-emerald-500">42%</span>
+                                    </div>
+                                    <div className="h-1.5 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                                        <div className="h-full bg-emerald-400 rounded-full" style={{ width: '42%' }} />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </motion.div>
                 </div>
 
                 <div className={cn(
@@ -321,6 +396,7 @@ export function LandingPage() {
                                 colorClassName="bg-rose-50 dark:bg-rose-900/30"
                                 iconClassName="text-rose-600 dark:text-rose-400"
                                 className="md:col-span-2"
+                                visual={visuals.Health}
                                 delay={0.4}
                             />
                         </BentoGrid>

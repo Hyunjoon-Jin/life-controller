@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, Reorder } from 'framer-motion';
 import {
     Calendar, Target, DollarSign, Activity,
@@ -17,7 +17,7 @@ const DEMO_TABS = [
     { id: 'goals', label: '목표', icon: Target, color: 'green' },
     { id: 'finance', label: '경제', icon: DollarSign, color: 'emerald' },
     { id: 'health', label: '건강', icon: Activity, color: 'rose' },
-    { id: 'team', label: '팀', icon: Users, color: 'purple' }, // New Team Tab
+    { id: 'team', label: '팀', icon: Users, color: 'purple' },
     { id: 'ideas', label: '아이디어', icon: Lightbulb, color: 'amber' },
 ] as const;
 
@@ -29,12 +29,55 @@ const PERSONAS = [
     { id: 'freelancer', label: '프리랜서', icon: User, desc: '루틴 및 자기계발 강화' },
 ];
 
+// ─── Initial state constants ─────────────────────────────────────────────────
+const INITIAL_TASKS = [
+    { id: '1', title: '팀 스탠드업 미팅', time: '09:00', done: true },
+    { id: '2', title: '신규 기능 기획서 작성', time: '11:00', done: false },
+    { id: '3', title: '사용자 인터뷰 결과 정리', time: '14:30', done: false },
+];
+
+const INITIAL_GOALS = [
+    { id: '1', title: '올해 독서 24권 완독', progress: 65, icon: BookOpen, sub: '16/24권 진행 중' },
+    { id: '2', title: '바디프로필 촬영', progress: 42, icon: Flame, sub: '식단 3주차 유지' },
+];
+
+const INITIAL_NOTES = [
+    { id: '1', content: '차기 프로젝트 컨셉: 미니멀리즘', color: 'bg-amber-100' },
+    { id: '2', content: '운동용 플레이리스트 공유하기', color: 'bg-blue-100' },
+];
+
+const INITIAL_TEAM_TASKS = [
+    { id: '1', member: '김민준', avatar: 'K', task: 'UI 디자인 검토', done: true, color: 'bg-blue-500' },
+    { id: '2', member: '이서연', avatar: 'L', task: 'API 연동 작업', done: false, color: 'bg-violet-500' },
+    { id: '3', member: '박지우', avatar: 'P', task: 'QA 테스트 진행', done: false, color: 'bg-emerald-500' },
+];
+
+const INITIAL_HABITS = [
+    { id: '1', name: '독서 30분', icon: '📚', streak: 12, done: true },
+    { id: '2', name: '운동', icon: '🏃', streak: 7, done: true },
+    { id: '3', name: '명상', icon: '🧘', streak: 0, done: false },
+];
+
+// ─── Helper ──────────────────────────────────────────────────────────────────
+function generateSubText(title: string, progress: number): string {
+    if (title.includes('독서')) return `${Math.round(24 * progress / 100)}/24권 진행 중`;
+    if (title.includes('바디프로필')) return `식단 ${Math.round(progress / 10)}주차 유지`;
+    if (title.includes('학점')) return `진행률 ${progress}%`;
+    if (title.includes('영어')) return `${Math.round(30 * progress / 100)}일차 유지`;
+    if (title.includes('연봉')) return `달성률 ${progress}%`;
+    if (title.includes('운동 주')) return `이번주 ${Math.ceil(4 * progress / 100)}회 완료`;
+    if (title.includes('수입')) return `현재 ${Math.round(600 * progress / 100)}만원`;
+    if (title.includes('포트폴리오') || title.includes('작품')) return `${Math.round(10 * progress / 100)}/10 완료`;
+    return `${progress}% 달성`;
+}
+
 export function InteractiveDemo() {
     const [activeTab, setActiveTab] = useState<DemoTabId>('schedule');
     const [activePersona, setActivePersona] = useState('office');
     const [frameMode, setFrameMode] = useState<'mobile' | 'tablet'>('mobile');
     const [currentTime, setCurrentTime] = useState('');
     const [demoNotification, setDemoNotification] = useState<string | null>(null);
+    const boardRef = useRef<HTMLDivElement>(null);
 
     // Clock Effect
     useEffect(() => {
@@ -47,27 +90,29 @@ export function InteractiveDemo() {
         return () => clearInterval(interval);
     }, []);
 
-    // --- Demo State Management ---
-    const [tasks, setTasks] = useState([
-        { id: '1', title: '팀 스탠드업 미팅', time: '09:00', done: true },
-        { id: '2', title: '신규 기능 기획서 작성', time: '11:00', done: false },
-        { id: '3', title: '사용자 인터뷰 결과 정리', time: '14:30', done: false },
-    ]);
+    // ─── Demo State ───────────────────────────────────────────────────────────
+    const [tasks, setTasks] = useState(INITIAL_TASKS.map(t => ({ ...t })));
     const [newTask, setNewTask] = useState('');
-
-    const [notes, setNotes] = useState([
-        { id: '1', content: '차기 프로젝트 컨셉: 미니멀리즘', color: 'bg-amber-100' },
-        { id: '2', content: '운동용 플레이리스트 공유하기', color: 'bg-blue-100' },
-    ]);
-
-    const [demoGoals, setDemoGoals] = useState([
-        { id: '1', title: '올해 독서 24권 완독', progress: 65, icon: BookOpen, sub: '16/24권 진행 중' },
-        { id: '2', title: '바디프로필 촬영', progress: 42, icon: Flame, sub: '식단 3주차 유지' },
-    ]);
-
+    const [notes, setNotes] = useState(INITIAL_NOTES.map(n => ({ ...n })));
+    const [demoGoals, setDemoGoals] = useState(INITIAL_GOALS.map(g => ({ ...g })));
     const [financeInput, setFinanceInput] = useState({ income: '500', expense: '280' });
+    const [healthStats, setHealthStats] = useState({ calories: 0, water: 0, workouts: 0 });
+    const [teamTasks, setTeamTasks] = useState(INITIAL_TEAM_TASKS.map(t => ({ ...t })));
+    const [habitItems, setHabitItems] = useState(INITIAL_HABITS.map(h => ({ ...h })));
 
-    // --- Actions ---
+    // ─── Derived values ───────────────────────────────────────────────────────
+    const doneCount = tasks.filter(t => t.done).length;
+    const taskProgress = tasks.length > 0 ? (doneCount / tasks.length) * 100 : 0;
+    const teamDoneCount = teamTasks.filter(t => t.done).length;
+    const teamAchievement = teamTasks.length > 0 ? Math.round((teamDoneCount / teamTasks.length) * 100) : 0;
+    const BASE_CALORIES = 2450;
+    const BASE_WATER = 1.2;
+    const totalCalories = BASE_CALORIES + healthStats.calories;
+    const totalWater = parseFloat((BASE_WATER + healthStats.water).toFixed(2));
+    const waterGoal = 2.0;
+    const waterPercent = Math.min(100, Math.round((totalWater / waterGoal) * 100));
+
+    // ─── Actions ──────────────────────────────────────────────────────────────
     const handlePersonaChange = (id: string) => {
         setActivePersona(id);
         if (id === 'student') {
@@ -86,7 +131,17 @@ export function InteractiveDemo() {
             ]);
             setDemoGoals([
                 { id: '1', title: '연봉 15% 인상 목표', progress: 50, icon: Target, sub: '자기 평가 완료' },
-                { id: '2', title: '운동 주 4회 달성', progress: 75, icon: Flame, sub: '목요일 성공' },
+                { id: '2', title: '운동 주 4회 달성', progress: 75, icon: Flame, sub: '이번주 3회 완료' },
+            ]);
+        } else if (id === 'freelancer') {
+            setTasks([
+                { id: '1', title: '클라이언트 미팅 자료 준비', time: '10:00', done: false },
+                { id: '2', title: '포트폴리오 페이지 업데이트', time: '14:00', done: true },
+                { id: '3', title: '월별 청구서 발송', time: '17:00', done: false },
+            ]);
+            setDemoGoals([
+                { id: '1', title: '월 수입 600만원 달성', progress: 68, icon: DollarSign, sub: '현재 408만원' },
+                { id: '2', title: '포트폴리오 작품 10개', progress: 50, icon: Briefcase, sub: '5/10 완료' },
             ]);
         }
     };
@@ -107,13 +162,17 @@ export function InteractiveDemo() {
         setTasks(tasks.map(t => t.id === id ? { ...t, done: !t.done } : t));
     };
 
-    const doneCount = tasks.filter(t => t.done).length;
+    const toggleTeamTask = (id: string) => {
+        setTeamTasks(teamTasks.map(t => t.id === id ? { ...t, done: !t.done } : t));
+    };
 
-    const taskProgress = (doneCount / tasks.length) * 100;
+    const toggleHabit = (id: string) => {
+        setHabitItems(habitItems.map(h => h.id === id ? { ...h, done: !h.done } : h));
+    };
 
     return (
         <div className="w-full max-w-5xl mx-auto">
-            {/* Persona Selection (Item 18) */}
+            {/* Persona Selection */}
             <div className="text-center mb-12">
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">페르소나를 선택하세요</p>
                 <div className="flex justify-center gap-3">
@@ -185,11 +244,15 @@ export function InteractiveDemo() {
                     onClick={() => {
                         setActivePersona('office');
                         setActiveTab('schedule');
-                        setTasks([
-                            { id: '1', title: '팀 스탠드업 미팅', time: '09:00', done: true },
-                            { id: '2', title: '신규 기능 기획서 작성', time: '11:00', done: false },
-                            { id: '3', title: '사용자 인터뷰 결과 정리', time: '14:30', done: false },
-                        ]);
+                        setTasks(INITIAL_TASKS.map(t => ({ ...t })));
+                        setNewTask('');
+                        setDemoGoals(INITIAL_GOALS.map(g => ({ ...g })));
+                        setFinanceInput({ income: '500', expense: '280' });
+                        setHealthStats({ calories: 0, water: 0, workouts: 0 });
+                        setNotes(INITIAL_NOTES.map(n => ({ ...n })));
+                        setTeamTasks(INITIAL_TEAM_TASKS.map(t => ({ ...t })));
+                        setHabitItems(INITIAL_HABITS.map(h => ({ ...h })));
+                        toast('데모가 초기화되었습니다.');
                     }}
                     className="absolute top-6 right-6 text-xs font-bold text-muted-foreground hover:text-blue-500 transition-colors z-10"
                 >
@@ -198,30 +261,26 @@ export function InteractiveDemo() {
 
                 {/* Left: Input Dashboard */}
                 <div className="flex-1 space-y-8 relative">
-                    {/* Mobile Swipe Indicator */}
                     <div className="md:hidden absolute -top-4 left-1/2 -translate-x-1/2 w-12 h-1 bg-slate-200 dark:bg-slate-700 rounded-full mb-4" />
 
                     <motion.div
                         drag="x"
                         dragConstraints={{ left: 0, right: 0 }}
                         dragElastic={0.2}
-                        onDragEnd={(e, { offset, velocity }) => {
+                        onDragEnd={(e, { offset }) => {
                             const swipe = offset.x;
                             if (swipe < -50) {
-                                // Swipe Left -> Next Tab
                                 const currentIndex = DEMO_TABS.findIndex(t => t.id === activeTab);
-                                const nextIndex = (currentIndex + 1) % DEMO_TABS.length;
-                                setActiveTab(DEMO_TABS[nextIndex].id);
+                                setActiveTab(DEMO_TABS[(currentIndex + 1) % DEMO_TABS.length].id);
                             } else if (swipe > 50) {
-                                // Swipe Right -> Prev Tab
                                 const currentIndex = DEMO_TABS.findIndex(t => t.id === activeTab);
-                                const prevIndex = (currentIndex - 1 + DEMO_TABS.length) % DEMO_TABS.length;
-                                setActiveTab(DEMO_TABS[prevIndex].id);
+                                setActiveTab(DEMO_TABS[(currentIndex - 1 + DEMO_TABS.length) % DEMO_TABS.length].id);
                             }
                         }}
                         className="h-full touch-pan-y"
                     >
                         <AnimatePresence mode="wait">
+                            {/* ── Schedule Input ── */}
                             {activeTab === 'schedule' && (
                                 <motion.div
                                     key="sc-input" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
@@ -247,6 +306,7 @@ export function InteractiveDemo() {
                                 </motion.div>
                             )}
 
+                            {/* ── Goals Input ── */}
                             {activeTab === 'goals' && (
                                 <motion.div key="gl-input" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-6">
                                     <div className="space-y-2">
@@ -267,18 +327,21 @@ export function InteractiveDemo() {
                                                     type="range"
                                                     value={goal.progress}
                                                     onChange={(e) => {
-                                                        const newGoals = [...demoGoals];
-                                                        newGoals[i].progress = parseInt(e.target.value);
-                                                        setDemoGoals(newGoals);
+                                                        const newProgress = parseInt(e.target.value);
+                                                        setDemoGoals(demoGoals.map((g, idx) =>
+                                                            idx === i ? { ...g, progress: newProgress, sub: generateSubText(g.title, newProgress) } : g
+                                                        ));
                                                     }}
                                                     className="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full appearance-none cursor-pointer accent-emerald-500"
                                                 />
+                                                <p className="text-xs text-slate-400 font-medium">{goal.sub}</p>
                                             </div>
                                         ))}
                                     </div>
                                 </motion.div>
                             )}
 
+                            {/* ── Finance Input ── */}
                             {activeTab === 'finance' && (
                                 <motion.div key="fi-input" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-6">
                                     <div className="space-y-2">
@@ -308,22 +371,90 @@ export function InteractiveDemo() {
                                 </motion.div>
                             )}
 
+                            {/* ── Health Input ── */}
                             {activeTab === 'health' && (
                                 <motion.div key="he-input" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-6">
                                     <div className="space-y-2">
                                         <h4 className="text-2xl font-black text-slate-900 dark:text-white">건강 지표를 트래킹하세요</h4>
-                                        <p className="text-sm text-slate-500 font-medium">어제보다 더 나은 당신을 기록하세요.</p>
+                                        <p className="text-sm text-slate-500 font-medium">버튼을 눌러 오늘의 운동과 수분 섭취를 기록하세요.</p>
                                     </div>
                                     <div className="grid grid-cols-3 gap-3">
-                                        {['스쿼트', '러닝', '수분섭취'].map((label) => (
-                                            <Button key={label} variant="outline" className="h-16 rounded-2xl border-slate-100 hover:border-rose-200 hover:bg-rose-50 dark:hover:bg-rose-900/10 font-bold text-slate-600">
-                                                {label} 추가
-                                            </Button>
+                                        <Button
+                                            variant="outline"
+                                            onClick={() => {
+                                                setHealthStats(s => ({ ...s, calories: s.calories + 45, workouts: s.workouts + 1 }));
+                                                toast('스쿼트 30회 완료! +45 kcal 🏋️');
+                                            }}
+                                            className="h-16 rounded-2xl border-slate-100 hover:border-rose-200 hover:bg-rose-50 dark:hover:bg-rose-900/10 font-bold text-slate-600"
+                                        >
+                                            스쿼트 추가
+                                        </Button>
+                                        <Button
+                                            variant="outline"
+                                            onClick={() => {
+                                                setHealthStats(s => ({ ...s, calories: s.calories + 55, workouts: s.workouts + 1 }));
+                                                toast('러닝 5분 완료! +55 kcal 🏃');
+                                            }}
+                                            className="h-16 rounded-2xl border-slate-100 hover:border-rose-200 hover:bg-rose-50 dark:hover:bg-rose-900/10 font-bold text-slate-600"
+                                        >
+                                            러닝 추가
+                                        </Button>
+                                        <Button
+                                            variant="outline"
+                                            onClick={() => {
+                                                setHealthStats(s => ({ ...s, water: parseFloat((s.water + 0.25).toFixed(2)) }));
+                                                toast('수분 250ml 섭취 기록! 💧');
+                                            }}
+                                            className="h-16 rounded-2xl border-slate-100 hover:border-blue-200 hover:bg-blue-50 dark:hover:bg-blue-900/10 font-bold text-slate-600"
+                                        >
+                                            수분섭취 추가
+                                        </Button>
+                                    </div>
+                                    <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl space-y-1">
+                                        <p className="text-xs font-black text-slate-400">오늘 누적</p>
+                                        <p className="text-sm font-bold text-slate-700 dark:text-slate-300">
+                                            운동 {healthStats.workouts}회 · 칼로리 +{healthStats.calories} kcal · 수분 +{healthStats.water.toFixed(2)}L
+                                        </p>
+                                    </div>
+                                </motion.div>
+                            )}
+
+                            {/* ── Team Input ── */}
+                            {activeTab === 'team' && (
+                                <motion.div key="tm-input" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-6">
+                                    <div className="space-y-2">
+                                        <h4 className="text-2xl font-black text-slate-900 dark:text-white">팀원의 작업 상태를 업데이트하세요</h4>
+                                        <p className="text-sm text-slate-500 font-medium">카드를 클릭하여 완료 여부를 토글해보세요.</p>
+                                    </div>
+                                    <div className="space-y-3">
+                                        {teamTasks.map(t => (
+                                            <button
+                                                key={t.id}
+                                                onClick={() => toggleTeamTask(t.id)}
+                                                className={cn(
+                                                    "w-full flex items-center gap-4 p-4 rounded-2xl border-2 transition-all text-left",
+                                                    t.done
+                                                        ? "bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-700"
+                                                        : "bg-slate-50 dark:bg-slate-800/50 border-transparent hover:border-slate-200 dark:hover:border-slate-600"
+                                                )}
+                                            >
+                                                <div className={cn("w-9 h-9 rounded-full flex items-center justify-center text-white font-black text-sm shrink-0", t.color)}>
+                                                    {t.avatar}
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-xs font-black text-slate-400">{t.member}</p>
+                                                    <p className={cn("text-sm font-bold truncate", t.done ? "line-through text-slate-400" : "text-slate-700 dark:text-slate-200")}>{t.task}</p>
+                                                </div>
+                                                <div className={cn("w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors", t.done ? "bg-emerald-500 border-emerald-500" : "border-slate-300")}>
+                                                    {t.done && <CheckCircle2 className="w-3 h-3 text-white" />}
+                                                </div>
+                                            </button>
                                         ))}
                                     </div>
                                 </motion.div>
                             )}
 
+                            {/* ── Ideas Input ── */}
                             {activeTab === 'ideas' && (
                                 <motion.div key="id-input" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-6">
                                     <div className="space-y-2">
@@ -357,7 +488,7 @@ export function InteractiveDemo() {
                         frameMode === 'mobile' ? "w-full md:w-[360px]" : "w-full md:w-[600px]"
                     )}
                 >
-                    {/* Top Bar (Fake Status Bar) */}
+                    {/* Fake Status Bar */}
                     <div className="h-12 w-full flex items-center justify-between px-6 pt-3 relative z-20">
                         <span className="text-[12px] font-bold text-slate-900 dark:text-white pointer-events-none select-none">{currentTime}</span>
                         <div className="flex gap-1.5 items-center">
@@ -392,56 +523,81 @@ export function InteractiveDemo() {
 
                     <div className={cn("p-6 h-[calc(100%-3rem)] overflow-y-auto custom-scrollbar relative", frameMode === 'tablet' ? "grid grid-cols-2 gap-6 content-start" : "")}>
                         <AnimatePresence mode="wait">
+                            {/* ── Schedule Preview ── */}
                             {activeTab === 'schedule' && (
-                                <motion.div key="sc-preview" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className={cn("space-y-6", frameMode === 'tablet' && "col-span-2")}>
+                                <motion.div key="sc-preview" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className={cn("space-y-3", frameMode === 'tablet' && "col-span-2")}>
                                     <div className="space-y-1">
                                         <h5 className="text-xs font-black text-slate-400 uppercase tracking-widest">오늘의 일정</h5>
                                         <p className="text-xl font-black text-slate-900 dark:text-white">순서를 변경해보세요</p>
                                     </div>
 
-                                    <Reorder.Group axis="y" values={tasks} onReorder={setTasks} className={cn("space-y-3", frameMode === 'tablet' && "grid grid-cols-2 gap-4 space-y-0")}>
+                                    <Reorder.Group axis="y" values={tasks} onReorder={setTasks} className={cn("space-y-2", frameMode === 'tablet' && "grid grid-cols-2 gap-4 space-y-0")}>
                                         {tasks.map((t) => (
                                             <Reorder.Item key={t.id} value={t}>
                                                 <div
                                                     onClick={() => toggleTask(t.id)}
                                                     className={cn(
-                                                        "p-4 rounded-3xl border transition-all cursor-grab active:cursor-grabbing flex items-center gap-3",
+                                                        "p-3 rounded-2xl border transition-all cursor-grab active:cursor-grabbing flex items-center gap-3",
                                                         t.done ? "bg-white border-blue-100 shadow-sm" : "bg-slate-100/50 border-transparent hover:bg-white hover:shadow-md"
                                                     )}
                                                 >
                                                     <div className={cn("w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors", t.done ? "bg-blue-600 border-blue-600" : "border-slate-300")}>
                                                         {t.done && <CheckCircle2 className="w-3 h-3 text-white" />}
                                                     </div>
-                                                    <span className={cn("text-sm font-bold flex-1", t.done ? "text-slate-900 line-through opacity-50" : "text-slate-600")}>
+                                                    <span className={cn("text-xs font-bold flex-1", t.done ? "text-slate-900 line-through opacity-50" : "text-slate-600")}>
                                                         {t.title}
                                                     </span>
-                                                    <div className="text-[10px] font-bold text-slate-300">
-                                                        {t.time}
-                                                    </div>
+                                                    <div className="text-[10px] font-bold text-slate-300">{t.time}</div>
                                                 </div>
                                             </Reorder.Item>
                                         ))}
                                     </Reorder.Group>
 
-                                    <div className={cn("p-4 bg-blue-600 rounded-[28px] text-white shadow-xl shadow-blue-500/30", frameMode === 'tablet' && "col-span-2")}>
+                                    <div className="p-3 bg-blue-600 rounded-[20px] text-white shadow-lg shadow-blue-500/30">
                                         <p className="text-[10px] font-black uppercase opacity-60 mb-1">달성률</p>
                                         <div className="flex items-center justify-between">
-                                            <span className="text-2xl font-black">{Math.round(taskProgress)}%</span>
-                                            <Sparkles className="w-5 h-5 opacity-60" />
+                                            <span className="text-xl font-black">{Math.round(taskProgress)}%</span>
+                                            <Sparkles className="w-4 h-4 opacity-60" />
+                                        </div>
+                                    </div>
+
+                                    {/* Habit Streak Card */}
+                                    <div className="p-3 bg-white dark:bg-slate-800/80 rounded-[20px] border border-slate-100 dark:border-white/10 space-y-2">
+                                        <div className="flex items-center justify-between">
+                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">🔥 오늘의 습관</p>
+                                            <span className="text-[10px] font-bold text-slate-400">{habitItems.filter(h => h.done).length}/{habitItems.length} 완료</span>
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            {habitItems.map(habit => (
+                                                <button
+                                                    key={habit.id}
+                                                    onClick={() => toggleHabit(habit.id)}
+                                                    className="w-full flex items-center gap-2 text-left"
+                                                >
+                                                    <span className="text-xs">{habit.icon}</span>
+                                                    <span className={cn("text-[11px] font-bold flex-1", habit.done ? "text-slate-700 dark:text-slate-200" : "text-slate-400")}>{habit.name}</span>
+                                                    {habit.done ? (
+                                                        <span className="text-[10px] font-black text-amber-500 shrink-0">{habit.streak}일 연속 🔥</span>
+                                                    ) : (
+                                                        <span className="text-[10px] font-bold text-slate-300 shrink-0">오늘 미완료 ○</span>
+                                                    )}
+                                                </button>
+                                            ))}
                                         </div>
                                     </div>
                                 </motion.div>
                             )}
 
+                            {/* ── Goals Preview ── */}
                             {activeTab === 'goals' && (
-                                <motion.div key="gl-preview" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className={cn("space-y-8", frameMode === 'tablet' && "col-span-2")}>
+                                <motion.div key="gl-preview" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className={cn("space-y-6", frameMode === 'tablet' && "col-span-2")}>
                                     <div className="space-y-1">
                                         <h5 className="text-xs font-black text-slate-400 uppercase tracking-widest">성장 지표</h5>
                                         <p className="text-xl font-black text-slate-900 dark:text-white">차근차근 앞으로</p>
                                     </div>
                                     <div className={cn("space-y-6", frameMode === 'tablet' && "grid grid-cols-2 gap-6 space-y-0")}>
                                         {demoGoals.map(goal => (
-                                            <div key={goal.id} className="space-y-3">
+                                            <div key={goal.id} className="space-y-2">
                                                 <div className="flex justify-between text-xs font-black">
                                                     <span className="text-slate-500">{goal.title}</span>
                                                     <span className="text-emerald-600">{goal.progress}%</span>
@@ -451,22 +607,25 @@ export function InteractiveDemo() {
                                                         className="h-full bg-emerald-500"
                                                         initial={{ width: 0 }}
                                                         animate={{ width: `${goal.progress}%` }}
+                                                        transition={{ duration: 0.3 }}
                                                     />
                                                 </div>
+                                                <p className="text-[10px] text-slate-400 font-medium">{goal.sub}</p>
                                             </div>
                                         ))}
                                     </div>
                                 </motion.div>
                             )}
 
+                            {/* ── Finance Preview ── */}
                             {activeTab === 'finance' && (
-                                <motion.div key="fi-preview" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className={cn("space-y-8", frameMode === 'tablet' && "col-span-2")}>
-                                    <div className="p-6 bg-slate-900 dark:bg-slate-800 rounded-[32px] text-white space-y-4">
-                                        <p className="text-[10px] font-black uppercase opacity-50 tracking-widest">Total Savings</p>
-                                        <h3 className="text-3xl font-black tracking-tighter">
+                                <motion.div key="fi-preview" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className={cn("space-y-4", frameMode === 'tablet' && "col-span-2")}>
+                                    <div className="p-5 bg-slate-900 dark:bg-slate-800 rounded-[28px] text-white space-y-3">
+                                        <p className="text-[10px] font-black uppercase opacity-50 tracking-widest">이번달 저축</p>
+                                        <h3 className="text-2xl font-black tracking-tighter">
                                             ₩{(parseInt(financeInput.income || '0') - parseInt(financeInput.expense || '0')).toLocaleString()}만
                                         </h3>
-                                        <div className="flex gap-4 pt-2">
+                                        <div className="flex gap-4">
                                             <div className="space-y-1">
                                                 <p className="text-[8px] font-bold opacity-50">수입</p>
                                                 <p className="text-sm font-black text-blue-400">+{parseInt(financeInput.income || '0').toLocaleString()}만</p>
@@ -477,58 +636,139 @@ export function InteractiveDemo() {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="flex items-center justify-between p-4 bg-white dark:bg-slate-800 rounded-3xl border border-slate-100 dark:border-white/5">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 rounded-2xl bg-orange-50 dark:bg-orange-900/20 flex items-center justify-center">
-                                                <PieChart className="w-5 h-5 text-orange-500" />
+
+                                    {/* Expense Category Breakdown */}
+                                    <div className="p-4 bg-white dark:bg-slate-800/80 rounded-[20px] border border-slate-100 dark:border-white/10 space-y-3">
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">지출 카테고리</p>
+                                        {[
+                                            { label: '식비', pct: 38, color: 'bg-orange-400' },
+                                            { label: '교통', pct: 18, color: 'bg-blue-400' },
+                                            { label: '취미/여가', pct: 26, color: 'bg-violet-400' },
+                                            { label: '기타', pct: 18, color: 'bg-slate-300' },
+                                        ].map(cat => (
+                                            <div key={cat.label} className="space-y-1">
+                                                <div className="flex justify-between text-[10px] font-bold">
+                                                    <span className="text-slate-600 dark:text-slate-300">{cat.label}</span>
+                                                    <span className="text-slate-400">{cat.pct}%</span>
+                                                </div>
+                                                <div className="h-1.5 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                                                    <motion.div
+                                                        className={cn("h-full rounded-full", cat.color)}
+                                                        initial={{ width: 0 }}
+                                                        animate={{ width: `${cat.pct}%` }}
+                                                        transition={{ duration: 0.6 }}
+                                                    />
+                                                </div>
                                             </div>
-                                            <div>
-                                                <p className="text-xs font-black text-slate-900 dark:text-white">리포트 생성</p>
-                                                <p className="text-[10px] text-slate-400">이번 달 소비 패턴 분석</p>
-                                            </div>
-                                        </div>
-                                        <ChevronRight className="w-4 h-4 text-slate-300" />
+                                        ))}
                                     </div>
                                 </motion.div>
                             )}
 
+                            {/* ── Health Preview ── */}
                             {activeTab === 'health' && (
-                                <motion.div key="he-preview" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className={cn("space-y-8", frameMode === 'tablet' && "col-span-2")}>
+                                <motion.div key="he-preview" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className={cn("space-y-4", frameMode === 'tablet' && "col-span-2")}>
                                     <div className="space-y-1">
                                         <h5 className="text-xs font-black text-slate-400 uppercase tracking-widest">오늘의 건강</h5>
                                         <p className="text-xl font-black text-slate-900 dark:text-white">건강이 자산입니다</p>
                                     </div>
-                                    <div className="grid grid-cols-2 gap-4">
+                                    <div className="grid grid-cols-2 gap-3">
                                         <div className="p-4 bg-rose-50 dark:bg-rose-900/20 rounded-3xl text-center">
-                                            <div className="text-2xl font-black text-rose-500">2,450</div>
+                                            <div className="text-2xl font-black text-rose-500">{totalCalories.toLocaleString()}</div>
                                             <div className="text-[10px] font-bold text-slate-400 uppercase">Calories</div>
                                         </div>
                                         <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-3xl text-center">
-                                            <div className="text-2xl font-black text-blue-500">1.2L</div>
+                                            <div className="text-2xl font-black text-blue-500">{totalWater.toFixed(1)}L</div>
                                             <div className="text-[10px] font-bold text-slate-400 uppercase">수분섭취</div>
                                         </div>
+                                    </div>
+                                    {/* Water Progress Bar */}
+                                    <div className="p-4 bg-white dark:bg-slate-800/80 rounded-[20px] border border-slate-100 dark:border-white/10 space-y-2">
+                                        <div className="flex justify-between text-[10px] font-bold">
+                                            <span className="text-slate-500">💧 수분 목표 달성률</span>
+                                            <span className="text-blue-500">{waterPercent}% / 2L</span>
+                                        </div>
+                                        <div className="h-3 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                                            <motion.div
+                                                className="h-full bg-blue-400 rounded-full"
+                                                animate={{ width: `${waterPercent}%` }}
+                                                transition={{ duration: 0.4 }}
+                                            />
+                                        </div>
+                                        {healthStats.workouts > 0 && (
+                                            <p className="text-[10px] font-bold text-slate-400">운동 {healthStats.workouts}회 완료 💪</p>
+                                        )}
                                     </div>
                                 </motion.div>
                             )}
 
+                            {/* ── Team Preview ── */}
+                            {activeTab === 'team' && (
+                                <motion.div key="tm-preview" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className={cn("space-y-4", frameMode === 'tablet' && "col-span-2")}>
+                                    <div className="space-y-1">
+                                        <h5 className="text-xs font-black text-slate-400 uppercase tracking-widest">팀 현황</h5>
+                                        <p className="text-xl font-black text-slate-900 dark:text-white">오늘의 팀 달성률</p>
+                                    </div>
+                                    <div className="p-4 bg-violet-600 rounded-[24px] text-white">
+                                        <p className="text-[10px] font-black uppercase opacity-60 mb-1">팀 전체 달성률</p>
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-3xl font-black">{teamAchievement}%</span>
+                                            <div className="flex -space-x-2">
+                                                {teamTasks.map(t => (
+                                                    <div key={t.id} className={cn("w-8 h-8 rounded-full border-2 border-violet-600 flex items-center justify-center text-white font-black text-xs", t.color)}>
+                                                        {t.avatar}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        {teamTasks.map(t => (
+                                            <div key={t.id} className={cn(
+                                                "flex items-center gap-3 p-3 rounded-2xl transition-all",
+                                                t.done ? "bg-emerald-50 dark:bg-emerald-900/20" : "bg-white dark:bg-slate-800/60 border border-slate-100 dark:border-white/10"
+                                            )}>
+                                                <div className={cn("w-8 h-8 rounded-full flex items-center justify-center text-white font-black text-xs shrink-0", t.color)}>
+                                                    {t.avatar}
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-[10px] font-black text-slate-400">{t.member}</p>
+                                                    <p className={cn("text-xs font-bold truncate", t.done ? "line-through text-slate-400" : "text-slate-700 dark:text-slate-200")}>{t.task}</p>
+                                                </div>
+                                                <div className={cn("shrink-0 text-[10px] font-black", t.done ? "text-emerald-500" : "text-slate-300")}>
+                                                    {t.done ? '완료' : '진행중'}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </motion.div>
+                            )}
+
+                            {/* ── Ideas Preview ── */}
                             {activeTab === 'ideas' && (
                                 <motion.div key="id-preview" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className={cn("space-y-4 h-full", frameMode === 'tablet' && "col-span-2")}>
-                                    <div className="space-y-1 mb-4">
+                                    <div className="space-y-1 mb-2">
                                         <h5 className="text-xs font-black text-slate-400 uppercase tracking-widest">아이디어 보드</h5>
                                         <p className="text-xl font-black text-slate-900 dark:text-white">자유롭게 움직여보세요</p>
                                     </div>
-                                    <div className="relative h-[350px] bg-slate-100 dark:bg-white/5 rounded-3xl p-4 overflow-hidden border-2 border-dashed border-slate-200 dark:border-white/10">
+                                    <div
+                                        ref={boardRef}
+                                        className="relative h-[350px] bg-slate-100 dark:bg-white/5 rounded-3xl overflow-hidden border-2 border-dashed border-slate-200 dark:border-white/10"
+                                    >
                                         {notes.map((note, i) => (
                                             <motion.div
                                                 key={note.id}
-                                                layout
                                                 drag
-                                                dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }} // Constraints relative to parent
-                                                initial={{ opacity: 0, scale: 0.8, rotate: Math.random() * 10 - 5 }}
-                                                animate={{ opacity: 1, scale: 1, rotate: Math.random() * 10 - 5, x: i % 2 === 0 ? -10 : 10, y: i * 40 }}
-                                                whileDrag={{ scale: 1.1, zIndex: 10, cursor: 'grabbing' }}
-                                                className={cn("absolute p-4 rounded-xl shadow-md text-xs font-black text-slate-800 w-40 cursor-grab", note.color)}
-                                                style={{ left: '50%', marginLeft: '-5rem', top: '20px' }}
+                                                dragConstraints={boardRef}
+                                                dragElastic={0.05}
+                                                initial={{ opacity: 0, scale: 0.8, rotate: i % 2 === 0 ? -4 : 4 }}
+                                                animate={{ opacity: 1, scale: 1, rotate: i % 2 === 0 ? -3 : 3 }}
+                                                whileDrag={{ scale: 1.08, zIndex: 10, cursor: 'grabbing' }}
+                                                className={cn("absolute p-4 rounded-xl shadow-md text-xs font-black text-slate-800 w-36 cursor-grab", note.color)}
+                                                style={{
+                                                    left: i % 2 === 0 ? '8%' : '52%',
+                                                    top: `${10 + Math.floor(i / 2) * 130}px`,
+                                                }}
                                             >
                                                 {note.content}
                                             </motion.div>
