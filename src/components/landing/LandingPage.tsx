@@ -2,20 +2,17 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/ui/Logo';
 import {
     Calendar, Target, Activity, DollarSign,
-    Sparkles, Briefcase, ChevronRight, Zap,
+    Sparkles, ChevronRight, Zap,
     Shield, Globe, Heart, Star,
-    Layers, MousePointer, Rocket,
     CheckCircle2, TrendingUp
 } from 'lucide-react';
 import { BentoGrid, BentoCard, BentoVisuals } from './BentoGrid';
 import { InteractiveDemo } from './InteractiveDemo';
-import { ModeSwitch } from './ModeSwitch';
-import { NewsletterSection } from './NewsletterSection';
 import { PricingAndFAQ } from './PricingAndFAQ';
 import { ErrorBoundary } from './ErrorBoundary';
 import { cn } from '@/lib/utils';
@@ -35,49 +32,29 @@ const jsonLd = {
 };
 
 export function LandingPage() {
-    const [landingMode, setLandingMode] = useState<'life' | 'work'>('life');
     const [scrollProgress, setScrollProgress] = useState(0);
     const visuals = BentoVisuals();
     const containerRef = useRef<HTMLDivElement>(null);
 
-    // Mode Persistence & SEO
+    // SEO
     useEffect(() => {
-        const savedMode = localStorage.getItem('life_controller_landing_mode') as 'life' | 'work';
-        if (savedMode) setLandingMode(savedMode);
-    }, []);
-
-    useEffect(() => {
-        document.title = landingMode === 'life'
-            ? "J들의 놀이터 | 당신의 하루를 작품처럼"
-            : "J들의 놀이터 | 업무 생산성의 한계를 넘다";
-
+        document.title = "J들의 놀이터 | 당신의 하루를 작품처럼";
         const metaDesc = document.querySelector('meta[name="description"]');
         if (metaDesc) {
-            metaDesc.setAttribute('content', landingMode === 'life'
-                ? "목표, 일정, 습관, 자산 관리를 한 곳에서. J들의 놀이터로 당신의 일상을 체계적으로 설계하세요."
-                : "팀 협업, 프로젝트 관리, 성과 분석까지. 업무 효율을 극대화하는 올인원 비즈니스 솔루션.");
+            metaDesc.setAttribute('content', "목표, 일정, 습관, 자산 관리를 한 곳에서. J들의 놀이터로 당신의 일상을 체계적으로 설계하세요.");
         }
-    }, [landingMode]);
+    }, []);
 
-    const handleModeChange = (mode: 'life' | 'work') => {
-        setLandingMode(mode);
-        localStorage.setItem('life_controller_landing_mode', mode);
-    };
-
+    // Scroll Progress
     useEffect(() => {
         const handleScroll = () => {
             const container = containerRef.current;
             if (!container) return;
-
             const totalHeight = container.scrollHeight - container.clientHeight;
-            const progress = (container.scrollTop / totalHeight) * 100;
-            setScrollProgress(progress);
+            setScrollProgress((container.scrollTop / totalHeight) * 100);
         };
-
         const container = containerRef.current;
-        if (container) {
-            container.addEventListener('scroll', handleScroll);
-        }
+        container?.addEventListener('scroll', handleScroll);
         return () => container?.removeEventListener('scroll', handleScroll);
     }, []);
 
@@ -85,7 +62,7 @@ export function LandingPage() {
     const y1 = useTransform(scrollY, [0, 500], [0, 200]);
     const y2 = useTransform(scrollY, [0, 500], [0, -150]);
 
-    // Scroll Snap & Keyboard Navigation
+    // Keyboard Navigation
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             const sections = document.querySelectorAll('section[data-snap="true"]');
@@ -93,43 +70,26 @@ export function LandingPage() {
             const container = containerRef.current;
             if (!container) return;
 
-            // Find current active section index based on visibility
             let currentIndex = 0;
             sections.forEach((section, i) => {
                 const rect = section.getBoundingClientRect();
-                // A section is "active" if it takes up the majority of the viewport
                 if (rect.top <= windowHeight / 2 && rect.bottom >= windowHeight / 2) {
                     currentIndex = i;
                 }
             });
 
             if (e.key === 'ArrowDown') {
-                const currentSection = sections[currentIndex];
-                const rect = currentSection.getBoundingClientRect();
-
-                if (rect.bottom > windowHeight + 5) {
-                    return; // Allow normal scroll
-                }
-
+                const rect = sections[currentIndex].getBoundingClientRect();
+                if (rect.bottom > windowHeight + 5) return;
                 e.preventDefault();
-                if (currentIndex < sections.length - 1) {
-                    sections[currentIndex + 1].scrollIntoView({ behavior: 'smooth' });
-                }
+                if (currentIndex < sections.length - 1) sections[currentIndex + 1].scrollIntoView({ behavior: 'smooth' });
             } else if (e.key === 'ArrowUp') {
-                const currentSection = sections[currentIndex];
-                const rect = currentSection.getBoundingClientRect();
-
-                if (rect.top < -5) {
-                    return; // Allow normal scroll
-                }
-
+                const rect = sections[currentIndex].getBoundingClientRect();
+                if (rect.top < -5) return;
                 e.preventDefault();
-                if (currentIndex > 0) {
-                    sections[currentIndex - 1].scrollIntoView({ behavior: 'smooth' });
-                }
+                if (currentIndex > 0) sections[currentIndex - 1].scrollIntoView({ behavior: 'smooth' });
             }
         };
-
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, []);
@@ -137,18 +97,16 @@ export function LandingPage() {
     return (
         <div
             ref={containerRef}
-            className={cn(
-                "h-screen overflow-y-scroll snap-y snap-mandatory scroll-smooth transition-colors duration-1000",
-                landingMode === 'life' ? "bg-white text-slate-900" : "bg-slate-950 text-white dark"
-            )}
+            className="h-screen overflow-y-scroll snap-y snap-mandatory scroll-smooth bg-white text-slate-900"
         >
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
-            {/* Scroll Progress Indicator (0, 25, 50, 75, 100) */}
+
+            {/* Scroll Progress Indicator */}
             <div className="fixed right-6 top-1/2 -translate-y-1/2 z-[60] hidden lg:flex flex-col gap-4 items-center">
-                <div className="absolute top-0 bottom-0 w-0.5 bg-slate-200 dark:bg-white/10 -z-10" />
+                <div className="absolute top-0 bottom-0 w-0.5 bg-slate-200 -z-10" />
                 <motion.div
                     className="absolute top-0 w-0.5 bg-blue-600 -z-10"
                     style={{ height: `${scrollProgress}%` }}
@@ -161,39 +119,23 @@ export function LandingPage() {
                             if (sections[i]) sections[i].scrollIntoView({ behavior: 'smooth' });
                         }}
                         className={cn(
-                            "w-2 h-2 rounded-full transition-all duration-300 border-2 border-white dark:border-slate-900 cursor-pointer hover:scale-150",
-                            scrollProgress >= p ? "bg-blue-600 scale-125" : "bg-slate-200 dark:bg-white/20"
+                            "w-2 h-2 rounded-full transition-all duration-300 border-2 border-white cursor-pointer hover:scale-150",
+                            scrollProgress >= p ? "bg-blue-600 scale-125" : "bg-slate-200"
                         )}
                     />
                 ))}
             </div>
 
-            {/* Header */}
-            <header className={cn(
-                "fixed top-0 w-full z-50 backdrop-blur-md border-b transition-colors duration-500",
-                landingMode === 'life' ? "bg-white/80 border-gray-100" : "bg-slate-950/80 border-white/5"
-            )}>
+            {/* Header — h-20 (80px) */}
+            <header className="fixed top-0 w-full z-50 backdrop-blur-md border-b bg-white/80 border-gray-100">
                 <div className="container mx-auto px-6 h-20 flex items-center justify-between">
-                    <Logo variant="full" className={cn("scale-90 transition-all", landingMode === 'work' && "brightness-0 invert")} />
-
-                    <div className="hidden md:block">
-                        <ModeSwitch mode={landingMode} setMode={handleModeChange} />
-                    </div>
-
+                    <Logo variant="full" className="scale-90" />
                     <div className="flex items-center gap-4">
                         <Link href="/login">
-                            <Button variant="ghost" className={cn(
-                                "font-bold",
-                                landingMode === 'life' ? "text-slate-600" : "text-slate-400 hover:text-white"
-                            )}>
-                                로그인
-                            </Button>
+                            <Button variant="ghost" className="font-bold text-slate-600">로그인</Button>
                         </Link>
                         <Link href="/register">
-                            <Button className={cn(
-                                "rounded-full px-8 font-black shadow-xl transition-all hover:scale-105",
-                                landingMode === 'life' ? "bg-blue-600 hover:bg-blue-700 text-white" : "bg-white text-slate-900 hover:bg-slate-100"
-                            )}>
+                            <Button className="rounded-full px-8 font-black shadow-xl transition-all hover:scale-105 bg-blue-600 hover:bg-blue-700 text-white">
                                 시작하기
                             </Button>
                         </Link>
@@ -201,8 +143,8 @@ export function LandingPage() {
                 </div>
             </header>
 
-            {/* 1. Hero Section */}
-            <section data-snap="true" className="h-screen snap-start flex flex-col justify-center relative overflow-hidden">
+            {/* ── 1. Hero ── */}
+            <section data-snap="true" className="h-screen snap-start flex flex-col justify-center relative overflow-hidden pt-20">
                 <div className="absolute inset-0 pointer-events-none overflow-hidden">
                     {/* Card 1 – Today's Schedule (left, y1 parallax) */}
                     <motion.div
@@ -211,27 +153,27 @@ export function LandingPage() {
                         transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
                         className="absolute top-[30%] left-8 hidden xl:block"
                     >
-                        <div className="w-56 bg-white/95 dark:bg-slate-800/90 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-3xl shadow-2xl p-4 space-y-3">
+                        <div className="w-56 bg-white/95 backdrop-blur-xl border border-slate-200 rounded-3xl shadow-2xl p-4 space-y-3">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
                                     <Calendar className="w-4 h-4 text-blue-500" />
-                                    <span className="text-xs font-black text-slate-700 dark:text-slate-200">오늘 할 일</span>
+                                    <span className="text-xs font-black text-slate-700">오늘 할 일</span>
                                 </div>
                                 <span className="text-[10px] font-bold text-slate-400">3/5 완료</span>
                             </div>
-                            <div className="h-1.5 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                            <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
                                 <div className="h-full bg-blue-500 rounded-full" style={{ width: '60%' }} />
                             </div>
                             <div className="space-y-1.5">
                                 <div className="flex items-center gap-2">
-                                    <div className="w-4 h-4 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center shrink-0">
+                                    <div className="w-4 h-4 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
                                         <CheckCircle2 className="w-2.5 h-2.5 text-blue-500" />
                                     </div>
                                     <span className="text-[10px] font-bold text-slate-400 line-through">09:00 팀 미팅</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <div className="w-4 h-4 rounded-full border border-slate-200 dark:border-slate-600 shrink-0" />
-                                    <span className="text-[10px] font-bold text-slate-600 dark:text-slate-300">11:00 기획서 작성</span>
+                                    <div className="w-4 h-4 rounded-full border border-slate-200 shrink-0" />
+                                    <span className="text-[10px] font-bold text-slate-600">11:00 기획서 작성</span>
                                 </div>
                             </div>
                         </div>
@@ -243,7 +185,7 @@ export function LandingPage() {
                         transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
                         className="absolute top-[28%] right-8 hidden xl:block"
                     >
-                        <div className="w-48 bg-slate-900/95 dark:bg-slate-800/90 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl p-4 space-y-2">
+                        <div className="w-48 bg-slate-900/95 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl p-4 space-y-2">
                             <div className="flex items-center gap-2">
                                 <DollarSign className="w-4 h-4 text-emerald-400" />
                                 <span className="text-xs font-black text-white">이번달 저축</span>
@@ -263,27 +205,27 @@ export function LandingPage() {
                         transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
                         className="absolute bottom-[22%] right-8 hidden xl:block"
                     >
-                        <div className="w-52 bg-white/95 dark:bg-slate-800/90 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-3xl shadow-2xl p-4 space-y-3">
+                        <div className="w-52 bg-white/95 backdrop-blur-xl border border-slate-200 rounded-3xl shadow-2xl p-4 space-y-3">
                             <div className="flex items-center gap-2">
                                 <Target className="w-4 h-4 text-emerald-500" />
-                                <span className="text-xs font-black text-slate-700 dark:text-slate-200">목표 달성률</span>
+                                <span className="text-xs font-black text-slate-700">목표 달성률</span>
                             </div>
                             <div className="space-y-2">
                                 <div className="space-y-1">
                                     <div className="flex justify-between text-[10px] font-bold">
-                                        <span className="text-slate-500 dark:text-slate-400">독서 24권</span>
+                                        <span className="text-slate-500">독서 24권</span>
                                         <span className="text-emerald-500">65%</span>
                                     </div>
-                                    <div className="h-1.5 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                                    <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
                                         <div className="h-full bg-emerald-400 rounded-full" style={{ width: '65%' }} />
                                     </div>
                                 </div>
                                 <div className="space-y-1">
                                     <div className="flex justify-between text-[10px] font-bold">
-                                        <span className="text-slate-500 dark:text-slate-400">운동 루틴</span>
+                                        <span className="text-slate-500">운동 루틴</span>
                                         <span className="text-emerald-500">42%</span>
                                     </div>
-                                    <div className="h-1.5 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                                    <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
                                         <div className="h-full bg-emerald-400 rounded-full" style={{ width: '42%' }} />
                                     </div>
                                 </div>
@@ -292,10 +234,7 @@ export function LandingPage() {
                     </motion.div>
                 </div>
 
-                <div className={cn(
-                    "absolute top-0 left-1/2 -translate-x-1/2 w-full h-[800px] blur-3xl opacity-20 pointer-events-none transition-colors duration-1000",
-                    landingMode === 'life' ? "bg-blue-400" : "bg-purple-600"
-                )} />
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[800px] blur-3xl opacity-20 pointer-events-none bg-blue-400" />
 
                 <div className="container mx-auto text-center max-w-5xl relative z-10">
                     <motion.div
@@ -303,58 +242,37 @@ export function LandingPage() {
                         whileInView={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8 }}
                     >
-                        <div className={cn(
-                            "inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest mb-8 border transition-colors",
-                            landingMode === 'life' ? "bg-blue-50 border-blue-100 text-blue-600" : "bg-white/5 border-white/10 text-white"
-                        )}>
-                            <Sparkles className="w-3 h-3" /> 올인원 라이프 & 워크 컨트롤러
+                        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest mb-8 border bg-blue-50 border-blue-100 text-blue-600">
+                            <Sparkles className="w-3 h-3" /> 올인원 라이프 컨트롤러
                         </div>
 
                         <h1 className="text-4xl md:text-6xl font-black tracking-tighter mb-4 leading-[1.0]">
-                            {landingMode === 'life' ? (
-                                <>당신의 하루를 <br /> <span className="text-blue-600">작품처럼</span> 설계하세요</>
-                            ) : (
-                                <>생산성의 한계를 <br /> <span className="text-purple-500 text-glow">뛰어넘으세요</span></>
-                            )}
+                            당신의 하루를 <br /> <span className="text-blue-600">작품처럼</span> 설계하세요
                         </h1>
 
-                        <p className={cn(
-                            "text-lg md:text-xl mb-8 max-w-3xl mx-auto leading-relaxed font-medium transition-colors",
-                            landingMode === 'life' ? "text-slate-600" : "text-slate-400"
-                        )}>
-                            {landingMode === 'life' ? (
-                                "목표, 일정, 습관, 자산 관리를 한 곳에서. \n 일상의 조각들을 하나로 연결하여 완성하는 나만의 라이프 시스템."
-                            ) : (
-                                "프로젝트 관리, 팀 협업, 성과 분석까지. \n 업무에 최적화된 컨트롤 센터에서 압도적인 효율을 경험하세요."
-                            )}
+                        <p className="text-lg md:text-xl mb-8 max-w-3xl mx-auto leading-relaxed font-medium text-slate-600">
+                            목표, 일정, 습관, 자산 관리를 한 곳에서. <br />
+                            일상의 조각들을 하나로 연결하여 완성하는 나만의 라이프 시스템.
                         </p>
 
-                        <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-                            <Link href="/register">
-                                <Button size="lg" className={cn(
-                                    "h-14 px-10 text-lg rounded-full font-black shadow-2xl transition-all hover:scale-105",
-                                    landingMode === 'life' ? "bg-slate-900 text-white" : "bg-white text-slate-950"
-                                )}>
-                                    지금 무료로 시작하기 <ChevronRight className="ml-2 w-6 h-6" />
-                                </Button>
-                            </Link>
-                        </div>
+                        <Link href="/register">
+                            <Button size="lg" className="h-14 px-10 text-lg rounded-full font-black shadow-2xl transition-all hover:scale-105 bg-slate-900 text-white">
+                                지금 무료로 시작하기 <ChevronRight className="ml-2 w-6 h-6" />
+                            </Button>
+                        </Link>
                     </motion.div>
                 </div>
             </section>
 
-            {/* 2. Bento Grid Features */}
-            <section data-snap="true" className="h-screen snap-start flex flex-col justify-center px-6 overflow-hidden">
+            {/* ── 2. Bento Grid Features ── */}
+            <section data-snap="true" className="h-screen snap-start flex flex-col justify-center px-6 overflow-hidden pt-20">
                 <div className="container mx-auto max-w-6xl h-full flex flex-col justify-center">
-                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-10 shrink-0">
+                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 shrink-0">
                         <div className="max-w-xl">
-                            <h2 className="text-2xl md:text-4xl font-black tracking-tight mb-4">
+                            <h2 className="text-2xl md:text-4xl font-black tracking-tight mb-3">
                                 기능 하나하나가 <br /> <span className="text-blue-600">혁신적인</span> 이유
                             </h2>
-                            <p className={cn(
-                                "text-base font-medium",
-                                landingMode === 'life' ? "text-slate-500" : "text-slate-400"
-                            )}>
+                            <p className="text-base font-medium text-slate-500">
                                 단조로운 할 일 목록이 아닙니다. 데이터가 연결되고 성장이 가시화되는 진짜 도구입니다.
                             </p>
                         </div>
@@ -404,20 +322,17 @@ export function LandingPage() {
                 </div>
             </section>
 
-            {/* 3. Interactive Demo Section */}
-            <section data-snap="true" className={cn(
-                "h-screen snap-start flex flex-col justify-center px-6 transition-colors duration-1000 overflow-hidden",
-                landingMode === 'life' ? "bg-slate-50" : "bg-slate-900/50"
-            )}>
-                <div className="container mx-auto h-full flex flex-col justify-center">
-                    <div className="text-center mb-10 space-y-4 shrink-0">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[10px] font-black uppercase tracking-widest">
+            {/* ── 3. Interactive Demo ── */}
+            <section data-snap="true" className="h-screen snap-start flex flex-col justify-center px-6 bg-slate-50 overflow-hidden pt-20">
+                <div className="container mx-auto h-full flex flex-col justify-center gap-4">
+                    <div className="text-center shrink-0 space-y-1">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 text-blue-600 text-[10px] font-black uppercase tracking-widest">
                             라이브 데모
                         </div>
-                        <h2 className="text-2xl md:text-4xl font-black tracking-tight">
+                        <h2 className="text-xl md:text-2xl font-black tracking-tight">
                             기다리지 말고 <span className="text-blue-600">지금 바로</span> 만져보세요
                         </h2>
-                        <p className="text-slate-500 dark:text-slate-400 font-medium max-w-2xl mx-auto">
+                        <p className="text-slate-500 font-medium max-w-2xl mx-auto text-sm">
                             백문이 불여일견. 가입 전에도 앱의 핵심 기능을 실시간으로 조작해볼 수 있습니다.
                         </p>
                     </div>
@@ -430,59 +345,74 @@ export function LandingPage() {
                 </div>
             </section>
 
-            {/* 4. Pricing & FAQ (Merged) */}
-            <section data-snap="true" className="h-screen snap-start flex flex-col justify-center overflow-hidden">
-                <PricingAndFAQ mode={landingMode} />
+            {/* ── 4. Pricing & FAQ ── */}
+            <section data-snap="true" className="h-screen snap-start flex flex-col justify-center overflow-hidden pt-20">
+                <PricingAndFAQ mode="life" />
             </section>
 
-            {/* 5. Newsletter, Trust, Footer */}
-            <section data-snap="true" className="h-screen snap-start flex flex-col justify-center relative bg-slate-50 dark:bg-slate-900 overflow-hidden">
-                <div className="flex-1 flex flex-col justify-center">
-                    <NewsletterSection mode={landingMode} />
+            {/* ── 5. Final CTA + Footer ── */}
+            <section data-snap="true" className="h-screen snap-start flex flex-col bg-white overflow-hidden pt-20">
+                {/* Final CTA */}
+                <div className="flex-1 flex flex-col items-center justify-center gap-6 px-6 text-center">
+                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest bg-blue-50 border border-blue-100 text-blue-600">
+                        <Sparkles className="w-3 h-3" /> 지금 바로 시작하세요
+                    </div>
+                    <h2 className="text-3xl md:text-5xl font-black tracking-tight max-w-xl">
+                        더 나은 내일을 위한 <br /> <span className="text-blue-600">첫 걸음</span>
+                    </h2>
+                    <p className="text-slate-500 font-medium max-w-md text-base">
+                        무료로 가입하고 목표, 일정, 건강, 자산을 한 곳에서 관리해 보세요.
+                    </p>
+                    <Link href="/register">
+                        <Button size="lg" className="h-14 px-10 text-lg rounded-full font-black shadow-2xl transition-all hover:scale-105 bg-slate-900 text-white">
+                            무료로 시작하기 <ChevronRight className="ml-2 w-6 h-6" />
+                        </Button>
+                    </Link>
                 </div>
 
-                <div className="py-8 border-y border-slate-100 dark:border-white/5 bg-white dark:bg-slate-950">
+                {/* Trust Badges */}
+                <div className="py-6 border-y border-slate-100 bg-slate-50 shrink-0">
                     <div className="container mx-auto px-6 max-w-6xl">
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 opacity-40">
-                            <div className="flex items-center gap-2 justify-center font-bold"><Shield className="w-5 h-5" /> 강력한 보안</div>
-                            <div className="flex items-center gap-2 justify-center font-bold"><Globe className="w-5 h-5" /> 클라우드 동기화</div>
-                            <div className="flex items-center gap-2 justify-center font-bold"><Zap className="w-5 h-5" /> 다크모드 지원</div>
-                            <div className="flex items-center gap-2 justify-center font-bold"><Heart className="w-5 h-5" /> 사용자 중심</div>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 opacity-40">
+                            <div className="flex items-center gap-2 justify-center font-bold text-sm"><Shield className="w-4 h-4" /> 강력한 보안</div>
+                            <div className="flex items-center gap-2 justify-center font-bold text-sm"><Globe className="w-4 h-4" /> 클라우드 동기화</div>
+                            <div className="flex items-center gap-2 justify-center font-bold text-sm"><Zap className="w-4 h-4" /> 다크모드 지원</div>
+                            <div className="flex items-center gap-2 justify-center font-bold text-sm"><Heart className="w-4 h-4" /> 사용자 중심</div>
                         </div>
                     </div>
                 </div>
 
-                <footer className={cn(
-                    "py-6 px-6 font-medium transition-colors",
-                    landingMode === 'life' ? "bg-white" : "bg-slate-950"
-                )}>
-                    <div className="container mx-auto max-w-6xl grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-                        <div className="col-span-1 md:col-span-1">
-                            <Logo variant="full" className={cn("mb-6 scale-90", landingMode === 'work' && "brightness-0 invert")} />
+                {/* Footer */}
+                <footer className="py-5 px-6 font-medium bg-white shrink-0">
+                    <div className="container mx-auto max-w-6xl grid grid-cols-1 md:grid-cols-4 gap-6 mb-5">
+                        <div>
+                            <Logo variant="full" className="mb-4 scale-90 -ml-2" />
                             <p className="text-sm opacity-50">성장을 위한 완벽한 동반자.</p>
                         </div>
                         <div>
-                            <h4 className="font-bold mb-4">제품</h4>
-                            <ul className="space-y-2 text-sm opacity-50">
+                            <h4 className="font-bold mb-3 text-sm">제품</h4>
+                            <ul className="space-y-1.5 text-sm opacity-50">
                                 <li>기능</li>
                                 <li>가격</li>
                             </ul>
                         </div>
                         <div>
-                            <h4 className="font-bold mb-4">회사</h4>
-                            <ul className="space-y-2 text-sm opacity-50">
+                            <h4 className="font-bold mb-3 text-sm">회사</h4>
+                            <ul className="space-y-1.5 text-sm opacity-50">
                                 <li>소개</li>
                                 <li>문의</li>
                             </ul>
                         </div>
                         <div>
-                            <h4 className="font-bold mb-4">소셜</h4>
-                            <div className="flex gap-4">
-                                <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-white/5 flex items-center justify-center cursor-pointer hover:scale-110 transition-transform"><Star className="w-4 h-4" /></div>
+                            <h4 className="font-bold mb-3 text-sm">소셜</h4>
+                            <div className="flex gap-3">
+                                <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center cursor-pointer hover:scale-110 transition-transform">
+                                    <Star className="w-4 h-4" />
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div className="container mx-auto text-center pt-6 border-t border-slate-100 dark:border-white/5 opacity-40 text-xs flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div className="container mx-auto text-center pt-4 border-t border-slate-100 opacity-40 text-xs flex flex-col md:flex-row justify-between items-center gap-3">
                         <p>© {new Date().getFullYear()} J들의 놀이터.</p>
                         <div className="flex gap-6">
                             <Link href="/privacy" className="hover:underline hover:opacity-100 transition-opacity">개인정보처리방침</Link>

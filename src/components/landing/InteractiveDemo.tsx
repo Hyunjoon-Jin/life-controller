@@ -173,7 +173,7 @@ export function InteractiveDemo() {
     return (
         <div className="w-full max-w-5xl mx-auto">
             {/* Persona Selection */}
-            <div className="text-center mb-12">
+            <div className="text-center mb-4">
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">페르소나를 선택하세요</p>
                 <div className="flex justify-center gap-3">
                     {PERSONAS.map(p => (
@@ -195,7 +195,7 @@ export function InteractiveDemo() {
             </div>
 
             {/* Tab Navigation */}
-            <div className="flex flex-wrap justify-center gap-2 mb-10">
+            <div className="flex flex-wrap justify-center gap-2 mb-4">
                 {DEMO_TABS.map(tab => (
                     <button
                         key={tab.id}
@@ -214,7 +214,7 @@ export function InteractiveDemo() {
             </div>
 
             {/* Control Bar */}
-            <div className="flex justify-end gap-2 mb-4 px-4">
+            <div className="flex justify-end gap-2 mb-2 px-4">
                 <div className="bg-muted p-1 rounded-xl flex">
                     <button
                         onClick={() => setFrameMode('mobile')}
@@ -238,7 +238,7 @@ export function InteractiveDemo() {
             </div>
 
             {/* Interactive Panel */}
-            <div className="bg-card rounded-[40px] border border-border p-8 md:p-12 shadow-[0_32px_80px_rgba(0,0,0,0.06)] min-h-[500px] flex flex-col md:flex-row gap-8 lg:gap-12 overflow-hidden relative">
+            <div className="bg-card rounded-[40px] border border-border p-5 md:p-8 shadow-[0_32px_80px_rgba(0,0,0,0.06)] flex flex-col md:flex-row gap-6 lg:gap-10 overflow-hidden relative">
                 {/* Reset Button */}
                 <button
                     onClick={() => {
@@ -484,7 +484,7 @@ export function InteractiveDemo() {
                 <motion.div
                     layout
                     className={cn(
-                        "bg-slate-50 dark:bg-black/50 rounded-[48px] border-[8px] border-slate-900 dark:border-slate-800 shadow-2xl relative overflow-hidden h-[540px] mx-auto md:mx-0 transition-all duration-500",
+                        "bg-slate-50 dark:bg-black/50 rounded-[48px] border-[8px] border-slate-900 dark:border-slate-800 shadow-2xl relative overflow-hidden h-[440px] mx-auto md:mx-0 transition-all duration-500",
                         frameMode === 'mobile' ? "w-full md:w-[360px]" : "w-full md:w-[600px]"
                     )}
                 >
@@ -753,7 +753,7 @@ export function InteractiveDemo() {
                                     </div>
                                     <div
                                         ref={boardRef}
-                                        className="relative h-[350px] bg-slate-100 dark:bg-white/5 rounded-3xl overflow-hidden border-2 border-dashed border-slate-200 dark:border-white/10"
+                                        className="relative h-[270px] bg-slate-100 dark:bg-white/5 rounded-3xl overflow-hidden border-2 border-dashed border-slate-200 dark:border-white/10"
                                     >
                                         {notes.map((note, i) => (
                                             <motion.div
@@ -786,19 +786,6 @@ export function InteractiveDemo() {
                 </motion.div>
             </div>
 
-            {/* CTA under Demo */}
-            <div className="text-center mt-12">
-                <p className="text-slate-400 text-sm font-medium mb-4 italic">※ 위 데모는 가입 전 체험을 위해 제공되는 가상 데이터입니다.</p>
-                <Button size="lg" className="h-16 px-10 text-lg rounded-full bg-slate-900 hover:bg-slate-800 text-white shadow-2xl transition-all hover:scale-105">
-                    지금 무료로 시작하기 <ArrowRight className="ml-2 w-5 h-5" />
-                </Button>
-            </div>
         </div>
     );
 }
-
-const ArrowRight = ({ className }: { className?: string }) => (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
-        <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-);
