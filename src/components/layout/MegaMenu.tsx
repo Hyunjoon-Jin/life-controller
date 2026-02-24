@@ -31,7 +31,7 @@ export function MegaMenuNav({ activeCategory, activeTab, onSelect, appMode }: Me
                                 "flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all whitespace-nowrap btn-premium",
                                 activeTab === item.id
                                     ? "bg-[#6366F1] text-white shadow-[0_0_20px_rgba(99,102,241,0.4)] btn-glow-work"
-                                    : "text-white/40 hover:bg-white/5 hover:text-white/80 border border-white/5"
+                                    : "text-white/40 hover:bg-white/5 hover:text-white/80 border border-white/5 nav-inactive"
                             )}
                         >
                             {item.label}
@@ -54,7 +54,7 @@ export function MegaMenuNav({ activeCategory, activeTab, onSelect, appMode }: Me
                                 "flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all whitespace-nowrap btn-premium",
                                 activeTab === item.id
                                     ? "bg-[#3F51B5] text-white shadow-[0_0_20px_rgba(63,81,181,0.4)] btn-glow-study"
-                                    : "text-white/40 hover:bg-white/5 hover:text-white/80 border border-white/5"
+                                    : "text-white/40 hover:bg-white/5 hover:text-white/80 border border-white/5 nav-inactive"
                             )}
                         >
                             {item.label}
@@ -77,7 +77,7 @@ export function MegaMenuNav({ activeCategory, activeTab, onSelect, appMode }: Me
                                 "flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all whitespace-nowrap btn-premium",
                                 activeTab === item.id
                                     ? "bg-amber-600 text-white shadow-[0_0_20px_rgba(217,119,6,0.4)]"
-                                    : "text-white/40 hover:bg-white/5 hover:text-white/80 border border-white/5"
+                                    : "text-white/40 hover:bg-white/5 hover:text-white/80 border border-white/5 nav-inactive"
                             )}
                         >
                             {item.label}
@@ -111,7 +111,7 @@ export function MegaMenuNav({ activeCategory, activeTab, onSelect, appMode }: Me
                             "px-5 py-2.5 rounded-full text-sm font-black transition-all whitespace-nowrap relative group",
                             activeCategory === cat.id
                                 ? "text-emerald-400"
-                                : "text-white/40 hover:text-white/80"
+                                : "text-white/40 hover:text-white/80 nav-inactive"
                         )}
                     >
                         {cat.label}

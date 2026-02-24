@@ -286,9 +286,62 @@
   .light .glass-muted  { background: rgba(15, 22, 42, 0.55); }
   .light .glass-subtle { background: rgba(15, 22, 42, 0.35); }
 
+  /* Light mode: glass-surface chips more visible on dark glass */
+  .light .glass-surface {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+  }
+
   /* Light mode page gradient */
   .light .premium-gradient-bg {
     background: radial-gradient(circle at 20% 20%, #eef2ff 0%, #dde8ff 100%);
+  }
+
+  /* ── Gray mode ──────────────────────────────────────────────
+     Comfort Gray 는 배경이 중간 회색(220 15% 20%)이므로
+     glass 를 파란-검정 대신 회색 톤으로, gradient도 회색으로 재정의
+  ─────────────────────────────────────────────────────────── */
+  .gray .premium-gradient-bg {
+    background: radial-gradient(circle at 20% 20%, hsl(220 15% 23%) 0%, hsl(220 15% 17%) 100%);
+  }
+
+  .gray .glass-premium {
+    background: rgba(38, 41, 54, 0.82);
+    backdrop-filter: blur(24px) saturate(140%);
+    -webkit-backdrop-filter: blur(24px) saturate(140%);
+  }
+
+  .gray .glass-muted {
+    background: rgba(38, 41, 54, 0.56);
+    backdrop-filter: blur(16px) saturate(120%);
+    -webkit-backdrop-filter: blur(16px) saturate(120%);
+  }
+
+  .gray .glass-subtle {
+    background: rgba(38, 41, 54, 0.34);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  .gray .glass-surface {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+  }
+
+  /* Logo title: always white inside glass-premium (dark bg in all modes) */
+  .glass-premium .logo-title {
+    color: rgba(255, 255, 255, 0.95) !important;
+  }
+
+  /* MegaMenu nav tabs sit outside glass-premium — fix visibility in light mode */
+  .light .nav-inactive {
+    color: hsl(var(--foreground) / 0.5);
+    border-color: hsl(var(--border));
+  }
+  .light .nav-inactive:hover {
+    color: hsl(var(--foreground) / 0.85);
+    background-color: hsl(var(--muted));
+    border-color: hsl(var(--border));
   }
 }
 
