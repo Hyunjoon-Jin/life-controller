@@ -80,7 +80,7 @@ export function WeatherWidget() {
         if (code >= 1 && code <= 3) return <Cloud className="w-5 h-5 text-gray-400" />;
         if (code >= 45 && code <= 48) return <AlignJustify className="w-5 h-5 text-gray-400" />;
         if (code >= 51 && code <= 67) return <CloudDrizzle className="w-5 h-5 text-blue-300" />;
-        if (code >= 71 && code <= 77) return <CloudSnow className="w-5 h-5 text-sky-100" />;
+        if (code >= 71 && code <= 77) return <CloudSnow className="w-5 h-5 text-sky-400" />;
         if (code >= 80 && code <= 82) return <CloudRain className="w-5 h-5 text-blue-400" />;
         if (code >= 95 && code <= 99) return <CloudLightning className="w-5 h-5 text-yellow-400" />;
         return <Sun className="w-5 h-5 text-yellow-500" />;

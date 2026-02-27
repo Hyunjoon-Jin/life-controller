@@ -50,7 +50,7 @@ export function WeatherCard() {
         if (code >= 1 && code <= 3) return <Cloud className="w-8 h-8 text-gray-500" />; // Cloudy
         if (code >= 45 && code <= 48) return <AlignJustify className="w-8 h-8 text-gray-400" />; // Fog
         if (code >= 51 && code <= 67) return <CloudDrizzle className="w-8 h-8 text-blue-400" />; // Drizzle/Rain
-        if (code >= 71 && code <= 77) return <CloudSnow className="w-8 h-8 text-sky-200" />; // Snow
+        if (code >= 71 && code <= 77) return <CloudSnow className="w-8 h-8 text-sky-400" />; // Snow
         if (code >= 80 && code <= 82) return <CloudRain className="w-8 h-8 text-blue-600" />; // Showers
         if (code >= 95 && code <= 99) return <CloudLightning className="w-8 h-8 text-yellow-600" />; // Thunderstorm
         return <Sun className="w-8 h-8 text-orange-500" />;
@@ -81,7 +81,7 @@ export function WeatherCard() {
     if (!weather) return null;
 
     return (
-        <Card className="h-full border-none shadow-md hover:shadow-lg transition-shadow overflow-hidden bg-gradient-to-br from-blue-50 to-white dark:from-blue-950/20 dark:to-background">
+        <Card className="h-full border-none shadow-md hover:shadow-lg transition-shadow overflow-hidden bg-card">
             <CardHeader className="pb-2 border-b border-blue-100/50 dark:border-blue-900/50">
                 <div className="flex justify-between items-center">
                     <CardTitle className="text-lg flex items-center gap-2">

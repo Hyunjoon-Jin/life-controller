@@ -1035,9 +1035,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
     };
 
     // ============================================
-    // Alarm Effects (unchanged)
+    // Unified Alarm System
     // ============================================
-    const alertedEventIdsRef = useRef<Set<string>>(new Set());
 
     useEffect(() => {
         if ('Notification' in window && Notification.permission !== 'granted' && Notification.permission !== 'denied') {
@@ -1046,53 +1045,67 @@ export function DataProvider({ children }: { children: ReactNode }) {
     }, []);
 
     useEffect(() => {
+        const ADVANCE_MINUTES = 10;
+
+        // localStorage 기반 중복 방지 — 페이지 새로고침 후에도 당일 알람 재발동 없음
+        const getAlarmKey = (event: CalendarEvent) =>
+            `event-alerted-${event.id}-${format(new Date(event.start), 'yyyy-MM-dd')}`;
+
         const checkAlarms = () => {
             const now = new Date();
             events.forEach(event => {
                 if (!event.start) return;
                 const start = new Date(event.start);
+
+                // 오늘 일정만 처리
+                if (!isSameDay(start, now)) return;
+
+                const minutesToStart = differenceInMinutes(start, now);
+                // 이미 시작된 일정은 건너뜀
+                if (minutesToStart < 0) return;
+
                 const prep = event.prepTime || 0;
                 const travel = event.travelTime || 0;
-                const alarmTime = new Date(start.getTime() - (prep + travel) * 60 * 1000);
-                const timeDiff = now.getTime() - alarmTime.getTime();
-                if (timeDiff >= 0 && timeDiff < 60000 && !alertedEventIdsRef.current.has(event.id)) {
-                    const message = `${format(start, 'HH:mm')} 시작` +
-                        (prep > 0 ? `, 준비 ${prep}분` : '') +
-                        (travel > 0 ? `, 이동 ${travel}분` : '') + ' 전입니다.';
-                    if (Notification.permission === 'granted') {
-                        new Notification(`[일정 알림] ${event.title}`, { body: message });
-                    }
-                    toast.info(`[일정] ${event.title}`, { description: message });
-                    alertedEventIdsRef.current.add(event.id);
-                }
-            });
-        };
-        const interval = setInterval(checkAlarms, 10000);
-        return () => clearInterval(interval);
-    }, [events]);
+                // prep/travel이 있으면 그만큼 앞당기되, 최소 10분 전 보장
+                const advanceMinutes = Math.max(prep + travel, ADVANCE_MINUTES);
 
-    useEffect(() => {
-        const checkAlarms = () => {
-            const now = new Date();
-            const upcomingEvents = events.filter(event => {
-                if (event.priority !== 'high') return false;
-                if (alertedEventIdsRef.current.has(event.id)) return false;
-                const start = new Date(event.start);
-                if (!isSameDay(start, now)) return false;
-                const diff = differenceInMinutes(start, now);
-                return diff >= 0 && diff <= 10;
-            });
-            upcomingEvents.forEach(event => {
-                toast.error(`중요 일정 알림 ⏰`, {
-                    description: `'${event.title}' 일정이 10분 내에 시작됩니다!`,
-                    duration: 5000,
-                    style: { background: '#fee2e2', color: '#991b1b', border: '1px solid #f87171' }
-                });
-                alertedEventIdsRef.current.add(event.id);
+                if (minutesToStart > advanceMinutes) return;
+
+                // 이미 알람 발동된 이벤트는 건너뜀
+                const alarmKey = getAlarmKey(event);
+                if (localStorage.getItem(alarmKey)) return;
+
+                const prepTravelParts: string[] = [];
+                if (prep > 0) prepTravelParts.push(`준비 ${prep}분`);
+                if (travel > 0) prepTravelParts.push(`이동 ${travel}분`);
+                const prepTravelStr = prepTravelParts.length > 0
+                    ? ` (${prepTravelParts.join(', ')})`
+                    : '';
+                const message = `${format(start, 'HH:mm')} 시작 ${advanceMinutes}분 전${prepTravelStr}입니다.`;
+
+                if (Notification.permission === 'granted') {
+                    new Notification(`[일정 알림] ${event.title}`, { body: message });
+                }
+
+                if (event.priority === 'high') {
+                    toast.error(`⏰ 중요 일정 알림`, {
+                        description: `'${event.title}' — ${message}`,
+                        duration: 8000,
+                        style: { background: '#fee2e2', color: '#991b1b', border: '1px solid #f87171' }
+                    });
+                } else {
+                    toast.info(`📅 일정 알림`, {
+                        description: `${event.title} — ${message}`,
+                        duration: 6000,
+                    });
+                }
+
+                localStorage.setItem(alarmKey, '1');
             });
         };
-        const interval = setInterval(checkAlarms, 60000);
-        checkAlarms();
+
+        const interval = setInterval(checkAlarms, 30000); // 30초마다 체크
+        checkAlarms(); // 마운트 즉시 1회 실행
         return () => clearInterval(interval);
     }, [events]);
 
