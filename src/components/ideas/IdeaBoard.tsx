@@ -6,13 +6,33 @@ import { Memo } from '@/types';
 import { generateId, cn, safeFormat } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Plus, X, Trash2, Image as ImageIcon, Tag, Paperclip, Sparkles, Star, Target, Briefcase, Eye, Edit3, Search } from 'lucide-react';
+import { Plus, X, Trash2, Image as ImageIcon, Paperclip, Sparkles, Star, Target, Briefcase, Eye, Edit3, Search, FileText, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
+import { createClient } from '@/lib/supabase';
+import { toast } from 'sonner';
+
+const BUCKET_NAME = 'memo-pdfs';
+
+function formatFileSize(bytes: number): string {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function getPdfFileName(url: string): string {
+    try {
+        const decoded = decodeURIComponent(url.split('/').pop() || url);
+        // 타임스탬프 접두사 제거 (예: 1234567890_파일명.pdf → 파일명.pdf)
+        return decoded.replace(/^\d+_/, '');
+    } catch {
+        return url.split('/').pop() || 'file.pdf';
+    }
+}
 
 const COLORS = [
     { name: 'yellow', value: 'bg-yellow-200 text-yellow-900 border-yellow-300' },
@@ -43,6 +63,8 @@ export function IdeaBoard() {
     const [isFavorite, setIsFavorite] = useState(false);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const pdfInputRef = useRef<HTMLInputElement>(null);
+    const [isUploading, setIsUploading] = useState(false);
 
     // Filter memos based on search query
     const filteredMemos = useMemo(() => {
@@ -150,7 +172,60 @@ export function IdeaBoard() {
         }
     };
 
-    const removeAttachment = (index: number) => {
+    const handlePdfUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        if (file.type !== 'application/pdf') {
+            toast.error('PDF 파일만 첨부할 수 있습니다.');
+            return;
+        }
+        if (file.size > 10 * 1024 * 1024) {
+            toast.error('파일 크기는 10MB 이하여야 합니다.');
+            return;
+        }
+
+        setIsUploading(true);
+        try {
+            const supabase = createClient();
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) { toast.error('로그인이 필요합니다.'); return; }
+
+            const timestamp = Date.now();
+            const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+            const path = `${user.id}/${timestamp}_${safeName}`;
+
+            let { error: uploadError } = await supabase.storage.from(BUCKET_NAME).upload(path, file);
+            if (uploadError) {
+                if (uploadError.message?.toLowerCase().includes('bucket')) {
+                    await supabase.storage.createBucket(BUCKET_NAME, { public: true });
+                    const retry = await supabase.storage.from(BUCKET_NAME).upload(path, file);
+                    uploadError = retry.error;
+                }
+                if (uploadError) throw uploadError;
+            }
+
+            const { data: urlData } = supabase.storage.from(BUCKET_NAME).getPublicUrl(path);
+            setAttachments(prev => [...prev, `pdf::${urlData.publicUrl}`]);
+            toast.success(`"${file.name}" 첨부 완료`);
+        } catch (err) {
+            console.error('PDF upload error:', err);
+            toast.error('PDF 업로드에 실패했습니다.');
+        } finally {
+            setIsUploading(false);
+            if (pdfInputRef.current) pdfInputRef.current.value = '';
+        }
+    };
+
+    const removeAttachment = async (index: number) => {
+        const att = attachments[index];
+        if (att.startsWith('pdf::')) {
+            try {
+                const url = att.replace('pdf::', '');
+                const supabase = createClient();
+                const afterBucket = new URL(url).pathname.split(`/${BUCKET_NAME}/`)[1];
+                if (afterBucket) await supabase.storage.from(BUCKET_NAME).remove([decodeURIComponent(afterBucket)]);
+            } catch {}
+        }
         setAttachments(prev => prev.filter((_, i) => i !== index));
     };
 
@@ -279,7 +354,7 @@ export function IdeaBoard() {
             </div>
 
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen} modal={false}>
-                <DialogContent className="sm:max-w-[600px]">
+                <DialogContent className="sm:max-w-[600px] bg-card text-foreground">
                     <DialogHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <DialogTitle className="text-xl font-bold">
                             {editingMemo ? '메모 수정' : '새 메모'}
@@ -317,7 +392,7 @@ export function IdeaBoard() {
 
                         {editMode === 'edit' ? (
                             <textarea
-                                className="w-full h-48 bg-muted border-transparent rounded-xl p-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none custom-scrollbar font-mono"
+                                className="w-full h-48 bg-muted border-transparent rounded-xl p-4 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none custom-scrollbar font-mono"
                                 placeholder="내용을 입력하세요... (Markdown 지원)"
                                 value={content}
                                 onChange={e => setContent(e.target.value)}
@@ -379,7 +454,7 @@ export function IdeaBoard() {
                                     ))}
                                 </div>
                                 <Input
-                                    className="bg-muted border-transparent text-sm"
+                                    className="bg-muted border-transparent text-sm text-foreground"
                                     placeholder="태그 입력 (Enter로 추가)"
                                     value={tagInput}
                                     onChange={e => setTagInput(e.target.value)}
@@ -394,6 +469,7 @@ export function IdeaBoard() {
                                     }}
                                 />
                             </div>
+                            {/* 이미지 첨부 */}
                             <input
                                 type="file"
                                 ref={fileInputRef}
@@ -409,22 +485,77 @@ export function IdeaBoard() {
                             >
                                 <ImageIcon className="w-4 h-4" />
                             </Button>
+                            {/* PDF 첨부 */}
+                            <input
+                                type="file"
+                                ref={pdfInputRef}
+                                className="hidden"
+                                accept=".pdf"
+                                onChange={handlePdfUpload}
+                            />
+                            <Button
+                                variant="outline"
+                                size="icon"
+                                onClick={() => pdfInputRef.current?.click()}
+                                title="PDF 첨부"
+                                disabled={isUploading}
+                            >
+                                {isUploading
+                                    ? <Loader2 className="w-4 h-4 animate-spin" />
+                                    : <Paperclip className="w-4 h-4" />
+                                }
+                            </Button>
                         </div>
 
                         {/* Attachments Preview */}
                         {attachments.length > 0 && (
-                            <div className="flex gap-2 overflow-x-auto py-2">
-                                {attachments.map((src, idx) => (
-                                    <div key={idx} className="relative w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden border">
-                                        <Image src={src} alt="attachment" fill className="object-cover" unoptimized />
-                                        <button
-                                            onClick={() => removeAttachment(idx)}
-                                            className="absolute top-0 right-0 bg-black/50 text-white p-0.5 hover:bg-red-500 rounded-bl"
-                                        >
-                                            <X className="w-3 h-3" />
-                                        </button>
+                            <div className="flex flex-col gap-2">
+                                {/* 이미지 미리보기 */}
+                                {attachments.some(a => !a.startsWith('pdf::')) && (
+                                    <div className="flex gap-2 overflow-x-auto py-1">
+                                        {attachments.filter(a => !a.startsWith('pdf::')).map((src, idx) => (
+                                            <div key={idx} className="relative w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden border">
+                                                <Image src={src} alt="attachment" fill className="object-cover" unoptimized />
+                                                <button
+                                                    onClick={() => removeAttachment(attachments.indexOf(src))}
+                                                    className="absolute top-0 right-0 bg-black/50 text-white p-0.5 hover:bg-red-500 rounded-bl"
+                                                >
+                                                    <X className="w-3 h-3" />
+                                                </button>
+                                            </div>
+                                        ))}
                                     </div>
-                                ))}
+                                )}
+                                {/* PDF 목록 */}
+                                {attachments.some(a => a.startsWith('pdf::')) && (
+                                    <div className="space-y-1">
+                                        {attachments.map((att, idx) => {
+                                            if (!att.startsWith('pdf::')) return null;
+                                            const url = att.replace('pdf::', '');
+                                            const name = getPdfFileName(url);
+                                            return (
+                                                <div key={idx} className="flex items-center gap-2 bg-muted/50 rounded-lg px-3 py-2 group">
+                                                    <FileText className="w-4 h-4 text-red-500 flex-shrink-0" />
+                                                    <a
+                                                        href={url}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="text-xs text-foreground/80 hover:text-primary truncate flex-1"
+                                                        title={name}
+                                                    >
+                                                        {name}
+                                                    </a>
+                                                    <button
+                                                        onClick={() => removeAttachment(idx)}
+                                                        className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-red-500 transition-opacity"
+                                                    >
+                                                        <X className="w-3.5 h-3.5" />
+                                                    </button>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                )}
                             </div>
                         )}
 
