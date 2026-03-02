@@ -296,9 +296,10 @@ export type Memo = {
     tags?: string[];
     attachments?: string[];
     createdAt: Date;
-    connectedProjectId?: string; // New: Linked Project
-    connectedGoalId?: string;    // New: Linked Goal
-    isFavorite?: boolean;        // New: Pin/Favorite
+    connectedProjectId?: string;
+    connectedGoalId?: string;
+    isFavorite?: boolean;
+    status?: 'idea' | 'reviewing' | 'in-progress' | 'done' | 'on-hold';
     width?: number;
     height?: number;
     x?: number;
@@ -614,8 +615,24 @@ export type StockAnalysis = {
     rating: 'buy' | 'hold' | 'sell';
     targetPrice?: number;
     content: string; // Markdown analysis
-    url?: string; // New: Reference URL
+    url?: string; // Reference URL
     tags?: string[];
+    // AI-generated fields
+    aiAssisted?: boolean;
+    sentiment?: 'bullish' | 'neutral' | 'bearish';
+    keyPoints?: string[];
+    riskLevel?: 'low' | 'medium' | 'high';
+};
+
+export type PortfolioHolding = {
+    id: string;
+    symbol: string;
+    name: string;
+    quantity: number;
+    avgBuyPrice: number;
+    currency: 'KRW' | 'USD';
+    addedAt: Date;
+    notes?: string;
 };
 
 export type FinanceGoal = {

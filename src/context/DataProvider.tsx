@@ -4,7 +4,7 @@ import React, { createContext, useContext, ReactNode, useState, useEffect, useCa
 import {
     Task, Project, Goal, Habit, CalendarEvent, JournalEntry, Memo, Person, Scrap,
     LanguageEntry, Book, ExerciseSession, DietEntry, InBodyEntry, HobbyEntry,
-    Transaction, Asset, Certificate, PortfolioItem, RealEstateScrap, StockAnalysis,
+    Transaction, Asset, Certificate, PortfolioItem, RealEstateScrap, StockAnalysis, PortfolioHolding,
     WorkLog, ExerciseRoutine, FinanceGoal, MonthlyBudget, CustomFood, ExerciseDefinition,
     ArchiveDocument, UserProfile, Education, Career, Activity, Hobby, HobbyPost,
     LanguageResource, BodyCompositionGoal, WikiPage, ProjectResource, ProjectRisk, CustomFieldDefinition
@@ -150,6 +150,11 @@ interface DataContextType {
     addStockAnalysis: (analysis: StockAnalysis) => void;
     updateStockAnalysis: (analysis: StockAnalysis) => void;
     deleteStockAnalysis: (id: string) => void;
+    portfolioHoldings: PortfolioHolding[];
+    setPortfolioHoldings: (holdings: PortfolioHolding[]) => void;
+    addPortfolioHolding: (holding: PortfolioHolding) => void;
+    updatePortfolioHolding: (holding: PortfolioHolding) => void;
+    deletePortfolioHolding: (id: string) => void;
     workLogs: WorkLog[];
     setWorkLogs: (logs: WorkLog[]) => void;
     addWorkLog: (log: WorkLog) => void;
@@ -274,6 +279,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
     const [portfolios, setPortfolios] = useState<PortfolioItem[]>([]);
     const [realEstateScraps, setRealEstateScraps] = useState<RealEstateScrap[]>([]);
     const [stockAnalyses, setStockAnalyses] = useState<StockAnalysis[]>([]);
+    const [portfolioHoldings, setPortfolioHoldings] = useState<PortfolioHolding[]>([]);
     const [workLogs, setWorkLogs] = useState<WorkLog[]>([]);
     const [exerciseRoutines, setExerciseRoutines] = useState<ExerciseRoutine[]>([]);
     const [financeGoals, setFinanceGoals] = useState<FinanceGoal[]>([]);
@@ -434,7 +440,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
                     txData, assetsData, certsData, portfoliosData,
                     reData, stockData, wlData, erData, fgData, mbData,
                     cfData, ceData, archiveData,
-                    eduData, careerData, actData,
+                    eduData, careerData, actData, holdingsData,
                 ] = await Promise.all([
                     fetchAll<Task>('tasks'),
                     fetchAll<Project>('projects'),
@@ -470,6 +476,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
                     fetchAll<Education>('educations'),
                     fetchAll<Career>('careers'),
                     fetchAll<Activity>('activities'),
+                    fetchAll<PortfolioHolding>('portfolio_holdings'),
                 ]);
 
                 setTasks(tasksData);
@@ -496,6 +503,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
                 setPortfolios(portfoliosData);
                 setRealEstateScraps(reData);
                 setStockAnalyses(stockData);
+                setPortfolioHoldings(holdingsData);
                 setWorkLogs(wlData);
                 setExerciseRoutines(erData);
                 setFinanceGoals(fgData);
@@ -981,6 +989,11 @@ export function DataProvider({ children }: { children: ReactNode }) {
     const updateStockAnalysis = (s: StockAnalysis) => { setStockAnalyses(prev => prev.map(x => x.id === s.id ? s : x)); bg(() => dbUpdate('stock_analyses', s.id, s)); };
     const deleteStockAnalysis = (id: string) => { setStockAnalyses(prev => prev.filter(x => x.id !== id)); bg(() => dbDelete('stock_analyses', id)); };
 
+    // Portfolio Holdings
+    const addPortfolioHolding = (h: PortfolioHolding) => { setPortfolioHoldings(prev => [...prev, h]); bg(() => insertRow('portfolio_holdings', h)); };
+    const updatePortfolioHolding = (h: PortfolioHolding) => { setPortfolioHoldings(prev => prev.map(x => x.id === h.id ? h : x)); bg(() => dbUpdate('portfolio_holdings', h.id, h)); };
+    const deletePortfolioHolding = (id: string) => { setPortfolioHoldings(prev => prev.filter(x => x.id !== id)); bg(() => dbDelete('portfolio_holdings', id)); };
+
     // Work Logs
     const addWorkLog = (l: WorkLog) => { setWorkLogs(prev => [...prev, l]); bg(() => insertRow('work_logs', l)); };
     const updateWorkLog = (l: WorkLog) => { setWorkLogs(prev => prev.map(x => x.id === l.id ? l : x)); bg(() => dbUpdate('work_logs', l.id, l)); };
@@ -1151,6 +1164,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
             portfolios, addPortfolio, updatePortfolio, deletePortfolio,
             realEstateScraps, setRealEstateScraps, addRealEstateScrap, updateRealEstateScrap, deleteRealEstateScrap,
             stockAnalyses, setStockAnalyses, addStockAnalysis, updateStockAnalysis, deleteStockAnalysis,
+            portfolioHoldings, setPortfolioHoldings, addPortfolioHolding, updatePortfolioHolding, deletePortfolioHolding,
             workLogs, setWorkLogs, addWorkLog, updateWorkLog, deleteWorkLog,
             exerciseRoutines, setExerciseRoutines, addExerciseRoutine, updateExerciseRoutine, deleteExerciseRoutine,
             financeGoals, setFinanceGoals, addFinanceGoal, updateFinanceGoal, deleteFinanceGoal,

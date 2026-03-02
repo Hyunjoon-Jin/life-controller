@@ -168,6 +168,115 @@ export async function POST(req: NextRequest) {
                 return NextResponse.json(JSON.parse(jsonText));
             }
 
+            case 'analyze_investment_url': {
+                const { url: investUrl, symbol: investSymbol, name: investName } = payload;
+                try {
+                    const response = await fetch(investUrl, {
+                        headers: {
+                            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+                        }
+                    });
+                    if (!response.ok) throw new Error(`URL 접근 실패: ${response.status}`);
+                    const html = await response.text();
+                    const $ = cheerio.load(html);
+                    $('script, style, iframe, nav, footer, header, aside').remove();
+                    const text = $('body').text().replace(/\s+/g, ' ').trim().slice(0, 12000);
+
+                    const prompt = `당신은 전문 투자 애널리스트입니다. 다음 기사/리포트를 분석하여 투자 의견을 JSON으로 반환하세요.
+${investSymbol ? `종목 심볼: ${investSymbol}` : ''}
+${investName ? `종목명: ${investName}` : ''}
+
+기사 내용:
+${text}
+
+다음 JSON 형식으로만 반환하세요 (코드블록 없이):
+{
+  "symbol": "티커심볼 (기사에서 추출, 없으면 입력값 사용)",
+  "name": "종목명 (기사에서 추출, 없으면 입력값 사용)",
+  "rating": "buy 또는 hold 또는 sell",
+  "targetPrice": 목표주가 숫자 또는 null,
+  "sentiment": "bullish 또는 neutral 또는 bearish",
+  "riskLevel": "low 또는 medium 또는 high",
+  "keyPoints": ["핵심 포인트 1 (한국어)", "핵심 포인트 2", "핵심 포인트 3"],
+  "tags": ["태그1", "태그2", "태그3"],
+  "analysis": "3-4문단의 전문적인 한국어 투자 분석문. 종목 개요 및 현재 시장 상황, 투자 의견 근거 및 핵심 포인트, 주요 리스크 요인, 결론 및 투자 전략을 포함하세요."
+}`;
+                    const result = await model.generateContent(prompt);
+                    const jsonText = result.response.text().replace(/```json/g, '').replace(/```/g, '').trim();
+                    return NextResponse.json(JSON.parse(jsonText));
+                } catch (error: any) {
+                    console.error('[AI] analyze_investment_url error:', error);
+                    return NextResponse.json({ error: `분석 실패: ${error.message}` }, { status: 500 });
+                }
+            }
+
+            case 'write_investment_analysis': {
+                const { symbol: wSymbol, name: wName, rating: wRating, targetPrice: wTargetPrice, notes, stockData } = payload;
+                const ratingKorean = wRating === 'buy' ? '매수' : wRating === 'sell' ? '매도' : '중립';
+                const stockInfo = stockData
+                    ? `현재가: ${stockData.currentPrice} ${stockData.currency}, 전일대비: ${stockData.changePercent?.toFixed(2)}%, 52주 고가: ${stockData.week52High}, 52주 저가: ${stockData.week52Low}`
+                    : '';
+
+                const prompt = `당신은 전문 투자 애널리스트입니다. 다음 종목에 대한 전문적인 한국어 투자 분석문을 작성해주세요.
+
+종목 심볼: ${wSymbol}
+종목명: ${wName}
+투자의견: ${ratingKorean} (${wRating})
+${wTargetPrice ? `목표주가: ${wTargetPrice} USD` : ''}
+${stockInfo ? `실시간 데이터: ${stockInfo}` : ''}
+${notes ? `사용자 메모: ${notes}` : ''}
+
+4문단의 전문적인 분석문을 한국어로 작성해주세요:
+1문단: 종목 개요 및 현재 시장 상황
+2문단: 투자의견 근거 및 핵심 투자 포인트
+3문단: 주요 리스크 요인 및 주의사항
+4문단: 결론 및 투자 전략 제안
+
+마크다운 포맷을 사용하고, 분석문만 반환하세요.`;
+
+                const result = await model.generateContent(prompt);
+                return NextResponse.json({ text: result.response.text() });
+            }
+
+            case 'analyze_portfolio': {
+                const { holdings, analyses } = payload;
+
+                const holdingsSummary = (holdings || []).length > 0
+                    ? holdings.map((h: any) =>
+                        `${h.name}(${h.symbol}): ${h.quantity}주 @ 평균단가 ${h.avgBuyPrice}${h.currency}${h.currentPrice ? `, 현재가 ${h.currentPrice}` : ''}`
+                    ).join('\n')
+                    : '보유 종목 없음';
+
+                const analysesSummary = (analyses || []).length > 0
+                    ? analyses.map((a: any) =>
+                        `${a.name}(${a.symbol}): ${a.rating}, 목표가 ${a.targetPrice || '미설정'}${a.sentiment ? `, 심리 ${a.sentiment}` : ''}`
+                    ).join('\n')
+                    : '분석 기록 없음';
+
+                const prompt = `당신은 포트폴리오 매니저입니다. 다음 포트폴리오를 분석하고 한국어로 투자 인사이트를 제공하세요.
+
+[보유 종목]
+${holdingsSummary}
+
+[분석 기록]
+${analysesSummary}
+
+다음 JSON 형식으로만 반환하세요 (코드블록 없이):
+{
+  "overallSentiment": "bullish 또는 neutral 또는 bearish",
+  "diversificationScore": 1~10 사이 정수 (분산 투자 점수),
+  "riskLevel": "conservative 또는 moderate 또는 aggressive",
+  "strengths": ["포트폴리오 강점 1 (한국어)", "강점 2"],
+  "risks": ["주요 리스크 1 (한국어)", "리스크 2"],
+  "recommendations": ["추천 액션 1 (한국어)", "추천 액션 2", "추천 액션 3"],
+  "summary": "포트폴리오 전반적 평가를 2-3문장으로 작성 (한국어)"
+}`;
+
+                const result = await model.generateContent(prompt);
+                const jsonText = result.response.text().replace(/```json/g, '').replace(/```/g, '').trim();
+                return NextResponse.json(JSON.parse(jsonText));
+            }
+
             default:
                 return NextResponse.json({ error: "Invalid action" }, { status: 400 });
         }
