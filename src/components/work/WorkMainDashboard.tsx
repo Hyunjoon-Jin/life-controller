@@ -6,7 +6,6 @@ import { ScheduleSection } from './sections/ScheduleSection';
 import { ProjectSection } from './sections/ProjectSection';
 import { WorkPeopleSection } from './sections/WorkPeopleSection';
 import { WorkTimeSection } from './sections/WorkTimeSection';
-import { WorkTemplateSection } from './sections/WorkTemplateSection';
 import { WorkDashboard } from './dashboard/WorkDashboard';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';

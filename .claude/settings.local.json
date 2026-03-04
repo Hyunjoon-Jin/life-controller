@@ -4,7 +4,29 @@
       "Bash(head:*)",
       "Bash(cd:*)",
       "Bash(cd \"C:/Users/jhj98/OneDrive/바탕 화면/daily-scheduler\" && git push origin main 2>&1)",
-      "Bash(cd C:\\\\Users\\\\jhj98\\\\OneDrive\\\\바탕 화면\\\\daily-scheduler:*)"
+      "Bash(cd C:\\\\Users\\\\jhj98\\\\OneDrive\\\\바탕 화면\\\\daily-scheduler:*)",
+      "Bash(tail:*)",
+      "Bash(grep:*)",
+      "Bash(echo npx vercel not found:*)",
+      "Bash(cd \"/c/Users/jhj98/OneDrive/바탕 화면/daily-scheduler\" && npx vercel --prod 2>&1)",
+      "Bash(cd \"/c/Users/jhj98/OneDrive/바탕 화면/daily-scheduler\" && git push origin main 2>&1)",
+      "Bash(cd \"C:\\\\Users\\\\jhj98\\\\OneDrive\\\\바탕 화면\\\\daily-scheduler\" && git push origin main 2>&1)",
+      "Bash(cd \"C:\\\\Users\\\\jhj98\\\\OneDrive\\\\바탕 화면\\\\daily-scheduler\" && git add src/components/ideas/IdeaBoard.tsx && git commit -m \"$\\(cat <<'EOF'\nfix: 아이디어 보드 메모 창 텍스트 가시성 수정 및 PDF 첨부 기능 추가\n\n- textarea text-foreground 명시로 모든 테마에서 입력 텍스트 가시\n- DialogContent bg-card text-foreground 적용\n- PDF 첨부 버튼\\(클립 아이콘\\) 추가 → Supabase Storage 업로드\n- 이미지/PDF 첨부 구분 표시 \\(이미지: 썸네일, PDF: 링크 목록\\)\n- 첨부 삭제 시 Storage에서도 파일 제거\n\nCo-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>\nEOF\n\\)\" && git push origin main 2>&1)",
+      "Bash(echo EXIT:$?:*)",
+      "Bash(cd \"C:\\\\Users\\\\jhj98\\\\OneDrive\\\\바탕 화면\\\\daily-scheduler\" && vercel --prod 2>&1)",
+      "Bash(cd \"C:\\\\Users\\\\jhj98\\\\OneDrive\\\\바탕 화면\\\\daily-scheduler\" && vercel login 2>&1)",
+      "Bash(cd \"C:\\\\Users\\\\jhj98\\\\OneDrive\\\\바탕 화면\\\\daily-scheduler\" && gh run list --repo Hyunjoon-Jin/life-controller --limit 3 2>&1)",
+      "WebSearch",
+      "WebFetch(domain:purewrite.io)",
+      "WebFetch(domain:sentencify.ai)",
+      "WebFetch(domain:www.talaera.com)",
+      "WebFetch(domain:yourbuoy.kr)",
+      "WebFetch(domain:www.indeed.com)",
+      "WebFetch(domain:pumble.com)",
+      "Bash(cd \"C:\\\\Users\\\\jhj98\\\\OneDrive\\\\바탕 화면\\\\daily-scheduler\" && node -e \"require\\('remark-gfm'\\); console.log\\('ok'\\)\" 2>&1)",
+      "Bash(powershell:*)",
+      "Bash(python3:*)",
+      "Bash(node:*)"
     ]
   }
 }

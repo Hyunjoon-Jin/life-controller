@@ -66,14 +66,14 @@ export function WorkloadHeatmap() {
                         <Activity className="w-6 h-6 text-indigo-400" />
                     </div>
                     <div>
-                        <h3 className="text-xl font-black text-white tracking-widest uppercase mb-1">OPERATIONAL INTENSITY MATRIX</h3>
-                        <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] flex items-center gap-2">
-                            <Terminal className="w-3 h-3 text-indigo-500/50" /> {totalActivities} DATA POINTS ACQUIRED // 365D WINDOW
+                        <h3 className="text-base font-semibold text-foreground mb-1">업무 부하 현황</h3>
+                        <p className="text-xs text-muted-foreground flex items-center gap-2">
+                            <Terminal className="w-3 h-3 text-indigo-500/50" /> 최근 365일 · 총 {totalActivities}건
                         </p>
                     </div>
                 </div>
-                <div className="flex items-center gap-3 text-[9px] font-black text-white/20 tracking-widest uppercase">
-                    <span>LOW</span>
+                <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                    <span>낮음</span>
                     <div className="flex gap-1">
                         <div className="w-3 h-3 rounded-[2px] bg-white/[0.03]" />
                         <div className="w-3 h-3 rounded-[2px] bg-indigo-500/20" />
@@ -81,7 +81,7 @@ export function WorkloadHeatmap() {
                         <div className="w-3 h-3 rounded-[2px] bg-indigo-500/70" />
                         <div className="w-3 h-3 rounded-[2px] bg-indigo-500" />
                     </div>
-                    <span>MAX</span>
+                    <span>높음</span>
                 </div>
             </div>
 
@@ -108,12 +108,12 @@ export function WorkloadHeatmap() {
                                                     )}
                                                 />
                                             </TooltipTrigger>
-                                            <TooltipContent className="glass-premium border-white/10 rounded-xl p-3 shadow-3xl text-white">
-                                                <div className="text-[10px] font-black tracking-widest uppercase mb-1 drop-shadow-md">
-                                                    {format(dayDate, 'MMM dd, yyyy')}
+                                            <TooltipContent className="glass-premium border-white/10 rounded-xl p-3 shadow-3xl text-foreground">
+                                                <div className="text-xs font-semibold mb-1">
+                                                    {format(dayDate, 'yyyy년 M월 d일', { locale: ko })}
                                                 </div>
-                                                <div className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest flex items-center gap-2">
-                                                    <Zap className="w-3 h-3" /> INTENSITY_INDEX: {count}
+                                                <div className="text-xs text-indigo-400 flex items-center gap-2">
+                                                    <Zap className="w-3 h-3" /> 활동 지수: {count}
                                                 </div>
                                             </TooltipContent>
                                         </Tooltip>

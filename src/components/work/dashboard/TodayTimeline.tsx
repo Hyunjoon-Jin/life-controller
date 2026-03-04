@@ -23,7 +23,7 @@ export function TodayTimeline() {
         try {
             const suggestions = await recommendSmartSchedule(tasks, events);
             if (suggestions.length === 0) {
-                toast.info("NO OPTIMAL SCHEDULE COMBINATIONS FOUND.");
+                toast.info("최적 일정 조합을 찾지 못했습니다.");
                 return;
             }
 
@@ -39,10 +39,10 @@ export function TodayTimeline() {
                     count++;
                 }
             }
-            toast.success(`AI STRATEGY APPLIED: ${count} MISSIONS DEPLOYED.`);
+            toast.success(`AI 일정 배치 완료: ${count}개 할일이 배치되었습니다.`);
         } catch (error) {
             console.error(error);
-            toast.error("STRATEGIC ERROR: AI SCHEDULING FAILED.");
+            toast.error("AI 일정 배치에 실패했습니다.");
         } finally {
             setIsAIScheduling(false);
         }
@@ -63,8 +63,8 @@ export function TodayTimeline() {
                         <Activity className="w-5 h-5 text-indigo-400" />
                     </div>
                     <div>
-                        <h3 className="text-lg font-black text-white tracking-widest uppercase mb-0.5">오늘의 일정</h3>
-                        <p className="text-[8px] font-bold text-white/20 tracking-[0.2em] uppercase">시간순 업무 현황</p>
+                        <h3 className="text-base font-semibold text-foreground mb-0.5">오늘의 일정</h3>
+                        <p className="text-xs text-muted-foreground">시간순</p>
                     </div>
                 </div>
             </div>
@@ -97,27 +97,27 @@ export function TodayTimeline() {
                                     <div className="group-hover/item:translate-x-2 transition-transform duration-300">
                                         <div className="flex items-center gap-3 mb-2">
                                             <span className={cn(
-                                                "text-[10px] font-black tracking-widest uppercase font-mono",
-                                                isPast ? "text-white/20" : "text-white/40"
+                                                "text-xs font-mono",
+                                                isPast ? "text-muted-foreground/40" : "text-muted-foreground"
                                             )}>
                                                 {format(new Date(event.start), 'HH:mm')} — {format(new Date(event.end), 'HH:mm')}
                                             </span>
                                             {isCurrent && (
-                                                <span className="px-2 py-0.5 rounded bg-sky-500/10 text-sky-400 text-[8px] font-black tracking-widest uppercase animate-pulse">
+                                                <span className="px-2 py-0.5 rounded-full bg-sky-500/10 text-sky-400 text-xs animate-pulse">
                                                     진행 중
                                                 </span>
                                             )}
                                         </div>
                                         <div className={cn(
-                                            "p-5 rounded-2xl border transition-all duration-300",
+                                            "p-4 rounded-xl border transition-all duration-300",
                                             isPast
-                                                ? "bg-white/[0.01] border-white/5 text-white/20"
-                                                : "bg-white/[0.03] border-white/5 hover:border-indigo-500/30 text-white shadow-xl"
+                                                ? "bg-muted/20 border-border/30 text-muted-foreground/40"
+                                                : "bg-card border-border hover:border-indigo-500/40 text-foreground"
                                         )}>
-                                            <div className="font-black text-sm uppercase tracking-wide">{event.title}</div>
+                                            <div className="font-medium text-sm">{event.title}</div>
                                             {event.description && (
-                                                <div className="text-[10px] font-bold text-white/30 uppercase tracking-wider mt-2 line-clamp-2">
-                                                    <Terminal className="w-3 h-3 inline mr-2 text-indigo-500" /> {event.description}
+                                                <div className="text-xs text-muted-foreground mt-1.5 line-clamp-2">
+                                                    {event.description}
                                                 </div>
                                             )}
                                         </div>
@@ -127,9 +127,9 @@ export function TodayTimeline() {
                         })}
                     </div>
                 ) : (
-                    <div className="h-full flex flex-col items-center justify-center opacity-10 py-16 gap-4 border-2 border-dashed border-white/10 rounded-[40px]">
-                        <Clock className="w-12 h-12" />
-                        <p className="text-[9px] font-black tracking-[0.3em] uppercase text-center leading-relaxed">오늘 등록된<br />일정이 없습니다</p>
+                    <div className="h-full flex flex-col items-center justify-center py-16 gap-3 border-2 border-dashed border-border rounded-2xl">
+                        <Clock className="w-10 h-10 text-muted-foreground/30" />
+                        <p className="text-sm text-muted-foreground text-center">오늘 등록된 일정이 없습니다</p>
                     </div>
                 )}
             </div>
@@ -138,7 +138,8 @@ export function TodayTimeline() {
                 <Button
                     onClick={handleAISmartSchedule}
                     disabled={isAIScheduling}
-                    className="w-full h-14 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 hover:bg-indigo-500 hover:text-white font-black text-[11px] tracking-[0.2em] uppercase transition-all active:scale-95"
+                    variant="outline"
+                    className="w-full h-11 rounded-xl text-sm font-medium text-indigo-400 border-indigo-500/20 hover:bg-indigo-500 hover:text-white transition-all"
                 >
                     {isAIScheduling ? <Loader2 className="w-4 h-4 animate-spin mr-3" /> : <Zap className="w-4 h-4 mr-3" />}
                     AI 스마트 일정 자동 배치

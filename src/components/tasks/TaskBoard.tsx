@@ -113,9 +113,10 @@ export function TaskBoard({ projectId, hideHeader = false }: TaskBoardProps) {
             medium: 'bg-emerald-500 text-white shadow-[0_0_10px_rgba(16,185,129,0.4)]',
             low: 'bg-blue-500 text-white shadow-[0_0_10px_rgba(59,130,246,0.4)]'
         };
+        const labels: Record<Priority, string> = { high: '높음', medium: '보통', low: '낮음' };
         return (
-            <span className={cn("px-2 py-0.5 rounded-lg text-[9px] uppercase font-black tracking-wider", colors[p])}>
-                {p}
+            <span className={cn("px-2 py-0.5 rounded-lg text-[9px] font-semibold", colors[p])}>
+                {labels[p]}
             </span>
         );
     };
@@ -123,10 +124,10 @@ export function TaskBoard({ projectId, hideHeader = false }: TaskBoardProps) {
     const TaskForm = () => (
         <div className="grid gap-6 py-4">
             <div className="space-y-3">
-                <label className="text-[10px] font-black text-white/60 uppercase tracking-[0.2em]">task name</label>
+                <label className="text-[10px] font-semibold text-muted-foreground tracking-wide">할 일</label>
                 <Input
-                    className="h-14 font-black text-xl border-white/5 bg-white/5 focus-visible:ring-emerald-500/30 rounded-2xl text-white placeholder:text-white/30"
-                    placeholder="WONDERFUL TASK..."
+                    className="h-14 font-semibold text-xl border-border bg-card focus-visible:ring-primary/30 rounded-2xl text-foreground placeholder:text-muted-foreground"
+                    placeholder="할 일을 입력하세요..."
                     value={newTaskTitle}
                     onChange={e => setNewTaskTitle(e.target.value)}
                 />
@@ -134,27 +135,27 @@ export function TaskBoard({ projectId, hideHeader = false }: TaskBoardProps) {
 
             <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-3">
-                    <label className="text-[10px] font-black text-white/60 uppercase tracking-[0.2em]">Category</label>
+                    <label className="text-[10px] font-semibold text-muted-foreground tracking-wide">카테고리</label>
                     <select
-                        className="flex h-12 w-full rounded-2xl border border-white/5 bg-white/5 px-4 py-2 text-sm font-bold text-white outline-none focus:ring-2 focus:ring-emerald-500/20"
+                        className="flex h-12 w-full rounded-2xl border border-border bg-card px-4 py-2 text-sm font-medium text-foreground outline-none focus:ring-2 focus:ring-primary/20"
                         value={newTaskType}
                         onChange={e => setNewTaskType(e.target.value)}
                     >
-                        <option value="work">WORK</option>
-                        <option value="study">STUDY</option>
-                        <option value="personal">PERSONAL</option>
-                        <option value="health">HEALTH</option>
-                        <option value="finance">FINANCE</option>
-                        <option value="travel">TRAVEL</option>
-                        <option value="social">SOCIAL</option>
-                        <option value="hobby">HOBBY</option>
-                        <option value="home">HOME</option>
-                        <option value="other">ETC</option>
+                        <option value="work">업무</option>
+                        <option value="study">학습</option>
+                        <option value="personal">개인</option>
+                        <option value="health">건강</option>
+                        <option value="finance">재정</option>
+                        <option value="travel">여행</option>
+                        <option value="social">소셜</option>
+                        <option value="hobby">취미</option>
+                        <option value="home">집</option>
+                        <option value="other">기타</option>
                     </select>
                 </div>
                 <div className="space-y-3">
-                    <label className="text-[10px] font-black text-white/60 uppercase tracking-[0.2em]">Deadline</label>
-                    <div className="rounded-2xl overflow-hidden border border-white/5 bg-black/20">
+                    <label className="text-[10px] font-semibold text-muted-foreground tracking-wide">마감일</label>
+                    <div className="rounded-2xl overflow-hidden border border-border bg-card">
                         <DatePicker
                             date={newTaskDeadline}
                             setDate={setNewTaskDeadline}
@@ -164,10 +165,10 @@ export function TaskBoard({ projectId, hideHeader = false }: TaskBoardProps) {
             </div>
 
             <div className="space-y-3">
-                <label className="text-[10px] font-black text-white/60 uppercase tracking-[0.2em]">Notes</label>
+                <label className="text-[10px] font-semibold text-muted-foreground tracking-wide">메모</label>
                 <Input
-                    className="h-12 bg-white/5 border-white/5 rounded-2xl text-white placeholder:text-white/30"
-                    placeholder="EXTRA DETAILS..."
+                    className="h-12 bg-card border-border rounded-2xl text-foreground placeholder:text-muted-foreground"
+                    placeholder="추가 내용을 입력하세요..."
                     value={newTaskRemarks}
                     onChange={e => setNewTaskRemarks(e.target.value)}
                 />
@@ -188,8 +189,8 @@ export function TaskBoard({ projectId, hideHeader = false }: TaskBoardProps) {
                                 <ListTodo className="w-6 h-6 text-white" strokeWidth={3} />
                             </div>
                             <div>
-                                <h2 className="text-3xl font-black text-white tracking-tighter uppercase">TASK BOARD</h2>
-                                <p className="text-xs font-bold text-white/60 tracking-widest uppercase mt-0.5">MANAGE YOUR DAILY MISSIONS</p>
+                                <h2 className="text-3xl font-bold text-foreground tracking-tight">할 일 보드</h2>
+                                <p className="text-xs font-medium text-muted-foreground mt-0.5">오늘의 할 일을 관리하세요</p>
                             </div>
                         </div>
 
@@ -201,17 +202,17 @@ export function TaskBoard({ projectId, hideHeader = false }: TaskBoardProps) {
                             </DialogTrigger>
                             <DialogContent className="glass-premium border border-white/10 text-white rounded-[40px] p-10 shadow-2xl sm:max-w-[550px]">
                                 <DialogHeader>
-                                    <DialogTitle className="text-3xl font-black tracking-tighter uppercase">
-                                        {editingTask ? 'EDIT TASK' : 'NEW MISSION'}
+                                    <DialogTitle className="text-2xl font-bold tracking-tight">
+                                        {editingTask ? '할 일 수정' : '새 할 일'}
                                     </DialogTitle>
                                 </DialogHeader>
                                 <TaskForm />
                                 <DialogFooter className="mt-4">
                                     <Button
                                         onClick={handleSaveTask}
-                                        className="w-full h-14 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-black text-lg tracking-widest shadow-[0_15px_30px_-5px_rgba(16,185,129,0.4)] transition-all active:scale-95"
+                                        className="w-full h-14 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-lg transition-all active:scale-95"
                                     >
-                                        {editingTask ? 'UPDATE NOW' : 'DEPLOY TASK'}
+                                        {editingTask ? '수정 완료' : '추가'}
                                     </Button>
                                 </DialogFooter>
                             </DialogContent>
@@ -222,23 +223,23 @@ export function TaskBoard({ projectId, hideHeader = false }: TaskBoardProps) {
                         <button
                             onClick={() => setSelectedProjectId('all')}
                             className={cn(
-                                "px-6 py-2.5 rounded-2xl transition-all font-black text-[11px] tracking-widest uppercase border",
+                                "px-6 py-2.5 rounded-2xl transition-all font-medium text-[12px] border",
                                 selectedProjectId === 'all'
                                     ? "bg-emerald-500 text-white border-emerald-500/50 shadow-[0_10px_20px_-5px_rgba(16,185,129,0.3)]"
-                                    : "bg-white/5 border-white/5 text-white/50 hover:text-white/60 hover:bg-white/10"
+                                    : "bg-white/5 border-border text-muted-foreground hover:text-foreground hover:bg-white/10"
                             )}
                         >
-                            ALL TASKS
+                            전체
                         </button>
                         {displayProjects.map(p => (
                             <button
                                 key={p.id}
                                 onClick={() => setSelectedProjectId(p.id)}
                                 className={cn(
-                                    "px-6 py-2.5 rounded-2xl transition-all font-black text-[11px] tracking-widest uppercase border",
+                                    "px-6 py-2.5 rounded-2xl transition-all font-medium text-[12px] border",
                                     selectedProjectId === p.id
-                                        ? "bg-white text-black border-white shadow-[0_10px_20px_-5px_rgba(255,255,255,0.2)]"
-                                        : "bg-white/5 border-white/5 text-white/50 hover:text-white/60"
+                                        ? "bg-foreground text-background border-foreground/50 shadow-[0_10px_20px_-5px_rgba(255,255,255,0.2)]"
+                                        : "bg-white/5 border-border text-muted-foreground hover:text-foreground"
                                 )}
                             >
                                 <span className="flex items-center gap-2">
@@ -253,7 +254,7 @@ export function TaskBoard({ projectId, hideHeader = false }: TaskBoardProps) {
 
             {hideHeader && (
                 <div className="flex justify-between items-center mb-6 p-2">
-                    <h3 className="text-2xl font-black text-white tracking-tighter uppercase">QUICK TASKS</h3>
+                    <h3 className="text-2xl font-bold text-foreground tracking-tight">빠른 할 일</h3>
                     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                         <DialogTrigger asChild>
                             <button onClick={openCreateDialog} className="w-10 h-10 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center hover:bg-white/10 text-white/40 hover:text-white">
@@ -262,14 +263,14 @@ export function TaskBoard({ projectId, hideHeader = false }: TaskBoardProps) {
                         </DialogTrigger>
                         <DialogContent className="glass-premium border border-white/10 text-white rounded-[40px] p-10 shadow-2xl sm:max-w-[550px]">
                             <DialogHeader>
-                                <DialogTitle className="text-3xl font-black tracking-tighter uppercase">
-                                    {editingTask ? 'EDIT TASK' : 'NEW MISSION'}
+                                <DialogTitle className="text-2xl font-bold tracking-tight">
+                                    {editingTask ? '할 일 수정' : '새 할 일'}
                                 </DialogTitle>
                             </DialogHeader>
                             <TaskForm />
                             <DialogFooter className="mt-4">
-                                <Button onClick={handleSaveTask} className="w-full h-14 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-black text-lg tracking-widest shadow-[0_15px_30px_-5px_rgba(16,185,129,0.4)]">
-                                    {editingTask ? 'UPDATE NOW' : 'DEPLOY TASK'}
+                                <Button onClick={handleSaveTask} className="w-full h-14 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-lg">
+                                    {editingTask ? '수정 완료' : '추가'}
                                 </Button>
                             </DialogFooter>
                         </DialogContent>
@@ -277,14 +278,14 @@ export function TaskBoard({ projectId, hideHeader = false }: TaskBoardProps) {
                 </div>
             )}
 
-            <div className="hidden md:grid grid-cols-[60px_2fr_120px_140px_2fr_120px_80px] gap-4 px-8 py-4 border-b border-white/[0.03] text-[9px] font-black text-white/60 uppercase tracking-[0.2em] bg-white/[0.01]">
-                <div className="text-center">Done</div>
-                <div>Mission Detail</div>
-                <div>Category</div>
-                <div>Deadline</div>
-                <div>Intelligence</div>
-                <div>Priority</div>
-                <div className="text-right">Actions</div>
+            <div className="hidden md:grid grid-cols-[60px_2fr_120px_140px_2fr_120px_80px] gap-4 px-8 py-4 border-b border-border text-[9px] font-semibold text-muted-foreground uppercase tracking-wide bg-muted/20">
+                <div className="text-center">완료</div>
+                <div>할 일</div>
+                <div>카테고리</div>
+                <div>마감일</div>
+                <div>메모</div>
+                <div>우선순위</div>
+                <div className="text-right">관리</div>
             </div>
 
             <div className="flex-1 overflow-y-auto custom-scrollbar relative z-10">
@@ -298,8 +299,8 @@ export function TaskBoard({ projectId, hideHeader = false }: TaskBoardProps) {
                             <div className="absolute inset-0 bg-emerald-500/10 blur-2xl rounded-full" />
                             <ListTodo className="w-10 h-10 text-white/30 relative z-10" />
                         </motion.div>
-                        <p className="text-2xl font-black text-white/80 uppercase tracking-tighter">NO ACTIVE MISSIONS</p>
-                        <p className="text-xs font-bold text-white/60 tracking-widest uppercase mt-3 max-w-xs leading-relaxed">YOUR SLATE IS CLEAN. INITIALIZE A NEW TASK TO BEGIN.</p>
+                        <p className="text-2xl font-bold text-foreground/80 tracking-tight">할 일이 없습니다</p>
+                        <p className="text-sm font-medium text-muted-foreground mt-3 max-w-xs leading-relaxed">새 할 일을 추가하세요.</p>
                     </div>
                 ) : (
                     <div className="p-4 md:p-0">
@@ -329,22 +330,22 @@ export function TaskBoard({ projectId, hideHeader = false }: TaskBoardProps) {
 
                                     <div className="flex flex-col min-w-0">
                                         <div className={cn(
-                                            "text-sm font-black tracking-tight text-white transition-all",
-                                            task.completed && "opacity-20 line-through decoration-2"
+                                            "text-sm font-medium tracking-tight text-foreground transition-all",
+                                            task.completed && "opacity-40 line-through decoration-2"
                                         )}>
                                             {task.title}
                                         </div>
                                         <div className="md:hidden flex items-center gap-2 mt-1">
-                                            <span className="text-[9px] font-black text-white/60 uppercase tracking-widest">{task.type}</span>
-                                            <div className="w-1 h-1 rounded-full bg-white/10" />
-                                            <span className="text-[9px] font-black text-rose-500/60 uppercase">
-                                                {task.deadline ? format(new Date(task.deadline), 'MMM d') : 'NO LIMIT'}
+                                            <span className="text-[9px] font-medium text-muted-foreground">{task.type}</span>
+                                            <div className="w-1 h-1 rounded-full bg-muted" />
+                                            <span className="text-[9px] font-medium text-rose-500/60">
+                                                {task.deadline ? format(new Date(task.deadline), 'MM월 dd일') : '기한 없음'}
                                             </span>
                                         </div>
                                     </div>
 
                                     <div className="hidden md:block">
-                                        <div className="text-[9px] font-black text-white/40 bg-white/5 px-3 py-1.5 rounded-xl w-fit uppercase tracking-widest border border-white/5">
+                                        <div className="text-[9px] font-medium text-muted-foreground bg-muted/30 px-3 py-1.5 rounded-xl w-fit border border-border">
                                             {task.type}
                                         </div>
                                     </div>
@@ -368,14 +369,14 @@ export function TaskBoard({ projectId, hideHeader = false }: TaskBoardProps) {
                                                     <MoreHorizontal className="w-5 h-5" />
                                                 </button>
                                             </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end" className="glass-premium border border-white/10 text-white p-2 min-w-[140px] rounded-2xl shadow-2xl">
-                                                <DropdownMenuItem onClick={() => openEditDialog(task)} className="rounded-xl flex items-center gap-3 py-2.5 px-4 font-black text-[10px] tracking-widest cursor-pointer hover:bg-white/10 transition-all">
+                                            <DropdownMenuContent align="end" className="glass-premium border border-border text-foreground p-2 min-w-[140px] rounded-2xl shadow-2xl">
+                                                <DropdownMenuItem onClick={() => openEditDialog(task)} className="rounded-xl flex items-center gap-3 py-2.5 px-4 font-medium text-sm cursor-pointer hover:bg-muted/30 transition-all">
                                                     <Edit3 className="w-3.5 h-3.5" />
-                                                    UPDATE
+                                                    수정
                                                 </DropdownMenuItem>
-                                                <DropdownMenuItem onClick={() => deleteTask(task.id)} className="rounded-xl flex items-center gap-3 py-2.5 px-4 font-black text-[10px] tracking-widest cursor-pointer text-rose-500 hover:bg-rose-500/10 transition-all">
+                                                <DropdownMenuItem onClick={() => deleteTask(task.id)} className="rounded-xl flex items-center gap-3 py-2.5 px-4 font-medium text-sm cursor-pointer text-rose-500 hover:bg-rose-500/10 transition-all">
                                                     <Trash2 className="w-3.5 h-3.5" />
-                                                    TERMINATE
+                                                    삭제
                                                 </DropdownMenuItem>
                                             </DropdownMenuContent>
                                         </DropdownMenu>

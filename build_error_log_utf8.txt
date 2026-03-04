@@ -1,0 +1,133 @@
+﻿
+> daily-scheduler@0.1.0 build
+> next build
+
+??Next.js 16.1.4 (Turbopack)
+- Environments: .env.local, .env
+
+node.exe : ??The 
+"middleware" file 
+convention is 
+deprecated. Please 
+use "proxy" instead. 
+Learn more: https://n
+extjs.org/docs/messag
+es/middleware-to-prox
+y
+위치 줄:1 문자:1
++ & "C:\Program Files
+\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo 
+...
++ ~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~
+    + CategoryInfo   
+           : NotSpe  
+  cified: (??The "   
+ middlewa...lewar    
+e-to-proxy:Strin    
+g) [], RemoteExc    
+eption
+    + FullyQualified 
+   ErrorId : Native  
+  CommandError
+ 
+  Creating an optimized production build ...
+Turbopack build 
+encountered 1 
+warnings:
+./
+Failed to find font 
+override values for 
+font `Asta Sans`
+Skipping generating 
+a fallback font.
+
+
+??Compiled successfully in 8.9s
+  Running TypeScript ...
+Failed to compile.
+
+./src/components/goal
+s/GoalDetailDialog.ts
+x:221:38
+Type error: Property 
+'count' does not 
+exist on type '{ 
+readonly id: 
+"overview"; readonly 
+label: "媛쒖슂"; 
+readonly icon: Forwar
+dRefExoticComponent<O
+mit<LucideProps, 
+"ref"> & RefAttribute
+s<SVGSVGElement>>; } 
+| { ...; } | { ...; 
+}'.
+  Property 'count' 
+does not exist on 
+type '{ readonly id: 
+"overview"; readonly 
+label: "媛쒖슂"; 
+readonly icon: Forwar
+dRefExoticComponent<O
+mit<LucideProps, 
+"ref"> & RefAttribute
+s<SVGSVGElement>>; 
+}'.
+
+[0m [90m 219 
+|[39m               
+                  [3
+3m<[39m[33mtab[39m
+[33m.[39micon class
+Name[33m=[39m[32m"
+w-4 h-4"[39m [33m/
+[39m[33m>[39m
+ [90m 220 |[39m    
+                     
+        
+{tab[33m.[39mlabel}
+[31m[1m>[22m[39m
+[90m 221 |[39m      
+                     
+      
+{tab[33m.[39mcount 
+[33m!==[39m 
+undefined 
+[33m&&[39m (
+ [90m     |[39m    
+                     
+             
+[31m[1m^[22m[39m
+ [90m 222 |[39m    
+                     
+            [33m<[3
+9m[33mspan[39m clas
+sName[33m=[39m{cn(
+ [90m 223 |[39m    
+                     
+                
+[32m"px-1.5 py-0.5 
+rounded text-xs font-
+medium"[39m[33m,[3
+9m
+ [90m 224 |[39m    
+                     
+                
+activeTab 
+[33m===[39m 
+tab[33m.[39mid 
+[33m?[39m [32m"bg-
+amber-500/20 
+text-amber-600"[39m 
+[33m:[39m 
+[32m"bg-muted text-m
+uted-foreground"[39m
+[0m
+Next.js build worker 
+exited with code: 1 
+and signal: null

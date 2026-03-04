@@ -2,7 +2,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { LayoutGrid, List, Calendar, Filter, Archive, FolderPlus, Search, Shield, Target, Activity } from 'lucide-react';
+import { LayoutGrid, List, Calendar, Archive, FolderPlus, Search, Target } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 
@@ -39,11 +39,10 @@ export function PortfolioHeader({
                         <Target className="w-7 h-7 text-white" strokeWidth={2.5} />
                     </div>
                     <div>
-                        <h2 className="text-3xl font-black text-white tracking-tighter uppercase leading-none mb-2">STRATEGIC OBJECTIVE MAP</h2>
+                        <h2 className="text-3xl font-black text-white tracking-tighter leading-none mb-2">프로젝트 관리</h2>
                         <div className="flex items-center gap-3">
-                            <span className="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-[8px] font-black text-white/40 tracking-[0.2em] uppercase">ACCESS LEVEL: COMMANDER</span>
-                            <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest flex items-center gap-2">
-                                <Shield className="w-3 h-3" /> ENCRYPTED REPOSITORY ACTIVE
+                            <span className="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-[10px] font-semibold text-white/40">
+                                {showArchived ? '보관된 프로젝트' : '진행 중인 프로젝트'}
                             </span>
                         </div>
                     </div>
@@ -53,20 +52,20 @@ export function PortfolioHeader({
                         variant="outline"
                         onClick={onArchiveToggle}
                         className={cn(
-                            "h-12 px-6 rounded-xl font-black text-[10px] tracking-widest uppercase transition-all",
+                            "h-12 px-6 rounded-xl font-semibold text-sm transition-all",
                             showArchived
                                 ? "bg-indigo-500/20 border-indigo-500/40 text-indigo-400"
                                 : "bg-white/5 border-white/10 text-white/40 hover:text-white"
                         )}
                     >
                         <Archive className="w-4 h-4 mr-2" />
-                        {showArchived ? 'CLOSE ARCHIVE' : 'ACCESS VAULT'}
+                        {showArchived ? '진행 중으로 보기' : '보관함 보기'}
                     </Button>
                     <Button
                         onClick={onNewProject}
-                        className="h-12 px-8 rounded-xl bg-indigo-600 text-white hover:bg-indigo-500 font-black text-[10px] tracking-widest uppercase shadow-xl active:scale-95"
+                        className="h-12 px-8 rounded-xl bg-indigo-600 text-white hover:bg-indigo-500 font-semibold text-sm shadow-xl active:scale-95"
                     >
-                        <FolderPlus className="w-4 h-4 mr-2" /> INITIALIZE PROJECT
+                        <FolderPlus className="w-4 h-4 mr-2" /> 프로젝트 추가
                     </Button>
                 </div>
             </div>
@@ -76,10 +75,10 @@ export function PortfolioHeader({
 
                 <div className="relative flex-1 group/search">
                     <Input
-                        placeholder="SCAN MISSION PARAMETERS..."
+                        placeholder="프로젝트 검색..."
                         value={searchQuery}
                         onChange={(e) => onSearchChange(e.target.value)}
-                        className="h-12 pl-12 bg-white/[0.02] border-white/5 rounded-2xl text-[11px] font-bold tracking-wider placeholder:text-white/10 focus:border-indigo-500/30 transition-all uppercase"
+                        className="h-12 pl-12 bg-white/[0.02] border-white/5 rounded-2xl text-sm placeholder:text-white/30 focus:border-indigo-500/30 transition-all"
                     />
                     <Search className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within/search:text-indigo-400 transition-colors" />
                 </div>
@@ -87,16 +86,16 @@ export function PortfolioHeader({
                 <div className="h-8 w-px bg-white/5" />
 
                 <div className="flex items-center gap-4 px-2">
-                    <span className="text-[9px] font-black text-white/20 tracking-[0.2em] uppercase whitespace-nowrap">SORT_BY:</span>
+                    <span className="text-[11px] font-semibold text-white/30 whitespace-nowrap">묶기:</span>
                     <Select value={groupBy} onValueChange={onGroupByChange}>
-                        <SelectTrigger className="w-[160px] h-12 bg-white/[0.02] border-white/5 rounded-2xl text-[10px] font-black tracking-widest text-white/60 uppercase">
-                            <SelectValue placeholder="NONE" />
+                        <SelectTrigger className="w-[140px] h-12 bg-white/[0.02] border-white/5 rounded-2xl text-sm text-white/60">
+                            <SelectValue placeholder="없음" />
                         </SelectTrigger>
                         <SelectContent className="glass-premium border-white/10 rounded-2xl p-2">
-                            <SelectItem value="none" className="text-[10px] font-black tracking-widest uppercase">NONE</SelectItem>
-                            <SelectItem value="status" className="text-[10px] font-black tracking-widest uppercase">STATUS</SelectItem>
-                            <SelectItem value="category" className="text-[10px] font-black tracking-widest uppercase">CATEGORY</SelectItem>
-                            <SelectItem value="manager" className="text-[10px] font-black tracking-widest uppercase">COMMANDER</SelectItem>
+                            <SelectItem value="none" className="text-sm">없음</SelectItem>
+                            <SelectItem value="status" className="text-sm">상태별</SelectItem>
+                            <SelectItem value="category" className="text-sm">카테고리별</SelectItem>
+                            <SelectItem value="manager" className="text-sm">담당자별</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
@@ -106,34 +105,34 @@ export function PortfolioHeader({
                         variant="ghost"
                         size="sm"
                         className={cn(
-                            "h-9 px-4 rounded-xl font-black text-[9px] tracking-widest uppercase transition-all",
-                            viewMode === 'grid' ? "bg-white/10 text-white" : "text-white/20 hover:text-white"
+                            "h-9 px-4 rounded-xl font-semibold text-xs transition-all",
+                            viewMode === 'grid' ? "bg-white/10 text-white" : "text-white/30 hover:text-white"
                         )}
                         onClick={() => onViewModeChange('grid')}
                     >
-                        <LayoutGrid className="w-3 h-3 mr-2" /> GRID
+                        <LayoutGrid className="w-3 h-3 mr-1.5" /> 그리드
                     </Button>
                     <Button
                         variant="ghost"
                         size="sm"
                         className={cn(
-                            "h-9 px-4 rounded-xl font-black text-[9px] tracking-widest uppercase transition-all",
-                            viewMode === 'list' ? "bg-white/10 text-white" : "text-white/20 hover:text-white"
+                            "h-9 px-4 rounded-xl font-semibold text-xs transition-all",
+                            viewMode === 'list' ? "bg-white/10 text-white" : "text-white/30 hover:text-white"
                         )}
                         onClick={() => onViewModeChange('list')}
                     >
-                        <List className="w-3 h-3 mr-2" /> LIST
+                        <List className="w-3 h-3 mr-1.5" /> 목록
                     </Button>
                     <Button
                         variant="ghost"
                         size="sm"
                         className={cn(
-                            "h-9 px-4 rounded-xl font-black text-[9px] tracking-widest uppercase transition-all",
-                            viewMode === 'timeline' ? "bg-white/10 text-white" : "text-white/20 hover:text-white"
+                            "h-9 px-4 rounded-xl font-semibold text-xs transition-all",
+                            viewMode === 'timeline' ? "bg-white/10 text-white" : "text-white/30 hover:text-white"
                         )}
                         onClick={() => onViewModeChange('timeline')}
                     >
-                        <Calendar className="w-3 h-3 mr-2" /> CHRONO
+                        <Calendar className="w-3 h-3 mr-1.5" /> 타임라인
                     </Button>
                 </div>
             </div>

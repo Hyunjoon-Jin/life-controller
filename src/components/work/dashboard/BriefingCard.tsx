@@ -101,7 +101,7 @@ export function BriefingCard() {
             localStorage.setItem('morning_briefing_content', result);
         } catch (error) {
             console.error(error);
-            setBriefing("OPERATIONAL ERROR: FAILED TO GENERATE BRIEFING.");
+            setBriefing("브리핑 생성에 실패했습니다. 다시 시도해 주세요.");
         } finally {
             setLoading(false);
         }
@@ -122,33 +122,30 @@ export function BriefingCard() {
                     </div>
                     <div>
                         <div className="flex items-center gap-2 mb-1">
-                            <span className="px-2 py-0.5 rounded-md bg-indigo-500/10 text-indigo-400 text-[8px] font-black tracking-widest uppercase">
-                                레벨: ALPHA
-                            </span>
-                            <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">
-                                • {statusLabel}
+                            <span className="text-xs text-muted-foreground">
+                                {statusLabel}
                             </span>
                         </div>
-                        <h2 className="text-3xl font-black text-white tracking-tighter uppercase leading-tight">
+                        <h2 className="text-2xl font-bold text-foreground leading-tight">
                             {greeting}, <span className="text-indigo-400">{userName}</span>
                         </h2>
-                        <div className="flex items-center gap-4 mt-2">
-                            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/5">
+                        <div className="flex items-center gap-3 mt-2">
+                            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-muted border border-border">
                                 <Target className="w-3 h-3 text-rose-500" />
-                                <span className="text-[10px] font-bold text-white/60 tracking-widest uppercase">{incompleteTasks} 개 미완료 할일</span>
+                                <span className="text-xs text-muted-foreground">{incompleteTasks}개 미완료 할일</span>
                             </div>
-                            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/5">
+                            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-muted border border-border">
                                 <CalendarIcon className="w-3 h-3 text-sky-500" />
-                                <span className="text-[10px] font-bold text-white/60 tracking-widest uppercase">{todayEventsCount} 개 오늘 일정</span>
+                                <span className="text-xs text-muted-foreground">{todayEventsCount}개 오늘 일정</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div className="flex items-center gap-4 w-full xl:w-auto">
-                    <div className="hidden xl:flex flex-col items-end gap-1 px-4 border-r border-white/5">
-                        <span className="text-[8px] font-black text-white/20 tracking-widest uppercase">날짜</span>
-                        <span className="text-sm font-black text-white">{format(today, 'EEEE, MMM dd', { locale: ko })}</span>
+                    <div className="hidden xl:flex flex-col items-end gap-1 px-4 border-r border-border">
+                        <span className="text-xs text-muted-foreground">날짜</span>
+                        <span className="text-sm font-semibold text-foreground">{format(today, 'EEEE, MMM dd', { locale: ko })}</span>
                     </div>
 
                     <Button

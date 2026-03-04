@@ -172,9 +172,15 @@ export function PeopleManager() {
             work: 'bg-blue-500/20 text-blue-400 border-blue-500/30 shadow-[0_0_10px_rgba(59,130,246,0.2)]',
             other: 'bg-white/10 text-white/40 border-white/10',
         };
+        const labels: Record<RelationshipType, string> = {
+            family: '가족',
+            friend: '친구',
+            work: '직장',
+            other: '기타',
+        };
         return (
-            <span className={cn("px-2.5 py-0.5 rounded-lg text-[10px] uppercase font-black tracking-widest border", styles[rel])}>
-                {rel}
+            <span className={cn("px-2.5 py-0.5 rounded-lg text-[10px] font-semibold border", styles[rel])}>
+                {labels[rel]}
             </span>
         );
     };
@@ -192,8 +198,8 @@ export function PeopleManager() {
                             <UsersRound className="w-6 h-6 text-white" strokeWidth={3} />
                         </div>
                         <div>
-                            <h2 className="text-3xl font-black text-white tracking-tighter uppercase">RELATIONS</h2>
-                            <p className="text-xs font-bold text-white/30 tracking-widest uppercase mt-0.5">MANAGE YOUR SOCIAL NETWORK</p>
+                            <h2 className="text-3xl font-bold text-white tracking-tight">인맥 관리</h2>
+                            <p className="text-xs text-white/30 mt-0.5">내 소셜 네트워크를 관리하세요</p>
                         </div>
                     </div>
 
@@ -201,8 +207,8 @@ export function PeopleManager() {
                         <div className="relative flex-1 md:w-64">
                             <Search className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-white/20" />
                             <Input
-                                placeholder="FIND SOMEONE..."
-                                className="h-12 pl-12 bg-white/5 border-white/5 rounded-2xl text-white placeholder:text-white/10 font-bold focus-visible:ring-indigo-500/30"
+                                placeholder="이름, 연락처 검색..."
+                                className="h-12 pl-12 bg-white/5 border-white/5 rounded-2xl text-white placeholder:text-white/20 focus-visible:ring-indigo-500/30"
                                 value={searchQuery}
                                 onChange={e => setSearchQuery(e.target.value)}
                             />
@@ -215,39 +221,45 @@ export function PeopleManager() {
 
                 <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                     <div className="flex items-center gap-2 overflow-x-auto no-scrollbar w-full md:w-auto pb-2 md:pb-0">
-                        {(['all', 'family', 'friend', 'work', 'other'] as const).map(rel => (
+                        {([
+                            { key: 'all', label: '전체' },
+                            { key: 'family', label: '가족' },
+                            { key: 'friend', label: '친구' },
+                            { key: 'work', label: '직장' },
+                            { key: 'other', label: '기타' },
+                        ] as const).map(({ key, label }) => (
                             <button
-                                key={rel}
-                                onClick={() => setSelectedRelation(rel)}
+                                key={key}
+                                onClick={() => setSelectedRelation(key)}
                                 className={cn(
-                                    "px-6 py-2.5 rounded-2xl transition-all font-black text-[11px] tracking-widest uppercase border whitespace-nowrap",
-                                    selectedRelation === rel
+                                    "px-6 py-2.5 rounded-2xl transition-all text-sm font-semibold border whitespace-nowrap",
+                                    selectedRelation === key
                                         ? "bg-indigo-500 text-white border-indigo-500 shadow-[0_8px_16px_-4px_rgba(99,102,241,0.4)]"
                                         : "bg-white/5 border-white/5 text-white/30 hover:text-white/60 hover:bg-white/10"
                                 )}
                             >
-                                {rel}
+                                {label}
                             </button>
                         ))}
                     </div>
 
                     <button
                         onClick={() => setIsMapOpen(true)}
-                        className="flex items-center gap-3 px-6 py-2.5 rounded-2xl bg-white/5 border border-white/5 text-white/40 hover:text-white hover:bg-white/10 transition-all font-black text-[11px] tracking-widest uppercase"
+                        className="flex items-center gap-3 px-6 py-2.5 rounded-2xl bg-white/5 border border-white/5 text-white/40 hover:text-white hover:bg-white/10 transition-all text-sm font-semibold"
                     >
-                        <MapIcon className="w-4 h-4" strokeWidth={3} />
-                        NETWORK MAP
+                        <MapIcon className="w-4 h-4" />
+                        인맥 맵
                     </button>
                 </div>
             </div>
 
             {/* List Table Header */}
-            <div className="hidden md:grid grid-cols-[1.5fr_1fr_1.5fr_2fr_80px] gap-6 px-10 py-4 border-b border-white/[0.03] text-[9px] font-black text-white/20 uppercase tracking-[0.2em] bg-white/[0.01] relative z-10">
-                <div>Identity</div>
-                <div>Connection</div>
-                <div>Intelligence</div>
-                <div>Status / Notes</div>
-                <div className="text-right">Actions</div>
+            <div className="hidden md:grid grid-cols-[1.5fr_1fr_1.5fr_2fr_80px] gap-6 px-10 py-4 border-b border-white/[0.03] text-[10px] font-semibold text-white/30 bg-white/[0.01] relative z-10">
+                <div>이름</div>
+                <div>관계</div>
+                <div>연락처 / 직종</div>
+                <div>메모</div>
+                <div className="text-right">관리</div>
             </div>
 
             {/* List Content */}
@@ -262,8 +274,8 @@ export function PeopleManager() {
                             <div className="absolute inset-0 bg-indigo-500/10 blur-2xl rounded-full" />
                             <UsersRound className="w-10 h-10 text-white/10 relative z-10" />
                         </motion.div>
-                        <p className="text-2xl font-black text-white/80 uppercase tracking-tighter">NO RELATIONS FOUND</p>
-                        <p className="text-xs font-bold text-white/20 tracking-widest uppercase mt-3 max-w-xs leading-relaxed">EXPAND YOUR CIRCLE. REGISTER A NEW CONNECTION TO BEGIN.</p>
+                        <p className="text-2xl font-bold text-white/80">등록된 인물이 없습니다</p>
+                        <p className="text-sm text-white/30 mt-3 max-w-xs leading-relaxed">새 인물을 추가해 인맥을 관리해 보세요.</p>
                     </div>
                 ) : (
                     <div className="p-4 md:p-0">
@@ -284,7 +296,7 @@ export function PeopleManager() {
                                         <div className="flex flex-col min-w-0">
                                             <div className="flex items-center gap-2">
                                                 <span className="text-base font-black text-white tracking-tight">{person.name}</span>
-                                                {person.isMe && <Badge className="bg-indigo-500/20 text-indigo-400 border-indigo-500/10 text-[9px] font-black h-5 uppercase px-1.5">SELF</Badge>}
+                                                {person.isMe && <Badge className="bg-indigo-500/20 text-indigo-400 border-indigo-500/10 text-[9px] font-semibold h-5 px-1.5">나</Badge>}
                                                 {person.businessCardImage && (
                                                     <button onClick={() => setViewImage(person.businessCardImage || null)} className="text-white/20 hover:text-indigo-400 transition-colors">
                                                         <ImageIcon className="w-4 h-4" />
@@ -292,7 +304,7 @@ export function PeopleManager() {
                                                 )}
                                             </div>
                                             {(person.company || person.jobTitle) && (
-                                                <span className="text-[10px] text-white/20 font-bold uppercase tracking-widest mt-0.5 truncate">
+                                                <span className="text-[10px] text-white/30 mt-0.5 truncate">
                                                     {[person.company, person.jobTitle].filter(Boolean).join(' // ')}
                                                 </span>
                                             )}
@@ -319,13 +331,13 @@ export function PeopleManager() {
                                         {person.industry && (
                                             <div className="flex items-center gap-3">
                                                 <Briefcase className="w-3.5 h-3.5 text-white/10" />
-                                                <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">{person.industry}</span>
+                                                <span className="text-[10px] text-white/30">{person.industry}</span>
                                             </div>
                                         )}
                                     </div>
 
                                     <div className="text-[11px] text-white/30 font-bold leading-relaxed truncate md:line-clamp-2" title={person.notes}>
-                                        {person.notes || <span className="opacity-20 italic">NO NOTES RECORDED</span>}
+                                        {person.notes || <span className="opacity-20 italic">메모 없음</span>}
                                     </div>
 
                                     <div className="flex justify-end opacity-100 md:opacity-0 group-hover:opacity-100 transition-all">
@@ -335,14 +347,14 @@ export function PeopleManager() {
                                                     <MoreHorizontal className="w-5 h-5" />
                                                 </button>
                                             </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end" className="glass-premium border border-white/10 text-white p-2 min-w-[150px] rounded-2xl shadow-2xl">
-                                                <DropdownMenuItem onClick={() => handleOpenEdit(person)} className="rounded-xl flex items-center gap-3 py-3 px-4 font-black text-[10px] tracking-widest cursor-pointer hover:bg-white/10 transition-all">
+                                            <DropdownMenuContent align="end" className="glass-premium border border-white/10 text-white p-2 min-w-[130px] rounded-2xl shadow-2xl">
+                                                <DropdownMenuItem onClick={() => handleOpenEdit(person)} className="rounded-xl flex items-center gap-3 py-3 px-4 text-sm font-semibold cursor-pointer hover:bg-white/10 transition-all">
                                                     <Edit3 className="w-4 h-4" />
-                                                    UPDATE DOSSIER
+                                                    수정
                                                 </DropdownMenuItem>
-                                                <DropdownMenuItem onClick={() => handleDelete(person.id)} className="rounded-xl flex items-center gap-3 py-3 px-4 font-black text-[10px] tracking-widest cursor-pointer text-rose-500 hover:bg-rose-500/10 transition-all">
+                                                <DropdownMenuItem onClick={() => handleDelete(person.id)} className="rounded-xl flex items-center gap-3 py-3 px-4 text-sm font-semibold cursor-pointer text-rose-500 hover:bg-rose-500/10 transition-all">
                                                     <Trash2 className="w-4 h-4" />
-                                                    TERMINATE
+                                                    삭제
                                                 </DropdownMenuItem>
                                             </DropdownMenuContent>
                                         </DropdownMenu>
@@ -359,21 +371,21 @@ export function PeopleManager() {
                 <DialogContent className="glass-premium border border-white/10 text-white rounded-[40px] p-0 shadow-2xl sm:max-w-[700px] max-h-[90vh] overflow-hidden">
                     <DialogHeader className="p-10 pb-0 relative">
                         <div className="absolute top-10 right-10 flex items-center gap-2">
-                            <Badge className="bg-white/5 border-white/5 text-white/30 text-[9px] font-black h-6 uppercase px-3 tracking-widest">
-                                {editingId ? 'edit mode' : 'initialization'}
+                            <Badge className="bg-white/5 border-white/5 text-white/30 text-[10px] font-medium h-6 px-3">
+                                {editingId ? '편집 중' : '새 인물'}
                             </Badge>
                         </div>
-                        <DialogTitle className="text-4xl font-black tracking-tighter uppercase mb-2">
-                            {editingId ? 'UPDATE PERSONA' : 'NEW CONNECTION'}
+                        <DialogTitle className="text-3xl font-bold tracking-tight mb-2">
+                            {editingId ? '인물 정보 수정' : '인물 추가'}
                         </DialogTitle>
-                        <p className="text-xs font-bold text-white/20 tracking-widest uppercase">ENCRYPTING SOCIAL DATA...</p>
+                        <p className="text-xs text-white/30">정보를 입력하고 저장하세요.</p>
                     </DialogHeader>
 
                     <Tabs defaultValue="profile" className="flex-1 flex flex-col overflow-hidden">
                         <div className="px-10 mt-8">
                             <TabsList className="bg-white/5 border border-white/5 rounded-2xl p-1 h-12 w-full grid grid-cols-2">
-                                <TabsTrigger value="profile" className="rounded-xl font-black text-[10px] tracking-[0.2em] uppercase data-[state=active]:bg-indigo-500 data-[state=active]:text-white">IDENTITY</TabsTrigger>
-                                <TabsTrigger value="interactions" className="rounded-xl font-black text-[10px] tracking-[0.2em] uppercase data-[state=active]:bg-indigo-500 data-[state=active]:text-white">INTEL LOGS</TabsTrigger>
+                                <TabsTrigger value="profile" className="rounded-xl text-sm font-semibold data-[state=active]:bg-indigo-500 data-[state=active]:text-white">기본 정보</TabsTrigger>
+                                <TabsTrigger value="interactions" className="rounded-xl text-sm font-semibold data-[state=active]:bg-indigo-500 data-[state=active]:text-white">교류 기록</TabsTrigger>
                             </TabsList>
                         </div>
 
@@ -383,26 +395,26 @@ export function PeopleManager() {
                                 <div className="grid gap-6">
                                     <div className="grid grid-cols-2 gap-8">
                                         <div className="space-y-3">
-                                            <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">full name <span className="text-indigo-500">*</span></label>
+                                            <label className="text-[10px] font-semibold text-white/40">이름 <span className="text-indigo-500">*</span></label>
                                             <Input
-                                                className="h-14 font-black text-xl border-white/5 bg-white/5 focus-visible:ring-indigo-500/30 rounded-2xl text-white placeholder:text-white/10"
+                                                className="h-14 font-semibold text-xl border-white/5 bg-white/5 focus-visible:ring-indigo-500/30 rounded-2xl text-white placeholder:text-white/20"
                                                 value={formData.name}
                                                 onChange={e => setFormData({ ...formData, name: e.target.value })}
-                                                placeholder="IDENTITY..."
+                                                placeholder="이름 입력..."
                                             />
                                         </div>
                                         <div className="space-y-3">
-                                            <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">connection type</label>
+                                            <label className="text-[10px] font-semibold text-white/40">관계 유형</label>
                                             <div className="relative">
                                                 <select
                                                     value={formData.relationship}
                                                     onChange={e => setFormData({ ...formData, relationship: e.target.value as RelationshipType })}
-                                                    className="flex h-14 w-full rounded-2xl border border-white/5 bg-white/5 px-4 py-2 text-sm font-black text-white outline-none focus:ring-2 focus:ring-indigo-500/20 appearance-none uppercase tracking-widest"
+                                                    className="flex h-14 w-full rounded-2xl border border-white/5 bg-white/5 px-4 py-2 text-sm font-semibold text-white outline-none focus:ring-2 focus:ring-indigo-500/20 appearance-none"
                                                 >
-                                                    <option value="family">FAMILY</option>
-                                                    <option value="friend">FRIEND</option>
-                                                    <option value="work">COLLEAGUE</option>
-                                                    <option value="other">OTHER</option>
+                                                    <option value="family">가족</option>
+                                                    <option value="friend">친구</option>
+                                                    <option value="work">직장</option>
+                                                    <option value="other">기타</option>
                                                 </select>
                                                 <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 opacity-20 pointer-events-none" />
                                             </div>
@@ -416,23 +428,23 @@ export function PeopleManager() {
                                             onCheckedChange={(checked) => setFormData({ ...formData, isMe: checked === true })}
                                             className="w-5 h-5 border-white/20 data-[state=checked]:bg-indigo-500 rounded-lg"
                                         />
-                                        <label htmlFor="person-isMe" className="text-[11px] font-black text-white/40 uppercase tracking-widest cursor-pointer">
-                                            MARK THIS PROFILE AS MY PERSONAL IDENTITY
+                                        <label htmlFor="person-isMe" className="text-sm font-semibold text-white/50 cursor-pointer">
+                                            이 인물을 나 자신으로 설정
                                         </label>
                                     </div>
 
                                     <div className="grid grid-cols-2 gap-8">
                                         <div className="space-y-3">
-                                            <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">COMMS CHANNEL</label>
+                                            <label className="text-[10px] font-semibold text-white/40">연락처</label>
                                             <Input
-                                                className="h-14 bg-white/5 border-white/5 rounded-2xl text-white placeholder:text-white/10 font-mono text-sm"
+                                                className="h-14 bg-white/5 border-white/5 rounded-2xl text-white placeholder:text-white/20 font-mono text-sm"
                                                 value={formData.contact}
                                                 onChange={e => setFormData({ ...formData, contact: e.target.value })}
                                                 placeholder="010-0000-0000"
                                             />
                                         </div>
                                         <div className="space-y-3 flex flex-col">
-                                            <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Origin Date (Birth)</label>
+                                            <label className="text-[10px] font-semibold text-white/40">생년월일</label>
                                             <div className="glass-premium rounded-2xl overflow-hidden border border-white/5 bg-black/20">
                                                 <DatePicker
                                                     date={formData.birthdate ? new Date(formData.birthdate) : undefined}
@@ -447,44 +459,44 @@ export function PeopleManager() {
 
                                 {/* Social Context */}
                                 <div className="grid gap-6">
-                                    <label className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.3em]">SOCIAL ARCHITECTURE</label>
+                                    <label className="text-[10px] font-semibold text-indigo-400">직장 / 소속</label>
                                     <div className="grid grid-cols-2 gap-8">
                                         <div className="space-y-3">
-                                            <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Industry Sector</label>
+                                            <label className="text-[10px] font-semibold text-white/40">직종 / 업계</label>
                                             <Input
-                                                className="h-12 bg-white/5 border-white/5 rounded-2xl text-white placeholder:text-white/10 text-sm font-bold uppercase tracking-wider"
+                                                className="h-12 bg-white/5 border-white/5 rounded-2xl text-white placeholder:text-white/20 text-sm"
                                                 value={formData.industry || ''}
                                                 onChange={e => setFormData({ ...formData, industry: e.target.value })}
-                                                placeholder="TECH / FINANCE / ETC"
+                                                placeholder="IT / 금융 / 교육 등"
                                             />
                                         </div>
                                         <div className="space-y-3">
-                                            <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Collective Group</label>
+                                            <label className="text-[10px] font-semibold text-white/40">그룹 / 모임</label>
                                             <Input
-                                                className="h-12 bg-white/5 border-white/5 rounded-2xl text-white placeholder:text-white/10 text-sm font-bold uppercase tracking-wider"
+                                                className="h-12 bg-white/5 border-white/5 rounded-2xl text-white placeholder:text-white/20 text-sm"
                                                 value={formData.group || ''}
                                                 onChange={e => setFormData({ ...formData, group: e.target.value })}
-                                                placeholder="HIGH SCHOOL / CLUB"
+                                                placeholder="고등학교 / 동아리 등"
                                             />
                                         </div>
                                     </div>
                                     <div className="grid grid-cols-2 gap-8">
                                         <div className="space-y-3">
-                                            <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Organization</label>
+                                            <label className="text-[10px] font-semibold text-white/40">회사 / 소속</label>
                                             <Input
-                                                className="h-12 bg-white/5 border-white/5 rounded-2xl text-white placeholder:text-white/10 text-sm font-bold uppercase"
+                                                className="h-12 bg-white/5 border-white/5 rounded-2xl text-white placeholder:text-white/20 text-sm"
                                                 value={formData.company || ''}
                                                 onChange={e => setFormData({ ...formData, company: e.target.value })}
-                                                placeholder="CORP / ENTITY"
+                                                placeholder="회사명"
                                             />
                                         </div>
                                         <div className="space-y-3">
-                                            <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Designation</label>
+                                            <label className="text-[10px] font-semibold text-white/40">직함 / 직책</label>
                                             <Input
-                                                className="h-12 bg-white/5 border-white/5 rounded-2xl text-white placeholder:text-white/10 text-sm font-bold uppercase"
+                                                className="h-12 bg-white/5 border-white/5 rounded-2xl text-white placeholder:text-white/20 text-sm"
                                                 value={formData.jobTitle || ''}
                                                 onChange={e => setFormData({ ...formData, jobTitle: e.target.value })}
-                                                placeholder="OPERATIVE ROLE"
+                                                placeholder="팀장 / 개발자 등"
                                             />
                                         </div>
                                     </div>
@@ -494,12 +506,12 @@ export function PeopleManager() {
 
                                 {/* Tags & Cards */}
                                 <div className="space-y-8">
-                                    <label className="text-[10px] font-black text-emerald-400 uppercase tracking-[0.3em]">SUPPLEMENTARY DATA</label>
+                                    <label className="text-[10px] font-semibold text-emerald-400">태그 / 메모</label>
                                     <div className="space-y-3">
-                                        <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">TAG CLOUD</label>
+                                        <label className="text-[10px] font-semibold text-white/40">태그</label>
                                         <div className="flex flex-wrap gap-2 p-4 bg-white/5 rounded-2xl border border-white/5 transition-all">
                                             {(formData.tags || []).map(tag => (
-                                                <Badge key={tag} className="px-3 py-1.5 text-[10px] font-black rounded-xl bg-white/5 border border-white/10 text-white shadow-sm hover:bg-indigo-500 transition-colors uppercase tracking-widest">
+                                                <Badge key={tag} className="px-3 py-1.5 text-[10px] font-medium rounded-xl bg-white/5 border border-white/10 text-white shadow-sm hover:bg-indigo-500 transition-colors">
                                                     {tag}
                                                     <button type="button" onClick={() => handleRemoveTag(tag)} className="ml-2 opacity-30 hover:opacity-100">
                                                         <X className="w-3 h-3" />
@@ -512,27 +524,27 @@ export function PeopleManager() {
                                                 onKeyDown={handleTagKeyDown}
                                                 onBlur={handleAddTag}
                                                 className="flex-1 min-w-[120px] bg-transparent outline-none text-sm h-8 italic text-white/20 placeholder:text-white/10"
-                                                placeholder="+ ADD LABEL..."
+                                                placeholder="+ 태그 추가..."
                                             />
                                         </div>
                                     </div>
 
                                     <div className="space-y-3">
-                                        <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Dossier Notes</label>
+                                        <label className="text-[10px] font-semibold text-white/40">메모</label>
                                         <textarea
                                             value={formData.notes || ''}
                                             onChange={e => setFormData({ ...formData, notes: e.target.value })}
-                                            className="flex min-h-[120px] w-full rounded-2xl border border-white/5 bg-white/5 px-4 py-4 text-sm font-bold text-white placeholder:text-white/10 outline-none focus:ring-2 focus:ring-indigo-500/20"
-                                            placeholder="RECORDS, PREFERENCES, TRAITS..."
+                                            className="flex min-h-[120px] w-full rounded-2xl border border-white/5 bg-white/5 px-4 py-4 text-sm text-white placeholder:text-white/20 outline-none focus:ring-2 focus:ring-indigo-500/20"
+                                            placeholder="특이사항, 성격, 관심사 등..."
                                         />
                                     </div>
 
                                     <div className="space-y-3">
-                                        <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">IDENTIFICATION MEDIA (Business Card)</label>
+                                        <label className="text-[10px] font-semibold text-white/40">명함 이미지</label>
                                         <div className="border-2 border-dashed border-white/5 rounded-3xl p-8 transition-all hover:bg-white/5 group relative overflow-hidden">
                                             {formData.businessCardImage ? (
                                                 <div className="relative w-full h-[250px] rounded-2xl overflow-hidden border border-white/10 bg-black/40 shadow-2xl">
-                                                    <Image src={formData.businessCardImage} alt="Business Card" fill className="object-contain" unoptimized />
+                                                    <Image src={formData.businessCardImage} alt="명함" fill className="object-contain" unoptimized />
                                                     <button
                                                         type="button"
                                                         onClick={() => setFormData(prev => ({ ...prev, businessCardImage: '' }))}
@@ -546,8 +558,8 @@ export function PeopleManager() {
                                                     <div className="w-16 h-16 rounded-[24px] bg-white/5 flex items-center justify-center mb-4 group-hover:scale-110 transition-all">
                                                         <ImageIcon className="w-8 h-8 text-white/10" />
                                                     </div>
-                                                    <p className="text-xs font-black text-white/20 tracking-[0.2em] uppercase">UPLOAD SCAN</p>
-                                                    <p className="text-[10px] font-bold text-white/10 mt-2 uppercase">PNG, JPG UP TO 2MB</p>
+                                                    <p className="text-sm font-semibold text-white/30">이미지 업로드</p>
+                                                    <p className="text-[11px] text-white/20 mt-1">PNG, JPG (최대 2MB)</p>
                                                 </div>
                                             )}
                                             <input id="card-upload" type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
@@ -559,58 +571,58 @@ export function PeopleManager() {
 
                         <TabsContent value="interactions" className="flex-1 overflow-y-auto custom-scrollbar p-10 mt-0 space-y-10">
                             <div className="space-y-8">
-                                <label className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.3em]">NEW ENGAGEMENT LOG</label>
+                                <label className="text-[10px] font-semibold text-indigo-400">새 교류 기록</label>
                                 <div className="p-8 bg-white/5 rounded-[32px] border border-white/5 space-y-6 shadow-xl relative overflow-hidden">
                                     <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 blur-[60px] rounded-full" />
                                     <div className="grid grid-cols-2 gap-6 relative z-10">
                                         <div className="space-y-3">
-                                            <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">LOG TYPE</label>
+                                            <label className="text-[10px] font-semibold text-white/40">교류 유형</label>
                                             <select
                                                 value={interactionType}
                                                 onChange={e => setInteractionType(e.target.value as any)}
-                                                className="h-12 w-full rounded-xl border border-white/5 bg-white/5 px-4 text-xs font-black text-white outline-none uppercase tracking-widest cursor-pointer"
+                                                className="h-12 w-full rounded-xl border border-white/5 bg-white/5 px-4 text-sm font-semibold text-white outline-none cursor-pointer"
                                             >
-                                                <option value="call">COMS CALL</option>
-                                                <option value="meeting">DIRECT MEETING</option>
-                                                <option value="email">SECURE EMAIL</option>
-                                                <option value="event">SOCIAL EVENT</option>
-                                                <option value="other">MISC</option>
+                                                <option value="call">전화</option>
+                                                <option value="meeting">미팅</option>
+                                                <option value="email">이메일</option>
+                                                <option value="event">행사</option>
+                                                <option value="other">기타</option>
                                             </select>
                                         </div>
                                         <div className="space-y-3">
-                                            <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">ENGAGEMENT DATE</label>
+                                            <label className="text-[10px] font-semibold text-white/40">날짜</label>
                                             <Input
                                                 type="date"
                                                 value={format(interactionDate, 'yyyy-MM-dd')}
                                                 onChange={e => setInteractionDate(new Date(e.target.value))}
-                                                className="h-12 bg-white/5 border-white/5 rounded-xl text-white text-[11px] font-black tracking-widest font-mono cursor-pointer"
+                                                className="h-12 bg-white/5 border-white/5 rounded-xl text-white text-sm font-mono cursor-pointer"
                                             />
                                         </div>
                                     </div>
                                     <div className="space-y-3 relative z-10">
-                                        <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">INTEL CONTENT</label>
+                                        <label className="text-[10px] font-semibold text-white/40">내용</label>
                                         <textarea
                                             value={interactionContent}
                                             onChange={e => setInteractionContent(e.target.value)}
-                                            placeholder="LOG ENTRY DETAILS..."
-                                            className="w-full h-32 rounded-2xl border border-white/5 bg-white/10 p-4 text-sm font-bold text-white placeholder:text-white/10 resize-none outline-none focus:ring-2 focus:ring-indigo-500/20"
+                                            placeholder="교류 내용을 입력하세요..."
+                                            className="w-full h-32 rounded-2xl border border-white/5 bg-white/10 p-4 text-sm text-white placeholder:text-white/20 resize-none outline-none focus:ring-2 focus:ring-indigo-500/20"
                                         />
                                     </div>
                                     <Button
-                                        className="w-full h-14 rounded-2xl bg-indigo-500 hover:bg-indigo-600 text-white font-black text-sm tracking-[0.2em] shadow-lg relative z-10"
+                                        className="w-full h-14 rounded-2xl bg-indigo-500 hover:bg-indigo-600 text-white font-semibold text-sm shadow-lg relative z-10"
                                         onClick={handleAddInteraction}
                                     >
-                                        COMMIT TO TIMELINE
+                                        기록 추가
                                     </Button>
                                 </div>
 
                                 <div className="space-y-8">
-                                    <label className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em]">CHRONOLOGICAL HISTORY</label>
+                                    <label className="text-[10px] font-semibold text-white/30">교류 이력</label>
                                     <div className="space-y-6">
                                         {(!formData.interactions || formData.interactions.length === 0) ? (
                                             <div className="flex flex-col items-center justify-center py-20 bg-white/[0.02] rounded-[32px] border border-dashed border-white/5">
                                                 <Briefcase className="w-10 h-10 text-white/5 mb-4" />
-                                                <p className="text-[11px] font-black text-white/10 uppercase tracking-[0.2em]">NO LOGS DETECTED</p>
+                                                <p className="text-sm text-white/20">기록이 없습니다</p>
                                             </div>
                                         ) : (
                                             formData.interactions.map(log => (
@@ -621,8 +633,8 @@ export function PeopleManager() {
                                                     <div className="glass-premium p-6 rounded-[24px] border border-white/5 hover:border-white/10 transition-all shadow-xl">
                                                         <div className="flex items-center justify-between mb-4">
                                                             <div className="flex items-center gap-4">
-                                                                <Badge className="bg-white/10 border-white/10 text-white text-[9px] font-black h-6 uppercase px-3 tracking-widest">
-                                                                    {log.type}
+                                                                <Badge className="bg-white/10 border-white/10 text-white text-[9px] font-semibold h-6 px-3">
+                                                                    {{ call: '전화', meeting: '미팅', email: '이메일', event: '행사', other: '기타' }[log.type] ?? log.type}
                                                                 </Badge>
                                                                 <span className="text-[10px] font-black text-white/20 tracking-widest font-mono">
                                                                     {format(new Date(log.date), 'yyyy . MM . dd')}
@@ -650,16 +662,16 @@ export function PeopleManager() {
                         <Button
                             variant="ghost"
                             onClick={() => setIsDialogOpen(false)}
-                            className="h-14 px-8 rounded-2xl font-black text-[11px] tracking-widest uppercase text-white/30 hover:text-white"
+                            className="h-14 px-8 rounded-2xl text-sm font-semibold text-white/30 hover:text-white"
                         >
-                            ABORT
+                            취소
                         </Button>
                         <Button
                             onClick={handleSave}
                             disabled={!formData.name}
-                            className="h-14 px-10 rounded-2xl bg-indigo-500 hover:bg-indigo-600 text-white font-black text-sm tracking-[0.2em] shadow-[0_15px_30px_-5px_rgba(99,102,241,0.4)] transition-all active:scale-95"
+                            className="h-14 px-10 rounded-2xl bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-semibold shadow-[0_15px_30px_-5px_rgba(99,102,241,0.4)] transition-all active:scale-95"
                         >
-                            {editingId ? 'COMMIT CHANGES' : 'INITIALIZE DOSSIER'}
+                            {editingId ? '저장' : '인물 추가'}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -668,7 +680,7 @@ export function PeopleManager() {
             <Dialog open={!!viewImage} onOpenChange={(open) => !open && setViewImage(null)}>
                 <DialogContent className="glass-premium border border-white/20 text-white rounded-[40px] p-0 shadow-2xl sm:max-w-4xl overflow-hidden">
                     <DialogHeader className="p-8 bg-white/[0.05] border-b border-white/5 flex flex-row items-center justify-between">
-                        <DialogTitle className="text-2xl font-black tracking-tighter uppercase">ID MEDIA PREVIEW</DialogTitle>
+                        <DialogTitle className="text-2xl font-bold">명함 이미지 미리보기</DialogTitle>
                     </DialogHeader>
                     {viewImage && (
                         <div className="w-full h-[70vh] bg-black/40 flex items-center justify-center p-10 relative">

@@ -17,7 +17,6 @@ import { DataExportButton } from '@/components/tools/DataExportButton';
 import { GuideModal } from '@/components/guide/GuideModal';
 import { WorkLayout } from '@/components/project/WorkLayout';
 import { WorkTimeSection } from '@/components/work/sections/WorkTimeSection';
-import { WorkTemplateSection } from '@/components/project/WorkTemplateSection';
 import { WorkPeopleSection } from '@/components/work/sections/WorkPeopleSection';
 import EmailPolishSection from '@/components/work/sections/EmailPolishSection';
 import { HomeDashboard } from '@/components/home/HomeDashboard';
@@ -65,7 +64,7 @@ export default function Home() {
   const [appMode, setAppMode] = useState<'life' | 'work' | 'study' | 'ambition'>('life');
   const [mainMode, setMainMode] = useState<'home' | 'schedule' | 'work' | 'study' | 'ambition'>('home');
   const [activeCategory, setActiveCategory] = useState<CategoryType>('basic');
-  const [activeTab, setActiveTab] = useState<'calendar' | 'tasks' | 'projects' | 'people' | 'goals' | 'language' | 'reading' | 'exercise' | 'diet' | 'inbody' | 'hobby' | 'learning' | 'report' | 'ideas' | 'journal' | 'scraps' | 'widgets' | 'ledger' | 'assets' | 'fund' | 'realestate' | 'investment' | 'certificate' | 'portfolio' | 'work_time' | 'templates' | 'full_schedule' | 'ambition' | 'email'>('calendar');
+  const [activeTab, setActiveTab] = useState<'calendar' | 'tasks' | 'projects' | 'people' | 'goals' | 'language' | 'reading' | 'exercise' | 'diet' | 'inbody' | 'hobby' | 'learning' | 'report' | 'ideas' | 'journal' | 'scraps' | 'widgets' | 'ledger' | 'assets' | 'fund' | 'realestate' | 'investment' | 'certificate' | 'portfolio' | 'work_time' | 'full_schedule' | 'ambition' | 'email'>('calendar');
   const [isGuideOpen, setIsGuideOpen] = useState(false);
   const [todayDate, setTodayDate] = useState('');
 
@@ -390,11 +389,6 @@ export default function Home() {
                 {activeTab === 'work_time' && (
                   <div className="h-full animate-in fade-in zoom-in-95 duration-200">
                     <WorkTimeSection />
-                  </div>
-                )}
-                {activeTab === 'templates' && (
-                  <div className="h-full animate-in fade-in zoom-in-95 duration-200">
-                    <WorkTemplateSection />
                   </div>
                 )}
                 {activeTab === 'email' && (

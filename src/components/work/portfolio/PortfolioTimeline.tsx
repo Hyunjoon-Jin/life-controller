@@ -47,15 +47,13 @@ export function PortfolioTimeline({ projects, onOpenProject }: PortfolioTimeline
 
             {/* Timeline Header */}
             <div className="flex border-b border-white/5 bg-white/[0.02] relative z-10">
-                <div className="w-72 p-6 font-black text-[10px] tracking-[0.2em] uppercase border-r border-white/5 shrink-0 bg-[#0A0B10]/80 backdrop-blur-xl z-20 sticky left-0 text-white/40">
-                    <div className="flex items-center gap-2">
-                        <Terminal className="w-3 h-3 text-indigo-500" /> MISSION_PROTOCOL
-                    </div>
+                <div className="w-72 p-6 text-xs font-semibold border-r border-border shrink-0 bg-card z-20 sticky left-0 text-muted-foreground">
+                    프로젝트
                 </div>
                 <div className="flex-1 relative h-16">
                     <div className="absolute inset-0 flex">
                         {months.map(month => (
-                            <div key={month.toString()} className="flex-1 border-r border-white/5 text-[9px] font-black text-white/20 p-5 tracking-widest uppercase text-center bg-[#0A0B10]/40">
+                            <div key={month.toString()} className="flex-1 border-r border-border text-xs text-muted-foreground p-5 text-center bg-card/60">
                                 {format(month, 'MMM yyyy', { locale: ko })}
                             </div>
                         ))}
@@ -70,19 +68,19 @@ export function PortfolioTimeline({ projects, onOpenProject }: PortfolioTimeline
 
                         return (
                             <div key={project.id} className="flex group/row hover:bg-white/[0.02] transition-colors relative">
-                                <div className="w-72 p-5 border-r border-white/5 shrink-0 bg-[#0A0B10]/80 backdrop-blur-xl z-20 sticky left-0 flex items-center gap-4">
+                                <div className="w-72 p-5 border-r border-border shrink-0 bg-card z-20 sticky left-0 flex items-center gap-4">
                                     <div className="w-1.5 h-10 rounded-full shadow-[0_0_12px_rgba(99,102,241,0.3)]" style={{ backgroundColor: project.color || '#6366f1' }} />
                                     <div className="min-w-0">
                                         <div
-                                            className="font-black text-[11px] tracking-widest text-white uppercase truncate w-52 cursor-pointer hover:text-indigo-400 transition-colors"
+                                            className="text-sm font-semibold text-foreground truncate w-52 cursor-pointer hover:text-indigo-400 transition-colors"
                                             onClick={() => onOpenProject(project.id)}
                                         >
                                             {project.title}
                                         </div>
-                                        <div className="text-[8px] font-black text-white/20 flex items-center gap-2 mt-1 tracking-widest uppercase">
-                                            {project.status === 'active' && <span className="text-indigo-400 flex items-center gap-1"><Zap className="w-2 h-2" /> ACTIVE</span>}
-                                            {project.status === 'completed' && <span className="text-emerald-400 flex items-center gap-1"><Shield className="w-2 h-2" /> DEPLOYED</span>}
-                                            {project.health === 'at-risk' && <span className="text-rose-500 px-1 bg-rose-500/10 rounded leading-none">CAUTION</span>}
+                                        <div className="text-xs text-muted-foreground flex items-center gap-2 mt-0.5">
+                                            {project.status === 'active' && <span className="text-indigo-400">진행 중</span>}
+                                            {project.status === 'completed' && <span className="text-emerald-400">완료</span>}
+                                            {project.health === 'at-risk' && <span className="text-rose-500">주의</span>}
                                         </div>
                                     </div>
                                 </div>
@@ -128,14 +126,14 @@ export function PortfolioTimeline({ projects, onOpenProject }: PortfolioTimeline
                                                 <div className="flex flex-col gap-2">
                                                     <div className="flex items-center gap-3">
                                                         <div className="w-2 h-2 rounded-full bg-indigo-500" />
-                                                        <span className="font-black text-xs uppercase tracking-widest">{project.title}</span>
+                                                        <span className="font-semibold text-sm text-foreground">{project.title}</span>
                                                     </div>
-                                                    <div className="text-[10px] font-bold text-white/40 uppercase tracking-widest font-mono">
-                                                        {format(new Date(project.startDate || new Date()), 'MM.dd.yyyy')} — {format(new Date(project.endDate || new Date()), 'MM.dd.yyyy')}
+                                                    <div className="text-xs text-muted-foreground font-mono">
+                                                        {format(new Date(project.startDate || new Date()), 'yyyy.MM.dd')} — {format(new Date(project.endDate || new Date()), 'yyyy.MM.dd')}
                                                     </div>
-                                                    <div className="flex items-center justify-between pt-2 border-t border-white/5">
-                                                        <span className="text-[9px] font-black text-white/20 uppercase tracking-widest">DEPLOY_READY</span>
-                                                        <span className="text-[10px] font-black text-indigo-400">{project.progress}%</span>
+                                                    <div className="flex items-center justify-between pt-2 border-t border-border">
+                                                        <span className="text-xs text-muted-foreground">진행률</span>
+                                                        <span className="text-xs font-semibold text-indigo-400">{project.progress}%</span>
                                                     </div>
                                                 </div>
                                             </TooltipContent>

@@ -92,8 +92,8 @@ export function WorkPeopleSection() {
                     <div className="relative group/search flex-1 md:w-96">
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within/search:text-indigo-400 transition-colors" />
                         <Input
-                            placeholder="SEARCH_COGNITIVE_NODES..."
-                            className="h-14 pl-12 pr-6 bg-white/[0.03] border-white/5 rounded-2xl text-[11px] font-black tracking-widest text-white uppercase focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500/40 transition-all placeholder:text-white/10"
+                            placeholder="이름, 회사, 직책으로 검색..."
+                            className="h-14 pl-12 pr-6 bg-white/[0.03] border-white/5 rounded-2xl text-sm text-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500/40 transition-all placeholder:text-white/20"
                             value={search}
                             onChange={e => setSearch(e.target.value)}
                         />
@@ -103,29 +103,29 @@ export function WorkPeopleSection() {
                             variant="ghost"
                             onClick={() => setShowWorkOnly(true)}
                             className={cn(
-                                "h-12 px-6 rounded-xl text-[10px] font-black tracking-widest uppercase transition-all",
-                                showWorkOnly ? "bg-indigo-500 text-white shadow-lg" : "text-white/20 hover:text-white"
+                                "h-12 px-6 rounded-xl text-sm font-semibold transition-all",
+                                showWorkOnly ? "bg-indigo-500 text-white shadow-lg" : "text-white/40 hover:text-white"
                             )}
                         >
-                            WORK_NODES
+                            업무 인맥
                         </Button>
                         <Button
                             variant="ghost"
                             onClick={() => setShowWorkOnly(false)}
                             className={cn(
-                                "h-12 px-6 rounded-xl text-[10px] font-black tracking-widest uppercase transition-all",
-                                !showWorkOnly ? "bg-indigo-500 text-white shadow-lg" : "text-white/20 hover:text-white"
+                                "h-12 px-6 rounded-xl text-sm font-semibold transition-all",
+                                !showWorkOnly ? "bg-indigo-500 text-white shadow-lg" : "text-white/40 hover:text-white"
                             )}
                         >
-                            ALL_VECTORS
+                            전체
                         </Button>
                     </div>
                 </div>
                 <Button
                     onClick={handleOpenCreate}
-                    className="h-14 px-8 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-black text-xs tracking-[0.2em] uppercase shadow-[0_12px_24px_-8px_rgba(99,102,241,0.5)] active:scale-95 transition-all w-full md:w-auto"
+                    className="h-14 px-8 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm shadow-[0_12px_24px_-8px_rgba(99,102,241,0.5)] active:scale-95 transition-all w-full md:w-auto"
                 >
-                    <UserPlus className="w-4 h-4 mr-3" /> INITIALIZE_NODE
+                    <UserPlus className="w-4 h-4 mr-2" /> 인물 추가
                 </Button>
             </div>
 
@@ -172,14 +172,14 @@ export function WorkPeopleSection() {
 
                                     <div className="mb-6">
                                         <div className="flex items-center gap-2 mb-1">
-                                            <span className="text-[8px] font-black text-indigo-400 tracking-widest uppercase px-1.5 py-0.5 bg-indigo-500/10 rounded">
-                                                {person.relationship || 'WORK_NODE'}
+                                            <span className="text-[10px] font-semibold text-indigo-400 px-1.5 py-0.5 bg-indigo-500/10 rounded">
+                                                {person.relationship === 'work' ? '업무' : person.relationship === 'friend' ? '친구' : person.relationship === 'family' ? '가족' : person.relationship || '업무'}
                                             </span>
                                             {person.isFavorite && <Zap className="w-2.5 h-2.5 text-amber-400 fill-amber-400" />}
                                         </div>
-                                        <h4 className="text-xl font-black text-white tracking-widest uppercase truncate mb-1">{person.name}</h4>
-                                        <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] truncate">
-                                            {person.role || person.jobTitle || 'UNSPECIFIED_ROLE'} @ <span className="text-white/60">{person.company || 'UNKNOWN_ORGA'}</span>
+                                        <h4 className="text-xl font-black text-white truncate mb-1">{person.name}</h4>
+                                        <p className="text-[11px] text-white/40 truncate">
+                                            {person.role || person.jobTitle || '직책 미입력'}{person.company ? <> · <span className="text-white/60">{person.company}</span></> : ''}
                                         </p>
                                     </div>
 
@@ -187,7 +187,7 @@ export function WorkPeopleSection() {
                                         {person.notes && (
                                             <div className="flex items-center gap-3 p-3 bg-white/[0.03] border border-white/5 rounded-xl">
                                                 <MessageSquare className="w-3 h-3 text-white/20 shrink-0" />
-                                                <span className="text-[9px] font-bold text-white/40 uppercase tracking-widest italic truncate">
+                                                <span className="text-xs text-white/40 italic truncate">
                                                     {person.notes}
                                                 </span>
                                             </div>
@@ -215,10 +215,10 @@ export function WorkPeopleSection() {
                                         </button>
                                         <Button
                                             variant="outline"
-                                            className="w-full h-9 rounded-xl border-white/5 bg-transparent hover:bg-white/5 text-[9px] font-black text-white/20 hover:text-white tracking-[0.2em] uppercase transition-all"
+                                            className="w-full h-9 rounded-xl border-white/5 bg-transparent hover:bg-white/5 text-xs text-white/30 hover:text-white transition-all"
                                             onClick={() => handleOpenEdit(person)}
                                         >
-                                            DETAIL
+                                            상세 정보
                                         </Button>
                                     </div>
                                 </CardContent>
@@ -236,7 +236,7 @@ export function WorkPeopleSection() {
                         <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mb-6">
                             <Users className="w-10 h-10 text-white/10" strokeWidth={1} />
                         </div>
-                        <h5 className="text-sm font-black text-white/20 tracking-[0.3em] uppercase">NO_VECTORS_DETECTED_IN_THIS_RADIUS</h5>
+                        <h5 className="text-sm font-medium text-white/25">검색 결과가 없습니다</h5>
                     </motion.div>
                 )}
             </div>
@@ -260,95 +260,95 @@ export function WorkPeopleSection() {
                             <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center">
                                 <Target className="w-5 h-5 text-indigo-400" />
                             </div>
-                            <span className="text-[10px] font-black text-indigo-400 tracking-[0.3em] uppercase">SYSTEM_NODE_CONFIGURATION</span>
+                            <span className="text-xs font-semibold text-indigo-400">인물 관리</span>
                         </div>
-                        <DialogTitle className="text-3xl font-black tracking-tighter uppercase">{editingId ? 'EDIT_COGNITIVE_VECTOR' : 'REGISTER_NEW_VECTOR'}</DialogTitle>
+                        <DialogTitle className="text-2xl font-black">{editingId ? '인물 정보 수정' : '새 인물 등록'}</DialogTitle>
                     </DialogHeader>
 
                     <div className="grid gap-6 py-4 relative z-10">
                         <div className="grid grid-cols-2 gap-6">
                             <div className="space-y-2">
-                                <Label className="text-[10px] font-black text-white/20 tracking-widest uppercase ml-1">DESIGNATION</Label>
+                                <Label className="text-xs text-white/40 ml-1">이름 *</Label>
                                 <Input
                                     value={formData.name}
                                     onChange={e => setFormData({ ...formData, name: e.target.value })}
-                                    placeholder="ENTRY_NAME"
-                                    className="h-12 bg-white/5 border-white/5 rounded-xl text-xs font-bold tracking-wider placeholder:text-white/10"
+                                    placeholder="홍길동"
+                                    className="h-12 bg-white/5 border-white/5 rounded-xl text-sm placeholder:text-white/20"
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label className="text-[10px] font-black text-white/20 tracking-widest uppercase ml-1">RELATION_TYPE</Label>
+                                <Label className="text-xs text-white/40 ml-1">관계</Label>
                                 <select
-                                    className="flex h-12 w-full rounded-xl border border-white/5 bg-white/5 px-3 py-2 text-xs font-bold uppercase tracking-widest text-white/60 focus:ring-2 focus:ring-indigo-500/20 transition-all"
+                                    className="flex h-12 w-full rounded-xl border border-white/5 bg-white/5 px-3 py-2 text-sm text-white/70 focus:ring-2 focus:ring-indigo-500/20 transition-all"
                                     value={formData.relationship}
                                     onChange={e => setFormData({ ...formData, relationship: e.target.value as RelationshipType })}
                                 >
-                                    <option value="work">WORK_PROTOCOL</option>
-                                    <option value="friend">FRIEND_PROTOCOL</option>
-                                    <option value="family">FAMILY_PROTOCOL</option>
-                                    <option value="other">STRAY_VECTOR</option>
+                                    <option value="work">업무</option>
+                                    <option value="friend">친구</option>
+                                    <option value="family">가족</option>
+                                    <option value="other">기타</option>
                                 </select>
                             </div>
                         </div>
                         <div className="grid grid-cols-2 gap-6">
                             <div className="space-y-2">
-                                <Label className="text-[10px] font-black text-white/20 tracking-widest uppercase ml-1">ORGANIZATION</Label>
+                                <Label className="text-xs text-white/40 ml-1">회사 / 소속</Label>
                                 <Input
                                     value={formData.company}
                                     onChange={e => setFormData({ ...formData, company: e.target.value })}
-                                    placeholder="COMMAND_BASE"
-                                    className="h-12 bg-white/5 border-white/5 rounded-xl text-xs font-bold tracking-wider"
+                                    placeholder="회사명"
+                                    className="h-12 bg-white/5 border-white/5 rounded-xl text-sm placeholder:text-white/20"
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label className="text-[10px] font-black text-white/20 tracking-widest uppercase ml-1">MISSION_ROLE</Label>
+                                <Label className="text-xs text-white/40 ml-1">직함 / 직책</Label>
                                 <Input
                                     value={formData.jobTitle}
                                     onChange={e => setFormData({ ...formData, jobTitle: e.target.value })}
-                                    placeholder="SPECIALIST_GRADE"
-                                    className="h-12 bg-white/5 border-white/5 rounded-xl text-xs font-bold tracking-wider"
+                                    placeholder="팀장, 대리, 이사..."
+                                    className="h-12 bg-white/5 border-white/5 rounded-xl text-sm placeholder:text-white/20"
                                 />
                             </div>
                         </div>
                         <div className="grid grid-cols-2 gap-6">
                             <div className="space-y-2">
-                                <Label className="text-[10px] font-black text-white/20 tracking-widest uppercase ml-1">COMMS_LINK</Label>
+                                <Label className="text-xs text-white/40 ml-1">연락처</Label>
                                 <Input
                                     value={formData.contact}
                                     onChange={e => setFormData({ ...formData, contact: e.target.value })}
-                                    placeholder="SECURE_LINE"
-                                    className="h-12 bg-white/5 border-white/5 rounded-xl text-xs font-bold tracking-wider"
+                                    placeholder="010-0000-0000"
+                                    className="h-12 bg-white/5 border-white/5 rounded-xl text-sm placeholder:text-white/20"
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label className="text-[10px] font-black text-white/20 tracking-widest uppercase ml-1">ELECTRONIC_MAIL</Label>
+                                <Label className="text-xs text-white/40 ml-1">이메일</Label>
                                 <Input
                                     value={formData.email}
                                     onChange={e => setFormData({ ...formData, email: e.target.value })}
-                                    placeholder="ENCRYPTED_MAIL"
-                                    className="h-12 bg-white/5 border-white/5 rounded-xl text-xs font-bold tracking-wider"
+                                    placeholder="example@company.com"
+                                    className="h-12 bg-white/5 border-white/5 rounded-xl text-sm placeholder:text-white/20"
                                 />
                             </div>
                         </div>
                         <div className="space-y-2">
-                            <Label className="text-[10px] font-black text-white/20 tracking-widest uppercase ml-1">BIOMETRIC_METADATA / NOTES</Label>
+                            <Label className="text-xs text-white/40 ml-1">메모</Label>
                             <Input
                                 value={formData.notes}
                                 onChange={e => setFormData({ ...formData, notes: e.target.value })}
-                                placeholder="OBSERVATIONAL_LOGS..."
-                                className="h-12 bg-white/5 border-white/5 rounded-xl text-xs font-bold tracking-wider"
+                                placeholder="특이사항, 관계 메모..."
+                                className="h-12 bg-white/5 border-white/5 rounded-xl text-sm placeholder:text-white/20"
                             />
                         </div>
                     </div>
 
                     <DialogFooter className="mt-10 relative z-10">
-                        <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="h-12 px-8 rounded-xl text-[10px] font-black text-white/20 hover:text-white uppercase tracking-widest">ABORT</Button>
+                        <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="h-12 px-8 rounded-xl text-sm text-foreground/50 hover:text-foreground">취소</Button>
                         <Button
                             onClick={handleSave}
                             disabled={!formData.name}
-                            className="h-12 px-10 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-black text-[10px] tracking-widest uppercase shadow-xl"
+                            className="h-12 px-10 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm shadow-xl"
                         >
-                            COMMIT_VECTOR
+                            저장
                         </Button>
                     </DialogFooter>
                 </DialogContent>

@@ -29,7 +29,7 @@ export function ScheduleSection() {
             </motion.div>
 
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-                {/* Today's Meetings/Events */}
+                {/* 오늘의 일정 */}
                 <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -44,8 +44,8 @@ export function ScheduleSection() {
                                     <Activity className="w-5 h-5 text-indigo-400" />
                                 </div>
                                 <div>
-                                    <h3 className="text-lg font-black text-white tracking-widest uppercase mb-0.5">OPERATIONAL EVENTS</h3>
-                                    <p className="text-[8px] font-bold text-white/20 tracking-[0.2em] uppercase">MEETINGS & ENGAGEMENTS</p>
+                                    <h3 className="text-base font-semibold text-foreground mb-0.5">오늘의 일정</h3>
+                                    <p className="text-xs text-muted-foreground">회의 및 약속</p>
                                 </div>
                             </div>
                         </div>
@@ -61,8 +61,8 @@ export function ScheduleSection() {
                                         className="bg-white/[0.02] border border-white/5 p-5 rounded-2xl flex items-center justify-between group hover:bg-white/[0.04] transition-all"
                                     >
                                         <div className="flex flex-col gap-1">
-                                            <span className="font-black text-sm text-white uppercase tracking-tight">{event.title}</span>
-                                            <span className="text-[10px] font-bold text-indigo-400/60 flex items-center gap-2 uppercase tracking-widest">
+                                            <span className="text-sm font-semibold text-foreground">{event.title}</span>
+                                            <span className="text-xs text-muted-foreground flex items-center gap-2">
                                                 <Clock className="w-3 h-3" />
                                                 {format(new Date(event.start), 'HH:mm')} — {format(new Date(event.end), 'HH:mm')}
                                             </span>
@@ -71,15 +71,15 @@ export function ScheduleSection() {
                                     </motion.div>
                                 ))
                             ) : (
-                                <div className="text-center py-12 px-6 border-2 border-dashed border-white/5 rounded-2xl opacity-10">
-                                    <p className="text-[10px] font-black tracking-[0.3em] uppercase">NO SCHEDULED EVENTS</p>
+                                <div className="text-center py-12 px-6 border-2 border-dashed border-white/5 rounded-2xl">
+                                    <p className="text-sm text-muted-foreground">일정이 없습니다</p>
                                 </div>
                             )}
                         </div>
                     </div>
                 </motion.div>
 
-                {/* Today's Priority Tasks */}
+                {/* 오늘 마감 업무 */}
                 <motion.div
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -94,8 +94,8 @@ export function ScheduleSection() {
                                     <Target className="w-5 h-5 text-rose-400" />
                                 </div>
                                 <div>
-                                    <h3 className="text-lg font-black text-white tracking-widest uppercase mb-0.5">CRITICAL DEADLINES</h3>
-                                    <p className="text-[8px] font-bold text-white/20 tracking-[0.2em] uppercase">EOD MISSION TARGETS</p>
+                                    <h3 className="text-base font-semibold text-foreground mb-0.5">마감 예정</h3>
+                                    <p className="text-xs text-muted-foreground">오늘까지</p>
                                 </div>
                             </div>
                         </div>
@@ -115,19 +115,19 @@ export function ScheduleSection() {
                                             task.priority === 'high' ? "bg-rose-500 text-rose-500" : "bg-amber-400 text-amber-400"
                                         )} />
                                         <div className="flex flex-col gap-1">
-                                            <span className="font-black text-sm text-white uppercase tracking-tight">{task.title}</span>
+                                            <span className="text-sm font-semibold text-foreground">{task.title}</span>
                                             <div className="flex items-center gap-3">
-                                                <span className="text-[9px] font-black text-white/30 uppercase tracking-widest">{task.category}</span>
+                                                <span className="text-xs text-muted-foreground">{task.category}</span>
                                                 {task.priority === 'high' && (
-                                                    <span className="text-[8px] font-black text-rose-500 uppercase tracking-tighter bg-rose-500/10 px-1.5 py-0.5 rounded leading-none">PRIORITY: HIGH</span>
+                                                    <span className="text-xs font-medium text-rose-500 bg-rose-500/10 px-1.5 py-0.5 rounded leading-none">우선순위 높음</span>
                                                 )}
                                             </div>
                                         </div>
                                     </motion.div>
                                 ))
                             ) : (
-                                <div className="text-center py-12 px-6 border-2 border-dashed border-white/5 rounded-2xl opacity-10">
-                                    <p className="text-[10px] font-black tracking-[0.3em] uppercase">ALL TARGETS CLEARED</p>
+                                <div className="text-center py-12 px-6 border-2 border-dashed border-white/5 rounded-2xl">
+                                    <p className="text-sm text-muted-foreground">마감 항목이 없습니다</p>
                                 </div>
                             )}
                         </div>
@@ -135,19 +135,19 @@ export function ScheduleSection() {
                 </motion.div>
             </div>
 
-            {/* Status Feedback */}
+            {/* 상태 표시 */}
             <div className="flex items-center justify-center gap-8 py-4 opacity-20">
                 <div className="flex items-center gap-3">
                     <Zap className="w-3 h-3 text-indigo-400" />
-                    <span className="text-[10px] font-black tracking-[0.2em] uppercase text-white">SYNC STATUS: NORMAL</span>
+                    <span className="text-xs text-muted-foreground">동기화 완료</span>
                 </div>
                 <div className="flex items-center gap-3">
                     <Shield className="w-3 h-3 text-indigo-400" />
-                    <span className="text-[10px] font-black tracking-[0.2em] uppercase text-white">SECURITY: LAYER 4</span>
+                    <span className="text-xs text-muted-foreground">보안 정상</span>
                 </div>
                 <div className="flex items-center gap-3">
                     <Terminal className="w-3 h-3 text-indigo-400" />
-                    <span className="text-[10px] font-black tracking-[0.2em] uppercase text-white">HOST: COGNITIVE_CORE</span>
+                    <span className="text-xs text-muted-foreground">시스템 연결됨</span>
                 </div>
             </div>
         </div>

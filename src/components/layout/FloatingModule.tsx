@@ -172,11 +172,11 @@ export function FloatingModule({ onOpenGuide }: { onOpenGuide?: () => void }) {
                                             <StickyNote className="w-5 h-5 text-amber-500" />
                                         </div>
                                         <div>
-                                            <h3 className="text-xl font-black text-white/90 uppercase tracking-tight">전송실 (Quick Sync)</h3>
-                                            <p className="text-[10px] text-white/30 font-bold uppercase tracking-[0.2em] mt-0.5">Global Neural Memo</p>
+                                            <h3 className="text-base font-semibold text-foreground">빠른 메모</h3>
+                                            <p className="text-xs text-muted-foreground mt-0.5">어디서든 바로 저장</p>
                                         </div>
                                     </div>
-                                    <div className="text-[10px] font-black text-emerald-500 px-2 py-1 rounded-md bg-emerald-500/10 border border-emerald-500/20">AUTO-SYNC ACTIVE</div>
+                                    <div className="text-xs font-medium text-emerald-500 px-2 py-1 rounded-md bg-emerald-500/10 border border-emerald-500/20">자동 저장</div>
                                 </DialogTitle>
                             </DialogHeader>
                             <div className="relative group">
@@ -190,8 +190,8 @@ export function FloatingModule({ onOpenGuide }: { onOpenGuide?: () => void }) {
                             </div>
                             <div className="flex items-center justify-center gap-2 py-2">
                                 <div className="w-1 h-1 rounded-full bg-amber-500 animate-ping" />
-                                <p className="text-[10px] text-white/20 font-black tracking-widest uppercase">
-                                    Secured Neural Link Optimized for Productivity
+                                <p className="text-xs text-muted-foreground">
+                                    자동으로 저장됩니다
                                 </p>
                             </div>
                         </div>

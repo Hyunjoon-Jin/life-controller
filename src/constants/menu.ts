@@ -2,11 +2,11 @@ import {
     Calendar, ListTodo, UsersRound, Target, Book, Sparkles, Award, Briefcase,
     NotebookPen, Lightbulb, Bookmark, CheckSquare, Scale, ChevronRight,
     Utensils, Dumbbell, Wallet, PieChart, Building2, TrendingUp as TrendingUpIcon, FileText,
-    Clock, LayoutTemplate, Mail
+    Clock, Mail
 } from 'lucide-react';
 
 export type CategoryType = 'basic' | 'health' | 'record' | 'finance';
-export type TabType = 'calendar' | 'tasks' | 'projects' | 'people' | 'goals' | 'language' | 'reading' | 'exercise' | 'diet' | 'inbody' | 'hobby' | 'learning' | 'certificate' | 'portfolio' | 'journal' | 'ideas' | 'scraps' | 'report' | 'ledger' | 'assets' | 'fund' | 'realestate' | 'investment' | 'work_time' | 'templates' | 'full_schedule' | 'ambition' | 'email';
+export type TabType = 'calendar' | 'tasks' | 'projects' | 'people' | 'goals' | 'language' | 'reading' | 'exercise' | 'diet' | 'inbody' | 'hobby' | 'learning' | 'certificate' | 'portfolio' | 'journal' | 'ideas' | 'scraps' | 'report' | 'ledger' | 'assets' | 'fund' | 'realestate' | 'investment' | 'work_time' | 'full_schedule' | 'ambition' | 'email';
 
 import { LucideIcon } from 'lucide-react';
 
@@ -30,7 +30,6 @@ export const WORK_NAV_ITEMS = [
     { id: 'projects', label: '프로젝트 관리', icon: Briefcase },
     { id: 'people', label: '인력 관리', icon: UsersRound },
     { id: 'work_time', label: '근무 관리', icon: Clock },
-    { id: 'templates', label: '템플릿', icon: LayoutTemplate },
     { id: 'email', label: '메일 다듬기', icon: Mail },
 ];
 

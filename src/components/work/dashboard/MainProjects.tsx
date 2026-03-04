@@ -26,8 +26,8 @@ export function MainProjects({ onOpenProject }: MainProjectsProps) {
                         <Layers className="w-5 h-5 text-indigo-400" />
                     </div>
                     <div>
-                        <h3 className="text-lg font-black text-white tracking-widest uppercase mb-0.5">주요 프로젝트</h3>
-                        <p className="text-[8px] font-bold text-white/20 tracking-[0.2em] uppercase">진행 중인 미션</p>
+                        <h3 className="text-base font-semibold text-foreground mb-0.5">주요 프로젝트</h3>
+                        <p className="text-xs text-muted-foreground">진행 중인 업무 프로젝트</p>
                     </div>
                 </div>
             </div>
@@ -54,19 +54,19 @@ export function MainProjects({ onOpenProject }: MainProjectsProps) {
                                 <div className="flex flex-col gap-4">
                                     <div className="flex justify-between items-start">
                                         <div>
-                                            <h4 className="text-sm font-black text-white tracking-wide uppercase mb-1">
+                                            <h4 className="text-sm font-semibold text-foreground mb-1">
                                                 {project.title}
                                             </h4>
-                                            <p className="text-[10px] font-bold text-white/40 line-clamp-1 uppercase tracking-wider">
-                                                {project.description || '추가 정보 없음'}
+                                            <p className="text-xs text-muted-foreground line-clamp-1">
+                                                {project.description || '설명 없음'}
                                             </p>
                                         </div>
                                     </div>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-white/5">
                                         <div className="flex items-center gap-2">
-                                            <Calendar className="w-3 h-3 text-indigo-400/60" />
-                                            <span className="text-[9px] font-black text-white/40 tracking-widest uppercase">
+                                            <Calendar className="w-3 h-3 text-muted-foreground" />
+                                            <span className="text-xs text-muted-foreground">
                                                 {project.startDate && project.endDate ? (
                                                     `${format(new Date(project.startDate), 'MM.dd')} - ${format(new Date(project.endDate), 'MM.dd')}`
                                                 ) : '기간 미정'}
@@ -74,8 +74,8 @@ export function MainProjects({ onOpenProject }: MainProjectsProps) {
                                         </div>
                                         {nextTask && (
                                             <div className="flex items-center gap-2 text-indigo-400">
-                                                <Target className="w-3 h-3 animate-pulse" />
-                                                <span className="text-[9px] font-black tracking-widest uppercase truncate max-w-[120px]">
+                                                <Target className="w-3 h-3" />
+                                                <span className="text-xs truncate max-w-[120px]">
                                                     다음: {nextTask.title}
                                                 </span>
                                             </div>
@@ -86,9 +86,9 @@ export function MainProjects({ onOpenProject }: MainProjectsProps) {
                         );
                     })
                 ) : (
-                    <div className="h-full flex flex-col items-center justify-center opacity-10 py-12 gap-4 border-2 border-dashed border-white/10 rounded-2xl">
-                        <Briefcase className="w-12 h-12" />
-                        <p className="text-[9px] font-black tracking-[0.3em] uppercase text-center">진행 중인 프로젝트가<br />없습니다</p>
+                    <div className="h-full flex flex-col items-center justify-center py-12 gap-3 border-2 border-dashed border-border rounded-2xl">
+                        <Briefcase className="w-10 h-10 text-muted-foreground/30" />
+                        <p className="text-sm text-muted-foreground text-center">진행 중인 프로젝트가 없습니다</p>
                     </div>
                 )}
             </div>

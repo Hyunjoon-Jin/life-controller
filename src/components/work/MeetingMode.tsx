@@ -2,23 +2,90 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useData } from '@/context/DataProvider';
-import { Project, Task } from '@/types';
+import { Project } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea'; // Ideally use TextareaAutosize
-import TextareaAutosize from 'react-textarea-autosize';
+import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Clock, Plus, Save, Play, Pause, RotateCcw, CheckSquare, FileText, Send, Sparkles, Loader2 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import {
+    Clock, Plus, Save, Play, Pause, RotateCcw, CheckSquare,
+    FileText, Sparkles, Loader2, X, Trash2, ChevronDown, ListTodo
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { summarizeMeeting } from '@/lib/gemini';
+import { generateId } from '@/lib/utils';
+import { toast } from 'sonner';
 
-export function MeetingMode({ project: initialProject, onClose }: { project?: Project, onClose: () => void }) {
-    const { addJournal, addTask, projects } = useData();
+interface AgendaItem {
+    id: string;
+    text: string;
+    done: boolean;
+}
+
+export function MeetingMode({ project: initialProject, onClose }: { project?: Project; onClose: () => void }) {
+    const { addTask, projects } = useData();
     const [selectedProjectId, setSelectedProjectId] = useState<string>(initialProject?.id || '');
     const project = projects.find(p => p.id === selectedProjectId) || initialProject;
 
     const [isSummarizing, setIsSummarizing] = useState(false);
+    const [saved, setSaved] = useState(false);
+
+    // Timer
+    const [seconds, setSeconds] = useState(0);
+    const [isActive, setIsActive] = useState(true);
+
+    // Agenda
+    const [agendas, setAgendas] = useState<AgendaItem[]>([]);
+    const [newAgenda, setNewAgenda] = useState('');
+    const agendaInputRef = useRef<HTMLInputElement>(null);
+
+    // Minutes
+    const [minutes, setMinutes] = useState('');
+
+    // Action Items
+    const [quickActions, setQuickActions] = useState<string[]>([]);
+    const [newAction, setNewAction] = useState('');
+    const actionInputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        let interval: NodeJS.Timeout;
+        if (isActive) {
+            interval = setInterval(() => setSeconds(s => s + 1), 1000);
+        }
+        return () => clearInterval(interval);
+    }, [isActive]);
+
+    const formatTime = (total: number) => {
+        const h = Math.floor(total / 3600);
+        const m = Math.floor((total % 3600) / 60);
+        const s = total % 60;
+        return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    };
+
+    const handleAddAgenda = () => {
+        if (!newAgenda.trim()) return;
+        setAgendas(prev => [...prev, { id: generateId(), text: newAgenda.trim(), done: false }]);
+        setNewAgenda('');
+        agendaInputRef.current?.focus();
+    };
+
+    const handleAddAction = () => {
+        if (!newAction.trim()) return;
+        setQuickActions(prev => [...prev, newAction.trim()]);
+        setNewAction('');
+        actionInputRef.current?.focus();
+    };
+
+    const toggleAgenda = (id: string) => {
+        setAgendas(prev => prev.map(a => a.id === id ? { ...a, done: !a.done } : a));
+    };
+
+    const removeAction = (idx: number) => {
+        setQuickActions(prev => prev.filter((_, i) => i !== idx));
+    };
 
     const handleAISummary = async () => {
         if (!minutes.trim()) return;
@@ -26,267 +93,221 @@ export function MeetingMode({ project: initialProject, onClose }: { project?: Pr
         try {
             const result = await summarizeMeeting(minutes);
             if (result) {
-                // Prepend summary to minutes
                 setMinutes(`# [AI 요약]\n${result.summary}\n\n---\n\n${minutes}`);
-
-                // Add action items to the list
-                if (result.actionItems && result.actionItems.length > 0) {
+                if (result.actionItems?.length > 0) {
                     setQuickActions(prev => [...prev, ...result.actionItems]);
                 }
             }
-        } catch (error) {
-            console.error("AI Summary failed", error);
+        } catch {
+            toast.error('AI 요약에 실패했습니다.');
         } finally {
             setIsSummarizing(false);
         }
     };
 
-    // ... (rest of state)
-
-    // ... (rest of logic)
-
-    // In Header:
-    // <div className="flex items-center gap-4">
-    //    ...
-    //    <div>
-    //       {project ? (
-    //           <h2 className="font-bold text-lg">{project.title} - 회의 진행 중</h2>
-    //       ) : (
-    //           <select 
-    //               value={selectedProjectId} 
-    //               onChange={e => setSelectedProjectId(e.target.value)}
-    //               className="bg-transparent font-bold text-lg border-none focus:ring-0 cursor-pointer"
-    //           >
-    //               <option value="" disabled>프로젝트 선택...</option>
-    //               {projects.map(p => <option key={p.id} value={p.id}>{p.title}</option>)}
-    //           </select>
-    //       )}
-    //       ...
-
-
-    // Timer State
-    const [seconds, setSeconds] = useState(0);
-    const [isActive, setIsActive] = useState(true); // Start immediately
-
-    // Agenda State
-    const [agendas, setAgendas] = useState<{ id: string, text: string, done: boolean }[]>([]);
-    const [newAgenda, setNewAgenda] = useState('');
-
-    // Minutes State
-    const [minutes, setMinutes] = useState('');
-
-    // Action Items State
-    const [quickActions, setQuickActions] = useState<string[]>([]);
-    const [newAction, setNewAction] = useState('');
-
-    useEffect(() => {
-        let interval: NodeJS.Timeout;
-        if (isActive) {
-            interval = setInterval(() => {
-                setSeconds(s => s + 1);
-            }, 1000);
-        }
-        return () => clearInterval(interval);
-    }, [isActive]);
-
-    const formatTime = (totalSeconds: number) => {
-        const h = Math.floor(totalSeconds / 3600);
-        const m = Math.floor((totalSeconds % 3600) / 60);
-        const s = totalSeconds % 60;
-        return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-    };
-
-    const handleAddAgenda = (e?: React.KeyboardEvent) => {
-        if (e && e.key !== 'Enter') return;
-        if (!newAgenda.trim()) return;
-        setAgendas([...agendas, { id: Date.now().toString(), text: newAgenda, done: false }]);
-        setNewAgenda('');
-    };
-
-    const toggleAgenda = (id: string) => {
-        setAgendas(prev => prev.map(a => a.id === id ? { ...a, done: !a.done } : a));
-    };
-
-    const handleAddAction = (e?: React.KeyboardEvent) => {
-        if (e && e.key !== 'Enter') return;
-        if (!newAction.trim()) return;
-        setQuickActions([...quickActions, newAction]);
-        setNewAction('');
-    };
-
     const handleSaveMeeting = () => {
-        // 1. Create Tasks from Action Items
-        quickActions.forEach(actionTitle => {
+        setIsActive(false);
+        quickActions.forEach(title => {
             addTask({
-                id: Date.now().toString() + Math.random().toString().slice(2, 5),
-                title: actionTitle,
+                id: generateId(),
+                title,
                 completed: false,
-                projectId: project?.id || '', // Use optional chaining
+                projectId: project?.id || '',
                 priority: 'medium',
-                dueDate: new Date(), // Due today by default
+                dueDate: new Date(),
                 source: 'timeline'
             });
         });
-
-        // 2. Save Minutes (As Journal or Archive? Let's use Archive for now as "Reference")
-        // Or actually, user might want it in Journal. Let's ask or just save to Archive as "Meeting Note"
-        // Since we have ArchiveDocument type.
-        // But for now, let's just log it to console or alert as "Saved" simulation if no direct API.
-        // Actually, let's use `addArchiveDocument` if available? 
-        // Checking `useData` context... I don't recall explicit `addArchiveDocument`.
-        // Let's assume we implement it later or just simulate for UI.
-        // Wait, I see `ArchiveSystem` imports. It likely uses local state or mocked.
-        // Re-checking types/context... `archiveDocuments` is in data provider.
-
-        // For this MVP, let's just alert success and close.
-        alert(`회의가 저장되었습니다.\n시간: ${formatTime(seconds)}\n액션 아이템: ${quickActions.length}개 생성됨`);
-        onClose();
+        setSaved(true);
+        toast.success(`회의 종료 — ${formatTime(seconds)} 진행, 액션 아이템 ${quickActions.length}개 등록됨`);
+        setTimeout(() => onClose(), 800);
     };
 
+    const doneCount = agendas.filter(a => a.done).length;
+
     return (
-        <div className="fixed inset-0 z-[100] bg-white dark:bg-zinc-950 flex flex-col animate-in fade-in duration-200">
-            {/* Header / Toolbar */}
-            <div className="h-16 border-b border-border flex items-center justify-between px-6 bg-card shadow-sm shrink-0">
+        <div className="fixed inset-0 z-[100] bg-background flex flex-col">
+            {/* ── Header ── */}
+            <div className="h-14 border-b border-border flex items-center justify-between px-5 bg-card shrink-0">
                 <div className="flex items-center gap-4">
-                    <div className="bg-primary/10 text-primary p-2 rounded-lg">
-                        <Clock className="w-6 h-6" />
-                    </div>
-                    <div className="flex items-center gap-2">
-                        {project ? (
-                            <h2 className="font-bold text-lg">{project.title} - 회의 진행 중</h2>
-                        ) : (
-                            <select
-                                value={selectedProjectId}
-                                onChange={e => setSelectedProjectId(e.target.value)}
-                                className="bg-transparent font-bold text-lg border-none focus:ring-0 cursor-pointer w-64"
-                            >
-                                <option value="" disabled>프로젝트 선택 (선택 사항)</option>
-                                <option value="">(프로젝트 없음)</option>
-                                {projects.map(p => <option key={p.id} value={p.id}>{p.title}</option>)}
-                            </select>
+                    {/* Timer */}
+                    <div className="flex items-center gap-2.5 bg-muted rounded-lg px-4 py-2">
+                        <Clock className="w-4 h-4 text-muted-foreground" />
+                        <span className="font-mono text-xl font-bold tabular-nums tracking-tight text-foreground">
+                            {formatTime(seconds)}
+                        </span>
+                        <div className="flex items-center gap-1 ml-1">
+                            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setIsActive(v => !v)}>
+                                {isActive ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
+                            </Button>
+                            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { setSeconds(0); setIsActive(true); }}>
+                                <RotateCcw className="w-3.5 h-3.5" />
+                            </Button>
+                        </div>
+                        {isActive && (
+                            <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
                         )}
-                        <div className="text-xs text-muted-foreground font-mono ml-2 mt-1">{formatTime(seconds)}</div>
                     </div>
 
-                    {/* Timer Controls */}
-                    <div className="flex items-center gap-1 ml-4">
-                        <Button variant="ghost" size="icon" onClick={() => setIsActive(!isActive)} className="h-8 w-8">
-                            {isActive ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-                        </Button>
-                        <Button variant="ghost" size="icon" onClick={() => setSeconds(0)} className="h-8 w-8">
-                            <RotateCcw className="w-4 h-4" />
-                        </Button>
-                    </div>
+                    <Separator orientation="vertical" className="h-6" />
+
+                    {/* Project */}
+                    {!initialProject ? (
+                        <Select value={selectedProjectId} onValueChange={setSelectedProjectId}>
+                            <SelectTrigger className="h-9 w-52 text-sm border-0 bg-transparent shadow-none focus:ring-0 text-muted-foreground">
+                                <SelectValue placeholder="프로젝트 연결 (선택)" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="">프로젝트 없음</SelectItem>
+                                {projects.map(p => (
+                                    <SelectItem key={p.id} value={p.id}>{p.title}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    ) : (
+                        <span className="text-sm font-semibold text-foreground">{project?.title}</span>
+                    )}
                 </div>
 
                 <div className="flex items-center gap-2">
-                    <Button variant="outline" onClick={onClose}>취소</Button>
-                    <Button onClick={handleSaveMeeting} className="gap-2">
-                        <Save className="w-4 h-4" /> 회의 종료 및 저장
+                    <Button variant="ghost" onClick={onClose} className="text-muted-foreground">
+                        <X className="w-4 h-4 mr-1.5" /> 취소
+                    </Button>
+                    <Button onClick={handleSaveMeeting} disabled={saved}>
+                        <Save className="w-4 h-4 mr-1.5" />
+                        회의 종료
                     </Button>
                 </div>
             </div>
 
-            {/* Main Content (Split View) */}
+            {/* ── Body ── */}
             <div className="flex-1 flex overflow-hidden">
-                {/* Left: Agenda & Actions (30%) */}
-                <div className="w-[350px] border-r border-border bg-muted/10 flex flex-col">
-                    {/* Agenda Section */}
-                    <div className="flex-1 p-6 border-b border-border overflow-y-auto">
-                        <h3 className="font-bold mb-4 flex items-center gap-2">
-                            <CheckSquare className="w-4 h-4 text-blue-500" /> 아젠다 (Agenda)
-                        </h3>
-                        <div className="space-y-3">
-                            {agendas.map(agenda => (
-                                <div key={agenda.id} className="flex items-center gap-3 group">
+                {/* Left panel */}
+                <div className="w-80 border-r border-border flex flex-col shrink-0 bg-card/50">
+                    {/* Agenda */}
+                    <div className="flex-1 flex flex-col min-h-0 border-b border-border">
+                        <div className="flex items-center justify-between px-5 py-4 shrink-0">
+                            <div className="flex items-center gap-2">
+                                <CheckSquare className="w-4 h-4 text-blue-500" />
+                                <span className="text-sm font-semibold">아젠다</span>
+                            </div>
+                            {agendas.length > 0 && (
+                                <Badge variant="secondary" className="text-xs">
+                                    {doneCount}/{agendas.length}
+                                </Badge>
+                            )}
+                        </div>
+                        <div className="flex-1 overflow-y-auto px-5 pb-3 space-y-2">
+                            {agendas.length === 0 && (
+                                <p className="text-xs text-muted-foreground py-4 text-center">아젠다를 추가하세요</p>
+                            )}
+                            {agendas.map(item => (
+                                <div key={item.id} className="flex items-start gap-3 group py-1">
                                     <Checkbox
-                                        checked={agenda.done}
-                                        onCheckedChange={() => toggleAgenda(agenda.id)}
-                                        id={agenda.id}
+                                        id={item.id}
+                                        checked={item.done}
+                                        onCheckedChange={() => toggleAgenda(item.id)}
+                                        className="mt-0.5"
                                     />
                                     <label
-                                        htmlFor={agenda.id}
-                                        className={cn("text-sm cursor-pointer flex-1 break-words", agenda.done && "line-through text-muted-foreground")}
+                                        htmlFor={item.id}
+                                        className={cn(
+                                            "text-sm cursor-pointer flex-1 leading-snug",
+                                            item.done && "line-through text-muted-foreground"
+                                        )}
                                     >
-                                        {agenda.text}
+                                        {item.text}
                                     </label>
                                 </div>
                             ))}
-                            <div className="flex gap-2 mt-2">
-                                <Input
-                                    placeholder="아젠다 추가..."
-                                    value={newAgenda}
-                                    onChange={e => setNewAgenda(e.target.value)}
-                                    onKeyDown={handleAddAgenda}
-                                    className="h-8 text-sm bg-background"
-                                />
-                                <Button size="sm" variant="ghost" onClick={() => handleAddAgenda()}>
-                                    <Plus className="w-4 h-4" />
-                                </Button>
-                            </div>
+                        </div>
+                        <div className="flex gap-2 px-5 pb-4 shrink-0">
+                            <Input
+                                ref={agendaInputRef}
+                                placeholder="아젠다 추가..."
+                                value={newAgenda}
+                                onChange={e => setNewAgenda(e.target.value)}
+                                onKeyDown={e => e.key === 'Enter' && handleAddAgenda()}
+                                className="h-8 text-sm"
+                            />
+                            <Button size="sm" variant="outline" className="h-8 w-8 p-0 shrink-0" onClick={handleAddAgenda}>
+                                <Plus className="w-3.5 h-3.5" />
+                            </Button>
                         </div>
                     </div>
 
-                    {/* Action Items Section */}
-                    <div className="h-1/2 p-6 overflow-y-auto bg-blue-50/30 dark:bg-blue-900/10">
-                        <h3 className="font-bold mb-4 flex items-center gap-2">
-                            <Send className="w-4 h-4 text-green-600" /> 액션 아이템
-                        </h3>
-                        <div className="text-xs text-muted-foreground mb-3">
-                            회의 종료 시 자동으로 작업으로 등록됩니다.
+                    {/* Action Items */}
+                    <div className="flex-1 flex flex-col min-h-0">
+                        <div className="flex items-center justify-between px-5 py-4 shrink-0">
+                            <div className="flex items-center gap-2">
+                                <ListTodo className="w-4 h-4 text-green-500" />
+                                <span className="text-sm font-semibold">액션 아이템</span>
+                            </div>
+                            {quickActions.length > 0 && (
+                                <Badge variant="secondary" className="text-xs">{quickActions.length}</Badge>
+                            )}
                         </div>
-                        <ul className="space-y-2 mb-3">
+                        <p className="text-xs text-muted-foreground px-5 pb-3 -mt-1 shrink-0">종료 시 할 일로 자동 등록</p>
+                        <div className="flex-1 overflow-y-auto px-5 pb-3 space-y-2">
+                            {quickActions.length === 0 && (
+                                <p className="text-xs text-muted-foreground py-2 text-center">아직 없습니다</p>
+                            )}
                             {quickActions.map((action, i) => (
-                                <li key={i} className="text-sm flex gap-2 items-start bg-background p-2 rounded shadow-sm">
-                                    <span className="text-green-600 font-bold">•</span>
-                                    {action}
-                                </li>
+                                <div key={i} className="flex items-center gap-2 bg-muted rounded-lg px-3 py-2 group">
+                                    <span className="flex-1 text-sm leading-snug">{action}</span>
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="h-6 w-6 opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive"
+                                        onClick={() => removeAction(i)}
+                                    >
+                                        <Trash2 className="w-3 h-3" />
+                                    </Button>
+                                </div>
                             ))}
-                        </ul>
-                        <div className="flex gap-2">
+                        </div>
+                        <div className="flex gap-2 px-5 pb-5 shrink-0">
                             <Input
-                                placeholder="할 일 입력..."
+                                ref={actionInputRef}
+                                placeholder="할 일 추가..."
                                 value={newAction}
                                 onChange={e => setNewAction(e.target.value)}
-                                onKeyDown={handleAddAction}
-                                className="h-8 text-sm bg-background"
+                                onKeyDown={e => e.key === 'Enter' && handleAddAction()}
+                                className="h-8 text-sm"
                             />
-                            <Button size="sm" variant="ghost" onClick={() => handleAddAction()}>
-                                <Plus className="w-4 h-4" />
+                            <Button size="sm" variant="outline" className="h-8 w-8 p-0 shrink-0" onClick={handleAddAction}>
+                                <Plus className="w-3.5 h-3.5" />
                             </Button>
                         </div>
                     </div>
                 </div>
 
-                {/* Right: Minutes Editor (70%) */}
-                <div className="flex-1 flex flex-col bg-background">
-                    <div className="p-6 border-b border-border bg-gray-50/50 dark:bg-gray-800/10">
-                        <h3 className="font-bold flex items-center gap-2">
-                            <FileText className="w-4 h-4 text-orange-500" /> 회의록
-                        </h3>
+                {/* Right: Minutes */}
+                <div className="flex-1 flex flex-col bg-background min-w-0">
+                    <div className="flex items-center justify-between px-6 py-3 border-b border-border shrink-0">
+                        <div className="flex items-center gap-2">
+                            <FileText className="w-4 h-4 text-orange-500" />
+                            <span className="text-sm font-semibold">회의록</span>
+                        </div>
                         <Button
-                            variant="ghost"
+                            variant="outline"
                             size="sm"
                             disabled={!minutes.trim() || isSummarizing}
                             onClick={handleAISummary}
-                            className="text-xs text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50"
+                            className="h-8 text-xs gap-1.5"
                         >
-                            {isSummarizing ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <Sparkles className="w-3 h-3 mr-1" />}
-                            AI 요약 및 요점 추출
+                            {isSummarizing
+                                ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                : <Sparkles className="w-3.5 h-3.5" />}
+                            AI 요약
                         </Button>
                     </div>
-                    <div className="flex-1 p-6 overflow-y-auto" onClick={(e) => {
-                        // Focus textarea if clicking on whitespace
-                        const textarea = document.getElementById('meeting-minutes-editor');
-                        if (textarea && e.target !== textarea) textarea.focus();
-                    }}>
-                        <TextareaAutosize
-                            id="meeting-minutes-editor"
-                            placeholder="# 회의 제목&#13;&#10;&#13;&#10;주요 내용 및 결정 사항을 자유롭게 기록하세요..."
-                            className="w-full h-full resize-none bg-transparent border-none focus:ring-0 text-base leading-relaxed p-0 placeholder:text-muted-foreground/50"
-                            minRows={10}
+                    <div className="flex-1 p-6 overflow-y-auto">
+                        <Textarea
+                            placeholder={`# 회의 제목\n\n주요 내용 및 결정 사항을 자유롭게 기록하세요...\n\n## 논의 사항\n\n## 결정 사항\n\n## 다음 단계`}
+                            className="w-full min-h-full resize-none bg-transparent border-none focus-visible:ring-0 text-base leading-relaxed p-0 placeholder:text-muted-foreground/40 font-mono"
                             value={minutes}
-                            onChange={(e) => setMinutes(e.target.value)}
+                            onChange={e => setMinutes(e.target.value)}
                         />
                     </div>
                 </div>

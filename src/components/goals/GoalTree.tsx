@@ -53,10 +53,10 @@ function GoalItem({ goal, level = 0, onAddSubGoal, onEdit, onDetail, forceExpand
 
     const getPlanTypeLabel = (type?: PlanType) => {
         switch (type) {
-            case 'short-term': return 'TQ (Tactical)';
-            case 'long-term': return 'SQ (Strategic)';
-            case 'habit': return 'RT (Routine)';
-            case 'project': return 'OP (Operation)';
+            case 'short-term': return '전술';
+            case 'long-term': return '전략';
+            case 'habit': return '루틴';
+            case 'project': return '작업';
             default: return '';
         }
     }
@@ -70,6 +70,18 @@ function GoalItem({ goal, level = 0, onAddSubGoal, onEdit, onDetail, forceExpand
             case 'language': return 'border-amber-500/50 text-amber-400 bg-amber-500/5';
             case 'hobby': return 'border-pink-500/50 text-pink-400 bg-pink-500/5';
             default: return 'border-slate-500/50 text-slate-400 bg-slate-500/5';
+        }
+    };
+
+    const getCategoryLabel = (cat?: GoalCategory) => {
+        switch (cat) {
+            case 'financial': return '재정';
+            case 'health': return '건강';
+            case 'career': return '커리어';
+            case 'growth': return '성장';
+            case 'language': return '언어';
+            case 'hobby': return '취미';
+            default: return '기타';
         }
     };
 
@@ -117,34 +129,34 @@ function GoalItem({ goal, level = 0, onAddSubGoal, onEdit, onDetail, forceExpand
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                             <div className="flex-1 cursor-pointer min-w-0" onClick={() => onDetail(goal)}>
                                 <div className="flex items-center gap-3 flex-wrap">
-                                    <h4 className={cn("font-black uppercase tracking-tight group-hover:text-amber-400 transition-colors truncate", level === 0 ? "text-lg text-white" : "text-sm text-foreground")}>
+                                    <h4 className={cn("font-bold tracking-tight group-hover:text-amber-400 transition-colors truncate", level === 0 ? "text-lg text-white" : "text-sm text-foreground")}>
                                         {goal.title}
                                     </h4>
 
                                     {goal.priority === 'high' && (
-                                        <div className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-rose-500/20 border border-rose-500/40 text-[9px] font-black text-rose-400 uppercase tracking-widest">
-                                            <Zap className="w-3 h-3" /> Critical
+                                        <div className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-rose-500/20 border border-rose-500/40 text-[9px] font-semibold text-rose-400">
+                                            <Zap className="w-3 h-3" /> 긴급
                                         </div>
                                     )}
 
                                     {goal.isHabit && (
-                                        <div className="px-2 py-0.5 rounded-md bg-emerald-500/20 border border-emerald-500/40 text-[9px] font-black text-emerald-400 uppercase tracking-widest">
-                                            Routine
+                                        <div className="px-2 py-0.5 rounded-md bg-emerald-500/20 border border-emerald-500/40 text-[9px] font-semibold text-emerald-400">
+                                            반복
                                         </div>
                                     )}
 
-                                    <div className={cn("px-2 py-0.5 rounded-md border text-[9px] font-black uppercase tracking-widest", getCategoryColor(goal.category))}>
-                                        {(goal.category || 'other').toUpperCase()}
+                                    <div className={cn("px-2 py-0.5 rounded-md border text-[9px] font-semibold", getCategoryColor(goal.category))}>
+                                        {getCategoryLabel(goal.category)}
                                     </div>
 
-                                    <div className={cn("px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-[9px] font-black uppercase tracking-widest", level === 0 ? "text-white/40" : "text-muted-foreground")}>
+                                    <div className={cn("px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-[9px] font-semibold", level === 0 ? "text-white/40" : "text-muted-foreground")}>
                                         {getPlanTypeLabel(goal.planType)}
                                     </div>
                                 </div>
 
                                 {level === 0 && goal.memo && (
-                                    <p className="text-[11px] text-white/60 font-medium line-clamp-1 mt-1 uppercase tracking-tight italic">
-                                        // {goal.memo}
+                                    <p className="text-[11px] text-white/60 font-medium line-clamp-1 mt-1">
+                                        {goal.memo}
                                     </p>
                                 )}
                             </div>
@@ -166,10 +178,10 @@ function GoalItem({ goal, level = 0, onAddSubGoal, onEdit, onDetail, forceExpand
                         {/* Progress Monitoring */}
                         <div className="flex items-center gap-4">
                             <div className="flex-1 space-y-1">
-                                <div className={cn("flex justify-between text-[9px] font-black uppercase tracking-[0.2em]", level === 0 ? "text-white/60" : "text-muted-foreground")}>
-                                    <span>Deployment Status</span>
+                                <div className={cn("flex justify-between text-[9px] font-semibold tracking-wide", level === 0 ? "text-white/60" : "text-muted-foreground")}>
+                                    <span>진행 상황</span>
                                     <span className={cn(goal.progress === 100 ? "text-emerald-400" : "text-amber-400")}>
-                                        {goal.progress}% COMPLETE
+                                        {goal.progress}% 완료
                                     </span>
                                 </div>
                                 <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden border border-white/5">
@@ -194,8 +206,8 @@ function GoalItem({ goal, level = 0, onAddSubGoal, onEdit, onDetail, forceExpand
                                         ? "bg-rose-500/10 border-rose-500/30 text-rose-400"
                                         : level === 0 ? "bg-white/5 border-white/10 text-white/40" : "bg-muted/50 border-border text-muted-foreground"
                                 )}>
-                                    <span className="text-[8px] font-black uppercase tracking-widest leading-none">Term</span>
-                                    <span className="text-[11px] font-black mt-1">
+                                    <span className="text-[8px] font-semibold leading-none">마감</span>
+                                    <span className="text-[11px] font-bold mt-1">
                                         {new Date(goal.deadline).toLocaleDateString()}
                                     </span>
                                 </div>
@@ -394,8 +406,8 @@ export default function GoalTree() {
                             <Shield className="w-6 h-6 text-amber-500" />
                         </div>
                         <div>
-                            <h2 className="text-3xl font-black text-foreground tracking-tighter uppercase italic">Strategic Command Center</h2>
-                            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.4em]">Master Objective Interface // Auth: Admin</p>
+                            <h2 className="text-3xl font-bold text-foreground tracking-tight">목표 트리</h2>
+                            <p className="text-[10px] font-medium text-muted-foreground mt-0.5">전략적 목표를 계층별로 관리하세요</p>
                         </div>
                     </div>
                 </div>
@@ -404,15 +416,15 @@ export default function GoalTree() {
                     <div className="flex items-center gap-2 glass-premium px-4 py-2 rounded-2xl border border-white/5">
                         <Activity className="w-4 h-4 text-emerald-500" />
                         <div className="text-left">
-                            <span className="block text-[8px] font-black text-white/40 uppercase tracking-widest">Global Progress</span>
-                            <span className="text-sm font-black text-white">42.8%</span>
+                            <span className="block text-[8px] font-semibold text-muted-foreground">전체 진행률</span>
+                            <span className="text-sm font-bold text-foreground">42.8%</span>
                         </div>
                     </div>
                     <div className="flex items-center gap-2 glass-premium px-4 py-2 rounded-2xl border border-white/5">
                         <Target className="w-4 h-4 text-amber-500" />
                         <div className="text-left">
-                            <span className="block text-[8px] font-black text-white/40 uppercase tracking-widest">Active Units</span>
-                            <span className="text-sm font-black text-white">{goals.length}</span>
+                            <span className="block text-[8px] font-semibold text-muted-foreground">활성 목표</span>
+                            <span className="text-sm font-bold text-foreground">{goals.length}</span>
                         </div>
                     </div>
                 </div>
@@ -422,7 +434,7 @@ export default function GoalTree() {
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
                 <div className="lg:col-span-2 relative">
                     <Input
-                        placeholder="전략 목표 필터링 (Search Unit)..."
+                        placeholder="목표 검색..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="h-12 bg-white/5 border-border text-foreground placeholder:text-muted-foreground pl-12 rounded-2xl focus:ring-amber-500/20"
@@ -432,37 +444,37 @@ export default function GoalTree() {
 
                 <div className="grid grid-cols-2 gap-2">
                     <Select value={filterCategory} onValueChange={(v) => setFilterCategory(v as any)}>
-                        <SelectTrigger className="h-12 bg-white/5 border-border text-foreground rounded-2xl text-[11px] font-black uppercase tracking-widest">
-                            <SelectValue placeholder="CATEGORY" />
+                        <SelectTrigger className="h-12 bg-white/5 border-border text-foreground rounded-2xl text-[11px] font-medium">
+                            <SelectValue placeholder="카테고리" />
                         </SelectTrigger>
                         <SelectContent className="bg-popover border-border text-popover-foreground">
-                            <SelectItem value="all">ALL DOMAINS</SelectItem>
-                            <SelectItem value="financial">ECONOMY</SelectItem>
-                            <SelectItem value="health">BIO-HAZARD</SelectItem>
-                            <SelectItem value="career">PROFESSIONAL</SelectItem>
-                            <SelectItem value="growth">INTELLIGENCE</SelectItem>
-                            <SelectItem value="language">COMMUNICATION</SelectItem>
-                            <SelectItem value="hobby">HEDONISM</SelectItem>
+                            <SelectItem value="all">전체</SelectItem>
+                            <SelectItem value="financial">재정</SelectItem>
+                            <SelectItem value="health">건강</SelectItem>
+                            <SelectItem value="career">커리어</SelectItem>
+                            <SelectItem value="growth">성장</SelectItem>
+                            <SelectItem value="language">언어</SelectItem>
+                            <SelectItem value="hobby">취미</SelectItem>
                         </SelectContent>
                     </Select>
 
                     <Select value={sortBy} onValueChange={(v) => setSortBy(v as any)}>
-                        <SelectTrigger className="h-12 bg-white/5 border-border text-foreground rounded-2xl text-[11px] font-black uppercase tracking-widest">
-                            <SelectValue placeholder="SORT" />
+                        <SelectTrigger className="h-12 bg-white/5 border-border text-foreground rounded-2xl text-[11px] font-medium">
+                            <SelectValue placeholder="정렬" />
                         </SelectTrigger>
                         <SelectContent className="bg-popover border-border text-popover-foreground">
-                            <SelectItem value="deadline">BY TIMELINE</SelectItem>
-                            <SelectItem value="progress">BY DEPLOYMENT</SelectItem>
-                            <SelectItem value="name">BY DESIGNATION</SelectItem>
+                            <SelectItem value="deadline">마감일순</SelectItem>
+                            <SelectItem value="progress">진행률순</SelectItem>
+                            <SelectItem value="name">이름순</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
 
                 <Button
                     onClick={() => handleOpenCreateDialog()}
-                    className="h-12 bg-amber-600 hover:bg-amber-700 text-white font-black uppercase tracking-[0.2em] rounded-2xl shadow-[0_10px_30px_rgba(217,119,6,0.3)] transition-all active:scale-95"
+                    className="h-12 bg-amber-600 hover:bg-amber-700 text-white font-semibold rounded-2xl shadow-[0_10px_30px_rgba(217,119,6,0.3)] transition-all active:scale-95"
                 >
-                    <Plus className="w-5 h-5 mr-2" /> Initialize Unit
+                    <Plus className="w-5 h-5 mr-2" /> 새 목표 추가
                 </Button>
             </div>
 
@@ -488,8 +500,8 @@ export default function GoalTree() {
                         className="flex flex-col items-center justify-center py-24 text-center glass-premium rounded-[40px] border border-white/5"
                     >
                         <Compass className="w-16 h-16 text-white/5 mb-6 animate-spin-slow" />
-                        <h3 className="text-xl font-black text-white uppercase tracking-widest">No Strategic Data Detected</h3>
-                        <p className="text-[10px] text-white/60 font-black uppercase tracking-[0.3em] mt-2">Initialize new ambition unit to begin operation</p>
+                        <h3 className="text-xl font-bold text-foreground">등록된 목표가 없습니다</h3>
+                        <p className="text-sm text-muted-foreground font-medium mt-2">새 목표를 추가하여 시작하세요</p>
                     </motion.div>
                 )}
             </div>
@@ -504,63 +516,63 @@ export default function GoalTree() {
                                     <Target className="w-5 h-5 text-amber-500" />
                                 </div>
                                 <div>
-                                    <h3 className="text-xl font-black uppercase tracking-tight">
-                                        {editingGoalId ? 'Modify Unit' : 'Initialize Unit'}
+                                    <h3 className="text-xl font-bold tracking-tight">
+                                        {editingGoalId ? '목표 수정' : '새 목표 추가'}
                                     </h3>
-                                    <p className="text-[9px] font-black text-white/60 uppercase tracking-widest mt-1">Strategic Objective Parameter Config</p>
+                                    <p className="text-[9px] font-medium text-muted-foreground mt-1">목표 정보를 입력하세요</p>
                                 </div>
                             </DialogTitle>
                         </DialogHeader>
 
                         <div className="space-y-6">
                             <div className="space-y-2">
-                                <Label className="text-[10px] font-black text-amber-500 uppercase tracking-[0.3em]">Objective Title</Label>
+                                <Label className="text-[10px] font-semibold text-amber-500 tracking-wide">목표 제목</Label>
                                 <Input
                                     value={newGoalTitle}
                                     onChange={(e) => setNewGoalTitle(e.target.value)}
-                                    placeholder="DESIGNATE OBJECTIVE NAME..."
-                                    className="h-12 bg-white/5 border-white/10 text-white placeholder:text-white/40 rounded-xl font-bold"
+                                    placeholder="목표 이름을 입력하세요..."
+                                    className="h-12 bg-white/5 border-white/10 text-white placeholder:text-white/40 rounded-xl font-medium"
                                 />
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <Label className="text-[10px] font-black text-amber-500 uppercase tracking-[0.3em]">Priority Protocol</Label>
+                                    <Label className="text-[10px] font-semibold text-amber-500 tracking-wide">우선순위</Label>
                                     <Select value={newGoalPriority} onValueChange={(v) => setNewGoalPriority(v as any)}>
-                                        <SelectTrigger className="h-12 bg-white/5 border-white/10 text-white rounded-xl font-bold">
+                                        <SelectTrigger className="h-12 bg-white/5 border-white/10 text-white rounded-xl font-medium">
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent className="bg-popover border-border text-popover-foreground">
-                                            <SelectItem value="high">🔥 CRITICAL</SelectItem>
-                                            <SelectItem value="medium">⚡ STANDARD</SelectItem>
-                                            <SelectItem value="low">🌱 BACKLOG</SelectItem>
+                                            <SelectItem value="high">🔥 긴급</SelectItem>
+                                            <SelectItem value="medium">⚡ 보통</SelectItem>
+                                            <SelectItem value="low">🌱 낮음</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label className="text-[10px] font-black text-amber-500 uppercase tracking-[0.3em]">Category Domain</Label>
+                                    <Label className="text-[10px] font-semibold text-amber-500 tracking-wide">카테고리</Label>
                                     <Select value={newGoalCategory} onValueChange={(v) => setNewGoalCategory(v as any)}>
-                                        <SelectTrigger className="h-12 bg-white/5 border-white/10 text-white rounded-xl font-bold">
+                                        <SelectTrigger className="h-12 bg-white/5 border-white/10 text-white rounded-xl font-medium">
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent className="bg-popover border-border text-popover-foreground">
-                                            <SelectItem value="financial">ECONOMY</SelectItem>
-                                            <SelectItem value="health">BIO-HAZARD</SelectItem>
-                                            <SelectItem value="career">PROFESSIONAL</SelectItem>
-                                            <SelectItem value="growth">INTELLIGENCE</SelectItem>
-                                            <SelectItem value="language">COMMUNICATION</SelectItem>
-                                            <SelectItem value="hobby">HEDONISM</SelectItem>
-                                            <SelectItem value="other">OTHER</SelectItem>
+                                            <SelectItem value="financial">재정</SelectItem>
+                                            <SelectItem value="health">건강</SelectItem>
+                                            <SelectItem value="career">커리어</SelectItem>
+                                            <SelectItem value="growth">성장</SelectItem>
+                                            <SelectItem value="language">언어</SelectItem>
+                                            <SelectItem value="hobby">취미</SelectItem>
+                                            <SelectItem value="other">기타</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
                             </div>
 
                             <div className="space-y-2">
-                                <Label className="text-[10px] font-black text-amber-500 uppercase tracking-[0.3em]">Tactical Memo</Label>
+                                <Label className="text-[10px] font-semibold text-amber-500 tracking-wide">메모</Label>
                                 <textarea
                                     className="w-full h-32 bg-white/5 border-white/10 text-white p-4 rounded-xl text-xs font-medium resize-none placeholder:text-white/40 focus:ring-1 focus:ring-amber-500/50"
-                                    placeholder="ENTER STRATEGIC CONTEXT..."
+                                    placeholder="목표에 대한 메모를 입력하세요..."
                                     value={newGoalMemo}
                                     onChange={(e) => setNewGoalMemo(e.target.value)}
                                 />
@@ -571,9 +583,9 @@ export default function GoalTree() {
                     <div className="flex bg-white/5 p-8 border-t border-white/10">
                         <Button
                             onClick={handleSaveGoal}
-                            className="w-full h-14 bg-amber-600 hover:bg-amber-700 text-white font-black uppercase tracking-[0.3em] rounded-2xl shadow-xl transition-all"
+                            className="w-full h-14 bg-amber-600 hover:bg-amber-700 text-white font-semibold rounded-2xl shadow-xl transition-all"
                         >
-                            {editingGoalId ? 'Update Parameters' : 'Authorize Deployment'}
+                            {editingGoalId ? '수정 완료' : '목표 추가'}
                         </Button>
                     </div>
                 </DialogContent>

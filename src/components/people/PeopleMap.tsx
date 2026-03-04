@@ -14,7 +14,7 @@ const ForceGraph2D = dynamic(() => import('react-force-graph-2d'), {
     loading: () => (
         <div className="flex flex-col items-center justify-center h-full text-white/20 gap-4">
             <div className="w-12 h-12 border-4 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin" />
-            <p className="text-xs font-black tracking-[0.2em] uppercase">CALIBRATING NEURAL MAP...</p>
+            <p className="text-xs text-white/30">인맥 맵 로딩 중...</p>
         </div>
     )
 });
@@ -58,7 +58,7 @@ export function PeopleMap({ onClose }: PeopleMapProps) {
         if (!nodes.some(n => n.isMe)) {
             nodes.push({
                 id: 'virtual-me',
-                name: 'YOU (Me)',
+                name: '나',
                 relationship: 'me' as any,
                 isMe: true,
                 val: 10,
@@ -138,10 +138,10 @@ export function PeopleMap({ onClose }: PeopleMapProps) {
                         <Navigation className="w-5 h-5 text-indigo-400" strokeWidth={3} />
                     </div>
                     <div>
-                        <h2 className="text-xl font-black text-white tracking-widest uppercase">NEURAL SOCIAL MAP</h2>
+                        <h2 className="text-xl font-bold text-white">인맥 맵</h2>
                         <div className="flex items-center gap-2 mt-0.5">
                             <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                            <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] italic">REAL-TIME CONNECTION TOPOLOGY ACTIVE</p>
+                            <p className="text-xs text-white/30">실시간 연결 관계 시각화</p>
                         </div>
                     </div>
                 </div>
@@ -150,15 +150,15 @@ export function PeopleMap({ onClose }: PeopleMapProps) {
                     <div className="hidden lg:flex items-center gap-6 bg-white/5 px-6 py-2.5 rounded-2xl border border-white/5">
                         <div className="flex items-center gap-2">
                             <div className="w-2.5 h-2.5 rounded-full bg-indigo-500" />
-                            <span className="text-[10px] font-black text-white/40 uppercase tracking-widest">Self</span>
+                            <span className="text-[10px] font-semibold text-white/40">나</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <div className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
-                            <span className="text-[10px] font-black text-white/40 uppercase tracking-widest">Friend</span>
+                            <span className="text-[10px] font-semibold text-white/40">친구</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <div className="w-2.5 h-2.5 rounded-full bg-blue-400" />
-                            <span className="text-[10px] font-black text-white/40 uppercase tracking-widest">Work</span>
+                            <span className="text-[10px] font-semibold text-white/40">직장</span>
                         </div>
                     </div>
 
@@ -177,7 +177,7 @@ export function PeopleMap({ onClose }: PeopleMapProps) {
                 {graphData.nodes.length === 0 ? (
                     <div className="absolute inset-0 flex flex-col items-center justify-center text-white/10 gap-4">
                         <Share2 className="w-12 h-12 opacity-10" />
-                        <p className="text-sm font-black tracking-widest">NO CONNECTION DATA FOUND</p>
+                        <p className="text-sm text-white/20">연결된 인물이 없습니다</p>
                     </div>
                 ) : (
                     <ForceGraph2D
@@ -268,19 +268,19 @@ export function PeopleMap({ onClose }: PeopleMapProps) {
                 <div className="absolute bottom-10 left-10 flex flex-col gap-4 max-w-xs p-6 glass-premium rounded-[32px] border border-white/10 shadow-2xl relative z-10">
                     <div className="flex items-center gap-3">
                         <Info className="w-5 h-5 text-indigo-400" />
-                        <h3 className="text-xs font-black text-white uppercase tracking-widest">NAVIGATION LOG</h3>
+                        <h3 className="text-xs font-semibold text-white">사용 안내</h3>
                     </div>
                     <div className="space-y-3">
-                        <p className="text-[10px] font-bold text-white/40 leading-relaxed uppercase">
-                            - DRAG NODES TO RESTRUCTURE<br />
-                            - SCROLL TO ZOOM IN/OUT<br />
-                            - GLOWING PARTICLES INDICATE ACTIVE CONNECTION FLOW
+                        <p className="text-[11px] text-white/40 leading-relaxed">
+                            - 노드를 드래그해 위치를 조정할 수 있습니다<br />
+                            - 스크롤로 확대/축소<br />
+                            - 입자 흐름은 연결 관계를 나타냅니다
                         </p>
                     </div>
                     <div className="mt-2 pt-4 border-t border-white/5">
-                        <div className="flex items-center justify-between text-[9px] font-black text-white/20 uppercase tracking-widest">
-                            <span>Signal Strength</span>
-                            <span className="text-emerald-500">OPTIMAL</span>
+                        <div className="flex items-center justify-between text-[9px] text-white/20">
+                            <span>연결 상태</span>
+                            <span className="text-emerald-500">정상</span>
                         </div>
                     </div>
                 </div>
@@ -290,17 +290,17 @@ export function PeopleMap({ onClose }: PeopleMapProps) {
             <div className="bg-white/[0.02] border-t border-white/5 px-10 py-4 flex items-center justify-between relative z-10">
                 <div className="flex items-center gap-6">
                     <div className="flex items-center gap-2">
-                        <span className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em]">NODES:</span>
-                        <span className="text-[10px] font-black text-indigo-400">{graphData.nodes.length}</span>
+                        <span className="text-[10px] text-white/30">인물:</span>
+                        <span className="text-[10px] font-semibold text-indigo-400">{graphData.nodes.length}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                        <span className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em]">EDGES:</span>
-                        <span className="text-[10px] font-black text-indigo-400">{graphData.links.length}</span>
+                        <span className="text-[10px] text-white/30">연결:</span>
+                        <span className="text-[10px] font-semibold text-indigo-400">{graphData.links.length}</span>
                     </div>
                 </div>
-                <div className="text-[9px] font-black text-white/20 uppercase tracking-[0.3em] flex items-center gap-2">
+                <div className="text-[10px] text-white/20 flex items-center gap-2">
                     <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                    SYSTEM SECURE // END-TO-END SOCIAL ENCRYPTION active
+                    데이터 보호 중
                 </div>
             </div>
         </motion.div>
