@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useData } from '@/context/DataProvider';
 import { generateId, cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -74,6 +74,17 @@ export function DietLog() {
     const resetTempInput = () => {
         setTempName(''); setTempCal(''); setTempCarbs(''); setTempProtein(''); setTempFat('');
     };
+
+    // 탄단지 입력 시 칼로리 자동 계산 (탄수화물 4kcal/g, 단백질 4kcal/g, 지방 9kcal/g)
+    useEffect(() => {
+        const carbs = parseFloat(tempCarbs) || 0;
+        const protein = parseFloat(tempProtein) || 0;
+        const fat = parseFloat(tempFat) || 0;
+        if (carbs || protein || fat) {
+            const calculated = Math.round(carbs * 4 + protein * 4 + fat * 9);
+            setTempCal(String(calculated));
+        }
+    }, [tempCarbs, tempProtein, tempFat]);
 
     const handleRemoveItem = (itemId: string) => {
         setItems(items.filter(i => i.id !== itemId));
@@ -438,7 +449,10 @@ export function DietLog() {
                                         type="number"
                                         value={tempCal}
                                         onChange={e => setTempCal(e.target.value)}
-                                        className="flex-1 h-12 bg-white/5 border-white/5 rounded-xl text-center font-black text-xs"
+                                        className={cn(
+                                            "flex-1 h-12 bg-white/5 border-white/5 rounded-xl text-center font-black text-xs",
+                                            (parseFloat(tempCarbs) || parseFloat(tempProtein) || parseFloat(tempFat)) && "border-emerald-500/30 bg-emerald-500/5"
+                                        )}
                                     />
                                     <Button onClick={handleAddItem} disabled={!tempName} className="w-12 h-12 rounded-xl bg-emerald-500 hover:bg-emerald-600 shadow-xl shrink-0 transition-all">
                                         <Plus className="w-5 h-5 text-white" strokeWidth={3} />

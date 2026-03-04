@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { CalendarEvent, EventPriority, EventType } from '@/types';
 import { format } from 'date-fns';
-import { Trash2, Clock, Calendar as CalendarIcon, Tag, AlertCircle, Users, ChevronDown, Handshake, FolderTree, Trophy, Repeat, CheckCircle2 } from 'lucide-react';
+import { Trash2, Clock, Tag, Users, ChevronDown, Handshake, FolderTree, Trophy, Repeat, Briefcase, BookOpen, User, Activity, TrendingUp, Palette, Plane, Umbrella, Home, ShoppingBag, MoreHorizontal, Utensils, type LucideIcon } from 'lucide-react';
 import { cn, generateId } from '@/lib/utils';
 import { useData } from '@/context/DataProvider';
 import { useHaptic } from '@/hooks/useHaptic';
@@ -31,6 +31,22 @@ interface EventDialogProps {
 }
 
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
+
+const EVENT_TYPES: { value: EventType; label: string; color: string; icon: LucideIcon }[] = [
+    { value: 'work',     label: '업무',   color: '#3B82F6', icon: Briefcase },
+    { value: 'study',    label: '공부',   color: '#A855F7', icon: BookOpen },
+    { value: 'personal', label: '개인',   color: '#0EA5E9', icon: User },
+    { value: 'health',   label: '건강',   color: '#22C55E', icon: Activity },
+    { value: 'finance',  label: '재테크', color: '#14B8A6', icon: TrendingUp },
+    { value: 'social',   label: '소셜',   color: '#EC4899', icon: Users },
+    { value: 'hobby',    label: '취미',   color: '#F97316', icon: Palette },
+    { value: 'travel',   label: '여행',   color: '#06B6D4', icon: Plane },
+    { value: 'meal',     label: '식사',   color: '#EAB308', icon: Utensils },
+    { value: 'vacation', label: '휴가',   color: '#84CC16', icon: Umbrella },
+    { value: 'family',   label: '가족',   color: '#EF4444', icon: Home },
+    { value: 'shopping', label: '쇼핑',   color: '#FB7185', icon: ShoppingBag },
+    { value: 'other',    label: '기타',   color: '#9CA3AF', icon: MoreHorizontal },
+];
 
 export function EventDialog({ isOpen, onOpenChange, event, initialDate, initialEndDate, onSave, onDelete }: EventDialogProps) {
     const { triggerSuccess } = useHaptic();
@@ -359,45 +375,56 @@ export function EventDialog({ isOpen, onOpenChange, event, initialDate, initialE
                         </div>
                     )}
 
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">유형</Label>
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button variant="outline" className="w-full justify-between font-medium border-border bg-card hover:border-blue-600/50 text-sm h-11">
-                                        {type === 'work' ? '업무' :
-                                            type === 'personal' ? '개인' :
-                                                type === 'study' ? '공부' :
-                                                    type === 'hobby' ? '취미' : '기타'}
-                                        <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent className="w-[180px]">
-                                    <DropdownMenuItem onSelect={() => setType('work')}>업무</DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={() => setType('personal')}>개인</DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={() => setType('study')}>공부</DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={() => setType('hobby')}>취미</DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={() => setType('health')}>건강</DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={() => setType('other')}>기타</DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
+                    {/* 유형 선택 — 컬러 그리드 */}
+                    <div className="space-y-2">
+                        <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">유형</Label>
+                        <div className="grid grid-cols-4 gap-1.5">
+                            {EVENT_TYPES.map((t) => {
+                                const isSelected = type === t.value;
+                                return (
+                                    <button
+                                        key={t.value}
+                                        type="button"
+                                        onClick={() => setType(t.value)}
+                                        className={cn(
+                                            "flex items-center gap-1.5 px-2.5 py-2 rounded-xl text-[11px] font-bold transition-all border",
+                                            isSelected
+                                                ? "border-2"
+                                                : "bg-muted border-border text-muted-foreground hover:bg-card hover:text-foreground"
+                                        )}
+                                        style={isSelected ? {
+                                            backgroundColor: t.color + '1A',
+                                            borderColor: t.color + '99',
+                                            color: t.color,
+                                        } : {}}
+                                    >
+                                        <t.icon
+                                            className="w-3.5 h-3.5 shrink-0"
+                                            style={isSelected ? { color: t.color } : {}}
+                                        />
+                                        <span className="truncate">{t.label}</span>
+                                    </button>
+                                );
+                            })}
                         </div>
-                        <div className="space-y-2">
-                            <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">우선순위</Label>
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button variant="outline" className="w-full justify-between font-medium border-border bg-card hover:border-blue-600/50 text-sm h-11">
-                                        {priority === 'low' ? '낮음' : priority === 'medium' ? '보통' : '높음'}
-                                        <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent className="w-[180px]">
-                                    <DropdownMenuItem onSelect={() => setPriority('low')}>낮음</DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={() => setPriority('medium')}>보통</DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={() => setPriority('high')}>높음</DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                        </div>
+                    </div>
+
+                    {/* 우선순위 */}
+                    <div className="space-y-2">
+                        <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">우선순위</Label>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="outline" className="w-full justify-between font-medium border-border bg-card hover:border-blue-600/50 text-sm h-11">
+                                    {priority === 'low' ? '낮음' : priority === 'medium' ? '보통' : '높음'}
+                                    <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className="w-[180px]">
+                                <DropdownMenuItem onSelect={() => setPriority('low')}>낮음</DropdownMenuItem>
+                                <DropdownMenuItem onSelect={() => setPriority('medium')}>보통</DropdownMenuItem>
+                                <DropdownMenuItem onSelect={() => setPriority('high')}>높음</DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     </div>
 
                     <div className="flex gap-4 pt-2">

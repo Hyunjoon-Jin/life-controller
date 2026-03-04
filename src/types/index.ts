@@ -241,7 +241,7 @@ export type Habit = {
     isTracked?: boolean; // If false, hide checkbox/streak
 };
 
-export type EventType = 'work' | 'personal' | 'study' | 'hobby' | 'health' | 'finance' | 'social' | 'travel' | 'meal' | 'vacation' | 'other';
+export type EventType = 'work' | 'personal' | 'study' | 'hobby' | 'health' | 'finance' | 'social' | 'travel' | 'meal' | 'vacation' | 'family' | 'shopping' | 'other';
 export type EventPriority = 'high' | 'medium' | 'low';
 
 export type UserSettings = {

@@ -3,7 +3,7 @@
 import { format, isSameDay, isValid } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { cn, generateId } from '@/lib/utils';
-import { Users, AlertCircle, Briefcase, Handshake, Plus } from 'lucide-react';
+import { Users, Briefcase, Handshake, Plus, BookOpen, User, Activity, TrendingUp, Palette, Plane, Umbrella, Home, ShoppingBag, MoreHorizontal, Utensils, type LucideIcon } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { useData } from '@/context/DataProvider';
 import { CalendarEvent, EventType } from '@/types';
@@ -11,6 +11,22 @@ import { getEventStyle, getEventColors } from '@/lib/calendar';
 import { EventDialog } from './EventDialog';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+
+const CATEGORY_META: Record<string, { label: string; icon: LucideIcon }> = {
+    work:     { label: '업무',   icon: Briefcase },
+    study:    { label: '공부',   icon: BookOpen },
+    personal: { label: '개인',   icon: User },
+    health:   { label: '건강',   icon: Activity },
+    finance:  { label: '재테크', icon: TrendingUp },
+    social:   { label: '소셜',   icon: Users },
+    hobby:    { label: '취미',   icon: Palette },
+    travel:   { label: '여행',   icon: Plane },
+    meal:     { label: '식사',   icon: Utensils },
+    vacation: { label: '휴가',   icon: Umbrella },
+    family:   { label: '가족',   icon: Home },
+    shopping: { label: '쇼핑',   icon: ShoppingBag },
+    other:    { label: '기타',   icon: MoreHorizontal },
+};
 
 export function DayView({ currentDate, showProjectTasks, onNext, onPrev }: { currentDate: Date; showProjectTasks: boolean; onNext: () => void; onPrev: () => void }) {
     const hours = Array.from({ length: 24 }, (_, i) => i);
@@ -121,6 +137,13 @@ export function DayView({ currentDate, showProjectTasks, onNext, onPrev }: { cur
     const [pixelsPerHour, setPixelsPerHour] = useState(60);
     const timelineRef = useRef<HTMLDivElement>(null);
     const SNAP_MINUTES = 15;
+
+    // 날짜 변경 시 현재 시간(오늘) 또는 오전 8시로 자동 스크롤
+    useEffect(() => {
+        if (!timelineRef.current) return;
+        const hour = isSameDay(currentDate, new Date()) ? Math.max(0, new Date().getHours() - 1) : 8;
+        timelineRef.current.scrollTop = hour * 60;
+    }, [currentDate]);
 
     // --- Interaction Handlers ---
 
@@ -509,11 +532,17 @@ export function DayView({ currentDate, showProjectTasks, onNext, onPrev }: { cur
                     {/* Current Time Line */}
                     {isSameDay(currentDate, new Date()) && (
                         <div
-                            className="absolute left-20 right-0 border-t border-emerald-500/50 z-50 pointer-events-none flex items-center transition-all duration-300"
-                            style={{ top: (new Date().getHours() + new Date().getMinutes() / 60) * pixelsPerHour }}
+                            className="absolute left-20 right-0 border-t border-emerald-500/70 z-50 pointer-events-none flex items-center"
+                            style={{ top: (now.getHours() + now.getMinutes() / 60) * pixelsPerHour }}
                         >
-                            <div className="absolute -left-1.5 w-3 h-3 bg-emerald-500 rounded-full shadow-[0_0_12px_rgba(16,185,129,0.8)]" />
-                            <div className="h-[1px] w-full bg-emerald-500/20" />
+                            {/* 시간 텍스트 레이블 (왼쪽 시간 컬럼 안) */}
+                            <div className="absolute -left-20 w-[76px] text-right pr-3 text-[9px] font-black text-emerald-400 -translate-y-1/2 leading-none whitespace-nowrap">
+                                {format(now, 'HH:mm')}
+                            </div>
+                            {/* 펄스 도트 */}
+                            <div className="absolute -left-1.5 w-3 h-3 bg-emerald-500 rounded-full shadow-[0_0_14px_rgba(16,185,129,0.9)] animate-pulse" />
+                            {/* 그라데이션 라인 */}
+                            <div className="h-[1px] w-full bg-gradient-to-r from-emerald-500/60 via-emerald-500/20 to-transparent" />
                         </div>
                     )}
 
@@ -526,7 +555,12 @@ export function DayView({ currentDate, showProjectTasks, onNext, onPrev }: { cur
                                 style={{ height: pixelsPerHour }}
                             >
                                 {/* Time Label */}
-                                <div className="absolute -top-3 left-4 text-[10px] text-white/60 font-black tracking-widest uppercase w-14 text-right">
+                                <div className={cn(
+                                    "absolute -top-3 left-4 text-[10px] font-black tracking-widest uppercase w-14 text-right transition-colors",
+                                    isSameDay(currentDate, new Date()) && now.getHours() === hour
+                                        ? "text-emerald-400"
+                                        : "text-white/40"
+                                )}>
                                     {format(new Date().setHours(hour, 0, 0, 0), 'h aa')}
                                 </div>
 
@@ -534,11 +568,14 @@ export function DayView({ currentDate, showProjectTasks, onNext, onPrev }: { cur
                                 <div className="w-20 flex-shrink-0 border-r border-white/[0.03] bg-white/[0.01]"></div>
 
                                 {/* Clickable Content Area */}
-                                <div className="flex-1 flex flex-col h-full relative border-b border-white/[0.03]">
+                                <div className="flex-1 flex flex-col h-full relative border-b border-white/[0.05]">
                                     {[0, 15, 30, 45].map((minute) => (
                                         <div
                                             key={minute}
-                                            className="flex-1 last:border-b-0 hover:bg-white/[0.03] transition-colors cursor-pointer relative md:min-h-0 min-h-[16px]"
+                                            className={cn(
+                                                "flex-1 hover:bg-white/[0.04] transition-colors cursor-pointer relative md:min-h-0 min-h-[16px]",
+                                                minute === 30 && "border-t border-dashed border-white/[0.09]"
+                                            )}
                                             onMouseDown={(e) => handleGridMouseDown(e, hour, minute)}
                                             onClick={(e) => {
                                                 if (e.target !== e.currentTarget) return;
@@ -614,20 +651,17 @@ export function DayView({ currentDate, showProjectTasks, onNext, onPrev }: { cur
                                             {event.isMeeting && <Users className="w-4 h-4 opacity-60 shrink-0 text-white" strokeWidth={2.5} />}
                                             {event.isAppointment && <Handshake className="w-4 h-4 opacity-60 shrink-0 text-white" strokeWidth={2.5} />}
 
-                                            {/* Category Tag */}
-                                            {!isShort && !isHabit && (
-                                                <span className="text-[10px] font-black opacity-60 px-2 py-0.5 rounded-lg bg-white/10 shrink-0 uppercase tracking-widest leading-none">
-                                                    {event.type === 'work' ? 'WORK' :
-                                                        event.type === 'study' ? 'STUDY' :
-                                                            event.type === 'hobby' ? 'HOBBY' :
-                                                                event.type === 'health' ? 'HEALTH' :
-                                                                    event.type === 'finance' ? 'FINANCE' :
-                                                                        event.type === 'social' ? 'SOCIAL' :
-                                                                            event.type === 'travel' ? 'TRAVEL' :
-                                                                                event.type === 'meal' ? 'MEAL' :
-                                                                                    event.type === 'personal' ? 'PERSONAL' : 'ETC'}
-                                                </span>
-                                            )}
+                                            {/* Category Icon Badge */}
+                                            {!isShort && !isHabit && event.type && CATEGORY_META[event.type] && (() => {
+                                                const meta = CATEGORY_META[event.type!];
+                                                const Icon = meta.icon;
+                                                return (
+                                                    <span className="flex items-center gap-1 text-[9px] font-black opacity-60 px-1.5 py-0.5 rounded-lg bg-white/10 shrink-0 leading-none whitespace-nowrap">
+                                                        <Icon className="w-2.5 h-2.5 shrink-0" />
+                                                        {meta.label}
+                                                    </span>
+                                                );
+                                            })()}
 
                                             <span className={cn("truncate leading-tight uppercase", getTextSizeClass(fontSize, 'title'))}>
                                                 {event.title}
@@ -642,8 +676,15 @@ export function DayView({ currentDate, showProjectTasks, onNext, onPrev }: { cur
                                     </div>
 
                                     {!isShort && (
-                                        <div className={cn("font-bold opacity-60 mt-auto tracking-tighter", getTextSizeClass(fontSize, 'time'))}>
-                                            {format(displayEvent.start, 'HH:mm')} - {format(displayEvent.end, 'HH:mm')}
+                                        <div className={cn("font-bold opacity-60 mt-auto tracking-tighter flex items-center gap-2 flex-wrap", getTextSizeClass(fontSize, 'time'))}>
+                                            <span>{format(displayEvent.start, 'HH:mm')} – {format(displayEvent.end, 'HH:mm')}</span>
+                                            {durationMins >= 30 && (
+                                                <span className="opacity-60 font-black">
+                                                    {durationMins >= 60
+                                                        ? `${Math.floor(durationMins / 60)}h${durationMins % 60 > 0 ? ` ${durationMins % 60}m` : ''}`
+                                                        : `${durationMins}m`}
+                                                </span>
+                                            )}
                                         </div>
                                     )}
 

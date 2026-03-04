@@ -52,6 +52,15 @@ export function WeekView({ currentDate, showProjectTasks, onDateClick }: { curre
     }, []);
     const PIXELS_PER_HOUR = 60;
     const SNAP_MINUTES = 15;
+    const scrollRef = useRef<HTMLDivElement>(null);
+
+    // 날짜 변경 시 현재 시간(오늘) 또는 오전 8시로 자동 스크롤
+    useEffect(() => {
+        if (!scrollRef.current) return;
+        const hasToday = weekDays.some(d => isToday(d));
+        const hour = hasToday ? Math.max(0, new Date().getHours() - 1) : 8;
+        scrollRef.current.scrollTop = hour * PIXELS_PER_HOUR;
+    }, [weekStart]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleOpenCreate = (day: Date, hour: number) => {
         if (dragState) return;
@@ -223,88 +232,6 @@ export function WeekView({ currentDate, showProjectTasks, onDateClick }: { curre
     }, [dragState]);
 
 
-    const getEventColors = (event: CalendarEvent) => {
-        if ((event as any).isHabit) return {
-            bg: 'rgba(251, 146, 60, 0.05)',
-            border: 'transparent',
-            text: '#ea580c',
-            accent: '#fb923c'
-        };
-
-        switch (event.type) {
-            case 'work':
-                return {
-                    bg: 'rgba(16, 185, 129, 0.08)',
-                    border: 'rgba(16, 185, 129, 0.2)',
-                    text: '#059669',
-                    accent: '#10b981'
-                };
-            case 'study':
-                return {
-                    bg: 'rgba(59, 130, 246, 0.08)',
-                    border: 'rgba(59, 130, 246, 0.2)',
-                    text: '#2563eb',
-                    accent: '#3b82f6'
-                };
-            case 'hobby':
-                return {
-                    bg: 'rgba(245, 158, 11, 0.08)',
-                    border: 'rgba(245, 158, 11, 0.2)',
-                    text: '#d97706',
-                    accent: '#f97316'
-                };
-            case 'health':
-                return {
-                    bg: 'rgba(239, 68, 68, 0.08)',
-                    border: 'rgba(239, 68, 68, 0.2)',
-                    text: '#dc2626',
-                    accent: '#ef4444'
-                };
-            case 'finance':
-                return {
-                    bg: 'rgba(34, 197, 94, 0.08)',
-                    border: 'rgba(34, 197, 94, 0.2)',
-                    text: '#16a34a',
-                    accent: '#22c55e'
-                };
-            case 'social':
-                return {
-                    bg: 'rgba(236, 72, 153, 0.08)',
-                    border: 'rgba(236, 72, 153, 0.2)',
-                    text: '#db2777',
-                    accent: '#ec4899'
-                };
-            case 'travel':
-                return {
-                    bg: 'rgba(6, 182, 212, 0.08)',
-                    border: 'rgba(6, 182, 212, 0.2)',
-                    text: '#0891b2',
-                    accent: '#06b6d4'
-                };
-            case 'meal':
-                return {
-                    bg: 'rgba(249, 115, 22, 0.08)',
-                    border: 'rgba(249, 115, 22, 0.2)',
-                    text: '#ea580c',
-                    accent: '#f97316'
-                };
-            case 'personal':
-                return {
-                    bg: 'rgba(99, 102, 241, 0.08)',
-                    border: 'rgba(99, 102, 241, 0.2)',
-                    text: '#4f46e5',
-                    accent: '#6366f1'
-                };
-            default:
-                return {
-                    bg: 'rgba(107, 114, 128, 0.08)',
-                    border: 'rgba(107, 114, 128, 0.2)',
-                    text: '#4b5563',
-                    accent: '#6b7280'
-                };
-        }
-    };
-
     // Compute non-overlapping layout for events in a day (안정화된 함수)
     const computeLayout = useCallback((evts: CalendarEvent[]) => {
         // Sort by start time
@@ -397,11 +324,16 @@ export function WeekView({ currentDate, showProjectTasks, onDateClick }: { curre
 
                     const isTodayDay = isToday(day);
 
+                    const dayEventCount = events.filter(e => {
+                        const d = new Date(e.start);
+                        return isValid(d) && isSameDay(d, day);
+                    }).length;
+
                     return (
                         <div
                             key={day.toString()}
                             className={cn(
-                                "flex-1 py-4 px-1 text-center border-r border-white/5 last:border-r-0 flex flex-col gap-2 min-w-[100px] cursor-pointer hover:bg-white/[0.05] transition-all duration-300",
+                                "flex-1 py-3 px-1 text-center border-r border-white/5 last:border-r-0 flex flex-col gap-1.5 min-w-[100px] cursor-pointer hover:bg-white/[0.05] transition-all duration-300",
                                 isTodayDay ? "bg-emerald-500/[0.03]" : "bg-transparent"
                             )}
                             onClick={() => onDateClick(day)}
@@ -418,10 +350,18 @@ export function WeekView({ currentDate, showProjectTasks, onDateClick }: { curre
                                 {format(day, 'd')}
                             </div>
 
-                            {/* Indicators in Header */}
-                            <div className="flex justify-center gap-1.5 min-h-[4px] mt-1">
-                                {daysGoals.length > 0 && <div className="w-1.5 h-1.5 rounded-full bg-red-400 shadow-[0_0_8px_rgba(248,113,113,0.5)]" />}
-                                {daysProjectTasks.length > 0 && <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]" />}
+                            {/* 이벤트 수 + 인디케이터 */}
+                            <div className="flex justify-center items-center gap-1.5 min-h-[16px]">
+                                {dayEventCount > 0 && (
+                                    <span className={cn(
+                                        "text-[9px] font-black px-1.5 py-0.5 rounded-full leading-none",
+                                        isTodayDay ? "bg-emerald-500/20 text-emerald-400" : "bg-white/10 text-white/40"
+                                    )}>
+                                        {dayEventCount}
+                                    </span>
+                                )}
+                                {daysGoals.length > 0 && <div className="w-1.5 h-1.5 rounded-full bg-red-400 shadow-[0_0_6px_rgba(248,113,113,0.5)]" />}
+                                {daysProjectTasks.length > 0 && <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.5)]" />}
                             </div>
                         </div>
                     );
@@ -429,16 +369,22 @@ export function WeekView({ currentDate, showProjectTasks, onDateClick }: { curre
             </div>
 
             {/* Grid Content */}
-            <div className="flex-1 overflow-y-auto custom-scrollbar relative flex touch-pan-y bg-white/[0.01]">
+            <div ref={scrollRef} className="flex-1 overflow-y-auto custom-scrollbar relative flex touch-pan-y bg-white/[0.01]">
                 {/* Time Labels Column */}
                 <div className="w-20 flex-shrink-0 bg-black/20 backdrop-blur-md border-r border-white/5 z-20 sticky left-0">
-                    {hours.map((hour) => (
-                        <div key={hour} className="h-[60px] relative border-b last:border-b-0 border-white/[0.02]">
-                            <span className="absolute -top-2.5 right-3 text-[10px] text-white/60 font-black tracking-tight uppercase">
-                                {format(new Date().setHours(hour, 0, 0, 0), 'h aa')}
-                            </span>
-                        </div>
-                    ))}
+                    {hours.map((hour) => {
+                        const isCurrent = isToday(now) && now.getHours() === hour;
+                        return (
+                            <div key={hour} className="h-[60px] relative border-b last:border-b-0 border-white/[0.03]">
+                                <span className={cn(
+                                    "absolute -top-2.5 right-3 text-[10px] font-black tracking-tight uppercase transition-colors",
+                                    isCurrent ? "text-emerald-400" : "text-white/40"
+                                )}>
+                                    {format(new Date().setHours(hour, 0, 0, 0), 'h aa')}
+                                </span>
+                            </div>
+                        );
+                    })}
                 </div>
 
                 {/* Day Columns */}
@@ -461,11 +407,14 @@ export function WeekView({ currentDate, showProjectTasks, onDateClick }: { curre
                         >
                             {/* Grid Lines */}
                             {hours.map(hour => (
-                                <div key={hour} className="h-[60px] border-b border-white/[0.03] w-full relative">
+                                <div key={hour} className="h-[60px] border-b border-white/[0.05] w-full relative">
                                     {[0, 15, 30, 45].map(minute => (
                                         <div
                                             key={minute}
-                                            className="absolute w-full h-[25%] hover:bg-white/[0.03] cursor-pointer z-0 transition-colors"
+                                            className={cn(
+                                                "absolute w-full h-[25%] hover:bg-white/[0.04] cursor-pointer z-0 transition-colors",
+                                                minute === 30 && "border-t border-dashed border-white/[0.08]"
+                                            )}
                                             style={{ top: `${(minute / 60) * 100}%` }}
                                             onClick={(e) => {
                                                 e.stopPropagation();
@@ -479,11 +428,11 @@ export function WeekView({ currentDate, showProjectTasks, onDateClick }: { curre
                             {/* Current Time Line */}
                             {isToday(day) && (
                                 <div
-                                    className="absolute left-0 right-0 border-t border-emerald-500/50 z-50 pointer-events-none flex items-center"
+                                    className="absolute left-0 right-0 border-t border-emerald-500/60 z-50 pointer-events-none flex items-center"
                                     style={{ top: `${(now.getHours() * PIXELS_PER_HOUR) + (now.getMinutes() / 60) * PIXELS_PER_HOUR}px` }}
                                 >
-                                    <div className="absolute -left-1.5 w-3 h-3 bg-emerald-500 rounded-full shadow-[0_0_10px_rgba(16,185,129,0.8)]" />
-                                    <div className="h-[1px] w-full bg-emerald-500/30" />
+                                    <div className="absolute -left-1 w-2.5 h-2.5 bg-emerald-500 rounded-full shadow-[0_0_10px_rgba(16,185,129,0.9)] animate-pulse" />
+                                    <div className="h-[1px] w-full bg-gradient-to-r from-emerald-500/60 via-emerald-500/20 to-transparent" />
                                 </div>
                             )}
 
@@ -522,10 +471,18 @@ export function WeekView({ currentDate, showProjectTasks, onDateClick }: { curre
                                             if (!isDragging) handleOpenEdit(event);
                                         }}
                                     >
-                                        <div className="p-2 flex flex-col h-full gap-0.5">
-                                            <div className="font-black truncate uppercase tracking-tight text-white/95">{event.title}</div>
-                                            <div className="text-[9px] font-bold text-white/60 group-hover:text-white/80 transition-colors">
-                                                {format(event.start, 'HH:mm')} - {format(event.end, 'HH:mm')}
+                                        <div className="p-2 flex flex-col h-full gap-0.5 min-h-0">
+                                            <div className="font-black truncate uppercase tracking-tight text-white/95 text-[10px] leading-tight">{event.title}</div>
+                                            <div className="text-[9px] font-bold text-white/50 group-hover:text-white/80 transition-colors flex items-center gap-1.5 flex-wrap">
+                                                <span>{format(event.start, 'HH:mm')}–{format(event.end, 'HH:mm')}</span>
+                                                {(() => {
+                                                    const dur = (new Date(displayEvent.end).getTime() - new Date(displayEvent.start).getTime()) / 60000;
+                                                    return dur >= 30 ? (
+                                                        <span className="opacity-60 font-black">
+                                                            {dur >= 60 ? `${Math.floor(dur / 60)}h${dur % 60 > 0 ? `${dur % 60}m` : ''}` : `${dur}m`}
+                                                        </span>
+                                                    ) : null;
+                                                })()}
                                             </div>
                                         </div>
 
