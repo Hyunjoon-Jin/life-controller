@@ -277,6 +277,53 @@ ${analysesSummary}
                 return NextResponse.json(JSON.parse(jsonText));
             }
 
+            case 'polish_email': {
+                const { to, subject, body, tone, purpose, language } = payload;
+
+                const toneMap: Record<string, string> = {
+                    formal: '매우 공식적이고 격식 있는',
+                    professional: '전문적이고 비즈니스에 적합한',
+                    friendly: '친근하고 따뜻한',
+                    assertive: '자신감 있고 단호한',
+                    concise: '간결하고 핵심만 전달하는',
+                };
+                const purposeMap: Record<string, string> = {
+                    report: '업무 보고',
+                    request: '요청',
+                    decline: '거절/사양',
+                    proposal: '제안',
+                    announcement: '공지/안내',
+                    thanks: '감사',
+                    apology: '사과',
+                    general: '일반',
+                };
+
+                const toneDesc = toneMap[tone] || '전문적인';
+                const purposeDesc = purposeMap[purpose] || '일반';
+                const lang = language === 'english' ? 'English' : '한국어';
+
+                const prompt = `당신은 전문 비즈니스 커뮤니케이션 전문가입니다.
+다음 메일 원문을 "${toneDesc}" 톤으로, "${purposeDesc}" 목적에 맞게, ${lang}로 자연스럽게 다듬어 주세요.
+문법 교정, 표현 개선, 구조 최적화를 포함하며, 원문의 핵심 내용과 의도는 반드시 유지하세요.
+
+수신자: ${to || '(미입력)'}
+제목: ${subject || '(미입력)'}
+원문 내용:
+${body}
+
+다음 JSON 형식으로만 반환하세요 (코드블록 없이):
+{
+  "subject": "다듬어진 제목",
+  "body": "다듬어진 메일 본문 (줄바꿈은 \\n 사용)",
+  "improvements": ["개선 포인트 1", "개선 포인트 2", "개선 포인트 3"],
+  "tone_summary": "적용된 톤과 스타일 설명 (1문장)"
+}`;
+
+                const result = await model.generateContent(prompt);
+                const jsonText = result.response.text().replace(/```json/g, '').replace(/```/g, '').trim();
+                return NextResponse.json(JSON.parse(jsonText));
+            }
+
             default:
                 return NextResponse.json({ error: "Invalid action" }, { status: 400 });
         }
