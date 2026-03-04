@@ -57,6 +57,7 @@
     "react-textarea-autosize": "^8.5.9",
     "react-use": "^17.6.0",
     "recharts": "^3.7.0",
+    "remark-gfm": "^4.0.1",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.4.0",
     "tailwindcss-animate": "^1.0.7",

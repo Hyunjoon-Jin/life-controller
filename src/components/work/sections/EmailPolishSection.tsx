@@ -13,6 +13,8 @@ import { cn } from '@/lib/utils';
 import { generateId } from '@/lib/utils';
 import { toast } from 'sonner';
 import { PHRASE_CATEGORIES, EMAIL_TEMPLATES, EMAIL_TIPS } from '@/data/emailSkills';
+import { MarkdownRenderer } from '@/components/ui/MarkdownRenderer';
+import { copyAsEmailHtml } from '@/lib/markdownToEmailHtml';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 type Tone = 'formal' | 'professional' | 'friendly' | 'assertive' | 'concise';
@@ -171,11 +173,20 @@ export default function EmailPolishSection() {
         }
     };
 
-    const copyToClipboard = async (text: string, field: string) => {
-        await navigator.clipboard.writeText(text);
-        setCopiedField(field);
-        toast.success('클립보드에 복사되었습니다.');
-        setTimeout(() => setCopiedField(null), 2000);
+    const copyToClipboard = async (text: string, field: string, asHtml = false) => {
+        let ok = false;
+        if (asHtml) {
+            ok = await copyAsEmailHtml(text);
+        } else {
+            try { await navigator.clipboard.writeText(text); ok = true; } catch { ok = false; }
+        }
+        if (ok) {
+            setCopiedField(field);
+            toast.success(asHtml ? 'Gmail·Outlook에 바로 붙여넣기 가능합니다.' : '클립보드에 복사되었습니다.');
+            setTimeout(() => setCopiedField(null), 2500);
+        } else {
+            toast.error('복사 실패. 브라우저 권한을 확인해 주세요.');
+        }
     };
 
     const insertPhrase = (text: string) => {
@@ -427,30 +438,53 @@ export default function EmailPolishSection() {
                                 {/* Subject */}
                                 <div className="space-y-1.5">
                                     <div className="flex items-center justify-between">
-                                        <Label className="text-xs text-muted-foreground">다듬어진 제목</Label>
+                                        <Label className="text-xs text-muted-foreground">제목</Label>
                                         <button onClick={() => copyToClipboard(result.subject, 'subject')}
                                             className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
                                             {copiedField === 'subject' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                                             복사
                                         </button>
                                     </div>
-                                    <div className="px-3 py-2.5 rounded-lg bg-white/5 border border-white/10 text-sm text-foreground font-medium">
+                                    <div className="px-3 py-2.5 rounded-lg bg-white/5 border border-white/10 text-sm text-foreground font-semibold">
                                         {result.subject}
                                     </div>
                                 </div>
 
-                                {/* Body */}
+                                {/* Body — Markdown rendered */}
                                 <div className="space-y-1.5">
                                     <div className="flex items-center justify-between">
-                                        <Label className="text-xs text-muted-foreground">다듬어진 본문</Label>
-                                        <button onClick={() => copyToClipboard(result.body, 'body')}
-                                            className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
-                                            {copiedField === 'body' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                                            복사
-                                        </button>
+                                        <Label className="text-xs text-muted-foreground">본문</Label>
+                                        <div className="flex items-center gap-2">
+                                            {/* 일반 텍스트 복사 */}
+                                            <button
+                                                onClick={() => copyToClipboard(result.body, 'body-plain')}
+                                                className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                                                title="마크다운 원문 복사"
+                                            >
+                                                {copiedField === 'body-plain' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                                                텍스트
+                                            </button>
+                                            {/* 서식 포함 HTML 복사 (Gmail/Outlook 직접 붙여넣기) */}
+                                            <button
+                                                onClick={() => copyToClipboard(result.body, 'body-html', true)}
+                                                className={cn(
+                                                    'flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-lg border transition-all',
+                                                    copiedField === 'body-html'
+                                                        ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                                                        : 'bg-blue-500/15 text-blue-300 border-blue-500/30 hover:bg-blue-500/25'
+                                                )}
+                                                title="볼드·표·줄바꿈 서식 유지 복사 (Gmail/Outlook 붙여넣기용)"
+                                            >
+                                                {copiedField === 'body-html'
+                                                    ? <><Check className="w-3.5 h-3.5" />복사됨</>
+                                                    : <><Copy className="w-3.5 h-3.5" />서식 복사</>
+                                                }
+                                            </button>
+                                        </div>
                                     </div>
-                                    <div className="px-3 py-3 rounded-lg bg-white/5 border border-white/10 text-sm text-foreground whitespace-pre-line max-h-80 overflow-y-auto leading-relaxed">
-                                        {result.body}
+                                    {/* Rendered markdown preview */}
+                                    <div className="px-4 py-3 rounded-xl bg-white/[0.04] border border-white/10 max-h-96 overflow-y-auto">
+                                        <MarkdownRenderer content={result.body} />
                                     </div>
                                 </div>
 
