@@ -1,6 +1,6 @@
 import { useData } from '@/context/DataProvider';
 import { Card, CardContent } from '@/components/ui/card';
-import { Users, Search, Phone, Mail, Link2, ExternalLink, Shield, Target, Activity, Terminal, Zap, UserPlus, Filter, MoreHorizontal, MessageSquare } from 'lucide-react';
+import { Users, Search, Phone, Mail, Link2, ExternalLink, Shield, Target, Activity, Terminal, Zap, UserPlus, Filter, MoreHorizontal, MessageSquare, FileText, CheckSquare } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { generateId, cn } from '@/lib/utils';
 import { Person, RelationshipType } from '@/types';
 import { motion, AnimatePresence } from 'framer-motion';
+import { KeyManActionPanel, loadActions } from './KeyManActionPanel';
 
 export function WorkPeopleSection() {
     const { people, addPerson, updatePerson, deletePerson } = useData();
@@ -62,6 +63,14 @@ export function WorkPeopleSection() {
     };
 
     const [showWorkOnly, setShowWorkOnly] = useState(true);
+    const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+
+    // 각 인물의 미완료 소통 항목 수 (배지용)
+    const allActions = typeof window !== 'undefined' ? loadActions() : [];
+    const pendingCountMap = allActions.reduce<Record<string, number>>((acc, a) => {
+        if (a.status === 'pending') acc[a.personId] = (acc[a.personId] || 0) + 1;
+        return acc;
+    }, {});
 
     const filteredPeople = people.filter(p => {
         const matchesSearch = p.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -174,19 +183,42 @@ export function WorkPeopleSection() {
                                         </p>
                                     </div>
 
-                                    <div className="mt-auto space-y-3">
-                                        <div className="flex items-center gap-3 p-3 bg-white/[0.03] border border-white/5 rounded-xl group/memo hover:bg-white/10 transition-colors">
-                                            <MessageSquare className="w-3 h-3 text-white/20 group-hover/memo:text-indigo-400" />
-                                            <span className="text-[9px] font-bold text-white/40 uppercase tracking-widest italic truncate">
-                                                {person.notes || 'NO_METADATA_AVAILABLE'}
-                                            </span>
-                                        </div>
+                                    <div className="mt-auto space-y-2">
+                                        {person.notes && (
+                                            <div className="flex items-center gap-3 p-3 bg-white/[0.03] border border-white/5 rounded-xl">
+                                                <MessageSquare className="w-3 h-3 text-white/20 shrink-0" />
+                                                <span className="text-[9px] font-bold text-white/40 uppercase tracking-widest italic truncate">
+                                                    {person.notes}
+                                                </span>
+                                            </div>
+                                        )}
+                                        {/* 소통 관리 버튼 */}
+                                        <button
+                                            onClick={() => setSelectedPerson(person)}
+                                            className="w-full flex items-center justify-between px-4 py-2.5 rounded-xl bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20 hover:border-indigo-500/40 transition-all group/comm"
+                                        >
+                                            <div className="flex items-center gap-2">
+                                                <div className="flex gap-1">
+                                                    <FileText className="w-3 h-3 text-blue-400" />
+                                                    <MessageSquare className="w-3 h-3 text-emerald-400" />
+                                                    <CheckSquare className="w-3 h-3 text-amber-400" />
+                                                </div>
+                                                <span className="text-[10px] font-bold text-indigo-300 tracking-wide">보고 · 소통 · 컨펌</span>
+                                            </div>
+                                            {pendingCountMap[person.id] ? (
+                                                <span className="min-w-[18px] h-[18px] px-1 rounded-full bg-indigo-500 text-white text-[10px] font-black flex items-center justify-center">
+                                                    {pendingCountMap[person.id]}
+                                                </span>
+                                            ) : (
+                                                <span className="text-[9px] text-indigo-500/50 font-bold tracking-widest group-hover/comm:text-indigo-400 transition-colors">→</span>
+                                            )}
+                                        </button>
                                         <Button
                                             variant="outline"
-                                            className="w-full h-10 rounded-xl border-white/5 bg-transparent hover:bg-indigo-500 hover:border-indigo-500 text-[9px] font-black text-white/20 hover:text-white tracking-[0.2em] uppercase transition-all"
+                                            className="w-full h-9 rounded-xl border-white/5 bg-transparent hover:bg-white/5 text-[9px] font-black text-white/20 hover:text-white tracking-[0.2em] uppercase transition-all"
                                             onClick={() => handleOpenEdit(person)}
                                         >
-                                            DEPLOY_DETAIL_MATRIX
+                                            DETAIL
                                         </Button>
                                     </div>
                                 </CardContent>
@@ -208,6 +240,16 @@ export function WorkPeopleSection() {
                     </motion.div>
                 )}
             </div>
+
+            {/* KeyMan Action Panel */}
+            <AnimatePresence>
+                {selectedPerson && (
+                    <KeyManActionPanel
+                        person={selectedPerson}
+                        onClose={() => setSelectedPerson(null)}
+                    />
+                )}
+            </AnimatePresence>
 
             {/* Premium Dialog Overhaul */}
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
