@@ -278,7 +278,7 @@ ${analysesSummary}
             }
 
             case 'polish_email': {
-                const { to, subject, body, tone, purpose, language } = payload;
+                const { to, subject, body, tone, purpose, language, userProfile, greetingTemplate } = payload;
 
                 const toneMap: Record<string, string> = {
                     formal: '매우 공식적이고 격식 있는',
@@ -288,35 +288,66 @@ ${analysesSummary}
                     concise: '간결하고 핵심만 전달하는',
                 };
                 const purposeMap: Record<string, string> = {
-                    report: '업무 보고',
-                    request: '요청',
-                    decline: '거절/사양',
-                    proposal: '제안',
-                    announcement: '공지/안내',
-                    thanks: '감사',
-                    apology: '사과',
-                    general: '일반',
+                    report: '업무 보고', request: '요청', decline: '거절/사양',
+                    proposal: '제안', announcement: '공지/안내', thanks: '감사',
+                    apology: '사과', general: '일반',
+                };
+                const purposeTagMap: Record<string, string> = {
+                    report: '[보고]', request: '[요청]', decline: '[안내]',
+                    proposal: '[제안]', announcement: '[공지]', thanks: '[감사]',
+                    apology: '[사과]', general: '',
                 };
 
                 const toneDesc = toneMap[tone] || '전문적인';
                 const purposeDesc = purposeMap[purpose] || '일반';
+                const purposeTag = purposeTagMap[purpose] || '';
                 const lang = language === 'english' ? 'English' : '한국어';
+                const isExternal = greetingTemplate?.type === 'external';
 
-                const prompt = `당신은 전문 비즈니스 커뮤니케이션 전문가입니다.
-다음 메일 원문을 "${toneDesc}" 톤으로, "${purposeDesc}" 목적에 맞게, ${lang}로 자연스럽게 다듬어 주세요.
-문법 교정, 표현 개선, 구조 최적화를 포함하며, 원문의 핵심 내용과 의도는 반드시 유지하세요.
+                const profileBlock = userProfile?.name ? `
+[발신자 정보 — 서명 및 본문에 반드시 반영]
+이름: ${userProfile.name}
+직함: ${userProfile.title || ''}
+부서: ${userProfile.department || ''}
+회사: ${userProfile.company || ''}
+이메일: ${userProfile.email || ''}
+연락처: ${userProfile.phone || ''}${userProfile.signature ? `\n커스텀 서명:\n${userProfile.signature}` : ''}
+` : '';
 
+                const greetingBlock = greetingTemplate ? `
+[인사말 스타일 — 반드시 이 스타일 그대로 사용]
+유형: ${greetingTemplate.type === 'internal' ? '사내(내부) 발송' : '외부 기관/거래처 발송'}
+오프닝: "${greetingTemplate.opening}"
+클로징: "${greetingTemplate.closing}"
+` : '';
+
+                const prompt = `당신은 한국 최고의 비즈니스 이메일 전문가입니다. 다음 원칙을 엄격히 준수하여 이메일을 완성해 주세요.
+
+[핵심 작성 원칙]
+1. BLUF(Bottom Line Up Front): 핵심 결론/요청을 첫 문장에 배치
+2. 피라미드 구조: 결론 → 근거 → 세부사항 순서로 작성
+3. 제목 공식: ${purposeTag ? purposeTag + ' ' : ''}핵심내용 (기한 있으면 포함), 50자 이하
+4. 단락당 3~4문장 이하, 항목 3개 이상이면 번호/불릿 포인트 사용
+5. 클로징: 구체적 기한 명시 + 감사 표현으로 마무리
+6. ${isExternal ? '외부 발송: 격식 있는 표현, 회사명 포함 자기소개 필수' : '사내 발송: 효율적이고 명확한 표현, 불필요한 격식 제거'}
+
+[작성 설정]
+톤: ${toneDesc}
+목적: ${purposeDesc}
+언어: ${lang}
 수신자: ${to || '(미입력)'}
-제목: ${subject || '(미입력)'}
-원문 내용:
+원본 제목 힌트: ${subject || '(없음)'}
+${profileBlock}${greetingBlock}
+[원문]
 ${body}
 
 다음 JSON 형식으로만 반환하세요 (코드블록 없이):
 {
-  "subject": "다듬어진 제목",
-  "body": "다듬어진 메일 본문 (줄바꿈은 \\n 사용)",
+  "subject": "완성된 이메일 제목 (말머리 태그 포함, 50자 이하)",
+  "body": "완성된 이메일 본문 (줄바꿈은 \\n 사용, 오프닝→BLUF→본문→클로징→발신자정보 순서)",
   "improvements": ["개선 포인트 1", "개선 포인트 2", "개선 포인트 3"],
-  "tone_summary": "적용된 톤과 스타일 설명 (1문장)"
+  "tone_summary": "적용된 톤과 스타일 설명 (1문장)",
+  "structure_note": "BLUF/피라미드 구조 적용 방식 설명 (1문장)"
 }`;
 
                 const result = await model.generateContent(prompt);
