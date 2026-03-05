@@ -8,10 +8,9 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
 import {
     Clock, Plus, Save, Play, Pause, RotateCcw, CheckSquare,
-    FileText, Sparkles, Loader2, X, Trash2, ChevronDown, ListTodo
+    FileText, Sparkles, Loader2, X, Trash2, ListTodo, Radio
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -124,37 +123,47 @@ export function MeetingMode({ project: initialProject, onClose }: { project?: Pr
     };
 
     const doneCount = agendas.filter(a => a.done).length;
+    const progressPct = agendas.length > 0 ? Math.round((doneCount / agendas.length) * 100) : 0;
 
     return (
-        <div className="fixed inset-0 z-[100] bg-background flex flex-col">
+        <div className="fixed inset-0 z-[200] flex flex-col" style={{ background: 'rgba(0,0,0,0.92)', backdropFilter: 'blur(8px)' }}>
             {/* ── Header ── */}
-            <div className="h-14 border-b border-border flex items-center justify-between px-5 bg-card shrink-0">
+            <div className="h-16 flex items-center justify-between px-6 shrink-0 border-b" style={{ background: 'rgba(15,15,20,0.95)', borderColor: 'rgba(255,255,255,0.1)' }}>
                 <div className="flex items-center gap-4">
-                    {/* Timer */}
-                    <div className="flex items-center gap-2.5 bg-muted rounded-lg px-4 py-2">
-                        <Clock className="w-4 h-4 text-muted-foreground" />
-                        <span className="font-mono text-xl font-bold tabular-nums tracking-tight text-foreground">
+                    {/* Live indicator + Timer */}
+                    <div className="flex items-center gap-2.5 rounded-xl px-4 py-2.5" style={{ background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)' }}>
+                        <Radio className="w-4 h-4 text-red-400" />
+                        <span className="font-mono text-xl font-bold tabular-nums tracking-tight text-white">
                             {formatTime(seconds)}
                         </span>
                         <div className="flex items-center gap-1 ml-1">
-                            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setIsActive(v => !v)}>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-7 w-7 text-red-300 hover:text-white hover:bg-red-500/20"
+                                onClick={() => setIsActive(v => !v)}
+                            >
                                 {isActive ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
                             </Button>
-                            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { setSeconds(0); setIsActive(true); }}>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-7 w-7 text-red-300 hover:text-white hover:bg-red-500/20"
+                                onClick={() => { setSeconds(0); setIsActive(true); }}
+                            >
                                 <RotateCcw className="w-3.5 h-3.5" />
                             </Button>
                         </div>
-                        {isActive && (
-                            <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                        )}
+                        {isActive && <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse ml-1" />}
                     </div>
 
-                    <Separator orientation="vertical" className="h-6" />
+                    {/* Divider */}
+                    <div className="w-px h-6 bg-white/10" />
 
-                    {/* Project */}
+                    {/* Project selector */}
                     {!initialProject ? (
                         <Select value={selectedProjectId} onValueChange={setSelectedProjectId}>
-                            <SelectTrigger className="h-9 w-52 text-sm border-0 bg-transparent shadow-none focus:ring-0 text-muted-foreground">
+                            <SelectTrigger className="h-9 w-52 text-sm border-0 bg-white/5 text-gray-300 focus:ring-0 focus:ring-offset-0">
                                 <SelectValue placeholder="프로젝트 연결 (선택)" />
                             </SelectTrigger>
                             <SelectContent>
@@ -165,15 +174,26 @@ export function MeetingMode({ project: initialProject, onClose }: { project?: Pr
                             </SelectContent>
                         </Select>
                     ) : (
-                        <span className="text-sm font-semibold text-foreground">{project?.title}</span>
+                        <div className="flex items-center gap-2">
+                            <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: project?.color || '#6b7280' }} />
+                            <span className="text-sm font-semibold text-white">{project?.title}</span>
+                        </div>
                     )}
                 </div>
 
                 <div className="flex items-center gap-2">
-                    <Button variant="ghost" onClick={onClose} className="text-muted-foreground">
+                    <Button
+                        variant="ghost"
+                        onClick={onClose}
+                        className="text-gray-400 hover:text-white hover:bg-white/10"
+                    >
                         <X className="w-4 h-4 mr-1.5" /> 취소
                     </Button>
-                    <Button onClick={handleSaveMeeting} disabled={saved}>
+                    <Button
+                        onClick={handleSaveMeeting}
+                        disabled={saved}
+                        className="bg-blue-600 hover:bg-blue-700 text-white border-0"
+                    >
                         <Save className="w-4 h-4 mr-1.5" />
                         회의 종료
                     </Button>
@@ -183,44 +203,59 @@ export function MeetingMode({ project: initialProject, onClose }: { project?: Pr
             {/* ── Body ── */}
             <div className="flex-1 flex overflow-hidden">
                 {/* Left panel */}
-                <div className="w-80 border-r border-border flex flex-col shrink-0 bg-card/50">
-                    {/* Agenda */}
-                    <div className="flex-1 flex flex-col min-h-0 border-b border-border">
+                <div className="w-80 flex flex-col shrink-0" style={{ background: 'rgba(20,20,28,0.9)', borderRight: '1px solid rgba(255,255,255,0.08)' }}>
+                    {/* Agenda Section */}
+                    <div className="flex-1 flex flex-col min-h-0" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
                         <div className="flex items-center justify-between px-5 py-4 shrink-0">
                             <div className="flex items-center gap-2">
-                                <CheckSquare className="w-4 h-4 text-blue-500" />
-                                <span className="text-sm font-semibold">아젠다</span>
+                                <CheckSquare className="w-4 h-4 text-blue-400" />
+                                <span className="text-sm font-semibold text-white">아젠다</span>
                             </div>
                             {agendas.length > 0 && (
-                                <Badge variant="secondary" className="text-xs">
-                                    {doneCount}/{agendas.length}
-                                </Badge>
-                            )}
-                        </div>
-                        <div className="flex-1 overflow-y-auto px-5 pb-3 space-y-2">
-                            {agendas.length === 0 && (
-                                <p className="text-xs text-muted-foreground py-4 text-center">아젠다를 추가하세요</p>
-                            )}
-                            {agendas.map(item => (
-                                <div key={item.id} className="flex items-start gap-3 group py-1">
-                                    <Checkbox
-                                        id={item.id}
-                                        checked={item.done}
-                                        onCheckedChange={() => toggleAgenda(item.id)}
-                                        className="mt-0.5"
-                                    />
-                                    <label
-                                        htmlFor={item.id}
-                                        className={cn(
-                                            "text-sm cursor-pointer flex-1 leading-snug",
-                                            item.done && "line-through text-muted-foreground"
-                                        )}
-                                    >
-                                        {item.text}
-                                    </label>
+                                <div className="flex items-center gap-2">
+                                    <div className="w-16 h-1.5 rounded-full bg-white/10 overflow-hidden">
+                                        <div
+                                            className="h-full rounded-full bg-blue-500 transition-all duration-300"
+                                            style={{ width: `${progressPct}%` }}
+                                        />
+                                    </div>
+                                    <span className="text-xs text-gray-400">{doneCount}/{agendas.length}</span>
                                 </div>
-                            ))}
+                            )}
                         </div>
+
+                        <div className="flex-1 overflow-y-auto px-5 pb-3 space-y-1.5">
+                            {agendas.length === 0 ? (
+                                <div className="flex flex-col items-center justify-center py-8 text-center">
+                                    <CheckSquare className="w-8 h-8 text-white/10 mb-2" />
+                                    <p className="text-xs text-gray-500">아젠다를 추가하세요</p>
+                                </div>
+                            ) : (
+                                agendas.map(item => (
+                                    <div
+                                        key={item.id}
+                                        className="flex items-start gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-white/5 group"
+                                    >
+                                        <Checkbox
+                                            id={item.id}
+                                            checked={item.done}
+                                            onCheckedChange={() => toggleAgenda(item.id)}
+                                            className="mt-0.5 border-gray-600 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500"
+                                        />
+                                        <label
+                                            htmlFor={item.id}
+                                            className={cn(
+                                                "text-sm cursor-pointer flex-1 leading-snug",
+                                                item.done ? "line-through text-gray-600" : "text-gray-200"
+                                            )}
+                                        >
+                                            {item.text}
+                                        </label>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+
                         <div className="flex gap-2 px-5 pb-4 shrink-0">
                             <Input
                                 ref={agendaInputRef}
@@ -228,44 +263,61 @@ export function MeetingMode({ project: initialProject, onClose }: { project?: Pr
                                 value={newAgenda}
                                 onChange={e => setNewAgenda(e.target.value)}
                                 onKeyDown={e => e.key === 'Enter' && handleAddAgenda()}
-                                className="h-8 text-sm"
+                                className="h-8 text-sm bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-blue-500/50"
                             />
-                            <Button size="sm" variant="outline" className="h-8 w-8 p-0 shrink-0" onClick={handleAddAgenda}>
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-8 w-8 p-0 shrink-0 bg-white/5 border-white/10 text-gray-400 hover:text-white hover:bg-white/10"
+                                onClick={handleAddAgenda}
+                            >
                                 <Plus className="w-3.5 h-3.5" />
                             </Button>
                         </div>
                     </div>
 
-                    {/* Action Items */}
+                    {/* Action Items Section */}
                     <div className="flex-1 flex flex-col min-h-0">
                         <div className="flex items-center justify-between px-5 py-4 shrink-0">
                             <div className="flex items-center gap-2">
-                                <ListTodo className="w-4 h-4 text-green-500" />
-                                <span className="text-sm font-semibold">액션 아이템</span>
+                                <ListTodo className="w-4 h-4 text-emerald-400" />
+                                <span className="text-sm font-semibold text-white">액션 아이템</span>
                             </div>
                             {quickActions.length > 0 && (
-                                <Badge variant="secondary" className="text-xs">{quickActions.length}</Badge>
+                                <Badge className="text-xs bg-emerald-500/20 text-emerald-400 border-emerald-500/30">
+                                    {quickActions.length}
+                                </Badge>
                             )}
                         </div>
-                        <p className="text-xs text-muted-foreground px-5 pb-3 -mt-1 shrink-0">종료 시 할 일로 자동 등록</p>
+                        <p className="text-xs text-gray-500 px-5 pb-3 -mt-1 shrink-0">종료 시 할 일로 자동 등록됩니다</p>
+
                         <div className="flex-1 overflow-y-auto px-5 pb-3 space-y-2">
-                            {quickActions.length === 0 && (
-                                <p className="text-xs text-muted-foreground py-2 text-center">아직 없습니다</p>
-                            )}
-                            {quickActions.map((action, i) => (
-                                <div key={i} className="flex items-center gap-2 bg-muted rounded-lg px-3 py-2 group">
-                                    <span className="flex-1 text-sm leading-snug">{action}</span>
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className="h-6 w-6 opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive"
-                                        onClick={() => removeAction(i)}
-                                    >
-                                        <Trash2 className="w-3 h-3" />
-                                    </Button>
+                            {quickActions.length === 0 ? (
+                                <div className="flex flex-col items-center justify-center py-6 text-center">
+                                    <ListTodo className="w-7 h-7 text-white/10 mb-2" />
+                                    <p className="text-xs text-gray-500">아직 없습니다</p>
                                 </div>
-                            ))}
+                            ) : (
+                                quickActions.map((action, i) => (
+                                    <div
+                                        key={i}
+                                        className="flex items-center gap-2 rounded-lg px-3 py-2 group"
+                                        style={{ background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.15)' }}
+                                    >
+                                        <span className="flex-1 text-sm text-gray-200 leading-snug">{action}</span>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            className="h-6 w-6 opacity-0 group-hover:opacity-100 text-gray-500 hover:text-red-400 hover:bg-red-500/10"
+                                            onClick={() => removeAction(i)}
+                                        >
+                                            <Trash2 className="w-3 h-3" />
+                                        </Button>
+                                    </div>
+                                ))
+                            )}
                         </div>
+
                         <div className="flex gap-2 px-5 pb-5 shrink-0">
                             <Input
                                 ref={actionInputRef}
@@ -273,9 +325,14 @@ export function MeetingMode({ project: initialProject, onClose }: { project?: Pr
                                 value={newAction}
                                 onChange={e => setNewAction(e.target.value)}
                                 onKeyDown={e => e.key === 'Enter' && handleAddAction()}
-                                className="h-8 text-sm"
+                                className="h-8 text-sm bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-emerald-500/50"
                             />
-                            <Button size="sm" variant="outline" className="h-8 w-8 p-0 shrink-0" onClick={handleAddAction}>
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-8 w-8 p-0 shrink-0 bg-white/5 border-white/10 text-gray-400 hover:text-white hover:bg-white/10"
+                                onClick={handleAddAction}
+                            >
                                 <Plus className="w-3.5 h-3.5" />
                             </Button>
                         </div>
@@ -283,18 +340,19 @@ export function MeetingMode({ project: initialProject, onClose }: { project?: Pr
                 </div>
 
                 {/* Right: Minutes */}
-                <div className="flex-1 flex flex-col bg-background min-w-0">
-                    <div className="flex items-center justify-between px-6 py-3 border-b border-border shrink-0">
+                <div className="flex-1 flex flex-col min-w-0" style={{ background: 'rgba(12,12,18,0.95)' }}>
+                    <div className="flex items-center justify-between px-6 py-3 shrink-0" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
                         <div className="flex items-center gap-2">
-                            <FileText className="w-4 h-4 text-orange-500" />
-                            <span className="text-sm font-semibold">회의록</span>
+                            <FileText className="w-4 h-4 text-orange-400" />
+                            <span className="text-sm font-semibold text-white">회의록</span>
+                            <span className="text-xs text-gray-500">자유롭게 기록하세요</span>
                         </div>
                         <Button
                             variant="outline"
                             size="sm"
                             disabled={!minutes.trim() || isSummarizing}
                             onClick={handleAISummary}
-                            className="h-8 text-xs gap-1.5"
+                            className="h-8 text-xs gap-1.5 bg-purple-500/10 border-purple-500/30 text-purple-300 hover:bg-purple-500/20 hover:text-purple-200 disabled:opacity-40"
                         >
                             {isSummarizing
                                 ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -302,10 +360,11 @@ export function MeetingMode({ project: initialProject, onClose }: { project?: Pr
                             AI 요약
                         </Button>
                     </div>
+
                     <div className="flex-1 p-6 overflow-y-auto">
                         <Textarea
                             placeholder={`# 회의 제목\n\n주요 내용 및 결정 사항을 자유롭게 기록하세요...\n\n## 논의 사항\n\n## 결정 사항\n\n## 다음 단계`}
-                            className="w-full min-h-full resize-none bg-transparent border-none focus-visible:ring-0 text-base leading-relaxed p-0 placeholder:text-muted-foreground/40 font-mono"
+                            className="w-full min-h-[calc(100vh-200px)] resize-none border-none bg-transparent text-base leading-relaxed p-0 text-gray-100 placeholder:text-gray-700 font-mono focus-visible:ring-0 focus-visible:ring-offset-0"
                             value={minutes}
                             onChange={e => setMinutes(e.target.value)}
                         />
