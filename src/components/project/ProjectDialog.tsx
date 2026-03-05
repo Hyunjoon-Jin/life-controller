@@ -14,7 +14,7 @@ import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { cn } from '@/lib/utils';
+import { cn, generateId } from '@/lib/utils';
 
 interface ProjectDialogProps {
     isOpen: boolean;
@@ -106,7 +106,7 @@ export function ProjectDialog({ isOpen, onOpenChange, projectToEdit }: ProjectDi
 
     const handleSave = () => {
         if (!title.trim()) return;
-        const newProjectId = projectToEdit ? projectToEdit.id : Date.now().toString();
+        const newProjectId = projectToEdit ? projectToEdit.id : generateId();
         const projectData: Project = {
             id: newProjectId,
             title,
@@ -122,7 +122,7 @@ export function ProjectDialog({ isOpen, onOpenChange, projectToEdit }: ProjectDi
             progress: projectToEdit?.progress || 0,
             parentId: projectToEdit?.parentId,
             isTemplate,
-            connectedGoalId: selectedGoalId,
+            connectedGoalId: selectedGoalId || undefined,
             category,
         };
         if (projectToEdit) {
